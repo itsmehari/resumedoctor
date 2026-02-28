@@ -48,7 +48,18 @@ npm install @opennextjs/cloudflare wrangler --save-dev --legacy-peer-deps
 
 > **Important:** The build step must use `build:cloudflare` (OpenNext), not `next build`. OpenNext produces the `.open-next` output that Wrangler deploys.
 
-### 4. Custom domain
+### 4. Fix build in Cloudflare dashboard (required)
+
+Workers Builds does **not** read build commands from wrangler. You must set them manually:
+
+1. Go to **Workers & Pages** → **resumedoctor** → **Settings** → **Build**
+2. Set **Build command** to: `npm run build:cloudflare`
+3. Set **Deploy command** to: `npx wrangler deploy`
+4. Save
+
+Without this, the deploy will fail with "Could not find compiled Open Next config".
+
+### 5. Custom domain
 
 1. Worker project → **Settings** → **Domains & Routes**
 2. Add custom domain: `resumedoctor.in` and `www.resumedoctor.in`
