@@ -1,0 +1,19 @@
+# Docker Compose for local PostgreSQL (WBS testing)
+# Run: docker compose up -d
+# Then: npx prisma migrate dev
+
+services:
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: resumedoctor_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - resumedoctor_pg_data:/var/lib/postgresql/data
+
+volumes:
+  resumedoctor_pg_data:

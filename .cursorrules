@@ -1,0 +1,23 @@
+# ResumeDoctor Project Rules
+
+## Project Context
+Zety-style resume/CV builder SaaS. India-first, freemium model. Domain: resumedoctor.in. Tech: Next.js 14, React, TypeScript, Prisma, PostgreSQL, Tailwind, Stripe, OpenAI.
+
+## Agent Workflow
+- Read `AGENTS.md` and `docs/PRD-ROLE-BASED.md` before starting.
+- Identify your role (Frontend/Backend/DevOps/Design/Content) and relevant WBS tasks.
+- Reference `docs/WBS-WORK-BREAKDOWN-STRUCTURE.md` for task details and dependencies.
+- Use kebab-case for file names. Follow existing folder structure.
+
+## Key Paths
+- App: `src/app/`
+- Components: `src/components/`
+- API: `src/app/api/`
+- DB: `prisma/`
+- Templates: `src/templates/` or `public/templates/`
+- Docs: `docs/`
+
+## Before Editing
+- Check for existing similar code to avoid duplication.
+- Ensure API routes validate input (Zod) and check auth.
+- Use prepared statements / Prisma for DB (no raw SQL injection risks).
