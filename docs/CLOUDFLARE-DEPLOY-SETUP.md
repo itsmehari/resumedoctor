@@ -28,8 +28,9 @@ npm install @opennextjs/cloudflare wrangler --save-dev --legacy-peer-deps
 
 1. **Workers & Pages** → **Create** → **Workers** (not Pages)
 2. **Connect to Git** → choose GitHub → select `resumedoctor`
-3. Configure build:
-   - **Build command:** `npm run deploy`
+3. Configure build (use **both** commands – Workers Builds runs them separately):
+   - **Build command:** `npm run build:cloudflare`
+   - **Deploy command:** `npx wrangler deploy`
    - **Root directory:** `/` (leave default)
 4. **Environment variables** – add all from `.env.example`:
 
@@ -43,7 +44,9 @@ npm install @opennextjs/cloudflare wrangler --save-dev --legacy-peer-deps
 | `OPENAI_API_KEY` | If using AI features |
 | (Optional) OAuth, S3, etc. | See `.env.example` |
 
-5. Deploy – Cloudflare runs `npm run deploy` and hosts the app.
+5. Deploy – Cloudflare runs the build command (OpenNext), then the deploy command (Wrangler), and hosts the app.
+
+> **Important:** The build step must use `build:cloudflare` (OpenNext), not `next build`. OpenNext produces the `.open-next` output that Wrangler deploys.
 
 ### 4. Custom domain
 
