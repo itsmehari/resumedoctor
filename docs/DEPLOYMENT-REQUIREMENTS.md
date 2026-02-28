@@ -27,7 +27,7 @@
 | **CDN** | Static assets, templates | Vercel Edge, Cloudflare |
 | **Email** | Transactional (verify, reset) | Resend, SendGrid, SES |
 | **Auth** | OAuth + sessions | NextAuth + DB, Supabase Auth, Clerk |
-| **Payments** | Subscriptions | Stripe, Razorpay |
+| **Payments** | QR/UPI (manual) | - |
 | **AI** | LLM API | OpenAI, Anthropic |
 | **Monitoring** | Errors, uptime | Sentry, Vercel Analytics |
 | **Redis** (optional) | Caching, rate limit | Upstash, Redis Cloud |
@@ -65,11 +65,6 @@ OPENAI_API_KEY=sk-...
 
 # Redis (production)
 REDIS_URL=rediss://...
-
-# Stripe (live mode)
-STRIPE_SECRET_KEY=sk_live_...
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
-STRIPE_WEBHOOK_SECRET=whsec_...
 
 # File Storage (S3/R2)
 S3_BUCKET=resumedoctor-prod
@@ -119,21 +114,19 @@ SENTRY_DSN=
 |---|------|--------|
 | 1 | HTTPS enforced | ☐ |
 | 2 | Security headers (CSP, HSTS, X-Frame) | ☐ |
-| 3 | Stripe webhook signature verification | ☐ |
-| 4 | Input validation on all API routes | ☐ |
-| 5 | File upload type/size restrictions | ☐ |
-| 6 | Admin routes protected by role | ☐ |
+| 3 | Input validation on all API routes | ☐ |
+| 4 | File upload type/size restrictions | ☐ |
+| 5 | Admin routes protected by role | ☐ |
 
 ### 3.4 Third-Party
 
 | # | Item | Status |
 |---|------|--------|
-| 1 | Stripe webhook URL registered | ☐ |
-| 2 | OAuth redirect URIs updated for prod | ☐ |
-| 3 | OpenAI usage limits set | ☐ |
-| 4 | Email domain verified (DKIM, SPF) | ☐ |
-| 5 | Sentry project for prod | ☐ |
-| 6 | **Transactional email** – verification & password reset sent via Resend/SendGrid (see `docs/LAUNCH-TODO.md`) | ☐ |
+| 1 | OAuth redirect URIs updated for prod | ☐ |
+| 2 | OpenAI usage limits set | ☐ |
+| 3 | Email domain verified (DKIM, SPF) | ☐ |
+| 4 | Sentry project for prod | ☐ |
+| 5 | **Transactional email** – verification & password reset sent via Resend/SendGrid (see `docs/LAUNCH-TODO.md`) | ☐ |
 
 ### 3.5 Domain & DNS
 
@@ -191,10 +184,8 @@ vercel --prod
 | 2 | Auth flow works | Sign up, sign in, sign out |
 | 3 | Resume create/save | Create resume, edit, save |
 | 4 | PDF export | Export resume as PDF |
-| 5 | Stripe checkout | Test payment (use test card) |
-| 6 | Webhook receives events | Check Stripe Dashboard → Webhooks |
-| 7 | Error tracking | Trigger error, verify Sentry |
-| 8 | Uptime monitor | Configure Pingdom/UptimeRobot |
+| 5 | Error tracking | Trigger error, verify Sentry |
+| 6 | Uptime monitor | Configure Pingdom/UptimeRobot |
 
 ---
 

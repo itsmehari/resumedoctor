@@ -1,4 +1,4 @@
-// WBS 10.5 – Pricing page (QR checkout only; Stripe skipped)
+// WBS 10.5 – Pricing page (QR/UPI checkout)
 "use client";
 
 import Link from "next/link";

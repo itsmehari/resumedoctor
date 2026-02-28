@@ -72,8 +72,6 @@ docker run -d --name resumedoctor-redis -p 6379:6379 redis:7-alpine
     "zod": "^3.22.4",
     "@tanstack/react-query": "^5.28.0",
     "next-auth": "^4.24.5",
-    "@stripe/stripe-js": "^2.4.0",
-    "stripe": "^14.18.0",
     "jspdf": "^2.5.1",
     "html2canvas": "^1.4.1"
   },
@@ -153,11 +151,6 @@ OPENAI_API_KEY=sk-...
 # Redis (optional for MVP)
 REDIS_URL=redis://localhost:6379
 
-# Stripe (test mode)
-STRIPE_SECRET_KEY=sk_test_...
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-
 # File Storage (S3-compatible, optional for local)
 # S3_BUCKET=
 # S3_REGION=
@@ -227,13 +220,6 @@ pnpm dev
 
 App: `http://localhost:3000`
 
-### 4.4 Optional: Stripe CLI (for webhooks locally)
-
-```bash
-# Install Stripe CLI: https://stripe.com/docs/stripe-cli
-stripe listen --forward-to localhost:3000/api/webhooks/stripe
-```
-
 ---
 
 ## 5. Dependency Tree (Visual)
@@ -245,7 +231,6 @@ ResumeDoctor App
 ├── tailwindcss (styling)
 ├── @prisma/client (DB)
 ├── next-auth (auth)
-├── stripe (payments)
 ├── openai (AI)
 ├── @dnd-kit/* (drag-drop)
 ├── jspdf + html2canvas (PDF export)
@@ -277,7 +262,6 @@ ResumeDoctor App
 | `PrismaClient` not found | Run `pnpm prisma generate` |
 | Port 3000 in use | Use `PORT=3001 pnpm dev` |
 | PostgreSQL connection refused | Ensure DB is running; check `DATABASE_URL` |
-| Stripe webhook fails | Use Stripe CLI to forward webhooks |
 | OpenAI rate limit | Add Redis caching; check usage |
 | PDF export blank | Check CORS; ensure `html2canvas` runs client-side |
 

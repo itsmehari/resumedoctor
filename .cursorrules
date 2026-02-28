@@ -1,7 +1,7 @@
 # ResumeDoctor Project Rules
 
 ## Project Context
-Zety-style resume/CV builder SaaS. India-first, freemium model. Domain: resumedoctor.in. Tech: Next.js 14, React, TypeScript, Prisma, PostgreSQL, Tailwind, Stripe, OpenAI.
+Zety-style resume/CV builder SaaS. India-first, freemium model. Domain: resumedoctor.in. Tech: Next.js 14, React, TypeScript, Prisma, PostgreSQL, Tailwind, OpenAI.
 
 ## Agent Workflow
 - Read `AGENTS.md` and `docs/PRD-ROLE-BASED.md` before starting.
