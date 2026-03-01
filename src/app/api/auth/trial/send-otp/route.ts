@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { hash } from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { sendOtpEmail } from "@/lib/email";
+import { sendOtpEmail, resend } from "@/lib/email";
 import { subMinutes, subHours } from "date-fns";
 
 const MAX_SENDS_PER_EMAIL = 3;
@@ -21,6 +21,15 @@ function generateOtp(): string {
 
 export async function POST(req: Request) {
   try {
+    // Early check: Resend must be configured for trial OTP
+    if (!resend) {
+      console.error("Send OTP: RESEND_API_KEY is not set in Vercel environment variables");
+      return NextResponse.json(
+        { error: "Email service is not configured. Please try again later." },
+        { status: 503 }
+      );
+    }
+
     const body = await req.json();
     const parsed = schema.safeParse(body);
     if (!parsed.success) {
@@ -126,10 +135,28 @@ export async function POST(req: Request) {
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     const isDev = process.env.NODE_ENV === "development";
+
+    // Log full error for debugging (visible in Vercel Logs)
     console.error("Send OTP error:", err);
+    if (err instanceof Error && err.stack) {
+      console.error("Stack:", err.stack);
+    }
+
+    // Database/Prisma errors often mean DATABASE_URL or migrations
+    const isDbError =
+      message.includes("Prisma") ||
+      message.includes("database") ||
+      message.includes("DATABASE_URL") ||
+      message.includes("DIRECT_URL") ||
+      message.includes("connect");
+
     return NextResponse.json(
       {
-        error: isDev ? `Something went wrong: ${message}` : "Something went wrong",
+        error: isDev
+          ? `Something went wrong: ${message}`
+          : isDbError
+            ? "Service temporarily unavailable. Please try again in a few moments."
+            : "Something went wrong. Please try again.",
       },
       { status: 500 }
     );
