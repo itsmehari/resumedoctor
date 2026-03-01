@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "deploy": "vercel --prod",
-    "preview": "vercel",
+    "deploy": "npx vercel --prod",
+    "preview": "npx vercel",
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
@@ -62,10 +62,9 @@
     "prettier": "^3.2.0",
     "prisma": "^5.9.0",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5.3.0",
-    "vercel": "^38.0.0"
+    "typescript": "^5.3.0"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": "20.x"
   }
 }
