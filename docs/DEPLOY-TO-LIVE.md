@@ -46,14 +46,26 @@ Set in **Vercel Dashboard** → Project → Settings → Environment Variables:
 
 ---
 
-## Troubleshooting: Trial "Something went wrong"
+## Troubleshooting: Trial "Service temporarily unavailable"
 
-If the **Try Free** OTP flow shows "Something went wrong":
+**Step 1: Run the health check**
 
-1. **RESEND_API_KEY** – Must be set in Vercel. Get a key from [Resend](https://resend.com).
-2. **DATABASE_URL + DIRECT_URL** – Both required. In Neon dashboard, copy the pooled URL for `DATABASE_URL` and the direct URL for `DIRECT_URL`.
-3. **Migrations** – Run `npx prisma migrate deploy` against your production DB so `TrialSession` and `OtpAttempt` tables exist.
-4. **Vercel Logs** – Project → Logs; filter for "Send OTP error" to see the real error.
+Visit: **https://resumedoctor.in/api/health**
+
+This shows which env vars or services are missing. Fix any failing checks.
+
+**Step 2: Common fixes**
+
+| Check fails | Fix |
+|-------------|-----|
+| RESEND_API_KEY | Add in Vercel → Settings → Env Vars. Get key from [Resend](https://resend.com). |
+| DATABASE_URL | Add your Neon/Supabase **pooled** connection string. |
+| DIRECT_URL | Add your Neon/Supabase **direct** (non-pooled) connection string. Prisma needs both. |
+| Migrations / TrialSession | Run `npx prisma migrate deploy` against production DB (use DIRECT_URL). |
+
+**Step 3: Redeploy**
+
+After adding env vars, redeploy: Vercel → Deployments → Redeploy.
 
 ---
 
