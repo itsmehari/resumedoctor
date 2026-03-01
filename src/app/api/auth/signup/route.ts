@@ -24,13 +24,42 @@ export async function POST(req: Request) {
     }
 
     const { email, password, name } = parsed.data;
+    const normalizedEmail = email.toLowerCase().trim();
 
     const existing = await prisma.user.findUnique({
-      where: { email },
+      where: { email: normalizedEmail },
+      include: { accounts: { take: 1 } },
     });
+
     if (existing) {
+      // Trial user (no password, no OAuth) → upgrade to full account
+      const isTrialUser =
+        existing.subscription === "trial" &&
+        !existing.passwordHash &&
+        existing.accounts.length === 0;
+
+      if (isTrialUser) {
+        const passwordHash = await hash(password, 12);
+        await prisma.user.update({
+          where: { id: existing.id },
+          data: {
+            passwordHash,
+            name: name || existing.name || null,
+            subscription: "free",
+          },
+        });
+        return NextResponse.json(
+          {
+            message:
+              "Account created! You can now sign in with your email and password.",
+          },
+          { status: 201 }
+        );
+      }
+
+      // Full account exists → must sign in
       return NextResponse.json(
-        { error: { email: ["An account with this email already exists"] } },
+        { error: { email: ["An account with this email already exists. Please sign in."] } },
         { status: 409 }
       );
     }
@@ -38,7 +67,7 @@ export async function POST(req: Request) {
     const passwordHash = await hash(password, 12);
     await prisma.user.create({
       data: {
-        email,
+        email: normalizedEmail,
         passwordHash,
         name: name || null,
       },
@@ -49,7 +78,7 @@ export async function POST(req: Request) {
     const verifyExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
     await prisma.verificationToken.create({
       data: {
-        identifier: email,
+        identifier: normalizedEmail,
         token: verifyToken,
         expires: verifyExpires,
       },
@@ -57,7 +86,7 @@ export async function POST(req: Request) {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
     const verifyLink = `${baseUrl}/verify-email?token=${verifyToken}`;
 
-    const emailResult = await sendVerificationEmail(email, verifyLink);
+    const emailResult = await sendVerificationEmail(normalizedEmail, verifyLink);
     if (!emailResult.ok) {
       console.error("Verification email failed:", emailResult.error);
     }
