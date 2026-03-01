@@ -74,3 +74,17 @@ export async function sendPasswordResetEmail(email: string, resetLink: string) {
 
   return error ? { ok: false, error } : { ok: true, data };
 }
+
+/** Test email – Resend "Hello World" style. Use for local testing only. */
+export async function sendTestEmail(to: string) {
+  if (!resend) return { ok: false, error: "Email not configured" };
+
+  const { data, error } = await resend.emails.send({
+    from: fromEmail,
+    to,
+    subject: "Hello from ResumeDoctor",
+    html: "<p>Congrats on sending your <strong>first email</strong> with Resend!</p>",
+  });
+
+  return error ? { ok: false, error } : { ok: true, data };
+}
