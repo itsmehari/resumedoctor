@@ -1,36 +1,56 @@
 # Deploy ResumeDoctor to Production
 
-Your build is failing on Cloudflare because the Worker exceeds the **3 MiB limit** (free plan).
-
-## Fastest fix: Deploy to Vercel
-
-1. Go to **[vercel.com/new](https://vercel.com/new)**
-2. Import `itsmehari/resumedoctor` from GitHub
-3. Add environment variables (from `.env.example`)
-4. Click **Deploy**
-
-Vercel has no Worker size limit and works with Next.js out of the box.
+**Current hosting:** Vercel (Hobby)
 
 ---
 
-## If you want to stay on Cloudflare
+## Deploy to Vercel
 
-### Option A: Try minify (may work)
+### Option A: Git push (automatic)
 
-In **Cloudflare Dashboard** → Workers & Pages → resumedoctor → **Settings** → **Build**:
+1. Push to `main` (or your production branch)
+2. Vercel builds and deploys automatically
+3. Production URL: `https://resumedoctor.in`
 
-- Change **Deploy command** to: `npx wrangler deploy --minify`
-- Save and **Retry deployment**
+### Option B: Vercel CLI
 
-### Option B: Upgrade to Workers Paid ($5/mo)
+```bash
+# Install CLI (if not already)
+npm i -g vercel
 
-- 10 MiB limit instead of 3 MiB
-- [Upgrade](https://dash.cloudflare.com)
+# Deploy to production
+npm run deploy
+# or
+vercel --prod
+```
+
+---
+
+## Environment variables
+
+Set in **Vercel Dashboard** → Project → Settings → Environment Variables:
+
+| Variable | Required | Notes |
+|----------|----------|-------|
+| `DATABASE_URL` | ✅ | Neon/Supabase Postgres |
+| `NEXTAUTH_URL` | ✅ | `https://resumedoctor.in` |
+| `NEXTAUTH_SECRET` | ✅ | `openssl rand -base64 32` |
+| `NEXT_PUBLIC_APP_URL` | ✅ | `https://resumedoctor.in` |
+| `RESEND_API_KEY` | ✅ | Email (verify, reset) |
+| `OPENAI_API_KEY` | ⚠️ | If using AI features |
+| `TRIAL_SESSION_SECRET` | optional | Trial JWT (falls back to NEXTAUTH_SECRET) |
+| OAuth keys | optional | Google, LinkedIn |
 
 ---
 
 ## After deploy
 
-- Set `NEXT_PUBLIC_APP_URL` to your live URL (e.g. `https://resumedoctor.in`)
-- Ensure `NEXTAUTH_URL` matches
 - Run `npx prisma migrate deploy` if DB schema changed
+- Verify: sign up, login, create resume, export PDF
+- Check Vercel → Deployments for build logs
+
+---
+
+## Rollback
+
+Vercel Dashboard → Deployments → select previous deploy → **Promote to Production**

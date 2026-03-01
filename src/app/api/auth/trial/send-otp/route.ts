@@ -124,9 +124,13 @@ export async function POST(req: Request) {
       message: "Verification code sent to your email",
     });
   } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    const isDev = process.env.NODE_ENV === "development";
     console.error("Send OTP error:", err);
     return NextResponse.json(
-      { error: "Something went wrong" },
+      {
+        error: isDev ? `Something went wrong: ${message}` : "Something went wrong",
+      },
       { status: 500 }
     );
   }

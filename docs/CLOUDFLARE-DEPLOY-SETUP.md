@@ -1,6 +1,8 @@
 # Cloudflare Deploy Setup for ResumeDoctor
 
-This guide covers deploying resumedoctor.in to Cloudflare. Your app is **full-stack** (API routes, NextAuth, Prisma, database), so use **Cloudflare Workers** (not static Pages).
+> **Archived.** ResumeDoctor now runs on Vercel. See [DEPLOY-TO-LIVE.md](./DEPLOY-TO-LIVE.md) and [MIGRATION-CLOUDFLARE-TO-VERCEL.md](./MIGRATION-CLOUDFLARE-TO-VERCEL.md).
+
+This guide covers deploying resumedoctor.in to Cloudflare (no longer in use). Your app is **full-stack** (API routes, NextAuth, Prisma, database), so use **Cloudflare Workers** (not static Pages).
 
 ---
 

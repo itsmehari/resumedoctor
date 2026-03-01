@@ -24,3 +24,50 @@ body {
     text-wrap: balance;
   }
 }
+
+/* Flip words animation */
+@keyframes flip-out {
+  from {
+    transform: translateY(0) rotateX(0deg);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-0.6em) rotateX(-90deg);
+    opacity: 0.3;
+  }
+}
+
+@keyframes flip-in {
+  from {
+    transform: translateY(0.6em) rotateX(90deg);
+    opacity: 0.3;
+  }
+  to {
+    transform: translateY(0) rotateX(0deg);
+    opacity: 1;
+  }
+}
+
+.animate-flip-out {
+  animation: flip-out 0.4s ease-out forwards;
+}
+
+.animate-flip-in {
+  animation: flip-in 0.4s ease-out forwards;
+}
+
+/* Staggered fade-in for sections */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out forwards;
+}
