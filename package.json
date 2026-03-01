@@ -7,7 +7,7 @@
     "build": "next build",
     "build:cloudflare": "next build && opennextjs-cloudflare build --skipNextBuild --dangerouslyUseUnsupportedNextVersion",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy": "npm run build:cloudflare && opennextjs-cloudflare deploy",
+    "deploy": "npm run build:cloudflare && npx wrangler deploy --minify",
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",

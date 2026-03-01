@@ -54,7 +54,7 @@ Workers Builds does **not** read build commands from wrangler. You must set them
 
 1. Go to **Workers & Pages** → **resumedoctor** → **Settings** → **Build**
 2. Set **Build command** to: `npm run build:cloudflare`
-3. Set **Deploy command** to: `npx wrangler deploy`
+3. Set **Deploy command** to: `npx wrangler deploy --minify` (minify helps stay under 3 MiB)
 4. Save
 
 Without this, the deploy will fail with "Could not find compiled Open Next config".
@@ -86,13 +86,21 @@ On the **Configure build** screen:
 
 ---
 
-## Option C: Vercel (easiest for Next.js)
+## Option C: Vercel (recommended – no Worker size limit)
 
-1. Push code to GitHub
-2. [vercel.com](https://vercel.com) → **Add New Project** → import `resumedoctor`
-3. Add env vars
-4. Deploy
-5. In Cloudflare DNS, add CNAME `@` → `cname.vercel-dns.com` for `resumedoctor.in`
+If Cloudflare Workers hits the 3 MiB limit, use Vercel. It supports Next.js natively with no size limits.
+
+### Steps
+
+1. Go to [vercel.com](https://vercel.com) → **Add New Project**
+2. Import the `resumedoctor` repo from GitHub
+3. **Build command:** `npm run build` (or leave default)
+4. Add **Environment variables** (same as `.env.example`):
+   - `DATABASE_URL`, `NEXTAUTH_URL`, `NEXTAUTH_SECRET`, `NEXT_PUBLIC_APP_URL`
+   - `RESEND_API_KEY`, `OPENAI_API_KEY`, OAuth keys, etc.
+5. Click **Deploy**
+6. **Custom domain:** Project → Settings → Domains → add `resumedoctor.in`
+7. **DNS:** In Cloudflare, add CNAME `@` → `cname.vercel-dns.com` (or the value Vercel shows)
 
 Domain stays on Cloudflare; hosting is on Vercel.
 
@@ -126,6 +134,18 @@ OpenNext recommends deploying from Linux. Use:
 - **Cloudflare Workers Builds** (runs on Cloudflare’s Linux), or  
 - **GitHub Actions** with a Linux runner.
 
-### Worker size limit
+### Worker size limit (3 MiB)
 
-Workers Free: 3 MiB compressed. If you hit it, consider the Workers Paid plan or Vercel.
+Cloudflare Workers Free limits each Worker to **3 MiB compressed**. Full Next.js apps often exceed this.
+
+**Fix options:**
+
+1. **Try minify first** – In Cloudflare Workers → Settings → Build, change **Deploy command** to:
+   ```bash
+   npx wrangler deploy --minify
+   ```
+   This can sometimes bring the bundle under 3 MiB.
+
+2. **Upgrade to Workers Paid** ($5/mo) – 10 MiB limit. [Upgrade](https://dash.cloudflare.com/workers/plans).
+
+3. **Use Vercel instead (recommended)** – No size limit, native Next.js. See Option C below.
