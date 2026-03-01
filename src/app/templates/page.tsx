@@ -1,4 +1,13 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+import { siteUrl } from "@/lib/seo";
+
+export const metadata: Metadata = {
+  title: "Resume Templates – ATS-Friendly Designs",
+  description:
+    "Choose from professional, ATS-friendly resume templates. Modern, clean designs for every industry.",
+  alternates: { canonical: `${siteUrl}/templates` },
+};
 
 export default function TemplatesPage() {
   return (

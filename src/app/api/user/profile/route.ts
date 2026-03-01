@@ -1,9 +1,10 @@
-// WBS 2.2 – User profile API
+// WBS 2.2 – User profile API (supports trial)
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getTrialFromRequest } from "@/lib/trial-auth";
 
 const updateSchema = z.object({
   name: z.string().min(1).max(100).optional(),
@@ -11,13 +12,25 @@ const updateSchema = z.object({
 });
 
 export async function GET() {
+  let userId: string | null = null;
   const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
+  if (session?.user?.email) {
+    const u = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true },
+    });
+    userId = u?.id ?? null;
+  }
+  if (!userId) {
+    const trial = await getTrialFromRequest();
+    userId = trial?.userId ?? null;
+  }
+  if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+    where: { id: userId },
     select: {
       id: true,
       email: true,
@@ -33,7 +46,10 @@ export async function GET() {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  return NextResponse.json(user);
+  return NextResponse.json({
+    ...user,
+    isTrial: user.subscription === "trial",
+  });
 }
 
 export async function PATCH(req: Request) {

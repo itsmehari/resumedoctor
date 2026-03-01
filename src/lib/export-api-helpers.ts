@@ -1,9 +1,8 @@
-// WBS 5 – Shared helpers for export API routes
-import { getServerSession } from "next-auth";
+// WBS 5 – Shared helpers for export API routes (blocks trial users)
 import { NextResponse } from "next/server";
-import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { parseResumeContent } from "@/lib/resume-utils";
+import { getResumeAuth } from "@/lib/trial-auth";
 
 const PRO_SUBSCRIPTIONS = ["pro_monthly", "pro_annual"];
 
@@ -11,13 +10,23 @@ export async function getResumeForExport(
   resumeId: string,
   options?: { requirePro?: boolean }
 ) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
+  const auth = await getResumeAuth();
+  if (!auth) {
     return { error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }) };
   }
 
+  // Trial users cannot export at all
+  if (auth.isTrial) {
+    return {
+      error: NextResponse.json(
+        { error: "Sign up to save and export your resume", code: "TRIAL_EXPORT_BLOCKED" },
+        { status: 403 }
+      ),
+    };
+  }
+
   const resume = await prisma.resume.findFirst({
-    where: { id: resumeId, user: { email: session.user.email } },
+    where: { id: resumeId, userId: auth.userId },
     include: { user: { select: { id: true, subscription: true } } },
   });
 

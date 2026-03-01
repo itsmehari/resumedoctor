@@ -18,7 +18,7 @@ model User {
   name          String?
   image         String?
   passwordHash  String?   // for credentials provider
-  subscription  String    @default("free") // free | pro_monthly | pro_annual
+  subscription  String    @default("free") // free | trial | pro_monthly | pro_annual
   subscriptionId String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -74,6 +74,31 @@ model PasswordResetToken {
 
   @@index([email])
   @@index([token])
+}
+
+// Free Trial – OTP & session (FREE-TRIAL-WORKFLOW-PLAN)
+model TrialSession {
+  id               String    @id @default(cuid())
+  email            String
+  otpHash          String
+  otpExpiresAt     DateTime
+  verifiedAt       DateTime?
+  sessionExpiresAt DateTime?
+  resumeId         String?
+  createdAt        DateTime  @default(now())
+
+  @@index([email])
+  @@index([sessionExpiresAt])
+}
+
+model OtpAttempt {
+  id         String   @id @default(cuid())
+  email      String
+  type       String   // "send" | "verify"
+  success    Boolean
+  createdAt  DateTime @default(now())
+
+  @@index([email, createdAt])
 }
 
 // Resume & Sections (WBS 3.1)

@@ -31,6 +31,27 @@ export async function sendVerificationEmail(email: string, verifyLink: string) {
   return error ? { ok: false, error } : { ok: true, data };
 }
 
+export async function sendOtpEmail(email: string, otp: string) {
+  if (!resend) return { ok: false, error: "Email not configured" };
+
+  const { data, error } = await resend.emails.send({
+    from: fromEmail,
+    to: email,
+    subject: `Your verification code – ${appName}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2 style="color: #1e293b;">Your verification code</h2>
+        <p>Use this code to start your free resume trial:</p>
+        <p style="margin: 24px 0; font-size: 28px; font-weight: bold; letter-spacing: 4px; color: #0d65d9;">${otp}</p>
+        <p style="color: #64748b; font-size: 14px;">This code expires in 10 minutes.</p>
+        <p style="color: #94a3b8; font-size: 12px; margin-top: 32px;">If you didn't request this, you can ignore this email.</p>
+      </div>
+    `,
+  });
+
+  return error ? { ok: false, error } : { ok: true, data };
+}
+
 export async function sendPasswordResetEmail(email: string, resetLink: string) {
   if (!resend) return { ok: false, error: "Email not configured" };
 

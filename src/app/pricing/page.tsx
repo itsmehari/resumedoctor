@@ -131,6 +131,33 @@ export default function PricingPage() {
             Pro plan — PDF & Word export. Email us after payment to activate.
           </p>
         </div>
+
+        {/* FAQ – AEO/GEO */}
+        <section className="mt-16 pt-12 border-t border-slate-200 dark:border-slate-700" aria-labelledby="pricing-faq-heading">
+          <h2 id="pricing-faq-heading" className="text-xl font-bold text-slate-900 dark:text-slate-100 text-center mb-8">
+            Pricing FAQ
+          </h2>
+          <dl className="max-w-2xl mx-auto space-y-6">
+            <div>
+              <dt className="font-semibold text-slate-900 dark:text-slate-100">How do I pay for Pro?</dt>
+              <dd className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+                Pay via UPI (Google Pay, PhonePe, or any UPI app) by scanning the QR code. Email us after payment to activate your Pro account.
+              </dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-slate-900 dark:text-slate-100">What&apos;s included in the free plan?</dt>
+              <dd className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+                Unlimited resumes, TXT export, print/HTML preview, and all section types. You can create and edit as many resumes as you need.
+              </dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-slate-900 dark:text-slate-100">Can I cancel Pro anytime?</dt>
+              <dd className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+                Yes. Pro is billed monthly. You can cancel before the next billing cycle. Contact us for refund requests.
+              </dd>
+            </div>
+          </dl>
+        </section>
       </main>
     </div>
   );

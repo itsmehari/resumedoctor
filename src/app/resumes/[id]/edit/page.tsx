@@ -1,4 +1,4 @@
-// WBS 3.4–3.10, 5 – Resume builder page with export
+// WBS 3.4–3.10, 5 – Resume builder page with export (supports trial)
 "use client";
 
 import { useParams } from "next/navigation";
@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRef } from "react";
 import { useResume } from "@/hooks/use-resume";
 import { useSubscription } from "@/hooks/use-subscription";
+import { useTrialTimer } from "@/hooks/use-trial-timer";
 import { SectionList } from "@/components/resume-builder/section-list";
 import { ResumePreview } from "@/components/resume-builder/resume-preview";
 import { AddSection } from "@/components/resume-builder/add-section";
@@ -18,7 +19,8 @@ export default function EditResumePage() {
   const previewRef = useRef<HTMLDivElement>(null);
   const { resume, loading, saveStatus, updateContent, updateTitle } =
     useResume(id);
-  const { isPro } = useSubscription();
+  const { isPro, isTrial } = useSubscription();
+  const { secondsLeft, expired } = useTrialTimer(isTrial);
 
   if (loading) {
     return (
@@ -32,8 +34,11 @@ export default function EditResumePage() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <p className="text-slate-600">Resume not found</p>
-        <Link href="/dashboard" className="text-primary-600 hover:underline">
-          Back to dashboard
+        <Link
+          href={isTrial ? "/try" : "/dashboard"}
+          className="text-primary-600 hover:underline"
+        >
+          {isTrial ? "Back to Try free" : "Back to dashboard"}
         </Link>
       </div>
     );
@@ -49,17 +54,55 @@ export default function EditResumePage() {
     handleSectionsChange([...sections, section]);
   };
 
+  const formatTime = (s: number) => {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m}:${sec.toString().padStart(2, "0")}`;
+  };
+
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-900 relative">
+      {expired && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 max-w-md mx-4 text-center shadow-xl">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+              Time&apos;s up!
+            </h2>
+            <p className="mt-4 text-slate-600 dark:text-slate-400">
+              Your 5-minute trial has ended. Sign up to save your resume and export to PDF.
+            </p>
+            <div className="mt-6 flex gap-4 justify-center">
+              <Link
+                href="/signup"
+                className="rounded-xl bg-accent hover:bg-accent-hover px-6 py-3 font-semibold text-accent-dark"
+              >
+                Sign up to save
+              </Link>
+              <Link
+                href="/try?expired=1"
+                className="rounded-xl border border-slate-300 dark:border-slate-600 px-6 py-3 font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                Start new trial
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
       <header className="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/50">
         <div className="max-w-[1600px] mx-auto px-4 h-14 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <Link
-              href="/dashboard"
+              href={isTrial ? "/try" : "/dashboard"}
               className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
             >
-              ← Dashboard
+              ← {isTrial ? "Try free" : "Dashboard"}
             </Link>
+            {isTrial && secondsLeft > 0 && (
+              <span className="text-sm font-medium text-amber-600 dark:text-amber-400">
+                {formatTime(secondsLeft)} left
+              </span>
+            )}
             <input
               type="text"
               value={resume.title}
@@ -74,6 +117,7 @@ export default function EditResumePage() {
               sections={sections}
               previewRef={previewRef}
               isPro={isPro}
+              isTrial={isTrial}
             />
             <span
               className={`text-sm ${
@@ -107,8 +151,8 @@ export default function EditResumePage() {
           <div className="sticky top-4 relative">
             <p className="text-xs text-slate-500 mb-2">Preview</p>
             <div ref={previewRef} className="relative">
-              <ResumePreview sections={sections} className="scale-[0.85] origin-top" />
-              {!isPro && (
+              <ResumePreview sections={sections} templateId={resume.templateId} className="scale-[0.85] origin-top" />
+              {(!isPro || isTrial) && (
                 <div
                   className="absolute inset-0 flex items-center justify-center pointer-events-none"
                   aria-hidden

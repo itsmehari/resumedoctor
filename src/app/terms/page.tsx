@@ -1,8 +1,12 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+import { siteUrl } from "@/lib/seo";
 
-export const metadata = {
-  title: "Terms of Service – ResumeDoctor",
-  description: "Terms of service for ResumeDoctor resume builder.",
+export const metadata: Metadata = {
+  title: "Terms of Service",
+  description:
+    "Terms of service for ResumeDoctor resume builder. Read our user agreement, service description, and policies.",
+  alternates: { canonical: `${siteUrl}/terms` },
 };
 
 export default function TermsPage() {

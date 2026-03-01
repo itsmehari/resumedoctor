@@ -1,10 +1,9 @@
-// WBS 3.2, 3.3 – Resume get, update, delete
-import { getServerSession } from "next-auth";
+// WBS 3.2, 3.3 – Resume get, update, delete (supports trial)
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { parseResumeContent } from "@/lib/resume-utils";
+import { getResumeAuth } from "@/lib/trial-auth";
 
 const MAX_VERSIONS = 10;
 
@@ -12,15 +11,15 @@ export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
+  const auth = await getResumeAuth();
+  if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const { id } = await params;
 
   const resume = await prisma.resume.findFirst({
-    where: { id, user: { email: session.user.email } },
+    where: { id, userId: auth.userId },
   });
 
   if (!resume) {
@@ -42,15 +41,15 @@ export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
+  const auth = await getResumeAuth();
+  if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const { id } = await params;
 
   const resume = await prisma.resume.findFirst({
-    where: { id, user: { email: session.user.email } },
+    where: { id, userId: auth.userId },
     include: { versions: true },
   });
 
@@ -126,15 +125,15 @@ export async function DELETE(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
+  const auth = await getResumeAuth();
+  if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const { id } = await params;
 
   const resume = await prisma.resume.findFirst({
-    where: { id, user: { email: session.user.email } },
+    where: { id, userId: auth.userId },
   });
 
   if (!resume) {

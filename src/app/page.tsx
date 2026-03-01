@@ -1,10 +1,22 @@
 import Link from "next/link";
 import { AuthNav } from "@/components/auth-nav";
 import { HeroCVMockup } from "@/components/hero-cv-mockup";
+import { HomeJsonLd, FaqJsonLd, HowToJsonLd, FAQ_ITEMS } from "@/components/seo/json-ld";
+import { TrustBar } from "@/components/trust-bar";
+import { TrustBadges } from "@/components/trust-badges";
+import { siteUrl } from "@/lib/seo";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  alternates: { canonical: siteUrl },
+};
 
 export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col">
+      <HomeJsonLd />
+      <FaqJsonLd />
+      <HowToJsonLd />
       {/* Header — elegant, minimal */}
       <header className="border-b border-white/10 bg-primary-600 sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
@@ -54,22 +66,22 @@ export default function HomePage() {
 
               <div className="mt-10 flex flex-col sm:flex-row gap-4">
                 <Link
-                  href="/resumes/new"
+                  href="/try"
                   className="rounded-xl bg-accent hover:bg-accent-hover px-8 py-4 text-lg font-semibold text-accent-dark text-center transition-colors shadow-lg shadow-black/20"
+                >
+                  Try Free
+                </Link>
+                <Link
+                  href="/resumes/new"
+                  className="rounded-xl border-2 border-white bg-white/10 backdrop-blur-sm px-8 py-4 text-lg font-semibold text-white hover:bg-white/20 transition-colors text-center"
                 >
                   Create Your Resume
                 </Link>
-                <Link
-                  href="/templates"
-                  className="rounded-xl border-2 border-white bg-white/10 backdrop-blur-sm px-8 py-4 text-lg font-semibold text-white hover:bg-white/20 transition-colors text-center"
-                >
-                  Explore Our Templates
-                </Link>
               </div>
 
-              {/* Trust indicator */}
+              {/* Trust indicator – aligns with AggregateRating schema */}
               <div className="mt-8 flex items-center gap-2">
-                <div className="flex gap-0.5" aria-label="5 out of 5 stars">
+                <div className="flex gap-0.5" aria-label="4.8 out of 5 stars">
                   {[1, 2, 3, 4, 5].map((i) => (
                     <svg
                       key={i}
@@ -82,9 +94,15 @@ export default function HomePage() {
                   ))}
                 </div>
                 <span className="text-sm font-medium text-white/90">
-                  Rated by thousands of job seekers
+                  4.8/5 · Trusted by job seekers across India
                 </span>
               </div>
+              <p className="mt-4 text-sm text-white/80">
+                <Link href="/try" className="hover:text-white underline underline-offset-2">
+                  Try free
+                </Link>
+                {" "}with just your email · 5 min, no signup
+              </p>
             </div>
 
             <div className="relative hidden lg:block">
@@ -94,26 +112,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Trust bar — as seen in */}
-      <section className="py-12 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-sm font-medium text-slate-500 dark:text-slate-400 mb-8 tracking-wide">
-            Trusted by professionals across India
-          </p>
-          <div className="flex flex-wrap justify-center items-center gap-10 sm:gap-14 opacity-50">
-            {["Naukri", "LinkedIn", "Indeed", "TimesJobs", "Shine"].map(
-              (name) => (
-                <span
-                  key={name}
-                  className="text-base font-semibold text-slate-600 dark:text-slate-500"
-                >
-                  {name}
-                </span>
-              )
-            )}
-          </div>
-        </div>
-      </section>
+      <TrustBar />
 
       {/* Template preview */}
       <section className="py-20 bg-slate-50 dark:bg-slate-900/50">
@@ -166,7 +165,13 @@ export default function HomePage() {
             />
           </div>
 
-          <div className="text-center mt-10">
+          <div className="flex flex-wrap justify-center gap-4 mt-10">
+            <Link
+              href="/blog"
+              className="inline-flex items-center gap-2 text-primary-600 dark:text-primary-400 font-semibold hover:underline"
+            >
+              Resume tips & guides
+            </Link>
             <Link
               href="/templates"
               className="inline-flex items-center gap-2 text-primary-600 dark:text-primary-400 font-semibold hover:underline"
@@ -213,6 +218,34 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* FAQ – GEO/AEO optimized with schema */}
+      <section className="py-20 bg-slate-50 dark:bg-slate-900/50" aria-labelledby="faq-heading">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 id="faq-heading" className="text-3xl font-bold text-slate-900 dark:text-slate-100 text-center mb-12">
+            Frequently Asked Questions
+          </h2>
+          <dl className="space-y-8">
+            {FAQ_ITEMS.map((item, i) => (
+              <div key={i}>
+                <dt className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                  {item.question}
+                </dt>
+                <dd className="mt-2 text-slate-600 dark:text-slate-400 leading-relaxed">
+                  {item.answer}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+
+      {/* Trust badges – SXO */}
+      <section className="py-12 bg-slate-50 dark:bg-slate-900/50">
+        <div className="max-w-4xl mx-auto px-4">
+          <TrustBadges />
+        </div>
+      </section>
+
       {/* CTA strip */}
       <section className="py-20 bg-primary-600">
         <div className="max-w-4xl mx-auto px-4 text-center">
@@ -223,11 +256,18 @@ export default function HomePage() {
             Create your professional resume in minutes. Free to start.
           </p>
           <Link
-            href="/resumes/new"
+            href="/try"
             className="inline-block mt-10 rounded-xl bg-accent hover:bg-accent-hover px-10 py-4 text-lg font-semibold text-accent-dark transition-colors shadow-lg shadow-black/20"
           >
-            Create Your Resume
+            Try Free
           </Link>
+          <p className="mt-4 text-sm text-white/80">
+            or{" "}
+            <Link href="/resumes/new" className="underline hover:text-white">
+              Create your resume
+            </Link>{" "}
+            if you&apos;re signed in
+          </p>
         </div>
       </section>
     </div>

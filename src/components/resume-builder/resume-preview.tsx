@@ -1,19 +1,22 @@
-// WBS 3.8 – Live preview panel
+// WBS 3.8 – Live preview panel (supports templates)
 "use client";
 
 import type { ResumeSection } from "@/types/resume";
+import { getTemplateStyle } from "@/lib/template-styles";
 
 interface Props {
   sections: ResumeSection[];
+  templateId?: string;
   className?: string;
 }
 
-export function ResumePreview({ sections, className = "" }: Props) {
+export function ResumePreview({ sections, templateId = "trial-modern", className = "" }: Props) {
   const sorted = [...sections].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  const style = getTemplateStyle(templateId);
 
   return (
     <div
-      className={`bg-white text-slate-800 shadow-lg rounded-lg p-8 max-w-[21cm] mx-auto ${className}`}
+      className={`bg-white text-slate-800 shadow-lg rounded-lg p-8 max-w-[21cm] mx-auto ${style.wrapper} ${className}`}
       style={{ minHeight: "297mm" }}
     >
       {sorted.length === 0 ? (
@@ -21,7 +24,7 @@ export function ResumePreview({ sections, className = "" }: Props) {
       ) : (
         <div className="space-y-4 text-sm">
           {sorted.map((section) => (
-            <SectionPreview key={section.id} section={section} />
+            <SectionPreview key={section.id} section={section} style={style} />
           ))}
         </div>
       )}
@@ -29,24 +32,35 @@ export function ResumePreview({ sections, className = "" }: Props) {
   );
 }
 
-function SectionPreview({ section }: { section: ResumeSection }) {
+const defaultStyle = {
+  sectionTitle: "font-semibold text-slate-900 border-b border-slate-200 pb-1 mb-2",
+  accent: "",
+};
+
+function SectionPreview({
+  section,
+  style,
+}: {
+  section: ResumeSection;
+  style?: { sectionTitle: string; accent: string };
+}) {
+  const s = style ?? defaultStyle;
+  const titleCls = s.sectionTitle;
+  const accentCls = s.accent;
+
   switch (section.type) {
     case "summary":
       return section.data.text ? (
-        <div>
-          <h3 className="font-semibold text-slate-900 border-b border-slate-200 pb-1 mb-2">
-            Summary
-          </h3>
+        <div className={accentCls}>
+          <h3 className={titleCls}>Summary</h3>
           <p className="text-slate-700 whitespace-pre-wrap">{section.data.text}</p>
         </div>
       ) : null;
 
     case "experience":
       return (
-        <div>
-          <h3 className="font-semibold text-slate-900 border-b border-slate-200 pb-1 mb-2">
-            Experience
-          </h3>
+        <div className={accentCls}>
+          <h3 className={titleCls}>Experience</h3>
           <div className="space-y-3">
             <div>
               <div className="flex justify-between">
@@ -74,10 +88,8 @@ function SectionPreview({ section }: { section: ResumeSection }) {
 
     case "education":
       return (
-        <div>
-          <h3 className="font-semibold text-slate-900 border-b border-slate-200 pb-1 mb-2">
-            Education
-          </h3>
+        <div className={accentCls}>
+          <h3 className={titleCls}>Education</h3>
           <div>
             <div className="flex justify-between">
               <span className="font-medium">{section.data.degree || "Degree"}</span>
@@ -109,10 +121,8 @@ function SectionPreview({ section }: { section: ResumeSection }) {
 
     case "projects":
       return (
-        <div>
-          <h3 className="font-semibold text-slate-900 border-b border-slate-200 pb-1 mb-2">
-            Projects
-          </h3>
+        <div className={accentCls}>
+          <h3 className={titleCls}>Projects</h3>
           <div>
             <div className="flex items-center gap-2">
               <span className="font-medium">{section.data.name || "Project"}</span>

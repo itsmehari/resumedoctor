@@ -1,8 +1,12 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+import { siteUrl } from "@/lib/seo";
 
-export const metadata = {
-  title: "Privacy Policy – ResumeDoctor",
-  description: "Privacy policy for ResumeDoctor resume builder.",
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description:
+    "Privacy policy for ResumeDoctor. Learn how we collect, use, and protect your resume data and personal information.",
+  alternates: { canonical: `${siteUrl}/privacy` },
 };
 
 export default function PrivacyPage() {

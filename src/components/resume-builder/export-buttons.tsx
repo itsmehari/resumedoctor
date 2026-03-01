@@ -14,6 +14,7 @@ interface Props {
   sections: ResumeSection[];
   previewRef: React.RefObject<HTMLDivElement | null>;
   isPro: boolean;
+  isTrial?: boolean;
 }
 
 export function ExportButtons({
@@ -22,12 +23,15 @@ export function ExportButtons({
   sections,
   previewRef,
   isPro,
+  isTrial = false,
 }: Props) {
+  const canExport = isPro && !isTrial;
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const downloadTxt = useCallback(async () => {
+    if (isTrial) return;
     setLoading("txt");
     setError(null);
     try {
@@ -45,9 +49,10 @@ export function ExportButtons({
     } finally {
       setLoading(null);
     }
-  }, [resumeId, resumeTitle]);
+  }, [resumeId, resumeTitle, isTrial]);
 
   const printHtml = useCallback(async () => {
+    if (isTrial) return;
     setLoading("html");
     setError(null);
     try {
@@ -67,10 +72,10 @@ export function ExportButtons({
     } finally {
       setLoading(null);
     }
-  }, [resumeId]);
+  }, [resumeId, isTrial]);
 
   const downloadPdf = useCallback(async () => {
-    if (!isPro) return;
+    if (!canExport) return;
     setLoading("pdf");
     setError(null);
     try {
@@ -107,10 +112,10 @@ export function ExportButtons({
     } finally {
       setLoading(null);
     }
-  }, [resumeId, resumeTitle, isPro, previewRef]);
+  }, [resumeId, resumeTitle, canExport, previewRef]);
 
   const downloadDocx = useCallback(async () => {
-    if (!isPro) return;
+    if (!canExport) return;
     setLoading("docx");
     setError(null);
     try {
@@ -131,7 +136,7 @@ export function ExportButtons({
     } finally {
       setLoading(null);
     }
-  }, [resumeId, resumeTitle, isPro]);
+  }, [resumeId, resumeTitle, canExport]);
 
   return (
     <div className="relative">
@@ -156,38 +161,43 @@ export function ExportButtons({
                 {error}
               </p>
             )}
-            <button
-              type="button"
-              onClick={() => {
-                downloadTxt();
-                setOpen(false);
-              }}
-              disabled={loading !== null}
-              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
-            >
-              <FileText className="h-4 w-4" />
-              {loading === "txt" ? "Downloading..." : "Download TXT"}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                printHtml();
-                setOpen(false);
-              }}
-              disabled={loading !== null}
-              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
-            >
-              <Printer className="h-4 w-4" />
-              {loading === "html" ? "Loading..." : "Print / HTML"}
-            </button>
-            {isPro ? (
+            {isTrial ? (
+              <>
+                <div className="px-3 py-2 text-sm text-slate-500 dark:text-slate-400">
+                  <Lock className="inline h-4 w-4 mr-2" />
+                  Sign up to export your resume
+                </div>
+                <Link
+                  href="/signup"
+                  onClick={() => setOpen(false)}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-primary-600 dark:text-primary-400 hover:bg-slate-100 dark:hover:bg-slate-700"
+                >
+                  Create account to save & export →
+                </Link>
+              </>
+            ) : canExport ? (
               <>
                 <button
                   type="button"
-                  onClick={() => {
-                    downloadPdf();
-                    setOpen(false);
-                  }}
+                  onClick={() => { downloadTxt(); setOpen(false); }}
+                  disabled={loading !== null}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
+                >
+                  <FileText className="h-4 w-4" />
+                  {loading === "txt" ? "Downloading..." : "Download TXT"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { printHtml(); setOpen(false); }}
+                  disabled={loading !== null}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
+                >
+                  <Printer className="h-4 w-4" />
+                  {loading === "html" ? "Loading..." : "Print / HTML"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { downloadPdf(); setOpen(false); }}
                   disabled={loading !== null}
                   className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
                 >
@@ -196,10 +206,7 @@ export function ExportButtons({
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    downloadDocx();
-                    setOpen(false);
-                  }}
+                  onClick={() => { downloadDocx(); setOpen(false); }}
                   disabled={loading !== null}
                   className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
                 >
@@ -209,19 +216,29 @@ export function ExportButtons({
               </>
             ) : (
               <>
-                <Link
-                  href="/pricing"
-                  onClick={() => setOpen(false)}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-primary-600"
+                <button
+                  type="button"
+                  onClick={() => { downloadTxt(); setOpen(false); }}
+                  disabled={loading !== null}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
                 >
+                  <FileText className="h-4 w-4" />
+                  {loading === "txt" ? "Downloading..." : "Download TXT"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { printHtml(); setOpen(false); }}
+                  disabled={loading !== null}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
+                >
+                  <Printer className="h-4 w-4" />
+                  {loading === "html" ? "Loading..." : "Print / HTML"}
+                </button>
+                <Link href="/pricing" onClick={() => setOpen(false)} className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-primary-600">
                   <Lock className="h-4 w-4" />
                   Download PDF — Upgrade to Pro
                 </Link>
-                <Link
-                  href="/pricing"
-                  onClick={() => setOpen(false)}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-primary-600"
-                >
+                <Link href="/pricing" onClick={() => setOpen(false)} className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-primary-600">
                   <Lock className="h-4 w-4" />
                   Download Word — Upgrade to Pro
                 </Link>

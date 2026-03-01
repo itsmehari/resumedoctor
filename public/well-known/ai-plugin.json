@@ -1,0 +1,6 @@
+{
+  "name": "ResumeDoctor",
+  "description": "India-first resume and CV builder. Create ATS-friendly resumes for Naukri, LinkedIn, Indeed.",
+  "url": "https://resumedoctor.in",
+  "structured_data": "https://resumedoctor.in/api/structured-data"
+}

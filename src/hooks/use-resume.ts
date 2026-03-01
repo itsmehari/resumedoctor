@@ -29,7 +29,7 @@ export function useResume(resumeId: string | null) {
     }
     setLoading(true);
     try {
-      const res = await fetch(`/api/resumes/${resumeId}`);
+      const res = await fetch(`/api/resumes/${resumeId}`, { credentials: "include" });
       if (!res.ok) throw new Error("Failed to fetch");
       const data = await res.json();
       setResume(data);
@@ -52,6 +52,7 @@ export function useResume(resumeId: string | null) {
       try {
         const res = await fetch(`/api/resumes/${resumeId}`, {
           method: "PATCH",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ content, ...(title !== undefined && { title }) }),
         });
