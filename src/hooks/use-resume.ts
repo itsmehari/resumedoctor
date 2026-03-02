@@ -45,16 +45,20 @@ export function useResume(resumeId: string | null) {
   }, [fetchResume]);
 
   const saveResume = useCallback(
-    async (content: ResumeContent, title?: string) => {
+    async (content?: ResumeContent, title?: string, templateId?: string) => {
       if (!resumeId) return;
       setSaving(true);
       setSaveStatus("saving");
       try {
+        const payload: Record<string, unknown> = {};
+        if (content !== undefined) payload.content = content;
+        if (title !== undefined) payload.title = title;
+        if (templateId !== undefined) payload.templateId = templateId;
         const res = await fetch(`/api/resumes/${resumeId}`, {
           method: "PATCH",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ content, ...(title !== undefined && { title }) }),
+          body: JSON.stringify(payload),
         });
         if (!res.ok) throw new Error("Failed to save");
         const data = await res.json();
@@ -79,7 +83,7 @@ export function useResume(resumeId: string | null) {
         clearTimeout(saveTimeoutRef.current);
       }
       saveTimeoutRef.current = setTimeout(() => {
-        saveResume(content);
+        saveResume(content, undefined, undefined);
         saveTimeoutRef.current = null;
       }, DEBOUNCE_MS);
     },
@@ -89,9 +93,17 @@ export function useResume(resumeId: string | null) {
   const updateTitle = useCallback(
     (title: string) => {
       setResume((prev) => (prev ? { ...prev, title } : null));
-      saveResume(resume?.content ?? { sections: [] }, title);
+      saveResume(resume?.content ?? { sections: [] }, title, undefined);
     },
     [resume?.content, saveResume]
+  );
+
+  const updateTemplateId = useCallback(
+    (templateId: string) => {
+      setResume((prev) => (prev ? { ...prev, templateId } : null));
+      saveResume(undefined, undefined, templateId);
+    },
+    [saveResume]
   );
 
   return {
@@ -101,6 +113,7 @@ export function useResume(resumeId: string | null) {
     saveStatus,
     updateContent,
     updateTitle,
+    updateTemplateId,
     refetch: fetchResume,
   };
 }

@@ -34,6 +34,7 @@ export async function GET(
 
 const updateSchema = z.object({
   title: z.string().max(200).optional(),
+  templateId: z.string().max(100).optional(),
   content: z.record(z.unknown()).optional(),
 });
 
@@ -67,10 +68,13 @@ export async function PATCH(
       );
     }
 
-    const updates: { title?: string; content?: object; version?: number } = {};
+    const updates: { title?: string; templateId?: string; content?: object; version?: number } = {};
 
     if (parsed.data.title !== undefined) {
       updates.title = parsed.data.title;
+    }
+    if (parsed.data.templateId !== undefined) {
+      updates.templateId = parsed.data.templateId;
     }
 
     if (parsed.data.content !== undefined) {

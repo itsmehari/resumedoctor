@@ -14,10 +14,12 @@ export function parseResumeContent(content: unknown): ResumeContent {
   }
   const obj = content as Record<string, unknown>;
   const sections = Array.isArray(obj.sections) ? obj.sections : [];
+  const meta = obj.meta && typeof obj.meta === "object" ? (obj.meta as ResumeContent["meta"]) : undefined;
   return {
     sections: sections.filter(
       (s): s is ResumeContent["sections"][number] =>
         s && typeof s === "object" && "id" in s && "type" in s
     ),
+    ...(meta && { meta }),
   };
 }

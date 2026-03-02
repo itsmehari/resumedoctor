@@ -10,9 +10,11 @@ export function useSubscription(): {
   isPro: boolean;
   isTrial: boolean;
   loading: boolean;
+  displayName: string | null;
 } {
   const [subscription, setSubscription] = useState("free");
   const [isTrial, setIsTrial] = useState(false);
+  const [displayName, setDisplayName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,15 +23,17 @@ export function useSubscription(): {
       .then((data) => {
         setSubscription(data.subscription ?? "free");
         setIsTrial(data.isTrial === true);
+        setDisplayName(data.name || data.email || null);
       })
       .catch(() => {
         setSubscription("free");
         setIsTrial(false);
+        setDisplayName(null);
       })
       .finally(() => setLoading(false));
   }, []);
 
   const isPro = PRO_SUBSCRIPTIONS.includes(subscription);
 
-  return { subscription, isPro, isTrial, loading };
+  return { subscription, isPro, isTrial, loading, displayName };
 }

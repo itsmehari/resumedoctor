@@ -72,8 +72,14 @@ export type ResumeSection =
   | SkillsSection
   | ProjectsSection;
 
+export interface ResumeContentMeta {
+  primaryColor?: string;
+  fontFamily?: "sans" | "serif" | "mono";
+}
+
 export interface ResumeContent {
   sections: ResumeSection[];
+  meta?: ResumeContentMeta;
 }
 
 export const DEFAULT_RESUME_CONTENT: ResumeContent = {

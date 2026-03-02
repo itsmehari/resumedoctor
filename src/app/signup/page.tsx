@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { trackEvent, trackMetaEvent, trackMetaCustom, trackLinkedInConversion } from "@/lib/analytics";
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -43,6 +44,10 @@ export default function SignupPage() {
         return;
       }
       setSuccess(true);
+      trackEvent("sign_up");
+      trackMetaEvent("Lead");
+      trackMetaCustom("SignUp");
+      trackLinkedInConversion();
       setTimeout(() => router.push("/login"), 2000);
     } catch {
       setError({ _: ["Something went wrong"] });
@@ -85,7 +90,7 @@ export default function SignupPage() {
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <Link href="/" className="text-2xl font-bold text-primary-600">
-            ResumeDoctor
+            Zesty
           </Link>
           <h1 className="mt-6 text-2xl font-bold text-slate-900 dark:text-slate-100">
             Create your account

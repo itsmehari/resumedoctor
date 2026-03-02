@@ -3,7 +3,7 @@
 
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useResume } from "@/hooks/use-resume";
 import { useSubscription } from "@/hooks/use-subscription";
 import { useTrialTimer } from "@/hooks/use-trial-timer";
@@ -11,16 +11,38 @@ import { SectionList } from "@/components/resume-builder/section-list";
 import { ResumePreview } from "@/components/resume-builder/resume-preview";
 import { AddSection } from "@/components/resume-builder/add-section";
 import { ExportButtons } from "@/components/resume-builder/export-buttons";
+import { AtsScorePanel } from "@/components/resume-builder/ats-score-panel";
 import type { ResumeSection } from "@/types/resume";
 
 export default function EditResumePage() {
   const params = useParams();
   const id = params.id as string;
   const previewRef = useRef<HTMLDivElement>(null);
-  const { resume, loading, saveStatus, updateContent, updateTitle } =
+  const { resume, loading, saveStatus, updateContent, updateTitle, updateTemplateId } =
     useResume(id);
   const { isPro, isTrial } = useSubscription();
   const { secondsLeft, expired } = useTrialTimer(isTrial);
+  const [templates, setTemplates] = useState<Array<{ id: string; name: string }>>([]);
+  const [templateOpen, setTemplateOpen] = useState(false);
+  const [customizeOpen, setCustomizeOpen] = useState(false);
+
+  const meta = resume?.content?.meta ?? {};
+  const handleCustomize = (updates: { primaryColor?: string; fontFamily?: "sans" | "serif" | "mono" }) => {
+    if (!resume) return;
+    const newMeta = { ...meta, ...updates };
+    const newContent = { ...resume.content, meta: newMeta };
+    updateContent(newContent);
+  };
+
+  useEffect(() => {
+    fetch("/api/templates", { credentials: "include" })
+      .then((res) => (res.ok ? res.json() : { templates: [] }))
+      .then((data) =>
+        setTemplates(
+          (data.templates ?? []).map((t: { id: string; name: string }) => ({ id: t.id, name: t.name }))
+        )
+      );
+  }, []);
 
   if (loading) {
     return (
@@ -35,16 +57,18 @@ export default function EditResumePage() {
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <p className="text-slate-600">Resume not found</p>
         <Link
-          href={isTrial ? "/try" : "/dashboard"}
+          href="/dashboard"
           className="text-primary-600 hover:underline"
         >
-          {isTrial ? "Back to Try free" : "Back to dashboard"}
+          Back to dashboard
         </Link>
       </div>
     );
   }
 
   const sections = resume.content.sections ?? [];
+  const currentTemplateName =
+    templates.find((t) => t.id === resume.templateId)?.name ?? resume.templateId;
 
   const handleSectionsChange = (newSections: ResumeSection[]) => {
     updateContent({ sections: newSections });
@@ -93,10 +117,10 @@ export default function EditResumePage() {
         <div className="max-w-[1600px] mx-auto px-4 h-14 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <Link
-              href={isTrial ? "/try" : "/dashboard"}
+              href="/dashboard"
               className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
             >
-              ← {isTrial ? "Try free" : "Dashboard"}
+              ← Dashboard
             </Link>
             {isTrial && secondsLeft > 0 && (
               <span className="text-sm font-medium text-amber-600 dark:text-amber-400">
@@ -109,8 +133,111 @@ export default function EditResumePage() {
               onChange={(e) => updateTitle(e.target.value)}
               className="bg-transparent font-semibold text-slate-900 dark:text-slate-100 border-none focus:outline-none focus:ring-0 px-2 py-1 rounded"
             />
+            {templates.length > 0 && (
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setTemplateOpen(!templateOpen)}
+                  className="flex items-center gap-1 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                >
+                  <span>{currentTemplateName}</span>
+                  <span className="text-slate-400">▼</span>
+                </button>
+                {templateOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setTemplateOpen(false)}
+                      aria-hidden="true"
+                    />
+                    <div className="absolute left-0 top-full mt-1 z-20 min-w-[160px] max-h-[280px] overflow-y-auto rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-lg py-1">
+                      {templates.map((t) => (
+                        <button
+                          key={t.id}
+                          type="button"
+                          onClick={() => {
+                            updateTemplateId(t.id);
+                            setTemplateOpen(false);
+                          }}
+                          className={`w-full text-left px-3 py-2 text-sm ${
+                            resume.templateId === t.id
+                              ? "bg-primary-50 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300"
+                              : "text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                          }`}
+                        >
+                          {t.name}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setCustomizeOpen(!customizeOpen)}
+                className="flex items-center gap-1 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+              >
+                Customize
+              </button>
+              {customizeOpen && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setCustomizeOpen(false)} aria-hidden="true" />
+                  <div className="absolute right-0 top-full mt-1 z-20 w-56 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-lg p-3">
+                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Accent color</p>
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {["#0f172a", "#1e40af", "#059669", "#7c3aed", "#be185d", "#ea580c", "#0d9488", "#1e293b"].map((c) => (
+                        <button
+                          key={c}
+                          type="button"
+                          onClick={() => handleCustomize({ primaryColor: meta.primaryColor === c ? undefined : c })}
+                          className={`w-6 h-6 rounded-full border-2 ${meta.primaryColor === c ? "border-slate-900 dark:border-white" : "border-slate-300 dark:border-slate-600"}`}
+                          style={{ backgroundColor: c }}
+                          title={c}
+                        />
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => handleCustomize({ primaryColor: undefined })}
+                        className="w-6 h-6 rounded-full border-2 border-slate-300 dark:border-slate-600 flex items-center justify-center text-xs"
+                        title="Reset"
+                      >
+                        ↺
+                      </button>
+                    </div>
+                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Font</p>
+                    <div className="flex flex-wrap gap-1">
+                      {(["sans", "serif", "mono"] as const).map((f) => (
+                        <button
+                          key={f}
+                          type="button"
+                          onClick={() => handleCustomize({ fontFamily: meta.fontFamily === f ? undefined : f })}
+                          className={`rounded px-2 py-1 text-xs ${meta.fontFamily === f ? "bg-primary-100 text-primary-800 dark:bg-primary-900/50 dark:text-primary-200" : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"}`}
+                        >
+                          {f}
+                        </button>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => handleCustomize({ fontFamily: undefined })}
+                        className="rounded px-2 py-1 text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+                      >
+                        Default
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-3">
+            <Link
+              href={`/cover-letters/new?resumeId=${id}`}
+              className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+            >
+              Cover Letter
+            </Link>
             <ExportButtons
               resumeId={id}
               resumeTitle={resume.title}
@@ -148,10 +275,18 @@ export default function EditResumePage() {
         </div>
 
         <div className="lg:w-[500px] xl:w-[550px] flex-shrink-0 border-l border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800/30 overflow-y-auto p-4">
-          <div className="sticky top-4 relative">
+          <div className="sticky top-4 relative space-y-6">
+            <AtsScorePanel resumeId={id} sections={sections} isPro={isPro} />
+            <div>
             <p className="text-xs text-slate-500 mb-2">Preview</p>
             <div ref={previewRef} className="relative">
-              <ResumePreview sections={sections} templateId={resume.templateId} className="scale-[0.85] origin-top" />
+              <ResumePreview
+                sections={sections}
+                templateId={resume.templateId}
+                primaryColor={resume.content?.meta?.primaryColor}
+                fontFamily={resume.content?.meta?.fontFamily}
+                className="scale-[0.85] origin-top"
+              />
               {(!isPro || isTrial) && (
                 <div
                   className="absolute inset-0 flex items-center justify-center pointer-events-none"
@@ -162,6 +297,7 @@ export default function EditResumePage() {
                   </span>
                 </div>
               )}
+            </div>
             </div>
           </div>
         </div>

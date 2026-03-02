@@ -5,8 +5,9 @@ import { prisma } from "@/lib/prisma";
 import { parseResumeContent } from "@/lib/resume-utils";
 import { DEFAULT_RESUME_CONTENT } from "@/types/resume";
 import { getResumeAuth } from "@/lib/trial-auth";
+import { AVAILABLE_TEMPLATE_IDS, TRIAL_TEMPLATE_IDS } from "@/lib/templates";
 
-const TRIAL_TEMPLATES = ["trial-classic", "trial-modern", "trial-bold", "trial-minimal", "trial-professional"];
+const LEGACY_TRIAL = ["trial-classic", "trial-modern", "trial-bold", "trial-minimal", "trial-professional"];
 
 export async function GET() {
   const auth = await getResumeAuth();
@@ -24,6 +25,7 @@ export async function GET() {
       version: true,
       createdAt: true,
       updatedAt: true,
+      _count: { select: { exportLogs: true } },
     },
   });
 
@@ -47,13 +49,13 @@ export async function POST(req: Request) {
     const title = parsed.success ? parsed.data.title : undefined;
     let templateId = parsed.success ? parsed.data.templateId : undefined;
 
-    // Trial users restricted to trial templates
+    // Trial users restricted to trial templates; full users get all Indian templates
     if (auth.isTrial) {
-      templateId = TRIAL_TEMPLATES.includes(templateId || "")
-        ? templateId
-        : TRIAL_TEMPLATES[0];
+      const allowed = [...TRIAL_TEMPLATE_IDS, ...LEGACY_TRIAL];
+      templateId = allowed.includes(templateId || "") ? templateId : TRIAL_TEMPLATE_IDS[0] ?? LEGACY_TRIAL[0];
     } else {
-      templateId = templateId || "professional-v1";
+      const allowed = [...AVAILABLE_TEMPLATE_IDS, ...LEGACY_TRIAL];
+      templateId = allowed.includes(templateId || "") ? templateId : "professional-in";
     }
 
     const resume = await prisma.resume.create({

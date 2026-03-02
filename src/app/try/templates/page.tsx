@@ -1,22 +1,36 @@
 "use client";
 
-// Free Trial – Template picker (5 basic templates)
-import { useState } from "react";
+// Free Trial – Template picker (5 Indian-style templates)
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ResumePreview } from "@/components/resume-builder/resume-preview";
+import { DEFAULT_RESUME_CONTENT } from "@/types/resume";
+import { trackEvent } from "@/lib/analytics";
 
-const TRIAL_TEMPLATES = [
-  { id: "trial-classic", name: "Classic", desc: "Traditional, professional" },
-  { id: "trial-modern", name: "Modern", desc: "Clean, minimal" },
-  { id: "trial-bold", name: "Bold", desc: "Strong headings, accent" },
-  { id: "trial-minimal", name: "Minimalist", desc: "Sparse, elegant" },
-  { id: "trial-professional", name: "Professional", desc: "Corporate, navy" },
-];
+interface TemplateInfo {
+  id: string;
+  name: string;
+  description: string;
+  colors: { primary: string };
+  trialAvailable?: boolean;
+}
 
 export default function TryTemplatesPage() {
   const router = useRouter();
+  const [templates, setTemplates] = useState<TemplateInfo[]>([]);
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/templates", { credentials: "include" })
+      .then((res) => (res.ok ? res.json() : { templates: [] }))
+      .then((data) =>
+        setTemplates(
+          (data.templates ?? []).filter((t: TemplateInfo) => t.trialAvailable !== false)
+        )
+      );
+  }, []);
 
   const handleSelect = async (templateId: string) => {
     setError(null);
@@ -33,6 +47,7 @@ export default function TryTemplatesPage() {
         setError(data.error || "Failed to create resume");
         return;
       }
+      trackEvent("resume_created", { template_id: templateId });
       router.push(`/resumes/${data.id}/edit`);
     } finally {
       setLoading(null);
@@ -68,44 +83,35 @@ export default function TryTemplatesPage() {
           )}
 
           <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {TRIAL_TEMPLATES.map((t) => (
+            {templates.map((t) => (
               <button
                 key={t.id}
                 type="button"
                 onClick={() => handleSelect(t.id)}
                 disabled={loading !== null}
-                className="group block text-left rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm hover:shadow-lg hover:border-primary-500/50 transition-all disabled:opacity-50"
+                className="group block text-left rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden shadow-sm hover:shadow-lg hover:border-primary-500/50 transition-all disabled:opacity-50"
               >
-                <div
-                  className={`aspect-[3/4] rounded-lg mb-4 flex items-center justify-center ${
-                    t.id === "trial-classic"
-                      ? "bg-slate-200 dark:bg-slate-700"
-                      : t.id === "trial-bold"
-                        ? "bg-primary-100 dark:bg-primary-900/40"
-                        : t.id === "trial-professional"
-                          ? "bg-slate-800"
-                          : "bg-slate-100 dark:bg-slate-800"
-                  }`}
-                >
-                  <span
-                    className={`text-4xl font-bold ${
-                      t.id === "trial-professional"
-                        ? "text-slate-400"
-                        : "text-slate-300 dark:text-slate-600 group-hover:text-primary-400"
-                    }`}
-                  >
-                    Aa
+                <div className="aspect-[3/4] bg-slate-100 dark:bg-slate-800 flex items-center justify-center p-2">
+                  <div className="w-full max-w-[140px] scale-75 origin-center">
+                    <ResumePreview
+                      sections={DEFAULT_RESUME_CONTENT.sections}
+                      templateId={t.id}
+                      primaryColor={t.colors?.primary}
+                      className="shadow-md"
+                    />
+                  </div>
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+                    {t.name}
+                  </h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    {t.description}
+                  </p>
+                  <span className="mt-3 inline-block text-sm font-medium text-primary-600 dark:text-primary-400 group-hover:underline">
+                    {loading === t.id ? "Creating..." : "Use this template"}
                   </span>
                 </div>
-                <h3 className="font-semibold text-slate-900 dark:text-slate-100">
-                  {t.name}
-                </h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  {t.desc}
-                </p>
-                <span className="mt-3 inline-block text-sm font-medium text-primary-600 dark:text-primary-400 group-hover:underline">
-                  {loading === t.id ? "Creating..." : "Use this template →"}
-                </span>
               </button>
             ))}
           </div>

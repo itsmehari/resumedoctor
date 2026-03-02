@@ -3,6 +3,7 @@
 import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { trackEvent, trackMetaEvent, trackMetaCustom, trackLinkedInConversion } from "@/lib/analytics";
 
 function TryPageContent() {
   const router = useRouter();
@@ -64,6 +65,10 @@ function TryPageContent() {
         setError(data.error || "Invalid or expired code");
         return;
       }
+      trackEvent("trial_start");
+      trackMetaEvent("CompleteRegistration");
+      trackMetaCustom("TrialStart");
+      trackLinkedInConversion();
       router.push(data.redirectTo || "/try/templates");
     } finally {
       setLoading(false);

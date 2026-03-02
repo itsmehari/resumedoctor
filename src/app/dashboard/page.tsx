@@ -1,4 +1,4 @@
-// WBS 3.9, 3.10 – Resume list & empty state
+// WBS 3.9, 3.10 – Resume list & empty state (Phase 1)
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
@@ -6,6 +6,11 @@ import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
+import { MoreVertical, Copy, Trash2, FileText } from "lucide-react";
+import { useSubscription } from "@/hooks/use-subscription";
+import { useTrialTimer } from "@/hooks/use-trial-timer";
+import { getSubscriptionLabel, getTemplateDisplayName } from "@/lib/subscription-labels";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface ResumeItem {
   id: string;
@@ -14,22 +19,70 @@ interface ResumeItem {
   version: number;
   createdAt: string;
   updatedAt: string;
+  _count?: { exportLogs: number };
 }
 
 function DashboardContent() {
   const { data: session, status } = useSession();
+  const { subscription, isPro, isTrial, displayName } = useSubscription();
+  const isAdmin = (session?.user as { role?: string })?.role === "admin";
+  const { secondsLeft, expired } = useTrialTimer(isTrial);
   const searchParams = useSearchParams();
   const [resumes, setResumes] = useState<ResumeItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<ResumeItem | null>(null);
+  const [menuOpen, setMenuOpen] = useState<string | null>(null);
   const upgraded = searchParams.get("upgraded") === "1";
 
-  useEffect(() => {
-    fetch("/api/resumes")
+  const welcomeName = displayName || session?.user?.name || session?.user?.email;
+  const isAuthenticated = !!session || isTrial;
+
+  const fetchResumes = () => {
+    fetch("/api/resumes", { credentials: "include" })
       .then((res) => (res.ok ? res.json() : []))
       .then(setResumes)
       .catch(() => setResumes([]))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchResumes();
   }, []);
+
+  const handleDuplicate = async (r: ResumeItem) => {
+    setActionLoading(r.id);
+    try {
+      const res = await fetch(`/api/resumes/${r.id}/duplicate`, {
+        method: "POST",
+        credentials: "include",
+      });
+      if (res.ok) {
+        fetchResumes();
+        setMenuOpen(null);
+      }
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setActionLoading(deleteTarget.id);
+    try {
+      const res = await fetch(`/api/resumes/${deleteTarget.id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (res.ok) {
+        setResumes((prev) => prev.filter((x) => x.id !== deleteTarget.id));
+        setDeleteTarget(null);
+        setMenuOpen(null);
+      }
+    } finally {
+      setActionLoading(null);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -39,15 +92,50 @@ function DashboardContent() {
             ResumeDoctor
           </Link>
           <nav className="flex items-center gap-4">
-            <Link href="/settings" className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">
-              Settings
-            </Link>
-            <button
-              onClick={() => signOut({ callbackUrl: "/" })}
-              className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+            <span
+              className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                isPro
+                  ? "bg-primary-100 text-primary-800 dark:bg-primary-900/40 dark:text-primary-200"
+                  : isTrial
+                    ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200"
+                    : "bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300"
+              }`}
             >
-              Sign out
-            </button>
+              {getSubscriptionLabel(subscription)}
+            </span>
+            {!isTrial && (
+              <>
+                <Link
+                  href="/settings"
+                  className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+                >
+                  Settings
+                </Link>
+                {isAdmin && (
+                  <Link
+                    href="/admin"
+                    className="text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300 font-medium"
+                  >
+                    Admin
+                  </Link>
+                )}
+              </>
+            )}
+            {session ? (
+              <button
+                onClick={() => signOut({ callbackUrl: "/" })}
+                className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+              >
+                Sign out
+              </button>
+            ) : isTrial ? (
+              <Link
+                href="/signup"
+                className="text-primary-600 hover:text-primary-700 font-medium text-sm"
+              >
+                Sign up to save
+              </Link>
+            ) : null}
           </nav>
         </div>
       </header>
@@ -62,26 +150,47 @@ function DashboardContent() {
                 You&apos;re now a Pro member. PDF & Word export are unlocked.
               </div>
             )}
+            {isTrial && !expired && secondsLeft > 0 && (
+              <div className="mb-6 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+                <span className="text-amber-800 dark:text-amber-200 text-sm font-medium">
+                  {Math.floor(secondsLeft / 60)}:{String(secondsLeft % 60).padStart(2, "0")} left in your trial · Sign up to save your work
+                </span>
+                <Link
+                  href="/signup"
+                  className="rounded-lg bg-amber-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-700"
+                >
+                  Sign up to save
+                </Link>
+              </div>
+            )}
             <div className="flex items-center justify-between mb-8">
               <div>
                 <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                   My Resumes
                 </h1>
-                {session?.user?.email && (
+                {welcomeName && (
                   <p className="mt-1 text-slate-600 dark:text-slate-400">
-                    Welcome, {session.user.name || session.user.email}
+                    Welcome, {welcomeName}
                   </p>
                 )}
               </div>
               <div className="flex items-center gap-3">
+                {!isPro && (
+                  <Link
+                    href="/pricing"
+                    className="rounded-lg border border-primary-600 px-4 py-2 text-sm font-medium text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors"
+                  >
+                    Upgrade to Pro
+                  </Link>
+                )}
                 <Link
-                  href="/pricing"
-                  className="rounded-lg border border-primary-600 px-4 py-2 text-sm font-medium text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors"
+                  href="/cover-letters"
+                  className="rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                 >
-                  Upgrade to Pro
+                  Cover Letters
                 </Link>
                 <Link
-                href="/resumes/new"
+                  href="/resumes/new"
                   className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 transition-colors"
                 >
                   + Create Resume
@@ -95,37 +204,113 @@ function DashboardContent() {
               </div>
             ) : resumes.length === 0 ? (
               <div className="rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 p-12 text-center">
-                <p className="text-slate-600 dark:text-slate-400 font-medium">
+                <FileText className="mx-auto h-12 w-12 text-slate-400 dark:text-slate-500" />
+                <p className="mt-4 text-slate-600 dark:text-slate-400 font-medium">
                   No resumes yet
                 </p>
                 <p className="mt-2 text-slate-500 text-sm">
                   Create your first resume to get started
                 </p>
-                <Link
-                  href="/resumes/new"
-                  className="mt-4 inline-block rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700"
-                >
-                  Create Resume
-                </Link>
+                <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <Link
+                    href={isTrial ? "/try/templates" : "/resumes/new"}
+                    className="inline-flex rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700"
+                  >
+                    {isTrial ? "Choose a template" : "Create Resume"}
+                  </Link>
+                  {!isTrial && (
+                    <Link
+                      href="/try/templates"
+                      className="inline-flex rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                    >
+                      Browse templates
+                    </Link>
+                  )}
+                </div>
               </div>
             ) : (
               <ul className="space-y-2">
                 {resumes.map((r) => (
-                  <li key={r.id}>
-                    <Link
-                      href={`/resumes/${r.id}/edit`}
-                      className="flex items-center justify-between rounded-lg border border-slate-200 dark:border-slate-700 p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
-                    >
-                      <div>
-                        <span className="font-medium text-slate-900 dark:text-slate-100">
-                          {r.title}
-                        </span>
-                        <p className="text-sm text-slate-500 mt-0.5">
-                          Updated {formatDistanceToNow(new Date(r.updatedAt), { addSuffix: true })}
-                        </p>
+                  <li
+                    key={r.id}
+                    className="group rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                  >
+                    <div className="flex items-center justify-between p-4">
+                      <Link
+                        href={`/resumes/${r.id}/edit`}
+                        className="flex-1 min-w-0"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+                            <FileText className="h-5 w-5 text-slate-500 dark:text-slate-400" />
+                          </div>
+                          <div>
+                            <span className="font-medium text-slate-900 dark:text-slate-100 block truncate">
+                              {r.title}
+                            </span>
+                            <p className="text-sm text-slate-500 mt-0.5">
+                              {getTemplateDisplayName(r.templateId)} • Updated{" "}
+                              {formatDistanceToNow(new Date(r.updatedAt), {
+                                addSuffix: true,
+                              })}
+                              {r._count && r._count.exportLogs > 0 && (
+                                <> • {r._count.exportLogs} export{r._count.exportLogs !== 1 ? "s" : ""}</>
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                      </Link>
+                      <div className="flex items-center gap-1 ml-2">
+                        <button
+                          onClick={() => handleDuplicate(r)}
+                          disabled={!!actionLoading}
+                          className="p-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:hover:text-slate-400 dark:hover:bg-slate-700 disabled:opacity-50"
+                          title="Duplicate"
+                        >
+                          <Copy className="h-4 w-4" />
+                        </button>
+                        <div className="relative">
+                          <button
+                            onClick={() =>
+                              setMenuOpen(menuOpen === r.id ? null : r.id)
+                            }
+                            className="p-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:hover:text-slate-400 dark:hover:bg-slate-700"
+                            title="More actions"
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                          </button>
+                          {menuOpen === r.id && (
+                            <>
+                              <div
+                                className="fixed inset-0 z-10"
+                                onClick={() => setMenuOpen(null)}
+                                aria-hidden="true"
+                              />
+                              <div className="absolute right-0 top-full mt-1 z-20 w-40 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-lg py-1">
+                                <button
+                                  onClick={() => handleDuplicate(r)}
+                                  disabled={!!actionLoading}
+                                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                                >
+                                  <Copy className="h-3.5 w-3.5" />
+                                  {actionLoading === r.id ? "Duplicating…" : "Duplicate"}
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setDeleteTarget(r);
+                                    setMenuOpen(null);
+                                  }}
+                                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                  Delete
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
                       </div>
-                      <span className="text-slate-400">→</span>
-                    </Link>
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -133,17 +318,35 @@ function DashboardContent() {
           </>
         )}
       </main>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete resume?"
+        description={
+          deleteTarget
+            ? `"${deleteTarget.title}" will be permanently deleted. This cannot be undone.`
+            : ""
+        }
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        variant="danger"
+        onConfirm={handleDelete}
+        loading={!!actionLoading && !!deleteTarget}
+      />
     </div>
   );
 }
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-slate-500">Loading...</p>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <p className="text-slate-500">Loading...</p>
+        </div>
+      }
+    >
       <DashboardContent />
     </Suspense>
   );

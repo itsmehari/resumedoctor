@@ -4,7 +4,8 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
-const protectedPaths = ["/dashboard", "/settings", "/resumes"];
+const protectedPaths = ["/dashboard", "/settings", "/resumes", "/cover-letters"];
+const adminPaths = ["/admin"];
 const authPaths = ["/login", "/signup"];
 const TRIAL_COOKIE = "trial_session";
 
@@ -45,8 +46,9 @@ export async function middleware(req: NextRequest) {
   }
 
   if (isProtected && !token) {
-    const hasTrial = isResumePath ? await hasValidTrialCookie(req) : false;
-    if (hasTrial) {
+    const hasTrial = await hasValidTrialCookie(req);
+    const trialAllowedPaths = isResumePath || pathname === "/dashboard" || pathname.startsWith("/dashboard/");
+    if (hasTrial && trialAllowedPaths) {
       return NextResponse.next();
     }
     const loginUrl = new URL(isResumePath ? "/try" : "/login", req.url);
@@ -58,6 +60,19 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
+  const isAdminPath = adminPaths.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+  if (isAdminPath) {
+    if (!token) {
+      const loginUrl = new URL("/login", req.url);
+      loginUrl.searchParams.set("callbackUrl", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    const role = (token as { role?: string }).role;
+    if (role !== "admin") {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
+  }
+
   return NextResponse.next();
 }
 
@@ -66,6 +81,8 @@ export const config = {
     "/dashboard/:path*",
     "/settings/:path*",
     "/resumes/:path*",
+    "/cover-letters/:path*",
+    "/admin/:path*",
     "/try/templates",
     "/login",
     "/signup",

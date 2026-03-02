@@ -7,6 +7,7 @@ import { FileText, FileDown, Printer, Lock } from "lucide-react";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import type { ResumeSection } from "@/types/resume";
+import { trackEvent, trackMetaCustom } from "@/lib/analytics";
 
 interface Props {
   resumeId: string;
@@ -131,6 +132,8 @@ export function ExportButtons({
       a.download = `${slugify(resumeTitle)}-resume.docx`;
       a.click();
       URL.revokeObjectURL(url);
+      trackEvent("resume_export", { format: "docx" });
+      trackMetaCustom("ResumeExport", { format: "docx" });
     } catch {
       setError("Failed to download Word");
     } finally {
@@ -169,7 +172,7 @@ export function ExportButtons({
                 </div>
                 <Link
                   href="/signup"
-                  onClick={() => setOpen(false)}
+                  onClick={() => { trackEvent("upgrade_click", { source: "export_trial" }); setOpen(false); }}
                   className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-primary-600 dark:text-primary-400 hover:bg-slate-100 dark:hover:bg-slate-700"
                 >
                   Create account to save & export →
@@ -234,11 +237,11 @@ export function ExportButtons({
                   <Printer className="h-4 w-4" />
                   {loading === "html" ? "Loading..." : "Print / HTML"}
                 </button>
-                <Link href="/pricing" onClick={() => setOpen(false)} className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-primary-600">
+                <Link href="/pricing" onClick={() => { trackEvent("upgrade_click", { source: "export_pdf" }); setOpen(false); }} className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-primary-600">
                   <Lock className="h-4 w-4" />
                   Download PDF — Upgrade to Pro
                 </Link>
-                <Link href="/pricing" onClick={() => setOpen(false)} className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-primary-600">
+                <Link href="/pricing" onClick={() => { trackEvent("upgrade_click", { source: "export_word" }); setOpen(false); }} className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-primary-600">
                   <Lock className="h-4 w-4" />
                   Download Word — Upgrade to Pro
                 </Link>

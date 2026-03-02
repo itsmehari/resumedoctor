@@ -1,0 +1,66 @@
+[
+  {
+    "slug": "software-engineer-resume",
+    "title": "Software Engineer Resume Example",
+    "role": "Software Engineer",
+    "industry": "IT / Tech",
+    "description": "Structure and tips for software developer resumes. Skills, projects, and experience that get shortlisted on Naukri and LinkedIn.",
+    "tips": ["Lead with a 2–3 line summary focused on tech stack and years of experience.", "List technologies and frameworks. Add 2–3 bullet points per role with impact (e.g. improved performance, reduced bugs).", "Include personal or open-source projects if you're a fresher."]
+  },
+  {
+    "slug": "fresher-resume-example",
+    "title": "Fresher Resume Example",
+    "role": "Fresher / Entry-level",
+    "industry": "All",
+    "description": "How to build a strong resume with no full-time experience. Education, internships, and projects.",
+    "tips": ["Put Education first, then Internships or Projects, then Skills.", "Use a short objective or summary (2 lines) stating your goal and key strength.", "Add coursework, certifications, and extracurriculars if relevant."]
+  },
+  {
+    "slug": "data-analyst-resume",
+    "title": "Data Analyst Resume Example",
+    "role": "Data Analyst",
+    "industry": "Analytics",
+    "description": "Resume structure for data analysts. SQL, tools, and metrics that recruiters look for.",
+    "tips": ["Highlight tools: SQL, Excel, Python/R, Tableau, Power BI.", "Quantify impact: e.g. 'Built dashboards used by 50+ stakeholders', 'Reduced report time by 30%'.", "Include relevant certifications (e.g. Google Data Analytics)."]
+  },
+  {
+    "slug": "marketing-manager-resume",
+    "title": "Marketing Manager Resume Example",
+    "role": "Marketing Manager",
+    "industry": "Marketing",
+    "description": "How to present marketing experience, campaigns, and ROI on your resume.",
+    "tips": ["Lead with a summary that mentions channels (digital, brand, growth) and years of experience.", "Use metrics: reach, conversion, revenue impact, team size.", "List campaigns or initiatives with clear outcomes."]
+  },
+  {
+    "slug": "bpo-customer-service-resume",
+    "title": "BPO / Customer Service Resume Example",
+    "role": "Customer Support",
+    "industry": "BPO / Services",
+    "description": "Resume format for call centre, BPO, and customer service roles in India.",
+    "tips": ["Include typing speed, languages known, and shift flexibility if applicable.", "Highlight resolution rates, CSAT, or tenure in previous roles.", "Keep sections clear: Experience, Education, Skills."]
+  },
+  {
+    "slug": "accountant-resume-example",
+    "title": "Accountant Resume Example",
+    "role": "Accountant",
+    "industry": "Finance",
+    "description": "Structure for accountant and finance resumes. Qualifications, software, and experience.",
+    "tips": ["Mention qualifications: CA, CMA, or relevant degrees and certifications.", "List software: Tally, SAP, Excel, or ERP experience.", "Use bullet points for responsibilities and achievements (e.g. audits, reconciliations)."]
+  },
+  {
+    "slug": "teacher-educator-resume",
+    "title": "Teacher / Educator Resume Example",
+    "role": "Teacher / Educator",
+    "industry": "Education",
+    "description": "How to write a resume for teaching and education roles.",
+    "tips": ["Lead with qualifications (B.Ed, M.Ed, subject expertise) and years of experience.", "Include grades/subjects taught, curriculum experience, and any awards.", "Add workshops, training, or extracurricular involvement."]
+  },
+  {
+    "slug": "sales-executive-resume",
+    "title": "Sales Executive Resume Example",
+    "role": "Sales Executive",
+    "industry": "Sales",
+    "description": "Resume tips for sales roles. Targets, achievements, and client handling.",
+    "tips": ["Open with a summary that states your domain (B2B, retail, etc.) and key wins.", "Quantify: targets met, growth %, new accounts, deal size.", "Mention CRM tools and sales methodologies if relevant."]
+  }
+]

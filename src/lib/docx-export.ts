@@ -199,3 +199,47 @@ export function buildDocx(
 
   return Packer.toBuffer(doc);
 }
+
+/** WBS 8.6 – Cover letter DOCX (plain text content) */
+export function buildCoverLetterDocx(
+  content: string,
+  title: string,
+  company?: string | null,
+  role?: string | null
+): Promise<Buffer> {
+  const children: FileChild[] = [];
+  children.push(
+    new Paragraph({
+      text: title,
+      heading: HeadingLevel.TITLE,
+      spacing: { after: 300 },
+    })
+  );
+  if (company || role) {
+    children.push(
+      new Paragraph({
+        children: [
+          ...(company ? [new TextRun({ text: company, bold: true })] : []),
+          ...(company && role ? [new TextRun(" – ")] : []),
+          ...(role ? [new TextRun(role)] : []),
+        ],
+        spacing: { after: 400 },
+      })
+    );
+  }
+  const paragraphs = content.split(/\n\n+/).filter(Boolean);
+  for (const p of paragraphs) {
+    children.push(
+      new Paragraph({
+        children: [new TextRun(p.trim())],
+        spacing: { after: 200 },
+      })
+    );
+  }
+  const doc = new Document({
+    creator: "ResumeDoctor",
+    title,
+    sections: [{ properties: {}, children }],
+  });
+  return Packer.toBuffer(doc);
+}

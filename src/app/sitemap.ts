@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { siteUrl } from "@/lib/seo";
 import { getPostSlugs } from "@/lib/blog";
+import { getExampleSlugs } from "@/lib/examples";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const blogSlugs = getPostSlugs();
@@ -9,6 +10,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: new Date(),
     changeFrequency: "monthly" as const,
     priority: 0.8,
+  }));
+
+  const exampleSlugs = getExampleSlugs();
+  const exampleUrls = exampleSlugs.map((slug) => ({
+    url: `${siteUrl}/examples/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
   }));
 
   const publicPages = [
@@ -22,6 +31,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${siteUrl}/login`, changeFrequency: "monthly" as const, priority: 0.5 },
     { url: `${siteUrl}/signup`, changeFrequency: "monthly" as const, priority: 0.5 },
     { url: `${siteUrl}/blog`, changeFrequency: "weekly" as const, priority: 0.8 },
+    { url: `${siteUrl}/examples`, changeFrequency: "monthly" as const, priority: 0.7 },
   ];
 
   return [
@@ -30,5 +40,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
     })),
     ...blogUrls,
+    ...exampleUrls,
   ];
 }

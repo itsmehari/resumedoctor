@@ -1,0 +1,57 @@
+// WBS 4.1 – Template JSON schema definition
+// Defines structure for sections, styling, fonts, and layout
+
+export type TemplateFontFamily = "sans" | "serif" | "mono";
+
+export interface TemplateColors {
+  /** Primary accent (headings, borders, links) */
+  primary: string;
+  /** Secondary accent (bullets, highlights) */
+  accent?: string;
+  /** Body text color */
+  text: string;
+  /** Muted/secondary text */
+  muted?: string;
+  /** Border color */
+  border?: string;
+}
+
+export interface TemplateLayout {
+  /** Section spacing */
+  spacing?: "compact" | "normal" | "spacious";
+  /** Section title style */
+  sectionTitleStyle?: "underline" | "left-border" | "uppercase" | "plain" | "bold";
+  /** Line height for body */
+  lineHeight?: "tight" | "normal" | "relaxed";
+  /** Single or two-column (sidebar) layout */
+  columns?: "single" | "two-column";
+}
+
+export interface TemplateMetadata {
+  /** Unique ID (e.g. professional-in, fresher-in) */
+  id: string;
+  /** Display name */
+  name: string;
+  /** Short description for selector */
+  description: string;
+  /** Template version for future migrations */
+  version: string;
+  /** Font family for body text */
+  fontFamily: TemplateFontFamily;
+  /** Color theme */
+  colors: TemplateColors;
+  /** Layout options */
+  layout?: TemplateLayout;
+  /** Tailwind classes for wrapper (legacy compatibility) */
+  wrapperClass?: string;
+  /** Tailwind classes for section titles */
+  sectionTitleClass?: string;
+  /** Tailwind classes for accent (e.g. left border) */
+  accentClass?: string;
+  /** Category for filtering */
+  category?: "professional" | "fresher" | "creative" | "minimal" | "corporate" | "executive" | "modern" | "classic" | "ats" | "tech";
+  /** Whether available for trial users */
+  trialAvailable?: boolean;
+}
+
+export type TemplateId = string;
