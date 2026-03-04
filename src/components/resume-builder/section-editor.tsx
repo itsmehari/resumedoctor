@@ -2,6 +2,7 @@
 "use client";
 
 import type { ResumeSection } from "@/types/resume";
+import { ContactEditor } from "./sections/contact-editor";
 import { SummaryEditor } from "./sections/summary-editor";
 import { ExperienceEditor } from "./sections/experience-editor";
 import { EducationEditor } from "./sections/education-editor";
@@ -12,9 +13,10 @@ interface Props {
   section: ResumeSection;
   onChange: (section: ResumeSection) => void;
   onRemove: () => void;
+  resumeId?: string;
 }
 
-export function SectionEditor({ section, onChange, onRemove }: Props) {
+export function SectionEditor({ section, onChange, onRemove, resumeId }: Props) {
   const common = (
     <button
       type="button"
@@ -26,6 +28,18 @@ export function SectionEditor({ section, onChange, onRemove }: Props) {
   );
 
   switch (section.type) {
+    case "contact":
+      return (
+        <div className="space-y-2">
+          <ContactEditor
+            data={section.data}
+            onChange={(data) =>
+              onChange({ ...section, data } as ResumeSection)
+            }
+          />
+          {common}
+        </div>
+      );
     case "summary":
       return (
         <div className="space-y-2">
@@ -34,6 +48,7 @@ export function SectionEditor({ section, onChange, onRemove }: Props) {
             onChange={(data) =>
             onChange({ ...section, data } as ResumeSection)
           }
+          resumeId={resumeId}
           />
           {common}
         </div>
@@ -46,6 +61,7 @@ export function SectionEditor({ section, onChange, onRemove }: Props) {
             onChange={(data) =>
             onChange({ ...section, data } as ResumeSection)
           }
+            resumeId={resumeId}
           />
           {common}
         </div>

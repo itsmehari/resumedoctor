@@ -9,10 +9,19 @@ export function resumeToPlainText(
   sections: ResumeSection[],
   title: string
 ): string {
-  const lines: string[] = [title.toUpperCase(), "", "=".repeat(50), ""];
   const sorted = sortSections(sections);
+  const contactSection = sorted.find((s) => s.type === "contact");
+  const contactData = contactSection?.type === "contact" ? contactSection.data : null;
+  const displayName = (contactData?.name?.trim() || title).toUpperCase();
+  const contactLine = contactData
+    ? [contactData.email, contactData.phone, contactData.location, contactData.website].filter(Boolean).join(" | ")
+    : "";
+  const lines: string[] = [displayName];
+  if (contactLine) lines.push(contactLine, "");
+  lines.push("=".repeat(50), "");
 
   for (const section of sorted) {
+    if (section.type === "contact") continue;
     switch (section.type) {
       case "summary":
         if (section.data.text?.trim()) {
@@ -22,38 +31,42 @@ export function resumeToPlainText(
         }
         break;
 
-      case "experience":
-        const exp = section.data;
-        if (exp.title || exp.company) {
-          lines.push("EXPERIENCE");
-          lines.push(`${exp.title || "Position"} | ${exp.company || ""}`);
-          if (exp.location) lines.push(exp.location);
-          const dates =
-            exp.startDate || exp.endDate
-              ? `${exp.startDate || ""} – ${exp.endDate || "Present"}`
-              : "";
-          if (dates) lines.push(dates);
-          for (const b of exp.bullets?.filter(Boolean) ?? []) {
-            lines.push(`  • ${b}`);
+      case "experience": {
+        const expData = section.data as { entries?: Array<{ title: string; company: string; location?: string; startDate: string; endDate: string; bullets?: string[] }> };
+        const expEntries = expData.entries ?? [section.data as { title: string; company: string; location?: string; startDate: string; endDate: string; bullets?: string[] }];
+        const expList = Array.isArray(expEntries) ? expEntries : [expEntries];
+        for (const exp of expList) {
+          if (exp.title || exp.company) {
+            lines.push("EXPERIENCE");
+            lines.push(`${exp.title || "Position"} | ${exp.company || ""}`);
+            if (exp.location) lines.push(exp.location);
+            const dates = exp.startDate || exp.endDate ? `${exp.startDate || ""} – ${exp.endDate || "Present"}` : "";
+            if (dates) lines.push(dates);
+            for (const b of exp.bullets?.filter(Boolean) ?? []) {
+              lines.push(`  • ${b}`);
+            }
+            lines.push("");
           }
-          lines.push("");
         }
         break;
+      }
 
-      case "education":
-        const edu = section.data;
-        if (edu.degree || edu.school) {
-          lines.push("EDUCATION");
-          lines.push(`${edu.degree || ""} | ${edu.school || ""}`);
-          if (edu.location) lines.push(edu.location);
-          const dates =
-            edu.startDate || edu.endDate
-              ? `${edu.startDate || ""} – ${edu.endDate || ""}`
-              : "";
-          if (dates) lines.push(dates);
-          lines.push("");
+      case "education": {
+        const eduData = section.data as { entries?: Array<{ degree: string; school: string; location?: string; startDate: string; endDate: string }> };
+        const eduEntries = eduData.entries ?? [section.data as { degree: string; school: string; location?: string; startDate: string; endDate: string }];
+        const eduList = Array.isArray(eduEntries) ? eduEntries : [eduEntries];
+        for (const edu of eduList) {
+          if (edu.degree || edu.school) {
+            lines.push("EDUCATION");
+            lines.push(`${edu.degree || ""} | ${edu.school || ""}`);
+            if (edu.location) lines.push(edu.location);
+            const dates = edu.startDate || edu.endDate ? `${edu.startDate || ""} – ${edu.endDate || ""}` : "";
+            if (dates) lines.push(dates);
+            lines.push("");
+          }
         }
         break;
+      }
 
       case "skills":
         const items = section.data.items?.filter(Boolean) ?? [];
@@ -92,7 +105,20 @@ export function resumeToHtml(
     ? '<div class="watermark">Upgrade for PDF • ResumeDoctor</div>'
     : "";
 
+  const contactSection = sorted.find((s) => s.type === "contact");
+  const contactData = contactSection?.type === "contact" ? contactSection.data : null;
+  const hasContact = contactData && (contactData.name?.trim() || contactData.email || contactData.phone || contactData.location || contactData.website);
+  const headerHtml = hasContact
+    ? `<header class="resume-header">
+        <h1>${escapeHtml(contactData!.name?.trim() || title)}</h1>
+        ${[contactData!.email, contactData!.phone, contactData!.location, contactData!.website].filter(Boolean).length
+          ? `<p class="contact-line">${[contactData!.email, contactData!.phone, contactData!.location, contactData!.website].filter((x): x is string => !!x).map(escapeHtml).join(" · ")}</p>`
+          : ""}
+      </header>`
+    : `<h1>${escapeHtml(title)}</h1>`;
+
   const sectionHtml = sorted
+    .filter((s) => s.type !== "contact")
     .map((section) => {
       switch (section.type) {
         case "summary":
@@ -102,36 +128,42 @@ export function resumeToHtml(
             <h2>Summary</h2>
             <p>${escapeHtml(section.data.text.trim())}</p>
           </section>`;
-        case "experience":
-          const exp = section.data;
-          const expBullets = (exp.bullets?.filter(Boolean) ?? [])
-            .map((b) => `<li>${escapeHtml(b)}</li>`)
+        case "experience": {
+          const expData = section.data as { entries?: Array<{ title: string; company: string; location?: string; startDate: string; endDate: string; bullets?: string[] }> };
+          const expEntries = expData.entries ?? [section.data as { title: string; company: string; location?: string; startDate: string; endDate: string; bullets?: string[] }];
+          const expList = Array.isArray(expEntries) ? expEntries : [expEntries];
+          const entriesHtml = expList
+            .filter((e) => e.title || e.company)
+            .map((exp) => {
+              const bullets = (exp.bullets?.filter(Boolean) ?? []).map((b) => `<li>${escapeHtml(b)}</li>`).join("");
+              return `<div class="entry">
+                <div class="entry-header">
+                  <span class="title">${escapeHtml(exp.title || "Position")}</span>
+                  <span class="dates">${exp.startDate || ""} – ${exp.endDate || "Present"}</span>
+                </div>
+                <div class="company">${escapeHtml(exp.company || "")}${exp.location ? `, ${escapeHtml(exp.location)}` : ""}</div>
+                ${bullets ? `<ul>${bullets}</ul>` : ""}
+              </div>`;
+            })
             .join("");
-          return `
-          <section>
-            <h2>Experience</h2>
-            <div class="entry">
-              <div class="entry-header">
-                <span class="title">${escapeHtml(exp.title || "Position")}</span>
-                <span class="dates">${exp.startDate || ""} – ${exp.endDate || "Present"}</span>
-              </div>
-              <div class="company">${escapeHtml(exp.company || "")}${exp.location ? `, ${escapeHtml(exp.location)}` : ""}</div>
-              ${expBullets ? `<ul>${expBullets}</ul>` : ""}
-            </div>
-          </section>`;
-        case "education":
-          const edu = section.data;
-          return `
-          <section>
-            <h2>Education</h2>
-            <div class="entry">
+          return entriesHtml ? `<section><h2>Experience</h2>${entriesHtml}</section>` : "";
+        }
+        case "education": {
+          const eduData = section.data as { entries?: Array<{ degree: string; school: string; location?: string; startDate: string; endDate: string }> };
+          const eduEntries = eduData.entries ?? [section.data as { degree: string; school: string; location?: string; startDate: string; endDate: string }];
+          const eduList = Array.isArray(eduEntries) ? eduEntries : [eduEntries];
+          const entriesHtml = eduList
+            .filter((e) => e.degree || e.school)
+            .map((edu) => `<div class="entry">
               <div class="entry-header">
                 <span class="title">${escapeHtml(edu.degree || "")}</span>
                 <span class="dates">${edu.startDate || ""} – ${edu.endDate || ""}</span>
               </div>
               <div class="company">${escapeHtml(edu.school || "")}${edu.location ? `, ${escapeHtml(edu.location)}` : ""}</div>
-            </div>
-          </section>`;
+            </div>`)
+            .join("");
+          return entriesHtml ? `<section><h2>Education</h2>${entriesHtml}</section>` : "";
+        }
         case "skills":
           const items = section.data.items?.filter(Boolean) ?? [];
           if (items.length === 0) return "";
@@ -183,13 +215,15 @@ export function resumeToHtml(
     ul { margin: 4px 0 0 1rem; }
     li { margin-bottom: 2px; }
     a { color: #2563eb; }
+    .resume-header { margin-bottom: 1rem; }
+    .contact-line { font-size: 10pt; color: #64748b; }
     .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 24pt; color: rgba(0,0,0,0.08); white-space: nowrap; pointer-events: none; }
     @media print { body { padding: 0; } }
   </style>
 </head>
 <body>
   ${watermark}
-  <h1>${escapeHtml(title)}</h1>
+  ${headerHtml}
   ${sectionHtml}
 </body>
 </html>`;

@@ -16,6 +16,7 @@ interface Props {
   previewRef: React.RefObject<HTMLDivElement | null>;
   isPro: boolean;
   isTrial?: boolean;
+  resumePackCredits?: number; // WBS 10.7 – one-time pack
 }
 
 export function ExportButtons({
@@ -25,8 +26,9 @@ export function ExportButtons({
   previewRef,
   isPro,
   isTrial = false,
+  resumePackCredits = 0,
 }: Props) {
-  const canExport = isPro && !isTrial;
+  const canExport = (isPro || resumePackCredits > 0) && !isTrial;
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);

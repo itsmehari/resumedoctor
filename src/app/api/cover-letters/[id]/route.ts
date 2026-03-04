@@ -39,6 +39,8 @@ const updateSchema = z.object({
   role: z.string().max(200).optional().nullable(),
   resumeId: z.string().optional().nullable(),
   content: z.string().optional(),
+  templateId: z.enum(["professional", "minimal", "modern", "classic", "bold", "compact"]).optional(),
+  tone: z.enum(["formal", "casual", "technical"]).optional(),
 });
 
 export async function PATCH(

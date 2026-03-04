@@ -1,36 +1,31 @@
-// WBS 2.2 – User profile API (supports trial)
+// WBS 2.2, 11.8 – User profile API (supports trial, impersonation)
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getTrialFromRequest } from "@/lib/trial-auth";
+import { getEffectiveAuth } from "@/lib/effective-auth";
 
 const updateSchema = z.object({
   name: z.string().min(1).max(100).optional(),
-  image: z.string().url().optional().nullable(),
+  image: z.union([z.string().url(), z.string().length(0)]).optional().nullable(),
+  notificationPrefs: z
+    .object({
+      marketing: z.boolean().optional(),
+      productUpdates: z.boolean().optional(),
+    })
+    .optional(),
 });
 
 export async function GET() {
-  let userId: string | null = null;
-  const session = await getServerSession(authOptions);
-  if (session?.user?.email) {
-    const u = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true },
-    });
-    userId = u?.id ?? null;
-  }
-  if (!userId) {
-    const trial = await getTrialFromRequest();
-    userId = trial?.userId ?? null;
-  }
-  if (!userId) {
+  const auth = await getEffectiveAuth();
+  if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const user = await prisma.user.findUnique({
-    where: { id: userId },
+    where: { id: auth.userId },
     select: {
       id: true,
       email: true,
@@ -38,7 +33,11 @@ export async function GET() {
       image: true,
       emailVerified: true,
       subscription: true,
+      subscriptionExpiresAt: true,
+      notificationPrefs: true,
+      twoFactorEnabled: true,
       createdAt: true,
+      resumePackCredits: true,
     },
   });
 
@@ -46,9 +45,17 @@ export async function GET() {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
+  const isProTrial14Active =
+    user.subscription === "pro_trial_14" &&
+    user.subscriptionExpiresAt &&
+    new Date(user.subscriptionExpiresAt) > new Date();
+
   return NextResponse.json({
     ...user,
     isTrial: user.subscription === "trial",
+    isPro: ["pro_monthly", "pro_annual"].includes(user.subscription) || isProTrial14Active,
+    isImpersonating: auth.isImpersonating ?? false,
+    resumePackCredits: user.resumePackCredits ?? 0,
   });
 }
 
@@ -68,9 +75,14 @@ export async function PATCH(req: Request) {
       );
     }
 
+    const data: Record<string, unknown> = {};
+    if (parsed.data.name !== undefined) data.name = parsed.data.name;
+    if (parsed.data.image !== undefined) data.image = parsed.data.image === "" ? null : parsed.data.image;
+    if (parsed.data.notificationPrefs !== undefined) data.notificationPrefs = parsed.data.notificationPrefs ?? undefined;
+
     const user = await prisma.user.update({
       where: { email: session.user.email },
-      data: parsed.data,
+      data,
       select: {
         id: true,
         email: true,
@@ -78,6 +90,7 @@ export async function PATCH(req: Request) {
         image: true,
         emailVerified: true,
         subscription: true,
+        notificationPrefs: true,
       },
     });
 

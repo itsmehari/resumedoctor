@@ -20,15 +20,32 @@ export function buildDocx(
   const children: FileChild[] = [];
   const sorted = sortSections(sections);
 
+  const contactSection = sorted.find((s) => s.type === "contact");
+  const contactData = contactSection?.type === "contact" ? contactSection.data : null;
+  const displayName = contactData?.name?.trim() || title;
+
   children.push(
     new Paragraph({
-      text: title,
+      text: displayName,
       heading: HeadingLevel.TITLE,
-      spacing: { after: 400 },
+      spacing: { after: 200 },
     })
   );
 
+  if (contactData) {
+    const contactParts = [contactData.email, contactData.phone, contactData.location, contactData.website].filter(Boolean);
+    if (contactParts.length > 0) {
+      children.push(
+        new Paragraph({
+          children: [new TextRun(contactParts.join(" · "))],
+          spacing: { after: 400 },
+        })
+      );
+    }
+  }
+
   for (const section of sorted) {
+    if (section.type === "contact") continue;
     switch (section.type) {
       case "summary":
         if (section.data.text?.trim()) {
@@ -47,8 +64,11 @@ export function buildDocx(
         break;
 
       case "experience": {
-        const exp = section.data;
-        if (exp.title || exp.company) {
+        const expData = section.data as { entries?: Array<{ title: string; company: string; location?: string; startDate: string; endDate: string; bullets?: string[] }> };
+        const expEntries = expData.entries ?? [section.data as { title: string; company: string; location?: string; startDate: string; endDate: string; bullets?: string[] }];
+        const expList = Array.isArray(expEntries) ? expEntries : [expEntries];
+        const validExp = expList.filter((e) => e.title || e.company);
+        if (validExp.length > 0) {
           children.push(
             new Paragraph({
               text: "Experience",
@@ -56,47 +76,46 @@ export function buildDocx(
               spacing: { before: 300, after: 200 },
             })
           );
-          const dateStr =
-            exp.startDate || exp.endDate
-              ? `${exp.startDate || ""} – ${exp.endDate || "Present"}`
-              : "";
-          children.push(
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: `${exp.title || "Position"} at ${exp.company || ""}`,
-                  bold: true,
-                }),
-                ...(dateStr ? [new TextRun(` (${dateStr})`)] : []),
-              ],
-              spacing: { after: 100 },
-            })
-          );
-          if (exp.location) {
+          for (const exp of validExp) {
+            const dateStr = exp.startDate || exp.endDate ? `${exp.startDate || ""} – ${exp.endDate || "Present"}` : "";
             children.push(
               new Paragraph({
-                children: [new TextRun({ text: exp.location, italics: true })],
+                children: [
+                  new TextRun({ text: `${exp.title || "Position"} at ${exp.company || ""}`, bold: true }),
+                  ...(dateStr ? [new TextRun(` (${dateStr})`)] : []),
+                ],
                 spacing: { after: 100 },
               })
             );
+            if (exp.location) {
+              children.push(
+                new Paragraph({
+                  children: [new TextRun({ text: exp.location, italics: true })],
+                  spacing: { after: 100 },
+                })
+              );
+            }
+            for (const b of exp.bullets?.filter(Boolean) ?? []) {
+              children.push(
+                new Paragraph({
+                  children: [new TextRun(`• ${b}`)],
+                  indent: { left: 720 },
+                  spacing: { after: 80 },
+                })
+              );
+            }
+            children.push(new Paragraph({ text: "", spacing: { after: 200 } }));
           }
-          for (const b of exp.bullets?.filter(Boolean) ?? []) {
-            children.push(
-              new Paragraph({
-                children: [new TextRun(`• ${b}`)],
-                indent: { left: 720 },
-                spacing: { after: 80 },
-              })
-            );
-          }
-          children.push(new Paragraph({ text: "", spacing: { after: 200 } }));
         }
         break;
       }
 
       case "education": {
-        const edu = section.data;
-        if (edu.degree || edu.school) {
+        const eduData = section.data as { entries?: Array<{ degree: string; school: string; location?: string; startDate: string; endDate: string }> };
+        const eduEntries = eduData.entries ?? [section.data as { degree: string; school: string; location?: string; startDate: string; endDate: string }];
+        const eduList = Array.isArray(eduEntries) ? eduEntries : [eduEntries];
+        const validEdu = eduList.filter((e) => e.degree || e.school);
+        if (validEdu.length > 0) {
           children.push(
             new Paragraph({
               text: "Education",
@@ -104,28 +123,27 @@ export function buildDocx(
               spacing: { before: 300, after: 200 },
             })
           );
-          const dateStr =
-            edu.startDate || edu.endDate
-              ? ` (${edu.startDate || ""} – ${edu.endDate || ""})`
-              : "";
-          children.push(
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: `${edu.degree || ""} - ${edu.school || ""}${dateStr}`,
-                  bold: true,
-                }),
-              ],
-              spacing: { after: 100 },
-            })
-          );
-          if (edu.location) {
+          for (const edu of validEdu) {
+            const dateStr = edu.startDate || edu.endDate ? ` (${edu.startDate || ""} – ${edu.endDate || ""})` : "";
             children.push(
               new Paragraph({
-                children: [new TextRun({ text: edu.location, italics: true })],
-                spacing: { after: 200 },
+                children: [
+                  new TextRun({
+                    text: `${edu.degree || ""} - ${edu.school || ""}${dateStr}`,
+                    bold: true,
+                  }),
+                ],
+                spacing: { after: 100 },
               })
             );
+            if (edu.location) {
+              children.push(
+                new Paragraph({
+                  children: [new TextRun({ text: edu.location, italics: true })],
+                  spacing: { after: 200 },
+                })
+              );
+            }
           }
         }
         break;

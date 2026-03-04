@@ -25,6 +25,11 @@ function LoginForm() {
         callbackUrl,
       });
       if (res?.error) {
+        if (res.error.startsWith("2FA_REQUIRED:")) {
+          const token = res.error.split(":")[1];
+          window.location.href = `/login/2fa?token=${token}&callbackUrl=${encodeURIComponent(callbackUrl)}`;
+          return;
+        }
         setError("Invalid email or password");
         setLoading(false);
         return;
@@ -167,6 +172,13 @@ function LoginForm() {
             className="text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
           >
             ← Back to home
+          </Link>
+          <span className="mx-2 text-slate-400">·</span>
+          <Link
+            href="/admin/login"
+            className="text-sm text-slate-500 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+          >
+            Admin sign in
           </Link>
         </p>
       </div>

@@ -1,8 +1,8 @@
-// WBS 3.8, 4.3 – Live preview (template-aware, two-column, font/color customization)
+// WBS 3.8, 4.3 – Live preview (JSON-driven layout from template metadata)
 "use client";
 
 import type { ResumeSection } from "@/types/resume";
-import { getTemplateStyle } from "@/lib/template-styles";
+import { getTemplateStyle, getSidebarSections } from "@/lib/template-styles";
 import { getTemplate } from "@/lib/templates";
 
 interface Props {
@@ -13,10 +13,12 @@ interface Props {
   primaryColor?: string;
   /** Override font: sans | serif | mono */
   fontFamily?: "sans" | "serif" | "mono";
+  /** Font size: small | normal | large */
+  fontSize?: "small" | "normal" | "large";
+  /** Section spacing: compact | normal | spacious */
+  spacing?: "compact" | "normal" | "spacious";
 }
 
-const SIDEBAR_TYPES = ["summary", "skills"] as const;
-const MAIN_TYPES = ["experience", "education", "projects"] as const;
 
 export function ResumePreview({
   sections,
@@ -24,12 +26,15 @@ export function ResumePreview({
   className = "",
   primaryColor,
   fontFamily: fontOverride,
+  fontSize: fontSizeOverride,
+  spacing: spacingOverride,
 }: Props) {
   const sorted = [...sections].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   const style = getTemplateStyle(templateId);
   const template = getTemplate(templateId || "professional-in");
   const accentColor = primaryColor ?? template?.colors?.primary;
   const useTwoColumn = style.columns === "two-column";
+  const sidebarTypes = useTwoColumn ? getSidebarSections(templateId || "professional-in") : [];
   const fontMap = {
     sans: "font-sans",
     serif: "font-serif",
@@ -40,11 +45,17 @@ export function ResumePreview({
       ? fontMap[fontOverride]
       : style.wrapper;
 
+  const sizeMap = { small: "text-xs", normal: "text-sm", large: "text-base" } as const;
+  const textSize = fontSizeOverride && sizeMap[fontSizeOverride] ? sizeMap[fontSizeOverride] : "text-sm";
+
+  const spaceMap = { compact: "space-y-2", normal: "space-y-4", spacious: "space-y-6" } as const;
+  const sectionSpacing = spacingOverride && spaceMap[spacingOverride] ? spaceMap[spacingOverride] : "space-y-4";
+
   const sidebarSections = useTwoColumn
-    ? sorted.filter((s) => SIDEBAR_TYPES.includes(s.type as (typeof SIDEBAR_TYPES)[number]))
+    ? sorted.filter((s) => sidebarTypes.includes(s.type))
     : [];
   const mainSections = useTwoColumn
-    ? sorted.filter((s) => MAIN_TYPES.includes(s.type as (typeof MAIN_TYPES)[number]))
+    ? sorted.filter((s) => !sidebarTypes.includes(s.type))
     : sorted;
 
   return (
@@ -60,20 +71,20 @@ export function ResumePreview({
       {sorted.length === 0 ? (
         <p className="text-slate-400 text-sm italic">Add sections to see preview</p>
       ) : useTwoColumn && (sidebarSections.length > 0 || mainSections.length > 0) ? (
-        <div className="grid grid-cols-[1fr_2fr] gap-8 text-sm">
-          <div className="space-y-4 border-r border-slate-200 pr-6">
+        <div className={`grid grid-cols-[1fr_2fr] gap-8 ${textSize}`}>
+          <div className={`${sectionSpacing} border-r border-slate-200 pr-6`}>
             {sidebarSections.map((section) => (
               <SectionPreview key={section.id} section={section} style={style} />
             ))}
           </div>
-          <div className="space-y-4">
+          <div className={sectionSpacing}>
             {mainSections.map((section) => (
               <SectionPreview key={section.id} section={section} style={style} />
             ))}
           </div>
         </div>
       ) : (
-        <div className="space-y-4 text-sm">
+        <div className={`${sectionSpacing} ${textSize}`}>
           {sorted.map((section) => (
             <SectionPreview key={section.id} section={section} style={style} />
           ))}
@@ -100,6 +111,30 @@ function SectionPreview({
   const accentCls = s.accent;
 
   switch (section.type) {
+    case "contact":
+      const c = section.data;
+      const contactParts = [c.name, c.email, c.phone, c.location, c.website].filter(Boolean);
+      return contactParts.length > 0 ? (
+        <div className={accentCls}>
+          <h2 className="text-lg font-bold text-slate-900 mb-1">{c.name || "Your Name"}</h2>
+          <p className="text-slate-600 text-xs space-x-2">
+            {c.email && <span>{c.email}</span>}
+            {c.phone && <span>· {c.phone}</span>}
+            {c.location && <span>· {c.location}</span>}
+            {c.website && (
+              <a href={c.website} target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:underline">
+                {c.website}
+              </a>
+            )}
+          </p>
+        </div>
+      ) : (
+        <div className={accentCls}>
+          <h2 className="text-lg font-bold text-slate-400 italic">Your Name</h2>
+          <p className="text-slate-400 text-xs italic">Email · Phone · Location</p>
+        </div>
+      );
+
     case "summary":
       return section.data.text ? (
         <div className={accentCls}>
@@ -108,54 +143,68 @@ function SectionPreview({
         </div>
       ) : null;
 
-    case "experience":
+    case "experience": {
+      const expData = section.data as { entries?: Array<{ title: string; company: string; location?: string; startDate: string; endDate: string; current?: boolean; bullets: string[] }> };
+      const expEntries = expData.entries ?? [section.data as { title: string; company: string; location?: string; startDate: string; endDate: string; current?: boolean; bullets: string[] }];
+      const entries = Array.isArray(expEntries) ? expEntries : [expEntries];
       return (
         <div className={accentCls}>
           <h3 className={titleCls}>Experience</h3>
           <div className="space-y-3">
-            <div>
-              <div className="flex justify-between">
-                <span className="font-medium">{section.data.title || "Job Title"}</span>
-                <span className="text-slate-600 text-xs">
-                  {section.data.startDate}
-                  {section.data.endDate && ` – ${section.data.endDate}`}
-                </span>
+            {entries.map((e, i) => (
+              <div key={i}>
+                <div className="flex justify-between">
+                  <span className="font-medium">{e.title || "Job Title"}</span>
+                  <span className="text-slate-600 text-xs">
+                    {e.startDate}
+                    {e.endDate && ` – ${e.endDate}`}
+                  </span>
+                </div>
+                <div className="text-slate-600 text-xs">
+                  {e.company}
+                  {e.location && `, ${e.location}`}
+                </div>
+                {(e.bullets ?? []).filter(Boolean).length > 0 && (
+                  <ul className="mt-2 list-disc list-inside space-y-1 text-slate-700">
+                    {(e.bullets ?? []).filter(Boolean).map((b, j) => (
+                      <li key={j}>{b}</li>
+                    ))}
+                  </ul>
+                )}
               </div>
-              <div className="text-slate-600 text-xs">
-                {section.data.company}
-                {section.data.location && `, ${section.data.location}`}
-              </div>
-              {section.data.bullets.filter(Boolean).length > 0 && (
-                <ul className="mt-2 list-disc list-inside space-y-1 text-slate-700">
-                  {section.data.bullets.filter(Boolean).map((b, i) => (
-                    <li key={i}>{b}</li>
-                  ))}
-                </ul>
-              )}
-            </div>
+            ))}
           </div>
         </div>
       );
+    }
 
-    case "education":
+    case "education": {
+      const eduData = section.data as { entries?: Array<{ degree: string; school: string; location?: string; startDate: string; endDate: string; details?: string }> };
+      const eduEntries = eduData.entries ?? [section.data as { degree: string; school: string; location?: string; startDate: string; endDate: string; details?: string }];
+      const eduList = Array.isArray(eduEntries) ? eduEntries : [eduEntries];
       return (
         <div className={accentCls}>
           <h3 className={titleCls}>Education</h3>
-          <div>
-            <div className="flex justify-between">
-              <span className="font-medium">{section.data.degree || "Degree"}</span>
-              <span className="text-slate-600 text-xs">
-                {section.data.startDate}
-                {section.data.endDate && ` – ${section.data.endDate}`}
-              </span>
-            </div>
-            <div className="text-slate-600 text-xs">
-              {section.data.school}
-              {section.data.location && `, ${section.data.location}`}
-            </div>
+          <div className="space-y-3">
+            {eduList.map((e, i) => (
+              <div key={i}>
+                <div className="flex justify-between">
+                  <span className="font-medium">{e.degree || "Degree"}</span>
+                  <span className="text-slate-600 text-xs">
+                    {e.startDate}
+                    {e.endDate && ` – ${e.endDate}`}
+                  </span>
+                </div>
+                <div className="text-slate-600 text-xs">
+                  {e.school}
+                  {e.location && `, ${e.location}`}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       );
+    }
 
     case "skills":
       const items = section.data.items?.filter(Boolean) ?? [];

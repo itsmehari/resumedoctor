@@ -9,6 +9,7 @@ import { chatCompletion, isAiConfigured } from "@/lib/ai-client";
 const schema = z.object({
   jobDescription: z.string().min(1, "Job description required").max(10000),
   resumeContent: z.string().optional(),
+  tone: z.enum(["formal", "casual", "technical"]).optional(),
 });
 
 export async function POST(
@@ -58,6 +59,13 @@ export async function POST(
         : "";
     }
 
+    const toneMap: Record<string, string> = {
+      formal: "Formal, professional, and polished. Use standard business language, proper salutations (Dear Hiring Manager), and avoid contractions.",
+      casual: "Friendly, conversational, and approachable. You may use contractions and a warmer, less stiff tone while still remaining professional.",
+      technical: "Precise, technically focused, and industry-specific. Emphasize skills, tools, and achievements with concrete terminology. Professional but direct.",
+    };
+    const toneInstruction = toneMap[parsed.data.tone ?? "formal"] ?? toneMap.formal;
+
     const generated = await chatCompletion(
       [
         {
@@ -65,7 +73,8 @@ export async function POST(
           content: `You are a professional cover letter writer. Write a compelling, personalized cover letter that:
 - Addresses the job description and requirements
 - Highlights relevant experience from the resume
-- Is 3-4 short paragraphs, professional tone
+- Is 3-4 short paragraphs
+- Tone: ${toneInstruction}
 - Starts with a strong opening, ends with a call to action
 - Uses "Dear Hiring Manager" unless a name is provided`,
         },

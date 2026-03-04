@@ -11,8 +11,9 @@ export async function GET(
   const result = await getResumeForExport(id);
   if ("error" in result) return result.error;
 
-  const { resume, userId, subscription } = result;
-  const isPro = ["pro_monthly", "pro_annual"].includes(subscription);
+  const { resume, userId, subscription, subscriptionExpiresAt } = result;
+  const { isProSubscription } = await import("@/lib/export-api-helpers");
+  const isPro = isProSubscription(subscription, subscriptionExpiresAt);
   const withWatermark = !isPro;
 
   const sections = resume.content.sections ?? [];

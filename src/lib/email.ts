@@ -52,6 +52,29 @@ export async function sendOtpEmail(email: string, otp: string) {
   return error ? { ok: false, error } : { ok: true, data };
 }
 
+export async function sendEmailChangeVerification(newEmail: string, verifyLink: string, currentEmail: string) {
+  if (!resend) return { ok: false, error: "Email not configured" };
+
+  const { data, error } = await resend.emails.send({
+    from: fromEmail,
+    to: newEmail,
+    subject: `Confirm your new email – ${appName}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2 style="color: #1e293b;">Confirm your new email</h2>
+        <p>You requested to change your ${appName} account email from <strong>${currentEmail}</strong> to this address.</p>
+        <p style="margin: 24px 0;">
+          <a href="${verifyLink}" style="background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block;">Confirm New Email</a>
+        </p>
+        <p style="color: #64748b; font-size: 14px;">Or copy this link: <a href="${verifyLink}">${verifyLink}</a></p>
+        <p style="color: #94a3b8; font-size: 12px; margin-top: 32px;">This link expires in 1 hour. If you didn't request this change, you can ignore this email.</p>
+      </div>
+    `,
+  });
+
+  return error ? { ok: false, error } : { ok: true, data };
+}
+
 export async function sendPasswordResetEmail(email: string, resetLink: string) {
   if (!resend) return { ok: false, error: "Email not configured" };
 

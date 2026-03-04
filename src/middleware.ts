@@ -61,15 +61,25 @@ export async function middleware(req: NextRequest) {
   }
 
   const isAdminPath = adminPaths.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+  const isAdminLoginPage = pathname === "/admin/login";
   if (isAdminPath) {
-    if (!token) {
-      const loginUrl = new URL("/login", req.url);
-      loginUrl.searchParams.set("callbackUrl", pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-    const role = (token as { role?: string }).role;
-    if (role !== "admin") {
+    if (isAdminLoginPage && token) {
+      const role = (token as { role?: string }).role;
+      if (role === "admin") {
+        return NextResponse.redirect(new URL("/admin", req.url));
+      }
       return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
+    if (!isAdminLoginPage && !token) {
+      const adminLoginUrl = new URL("/admin/login", req.url);
+      adminLoginUrl.searchParams.set("callbackUrl", pathname);
+      return NextResponse.redirect(adminLoginUrl);
+    }
+    if (!isAdminLoginPage && token) {
+      const role = (token as { role?: string }).role;
+      if (role !== "admin") {
+        return NextResponse.redirect(new URL("/dashboard", req.url));
+      }
     }
   }
 

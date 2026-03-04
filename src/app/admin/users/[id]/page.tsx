@@ -14,6 +14,7 @@ interface UserDetail {
   role: string;
   subscription: string;
   subscriptionId: string | null;
+  resumePackCredits?: number;
   createdAt: string;
   emailVerified: string | null;
   accounts: Array<{ id: string; provider: string; type: string }>;
@@ -43,6 +44,8 @@ export default function AdminUserDetailPage() {
   const [editRole, setEditRole] = useState("");
   const [editSubscription, setEditSubscription] = useState("");
   const [editName, setEditName] = useState("");
+  const [editPackCredits, setEditPackCredits] = useState(0);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch(`/api/admin/users/${id}`, { credentials: "include" })
@@ -53,6 +56,7 @@ export default function AdminUserDetailPage() {
           setEditRole(u.role);
           setEditSubscription(u.subscription);
           setEditName(u.name ?? "");
+          setEditPackCredits(u.resumePackCredits ?? 0);
         }
       })
       .finally(() => setLoading(false));
@@ -61,6 +65,7 @@ export default function AdminUserDetailPage() {
   const handleSave = async () => {
     if (!user) return;
     setSaving(true);
+    setSaveError(null);
     try {
       const res = await fetch(`/api/admin/users/${id}`, {
         method: "PATCH",
@@ -69,12 +74,18 @@ export default function AdminUserDetailPage() {
           role: editRole,
           subscription: editSubscription,
           name: editName || null,
+          resumePackCredits: editPackCredits,
         }),
       });
       if (res.ok) {
         const updated = await res.json();
         setUser({ ...user, ...updated });
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setSaveError(data.error || "Failed to save changes");
       }
+    } catch {
+      setSaveError("Failed to save changes");
     } finally {
       setSaving(false);
     }
@@ -109,12 +120,20 @@ export default function AdminUserDetailPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Link
-            href={`/admin/view-user/${id}`}
+          <button
+            type="button"
+            onClick={async () => {
+              const res = await fetch(`/api/admin/impersonate?userId=${id}`, {
+                method: "POST",
+                credentials: "include",
+              });
+              if (res.ok) window.location.href = "/dashboard";
+              else alert("Failed to impersonate");
+            }}
             className="flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
           >
-            View as user
-          </Link>
+            Impersonate (View as user)
+          </button>
           <button
             onClick={handleSave}
             disabled={saving}
@@ -131,6 +150,11 @@ export default function AdminUserDetailPage() {
           <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">
             Edit User
           </h2>
+          {saveError && (
+            <div className="mb-4 rounded-lg bg-red-50 dark:bg-red-900/20 px-4 py-3 text-sm text-red-700 dark:text-red-400">
+              {saveError}
+            </div>
+          )}
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
@@ -167,9 +191,23 @@ export default function AdminUserDetailPage() {
               >
                 <option value="free">Free</option>
                 <option value="trial">Trial</option>
+                <option value="pro_trial_14">Pro Trial (14-day ₹1)</option>
                 <option value="pro_monthly">Pro Monthly</option>
                 <option value="pro_annual">Pro Annual</option>
               </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                Resume Pack credits (PDF/DOCX for free users)
+              </label>
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={editPackCredits}
+                onChange={(e) => setEditPackCredits(Math.max(0, parseInt(e.target.value, 10) || 0))}
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100"
+              />
             </div>
           </div>
         </div>

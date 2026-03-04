@@ -4,6 +4,7 @@ import { SessionProvider } from "next-auth/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { ConsentProvider } from "@/contexts/consent-context";
+import { ToastProvider } from "@/contexts/toast-context";
 import { AnalyticsProvider } from "@/components/analytics-provider";
 import { ConsentBanner } from "@/components/consent-banner";
 
@@ -23,9 +24,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <SessionProvider>
       <QueryClientProvider client={queryClient}>
         <ConsentProvider>
-          {children}
-          <AnalyticsProvider />
-          <ConsentBanner />
+          <ToastProvider>
+            {children}
+            <AnalyticsProvider />
+            <ConsentBanner />
+          </ToastProvider>
         </ConsentProvider>
       </QueryClientProvider>
     </SessionProvider>

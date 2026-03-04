@@ -12,6 +12,7 @@ export async function GET() {
       category: t.category,
       colors: t.colors,
       trialAvailable: t.trialAvailable,
+      thumbnailUrl: t.thumbnailUrl ?? `/templates/thumbnails/${t.id}.png`,
     })),
   });
 }

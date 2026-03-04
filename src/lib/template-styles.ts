@@ -57,7 +57,12 @@ export function getTemplateStyle(templateId: string): TemplateStyle {
   if (legacy) return legacy;
 
   const t = getTemplateOrFallback(resolved);
-  const columns = t.layout?.columns ?? "single";
+  const layoutType = t.layout?.layoutType;
+  const columnsFromLayout = t.layout?.columns ?? "single";
+  const columns =
+    layoutType === "two-column" || columnsFromLayout === "two-column"
+      ? "two-column"
+      : "single";
   return {
     wrapper: t.wrapperClass ?? "font-sans",
     heading: "",
@@ -67,4 +72,10 @@ export function getTemplateStyle(templateId: string): TemplateStyle {
       "font-semibold text-slate-900 border-b border-slate-200 pb-1 mb-2",
     columns,
   };
+}
+
+/** WBS 4.3 – Get sidebar section types from template metadata */
+export function getSidebarSections(templateId: string): string[] {
+  const t = getTemplateOrFallback(resolveTemplateId(templateId));
+  return t.layout?.sidebarSections ?? ["contact", "summary", "skills"];
 }

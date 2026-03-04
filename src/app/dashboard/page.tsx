@@ -24,7 +24,7 @@ interface ResumeItem {
 
 function DashboardContent() {
   const { data: session, status } = useSession();
-  const { subscription, isPro, isTrial, displayName } = useSubscription();
+  const { subscription, isPro, isTrial, displayName, isImpersonating } = useSubscription();
   const isAdmin = (session?.user as { role?: string })?.role === "admin";
   const { secondsLeft, expired } = useTrialTimer(isTrial);
   const searchParams = useSearchParams();
@@ -145,7 +145,23 @@ function DashboardContent() {
           <p className="text-slate-500">Loading...</p>
         ) : (
           <>
-            {upgraded && (
+            {isImpersonating && (
+              <div className="mb-6 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 px-4 py-3 flex items-center justify-between gap-3">
+                <span className="text-amber-800 dark:text-amber-200 text-sm font-medium">
+                  Viewing as user (impersonation mode)
+                </span>
+                <button
+                  onClick={async () => {
+                    await fetch("/api/admin/impersonate/end", { method: "POST", credentials: "include" });
+                    window.location.href = "/admin/users";
+                  }}
+                  className="rounded-lg bg-amber-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-700"
+                >
+                  Stop impersonating
+                </button>
+              </div>
+            )}
+            {upgraded && !isImpersonating && (
               <div className="mb-6 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 px-4 py-3 text-green-800 dark:text-green-200 text-sm">
                 You&apos;re now a Pro member. PDF & Word export are unlocked.
               </div>

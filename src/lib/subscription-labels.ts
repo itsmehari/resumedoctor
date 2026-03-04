@@ -5,6 +5,8 @@ export function getSubscriptionLabel(subscription: string): string {
       return "Pro (Monthly)";
     case "pro_annual":
       return "Pro (Annual)";
+    case "pro_trial_14":
+      return "Pro (14-day trial)";
     case "trial":
       return "Trial";
     case "free":

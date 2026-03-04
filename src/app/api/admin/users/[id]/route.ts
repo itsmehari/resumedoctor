@@ -47,8 +47,9 @@ export async function GET(
 
 const updateSchema = z.object({
   role: z.enum(["user", "admin"]).optional(),
-  subscription: z.enum(["free", "trial", "pro_monthly", "pro_annual"]).optional(),
+  subscription: z.enum(["free", "trial", "pro_monthly", "pro_annual", "pro_trial_14"]).optional(),
   name: z.string().min(1).max(100).optional().nullable(),
+  resumePackCredits: z.number().int().min(0).max(100).optional(), // WBS 10.7
 });
 
 export async function PATCH(
@@ -74,9 +75,19 @@ export async function PATCH(
       return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
     }
 
+    const data: Record<string, unknown> = { ...parsed.data };
+    const sub = parsed.data.subscription;
+    if (sub === "pro_trial_14") {
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 14);
+      data.subscriptionExpiresAt = expiresAt;
+    } else if (sub) {
+      data.subscriptionExpiresAt = null;
+    }
+
     const updated = await prisma.user.update({
       where: { id },
-      data: parsed.data as Record<string, unknown>,
+      data,
     });
 
     return NextResponse.json(updated);

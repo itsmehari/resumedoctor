@@ -16,6 +16,8 @@ export interface TemplateColors {
   border?: string;
 }
 
+export type TemplateLayoutType = "single" | "two-column" | "header-split";
+
 export interface TemplateLayout {
   /** Section spacing */
   spacing?: "compact" | "normal" | "spacious";
@@ -25,6 +27,12 @@ export interface TemplateLayout {
   lineHeight?: "tight" | "normal" | "relaxed";
   /** Single or two-column (sidebar) layout */
   columns?: "single" | "two-column";
+  /** WBS 4.1 – Explicit layout type */
+  layoutType?: TemplateLayoutType;
+  /** Section types to show in sidebar (when two-column) */
+  sidebarSections?: string[];
+  /** Optional section display order (default: use content order) */
+  sectionOrder?: string[];
 }
 
 export interface TemplateMetadata {
@@ -52,6 +60,8 @@ export interface TemplateMetadata {
   category?: "professional" | "fresher" | "creative" | "minimal" | "corporate" | "executive" | "modern" | "classic" | "ats" | "tech";
   /** Whether available for trial users */
   trialAvailable?: boolean;
+  /** WBS 4.8 – Thumbnail URL for template selector */
+  thumbnailUrl?: string;
 }
 
 export type TemplateId = string;

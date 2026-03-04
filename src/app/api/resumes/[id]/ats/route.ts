@@ -6,6 +6,7 @@ import { getResumeAuth } from "@/lib/trial-auth";
 import { computeAtsScore } from "@/lib/ats-checker";
 
 const PRO_SUBSCRIPTIONS = ["pro_monthly", "pro_annual"];
+const PRO_TRIAL_14 = "pro_trial_14";
 
 export async function GET(
   _req: Request,
@@ -26,14 +27,18 @@ export async function GET(
   const { id } = await params;
   const resume = await prisma.resume.findFirst({
     where: { id, userId: auth.userId },
-    include: { user: { select: { subscription: true } } },
+    include: { user: { select: { subscription: true, subscriptionExpiresAt: true } } },
   });
 
   if (!resume) {
     return NextResponse.json({ error: "Resume not found" }, { status: 404 });
   }
 
-  const isPro = PRO_SUBSCRIPTIONS.includes(resume.user.subscription);
+  const isPro =
+    PRO_SUBSCRIPTIONS.includes(resume.user.subscription) ||
+    (resume.user.subscription === PRO_TRIAL_14 &&
+      resume.user.subscriptionExpiresAt &&
+      new Date(resume.user.subscriptionExpiresAt) > new Date());
   if (!isPro) {
     return NextResponse.json(
       { error: "Upgrade to Pro for ATS checker", code: "PRO_REQUIRED" },

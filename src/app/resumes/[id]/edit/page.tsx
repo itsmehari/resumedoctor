@@ -8,6 +8,7 @@ import { useResume } from "@/hooks/use-resume";
 import { useSubscription } from "@/hooks/use-subscription";
 import { useTrialTimer } from "@/hooks/use-trial-timer";
 import { SectionList } from "@/components/resume-builder/section-list";
+import { computeResumeProgress } from "@/lib/resume-utils";
 import { ResumePreview } from "@/components/resume-builder/resume-preview";
 import { AddSection } from "@/components/resume-builder/add-section";
 import { ExportButtons } from "@/components/resume-builder/export-buttons";
@@ -20,14 +21,14 @@ export default function EditResumePage() {
   const previewRef = useRef<HTMLDivElement>(null);
   const { resume, loading, saveStatus, updateContent, updateTitle, updateTemplateId } =
     useResume(id);
-  const { isPro, isTrial } = useSubscription();
+  const { isPro, isTrial, resumePackCredits } = useSubscription();
   const { secondsLeft, expired } = useTrialTimer(isTrial);
   const [templates, setTemplates] = useState<Array<{ id: string; name: string }>>([]);
   const [templateOpen, setTemplateOpen] = useState(false);
   const [customizeOpen, setCustomizeOpen] = useState(false);
 
   const meta = resume?.content?.meta ?? {};
-  const handleCustomize = (updates: { primaryColor?: string; fontFamily?: "sans" | "serif" | "mono" }) => {
+  const handleCustomize = (updates: { primaryColor?: string; fontFamily?: "sans" | "serif" | "mono"; fontSize?: "small" | "normal" | "large"; spacing?: "compact" | "normal" | "spacious" }) => {
     if (!resume) return;
     const newMeta = { ...meta, ...updates };
     const newContent = { ...resume.content, meta: newMeta };
@@ -127,6 +128,9 @@ export default function EditResumePage() {
                 {formatTime(secondsLeft)} left
               </span>
             )}
+            <span className="text-sm text-slate-500 dark:text-slate-400" title="Resume completion">
+              {computeResumeProgress(sections)}% complete
+            </span>
             <input
               type="text"
               value={resume.title}
@@ -184,10 +188,10 @@ export default function EditResumePage() {
               {customizeOpen && (
                 <>
                   <div className="fixed inset-0 z-10" onClick={() => setCustomizeOpen(false)} aria-hidden="true" />
-                  <div className="absolute right-0 top-full mt-1 z-20 w-56 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-lg p-3">
+                  <div className="absolute right-0 top-full mt-1 z-20 w-64 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-lg p-3">
                     <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Accent color</p>
                     <div className="flex flex-wrap gap-1 mb-3">
-                      {["#0f172a", "#1e40af", "#059669", "#7c3aed", "#be185d", "#ea580c", "#0d9488", "#1e293b"].map((c) => (
+                      {["#0f172a", "#1e40af", "#059669", "#7c3aed", "#be185d", "#ea580c", "#0d9488", "#1e293b", "#dc2626", "#2563eb", "#16a34a", "#9333ea", "#0891b2", "#ca8a04"].map((c) => (
                         <button
                           key={c}
                           type="button"
@@ -207,7 +211,7 @@ export default function EditResumePage() {
                       </button>
                     </div>
                     <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Font</p>
-                    <div className="flex flex-wrap gap-1">
+                    <div className="flex flex-wrap gap-1 mb-3">
                       {(["sans", "serif", "mono"] as const).map((f) => (
                         <button
                           key={f}
@@ -225,6 +229,32 @@ export default function EditResumePage() {
                       >
                         Default
                       </button>
+                    </div>
+                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Font size</p>
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {(["small", "normal", "large"] as const).map((f) => (
+                        <button
+                          key={f}
+                          type="button"
+                          onClick={() => handleCustomize({ fontSize: meta.fontSize === f ? undefined : f })}
+                          className={`rounded px-2 py-1 text-xs capitalize ${meta.fontSize === f ? "bg-primary-100 text-primary-800 dark:bg-primary-900/50 dark:text-primary-200" : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"}`}
+                        >
+                          {f}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Spacing</p>
+                    <div className="flex flex-wrap gap-1">
+                      {(["compact", "normal", "spacious"] as const).map((s) => (
+                        <button
+                          key={s}
+                          type="button"
+                          onClick={() => handleCustomize({ spacing: meta.spacing === s ? undefined : s })}
+                          className={`rounded px-2 py-1 text-xs capitalize ${meta.spacing === s ? "bg-primary-100 text-primary-800 dark:bg-primary-900/50 dark:text-primary-200" : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"}`}
+                        >
+                          {s}
+                        </button>
+                      ))}
                     </div>
                   </div>
                 </>
@@ -245,6 +275,7 @@ export default function EditResumePage() {
               previewRef={previewRef}
               isPro={isPro}
               isTrial={isTrial}
+              resumePackCredits={resumePackCredits}
             />
             <span
               className={`text-sm ${
@@ -269,7 +300,15 @@ export default function EditResumePage() {
       <main className="flex-1 flex flex-col lg:flex-row overflow-hidden">
         <div className="flex-1 overflow-y-auto p-4 lg:p-6">
           <div className="max-w-2xl mx-auto space-y-6">
-            <SectionList sections={sections} onChange={handleSectionsChange} />
+            {computeResumeProgress(sections) < 30 && sections.length < 4 && (
+              <div className="rounded-xl border border-primary-200 dark:border-primary-800 bg-primary-50/50 dark:bg-primary-900/20 p-4">
+                <h3 className="font-medium text-primary-900 dark:text-primary-100">Quick start</h3>
+                <p className="mt-1 text-sm text-primary-800 dark:text-primary-200">
+                  Add sections below to build your resume. Start with <strong>Contact</strong>, then <strong>Summary</strong>, and <strong>Experience</strong>. Use &quot;+ Add section&quot; to add more.
+                </p>
+              </div>
+            )}
+            <SectionList sections={sections} onChange={handleSectionsChange} resumeId={id} />
             <AddSection sections={sections} onAdd={handleAddSection} />
           </div>
         </div>
@@ -285,6 +324,8 @@ export default function EditResumePage() {
                 templateId={resume.templateId}
                 primaryColor={resume.content?.meta?.primaryColor}
                 fontFamily={resume.content?.meta?.fontFamily}
+                fontSize={resume.content?.meta?.fontSize}
+                spacing={resume.content?.meta?.spacing}
                 className="scale-[0.85] origin-top"
               />
               {(!isPro || isTrial) && (

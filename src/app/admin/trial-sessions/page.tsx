@@ -15,11 +15,19 @@ interface TrialSession {
 export default function AdminTrialSessionsPage() {
   const [sessions, setSessions] = useState<TrialSession[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/trial-sessions", { credentials: "include" })
-      .then((res) => (res.ok ? res.json() : { sessions: [] }))
+      .then((res) => {
+        if (!res.ok) {
+          setError(res.status === 403 ? "Session expired. Please sign in again." : "Failed to load trial sessions.");
+          return { sessions: [] };
+        }
+        return res.json();
+      })
       .then((data) => setSessions(data.sessions ?? []))
+      .catch(() => setError("Failed to load trial sessions."))
       .finally(() => setLoading(false));
   }, []);
 
@@ -40,6 +48,16 @@ export default function AdminTrialSessionsPage() {
         Recent trial sessions and OTP verifications.
       </p>
 
+      {error && (
+        <div className="mt-6 rounded-lg bg-red-50 dark:bg-red-900/20 px-4 py-3 text-sm text-red-700 dark:text-red-400">
+          {error}
+          {error.includes("Session") && (
+            <a href="/admin/login" className="ml-2 underline font-medium">
+              Sign in
+            </a>
+          )}
+        </div>
+      )}
       <div className="mt-6 overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
         <table className="w-full text-sm">
           <thead className="bg-slate-50 dark:bg-slate-800/50">

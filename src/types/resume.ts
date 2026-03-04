@@ -1,6 +1,7 @@
 // WBS 3.1 – Resume content structure (JSON schema)
 
 export type SectionType =
+  | "contact"
   | "summary"
   | "experience"
   | "education"
@@ -13,6 +14,17 @@ export interface BaseSection {
   order: number;
 }
 
+export interface ContactSection extends BaseSection {
+  type: "contact";
+  data: {
+    name: string;
+    email: string;
+    phone: string;
+    location: string;
+    website?: string;
+  };
+}
+
 export interface SummarySection extends BaseSection {
   type: "summary";
   data: {
@@ -20,29 +32,39 @@ export interface SummarySection extends BaseSection {
   };
 }
 
+export interface ExperienceEntry {
+  id: string;
+  title: string;
+  company: string;
+  location?: string;
+  startDate: string;
+  endDate: string;
+  current: boolean;
+  bullets: string[];
+}
+
 export interface ExperienceSection extends BaseSection {
   type: "experience";
-  data: {
-    title: string;
-    company: string;
-    location?: string;
-    startDate: string;
-    endDate: string;
-    current: boolean;
-    bullets: string[];
-  };
+  data:
+    | { entries: ExperienceEntry[] }
+    | (Omit<ExperienceEntry, "id"> & { bullets: string[] }); // legacy single-job
+}
+
+export interface EducationEntry {
+  id: string;
+  degree: string;
+  school: string;
+  location?: string;
+  startDate: string;
+  endDate: string;
+  details?: string;
 }
 
 export interface EducationSection extends BaseSection {
   type: "education";
-  data: {
-    degree: string;
-    school: string;
-    location?: string;
-    startDate: string;
-    endDate: string;
-    details?: string;
-  };
+  data:
+    | { entries: EducationEntry[] }
+    | Omit<EducationEntry, "id">; // legacy single-degree
 }
 
 export interface SkillsSection extends BaseSection {
@@ -66,6 +88,7 @@ export interface ProjectsSection extends BaseSection {
 }
 
 export type ResumeSection =
+  | ContactSection
   | SummarySection
   | ExperienceSection
   | EducationSection
@@ -75,6 +98,10 @@ export type ResumeSection =
 export interface ResumeContentMeta {
   primaryColor?: string;
   fontFamily?: "sans" | "serif" | "mono";
+  fontSize?: "small" | "normal" | "large";
+  spacing?: "compact" | "normal" | "spacious";
+  /** WBS 4.6 – Template version for migration (e.g. "1") */
+  templateVersion?: string;
 }
 
 export interface ResumeContent {
@@ -93,6 +120,92 @@ export const DEFAULT_RESUME_CONTENT: ResumeContent = {
   ],
 };
 
+/** Demo content for trial users – pre-filled sample resume */
+export const DEMO_RESUME_CONTENT: ResumeContent = {
+  sections: [
+    {
+      id: crypto.randomUUID(),
+      type: "contact",
+      order: 0,
+      data: {
+        name: "Priya Sharma",
+        email: "priya.sharma@email.com",
+        phone: "+91 98765 43210",
+        location: "Bangalore, India",
+      },
+    },
+    {
+      id: crypto.randomUUID(),
+      type: "summary",
+      order: 1,
+      data: {
+        text: "Results-driven software engineer with 4+ years of experience building scalable web applications. Skilled in React, Node.js, and cloud platforms. Passionate about clean code and user-centric design.",
+      },
+    },
+    {
+      id: crypto.randomUUID(),
+      type: "experience",
+      order: 2,
+      data: {
+        entries: [
+          {
+            id: crypto.randomUUID(),
+            title: "Senior Software Engineer",
+            company: "Tech Solutions Pvt Ltd",
+            location: "Bangalore",
+            startDate: "Jan 2022",
+            endDate: "Present",
+            current: true,
+            bullets: [
+              "Led migration of legacy app to microservices, reducing deployment time by 40%",
+              "Built real-time dashboard used by 50K+ users",
+              "Mentored 3 junior developers and improved code review practices",
+            ],
+          },
+          {
+            id: crypto.randomUUID(),
+            title: "Software Engineer",
+            company: "StartupXYZ",
+            location: "Remote",
+            startDate: "Jun 2019",
+            endDate: "Dec 2021",
+            current: false,
+            bullets: [
+              "Developed REST APIs serving 1M+ requests/day",
+              "Implemented CI/CD pipeline cutting release cycles by 60%",
+            ],
+          },
+        ],
+      },
+    },
+    {
+      id: crypto.randomUUID(),
+      type: "education",
+      order: 3,
+      data: {
+        entries: [
+          {
+            id: crypto.randomUUID(),
+            degree: "B.Tech Computer Science",
+            school: "IIT Delhi",
+            location: "New Delhi",
+            startDate: "2015",
+            endDate: "2019",
+          },
+        ],
+      },
+    },
+    {
+      id: crypto.randomUUID(),
+      type: "skills",
+      order: 4,
+      data: {
+        items: ["JavaScript", "React", "Node.js", "PostgreSQL", "AWS", "Git"],
+      },
+    },
+  ],
+};
+
 function genId(): string {
   if (typeof crypto !== "undefined" && crypto.randomUUID) {
     return crypto.randomUUID();
@@ -106,6 +219,13 @@ export function createEmptySection(
 ): ResumeSection {
   const id = genId();
   switch (type) {
+    case "contact":
+      return {
+        id,
+        type: "contact",
+        order,
+        data: { name: "", email: "", phone: "", location: "" },
+      };
     case "summary":
       return { id, type: "summary", order, data: { text: "" } };
     case "experience":
@@ -114,12 +234,17 @@ export function createEmptySection(
         type: "experience",
         order,
         data: {
-          title: "",
-          company: "",
-          startDate: "",
-          endDate: "",
-          current: false,
-          bullets: [""],
+          entries: [
+            {
+              id: genId(),
+              title: "",
+              company: "",
+              startDate: "",
+              endDate: "",
+              current: false,
+              bullets: [""],
+            },
+          ],
         },
       };
     case "education":
@@ -128,10 +253,15 @@ export function createEmptySection(
         type: "education",
         order,
         data: {
-          degree: "",
-          school: "",
-          startDate: "",
-          endDate: "",
+          entries: [
+            {
+              id: genId(),
+              degree: "",
+              school: "",
+              startDate: "",
+              endDate: "",
+            },
+          ],
         },
       };
     case "skills":

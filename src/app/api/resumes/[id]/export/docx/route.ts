@@ -26,6 +26,8 @@ export async function GET(
 
   const buffer = await buildDocx(sections, resume.title);
   await logExport(userId, id, "docx");
+  const { consumePackCreditIfNeeded } = await import("@/lib/export-api-helpers");
+  await consumePackCreditIfNeeded(userId);
 
   const filename = `${slugify(resume.title)}-resume.docx`;
   return new NextResponse(new Uint8Array(buffer), {

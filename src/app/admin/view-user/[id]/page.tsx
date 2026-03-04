@@ -6,31 +6,35 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-interface UserData {
-  user: { id: string; email: string; name: string | null };
+interface UserWithResumes {
+  id: string;
+  email: string;
+  name: string | null;
   resumes: Array<{ id: string; title: string; updatedAt: string }>;
 }
 
 export default function AdminViewUserPage() {
   const params = useParams();
   const id = params.id as string;
-  const [data, setData] = useState<UserData | null>(null);
+  const [user, setUser] = useState<UserWithResumes | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch(`/api/admin/users/${id}`, { credentials: "include" })
       .then((r) => (r.ok ? r.json() : null))
-      .then(setData)
+      .then(setUser)
       .finally(() => setLoading(false));
   }, [id]);
 
-  if (loading || !data) {
+  if (loading || !user) {
     return (
       <div className="p-8">
         <p className="text-slate-500">{loading ? "Loading..." : "User not found"}</p>
       </div>
     );
   }
+
+  const resumes = user.resumes ?? [];
 
   return (
     <div className="p-8">
@@ -43,19 +47,19 @@ export default function AdminViewUserPage() {
       </Link>
 
       <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-        View as: {data.user.name || data.user.email}
+        View as: {user.name || user.email}
       </h1>
-      <p className="text-slate-500 mt-1">{data.user.email}</p>
+      <p className="text-slate-500 mt-1">{user.email}</p>
 
       <div className="mt-8 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
         <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">
-          Resumes ({data.resumes.length})
+          Resumes ({resumes.length})
         </h2>
-        {data.resumes.length === 0 ? (
+        {resumes.length === 0 ? (
           <p className="text-sm text-slate-500">No resumes</p>
         ) : (
           <ul className="space-y-2">
-            {data.resumes.map((r) => (
+            {resumes.map((r) => (
               <li key={r.id}>
                 <Link
                   href={`/resumes/${r.id}/edit`}

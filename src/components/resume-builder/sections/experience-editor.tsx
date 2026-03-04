@@ -1,117 +1,335 @@
 "use client";
 
-import type { ExperienceSection } from "@/types/resume";
+// WBS 3.6, 6.5, 6.8 – Experience editor with AI + error handling
+import { useState } from "react";
+import type { ExperienceSection, ExperienceEntry } from "@/types/resume";
+import { MonthYearPicker } from "../month-year-picker";
+import { generateSectionId } from "@/lib/resume-utils";
+import { Sparkles } from "lucide-react";
+import { useToast } from "@/contexts/toast-context";
+
+type ExperienceData = { entries: ExperienceEntry[] };
 
 interface Props {
   data: ExperienceSection["data"];
-  onChange: (data: ExperienceSection["data"]) => void;
+  onChange: (data: ExperienceData) => void;
+  resumeId?: string;
 }
 
-export function ExperienceEditor({ data, onChange }: Props) {
-  const addBullet = () =>
-    onChange({ ...data, bullets: [...data.bullets, ""] });
-  const updateBullet = (i: number, v: string) => {
-    const next = [...data.bullets];
-    next[i] = v;
-    onChange({ ...data, bullets: next });
+function normalizeData(data: ExperienceSection["data"]): ExperienceData {
+  if ("entries" in data && Array.isArray(data.entries)) return data as ExperienceData;
+  const d = data as ExperienceEntry & { bullets: string[] };
+  return {
+    entries: [
+      {
+        id: generateSectionId(),
+        title: d.title || "",
+        company: d.company || "",
+        location: d.location,
+        startDate: d.startDate || "",
+        endDate: d.endDate || "",
+        current: !!d.current,
+        bullets: d.bullets ?? [""],
+      },
+    ],
   };
-  const removeBullet = (i: number) =>
+}
+
+export function ExperienceEditor({ data, onChange, resumeId }: Props) {
+  const { entries } = normalizeData(data);
+  const [improveKey, setImproveKey] = useState<string | null>(null);
+  const [suggestOpen, setSuggestOpen] = useState<number | null>(null);
+  const [suggestLoading, setSuggestLoading] = useState(false);
+  const [suggestJobDesc, setSuggestJobDesc] = useState("");
+  const { toast } = useToast();
+
+  const updateEntry = (index: number, updates: Partial<ExperienceEntry>) => {
+    const next = entries.map((e, i) => (i === index ? { ...e, ...updates } : e));
+    onChange({ entries: next });
+  };
+
+  const addEntry = () => {
     onChange({
-      ...data,
-      bullets: data.bullets.filter((_, j) => j !== i),
+      entries: [
+        ...entries,
+        {
+          id: generateSectionId(),
+          title: "",
+          company: "",
+          startDate: "",
+          endDate: "",
+          current: false,
+          bullets: [""],
+        },
+      ],
     });
+  };
+
+  const removeEntry = (index: number) => {
+    if (entries.length <= 1) return;
+    onChange({ entries: entries.filter((_, i) => i !== index) });
+  };
+
+  async function handleImproveBullet(entryIdx: number, bulletIdx: number) {
+    if (!resumeId) return;
+    const entry = entries[entryIdx];
+    const bullet = entry.bullets[bulletIdx];
+    if (!bullet.trim()) return;
+    const key = `${entryIdx}-${bulletIdx}`;
+    setImproveKey(key);
+    try {
+      const res = await fetch(`/api/resumes/${resumeId}/ai/improve-bullet`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          bullet,
+          context: entry.title && entry.company ? `${entry.title} at ${entry.company}` : undefined,
+        }),
+      });
+      const json = await res.json();
+      if (res.ok && json.bullet) {
+        const next = [...entry.bullets];
+        next[bulletIdx] = json.bullet;
+        updateEntry(entryIdx, { bullets: next });
+      } else if (!res.ok) {
+        if (res.status === 429 && json.code === "RATE_LIMITED") {
+          toast(json.error ?? "AI limit reached", {
+            variant: "error",
+            action: { label: "Upgrade to Pro", href: "/pricing" },
+          });
+        } else {
+          toast(json.error ?? "Failed to improve. Try again.", {
+            variant: "error",
+            action: { label: "Retry", onClick: () => handleImproveBullet(entryIdx, bulletIdx) },
+          });
+        }
+      }
+    } catch {
+      toast("Something went wrong. Try again.", {
+        variant: "error",
+        action: { label: "Retry", onClick: () => handleImproveBullet(entryIdx, bulletIdx) },
+      });
+    } finally {
+      setImproveKey(null);
+    }
+  }
+
+  async function handleSuggestBullets(entryIdx: number) {
+    if (!resumeId || !suggestJobDesc.trim()) return;
+    setSuggestLoading(true);
+    const entry = entries[entryIdx];
+    try {
+      const res = await fetch(`/api/resumes/${resumeId}/ai/suggest-bullets`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jobDescription: suggestJobDesc,
+          role: entry.title || undefined,
+          company: entry.company || undefined,
+          existingBullets: entry.bullets.filter(Boolean),
+        }),
+      });
+      const json = await res.json();
+      if (res.ok && json.bullets?.length) {
+        const existing = entry.bullets.filter(Boolean);
+        const toAdd = json.bullets.slice(0, Math.max(0, 6 - existing.length));
+        updateEntry(entryIdx, { bullets: [...existing, ...toAdd].length ? [...existing, ...toAdd] : [...existing, ""] });
+        setSuggestOpen(null);
+        setSuggestJobDesc("");
+      } else if (!res.ok) {
+        if (res.status === 429 && json.code === "RATE_LIMITED") {
+          toast(json.error ?? "AI limit reached", {
+            variant: "error",
+            action: { label: "Upgrade to Pro", href: "/pricing" },
+          });
+        } else {
+          toast(json.error ?? "Failed to suggest. Try again.", {
+            variant: "error",
+            action: { label: "Retry", onClick: () => handleSuggestBullets(entryIdx) },
+          });
+        }
+      }
+    } catch {
+      toast("Something went wrong. Try again.", {
+        variant: "error",
+        action: { label: "Retry", onClick: () => handleSuggestBullets(entryIdx) },
+      });
+    } finally {
+      setSuggestLoading(false);
+    }
+  }
 
   return (
-    <div className="space-y-3">
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="block text-xs font-medium text-slate-600">Job title</label>
-          <input
-            type="text"
-            value={data.title}
-            onChange={(e) => onChange({ ...data, title: e.target.value })}
-            placeholder="Software Engineer"
-            className="mt-0.5 block w-full rounded border border-slate-300 px-2 py-1.5 text-sm"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-slate-600">Company</label>
-          <input
-            type="text"
-            value={data.company}
-            onChange={(e) => onChange({ ...data, company: e.target.value })}
-            placeholder="Acme Inc"
-            className="mt-0.5 block w-full rounded border border-slate-300 px-2 py-1.5 text-sm"
-          />
-        </div>
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="block text-xs font-medium text-slate-600">Start date</label>
-          <input
-            type="text"
-            value={data.startDate}
-            onChange={(e) => onChange({ ...data, startDate: e.target.value })}
-            placeholder="Jan 2022"
-            className="mt-0.5 block w-full rounded border border-slate-300 px-2 py-1.5 text-sm"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-slate-600">End date</label>
-          <input
-            type="text"
-            value={data.endDate}
-            onChange={(e) => onChange({ ...data, endDate: e.target.value })}
-            placeholder="Present"
-            disabled={data.current}
-            className="mt-0.5 block w-full rounded border border-slate-300 px-2 py-1.5 text-sm disabled:opacity-50"
-          />
-          <label className="mt-1 flex items-center gap-1 text-xs">
-            <input
-              type="checkbox"
-              checked={data.current}
-              onChange={(e) =>
-                onChange({
-                  ...data,
-                  current: e.target.checked,
-                  endDate: e.target.checked ? "Present" : data.endDate,
-                })
-              }
-            />
-            Current role
-          </label>
-        </div>
-      </div>
-      <div>
-        <label className="block text-xs font-medium text-slate-600 mb-1">
-          Key achievements
-        </label>
-        {data.bullets.map((b, i) => (
-          <div key={i} className="flex gap-2 mb-2">
+    <div className="space-y-6">
+      {entries.map((entry, idx) => (
+        <div key={entry.id} className="rounded-lg border border-slate-200 dark:border-slate-600 p-4 space-y-3">
+          <div className="flex justify-between items-center">
+            <span className="text-xs font-medium text-slate-500">Job {idx + 1}</span>
+            {entries.length > 1 && (
+              <button
+                type="button"
+                onClick={() => removeEntry(idx)}
+                className="text-xs text-red-600 hover:text-red-700 dark:text-red-400"
+              >
+                Remove
+              </button>
+            )}
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400">Job title</label>
+              <input
+                type="text"
+                value={entry.title}
+                onChange={(e) => updateEntry(idx, { title: e.target.value })}
+                placeholder="Software Engineer"
+                className="mt-0.5 block w-full rounded border border-slate-300 dark:border-slate-600 px-2 py-1.5 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400">Company</label>
+              <input
+                type="text"
+                value={entry.company}
+                onChange={(e) => updateEntry(idx, { company: e.target.value })}
+                placeholder="Acme Inc"
+                className="mt-0.5 block w-full rounded border border-slate-300 dark:border-slate-600 px-2 py-1.5 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 dark:text-slate-400">Location (optional)</label>
             <input
               type="text"
-              value={b}
-              onChange={(e) => updateBullet(i, e.target.value)}
-              placeholder="Achieved X by doing Y..."
-              className="flex-1 rounded border border-slate-300 px-2 py-1.5 text-sm"
+              value={entry.location ?? ""}
+              onChange={(e) => updateEntry(idx, { location: e.target.value || undefined })}
+              placeholder="Chennai, India"
+              className="mt-0.5 block w-full rounded border border-slate-300 dark:border-slate-600 px-2 py-1.5 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
             />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400">Start date</label>
+              <MonthYearPicker
+                value={entry.startDate}
+                onChange={(v) => updateEntry(idx, { startDate: v })}
+                placeholder="Jan 2022"
+                className="mt-0.5"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400">End date</label>
+              <MonthYearPicker
+                value={entry.endDate}
+                onChange={(v) => updateEntry(idx, { endDate: v })}
+                placeholder="Present"
+                disabled={entry.current}
+              />
+              <label className="mt-1 flex items-center gap-1 text-xs text-slate-600 dark:text-slate-400">
+                <input
+                  type="checkbox"
+                  checked={entry.current}
+                  onChange={(e) =>
+                    updateEntry(idx, {
+                      current: e.target.checked,
+                      endDate: e.target.checked ? "Present" : entry.endDate,
+                    })
+                  }
+                />
+                Current role
+              </label>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400">Key achievements</label>
+              {resumeId && (
+                <button
+                  type="button"
+                  onClick={() => setSuggestOpen(suggestOpen === idx ? null : idx)}
+                  className="text-xs text-primary-600 hover:underline dark:text-primary-400 flex items-center gap-0.5"
+                >
+                  <Sparkles className="h-3 w-3" />
+                  Suggest bullets
+                </button>
+              )}
+            </div>
+            {suggestOpen === idx && resumeId && (
+              <div className="mb-3 p-2 rounded border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/50">
+                <textarea
+                  value={suggestJobDesc}
+                  onChange={(e) => setSuggestJobDesc(e.target.value)}
+                  placeholder="Paste job description here..."
+                  rows={3}
+                  className="w-full rounded border border-slate-300 dark:border-slate-600 px-2 py-1.5 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 mb-2"
+                />
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleSuggestBullets(idx)}
+                    disabled={suggestLoading || !suggestJobDesc.trim()}
+                    className="text-xs px-2 py-1 rounded bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-50"
+                  >
+                    {suggestLoading ? "Suggesting..." : "Generate"}
+                  </button>
+                  <button type="button" onClick={() => { setSuggestOpen(null); setSuggestJobDesc(""); }} className="text-xs text-slate-500 hover:underline">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+            {entry.bullets.map((b, i) => (
+              <div key={i} className="flex gap-2 mb-2">
+                <input
+                  type="text"
+                  value={b}
+                  onChange={(e) => {
+                    const next = [...entry.bullets];
+                    next[i] = e.target.value;
+                    updateEntry(idx, { bullets: next });
+                  }}
+                  placeholder="Achieved X by doing Y..."
+                  className="flex-1 rounded border border-slate-300 dark:border-slate-600 px-2 py-1.5 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                />
+                <div className="flex items-center gap-0.5">
+                  {resumeId && b.trim() && (
+                    <button
+                      type="button"
+                      onClick={() => handleImproveBullet(idx, i)}
+                      disabled={improveKey === `${idx}-${i}`}
+                      title="Improve with AI"
+                      className="text-primary-600 hover:text-primary-700 dark:text-primary-400 p-1 disabled:opacity-50"
+                    >
+                      <Sparkles className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => updateEntry(idx, { bullets: entry.bullets.filter((_, j) => j !== i) })}
+                    className="text-red-600 hover:text-red-700 dark:text-red-400 text-sm p-1"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+            ))}
             <button
               type="button"
-              onClick={() => removeBullet(i)}
-              className="text-red-600 hover:text-red-700 text-sm"
+              onClick={() => updateEntry(idx, { bullets: [...entry.bullets, ""] })}
+              className="text-xs text-primary-600 hover:underline dark:text-primary-400"
             >
-              ×
+              + Add bullet
             </button>
           </div>
-        ))}
-        <button
-          type="button"
-          onClick={addBullet}
-          className="text-xs text-primary-600 hover:underline"
-        >
-          + Add bullet
-        </button>
-      </div>
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={addEntry}
+        className="text-sm text-primary-600 hover:underline dark:text-primary-400"
+      >
+        + Add another job
+      </button>
     </div>
   );
 }

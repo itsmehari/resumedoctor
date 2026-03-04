@@ -1,8 +1,10 @@
 "use client";
 
+// WBS 11.4, 11.6 – Admin dashboard with template usage stats
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Users, FileText, Download, TrendingUp, BarChart3 } from "lucide-react";
+import { getTemplateDisplayName } from "@/lib/subscription-labels";
 
 interface Stats {
   totalUsers: number;
@@ -59,6 +61,7 @@ export default function AdminPage() {
     { label: "Total Resumes", value: stats.totalResumes, icon: FileText },
     { label: "Total Exports", value: stats.totalExports, icon: Download, href: "/admin/export-logs" },
     { label: "Trial Users", value: stats.trialCount, icon: TrendingUp, href: "/admin/trial-sessions" },
+    { label: "Trial Activations", value: "-", icon: BarChart3, href: "/admin/trial-activations" },
   ];
 
   return (
@@ -128,12 +131,12 @@ export default function AdminPage() {
             Users by Plan
           </h2>
           <div className="space-y-2">
-            {Object.entries(stats.planBreakdown).map(([plan, count]) => (
+            {Object.entries(stats.planBreakdown ?? {}).map(([plan, count]) => (
               <div
                 key={plan}
                 className="flex justify-between text-sm text-slate-600 dark:text-slate-400"
               >
-                <span className="capitalize">{plan.replace("_", " ")}</span>
+                <span className="capitalize">{(plan ?? "free").replace(/_/g, " ")}</span>
                 <span className="font-medium text-slate-900 dark:text-slate-100">
                   {count}
                 </span>
@@ -151,11 +154,15 @@ export default function AdminPage() {
               <div className="space-y-2">
                 {Object.entries(analytics.templateUsage)
                   .sort((a, b) => b[1] - a[1])
-                  .slice(0, 8)
+                  .slice(0, 10)
                   .map(([id, count]) => (
-                    <div key={id} className="flex justify-between text-sm">
-                      <span className="text-slate-600 dark:text-slate-400 truncate max-w-[200px]">{id}</span>
-                      <span className="font-medium">{count}</span>
+                    <div key={id} className="flex justify-between text-sm gap-2">
+                      <span className="text-slate-600 dark:text-slate-400 truncate min-w-0" title={id}>
+                        {getTemplateDisplayName(id)}
+                      </span>
+                      <span className="font-medium text-slate-900 dark:text-slate-100 shrink-0">
+                        {count}
+                      </span>
                     </div>
                   ))}
               </div>
@@ -167,11 +174,11 @@ export default function AdminPage() {
             <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">
               Recent Signups
             </h2>
-          {stats.recentSignups.length === 0 ? (
+          {(stats.recentSignups ?? []).length === 0 ? (
             <p className="text-sm text-slate-500">No users yet</p>
           ) : (
             <div className="space-y-3">
-              {stats.recentSignups.map((u) => (
+              {(stats.recentSignups ?? []).map((u) => (
                 <Link
                   key={u.id}
                   href={`/admin/users/${u.id}`}
@@ -181,7 +188,7 @@ export default function AdminPage() {
                     {u.name || u.email}
                   </span>
                   <span className="text-xs text-slate-500 capitalize ml-2">
-                    {u.subscription.replace("_", " ")}
+                    {(u.subscription ?? "free").replace(/_/g, " ")}
                   </span>
                 </Link>
               ))}

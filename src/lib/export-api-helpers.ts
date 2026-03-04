@@ -5,6 +5,7 @@ import { parseResumeContent } from "@/lib/resume-utils";
 import { getResumeAuth } from "@/lib/trial-auth";
 
 const PRO_SUBSCRIPTIONS = ["pro_monthly", "pro_annual"];
+const PRO_TRIAL_14 = "pro_trial_14";
 
 export async function getResumeForExport(
   resumeId: string,
@@ -27,7 +28,7 @@ export async function getResumeForExport(
 
   const resume = await prisma.resume.findFirst({
     where: { id: resumeId, userId: auth.userId },
-    include: { user: { select: { id: true, subscription: true } } },
+    include: { user: { select: { id: true, subscription: true, subscriptionExpiresAt: true, resumePackCredits: true } } },
   });
 
   if (!resume) {
@@ -35,8 +36,13 @@ export async function getResumeForExport(
   }
 
   if (options?.requirePro) {
-    const isPro = PRO_SUBSCRIPTIONS.includes(resume.user.subscription);
-    if (!isPro) {
+    const isPro =
+      PRO_SUBSCRIPTIONS.includes(resume.user.subscription) ||
+      (resume.user.subscription === PRO_TRIAL_14 &&
+        resume.user.subscriptionExpiresAt &&
+        new Date(resume.user.subscriptionExpiresAt) > new Date());
+    const hasPackCredits = (resume.user.resumePackCredits ?? 0) > 0;
+    if (!isPro && !hasPackCredits) {
       return {
         error: NextResponse.json(
           { error: "Upgrade to Pro to export PDF or Word", code: "PRO_REQUIRED" },
@@ -51,11 +57,20 @@ export async function getResumeForExport(
     resume: { ...resume, content },
     userId: resume.user.id,
     subscription: resume.user.subscription,
+    subscriptionExpiresAt: resume.user.subscriptionExpiresAt,
+    resumePackCredits: resume.user.resumePackCredits ?? 0,
   };
 }
 
-export function isProSubscription(subscription: string): boolean {
-  return PRO_SUBSCRIPTIONS.includes(subscription);
+export function isProSubscription(
+  subscription: string,
+  subscriptionExpiresAt?: Date | string | null
+): boolean {
+  if (PRO_SUBSCRIPTIONS.includes(subscription)) return true;
+  if (subscription === PRO_TRIAL_14 && subscriptionExpiresAt) {
+    return new Date(subscriptionExpiresAt) > new Date();
+  }
+  return false;
 }
 
 export async function logExport(
@@ -66,4 +81,26 @@ export async function logExport(
   await prisma.exportLog.create({
     data: { userId, resumeId, format },
   });
+}
+
+/** WBS 10.7 – Consume one Resume Pack credit for PDF/DOCX (free users only) */
+export async function consumePackCreditIfNeeded(userId: string): Promise<boolean> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { subscription: true, subscriptionExpiresAt: true, resumePackCredits: true },
+  });
+  if (!user) return false;
+  const isPro =
+    PRO_SUBSCRIPTIONS.includes(user.subscription) ||
+    (user.subscription === PRO_TRIAL_14 &&
+      user.subscriptionExpiresAt &&
+      new Date(user.subscriptionExpiresAt) > new Date());
+  if (isPro) return false; // Pro users don't use credits
+  const credits = user.resumePackCredits ?? 0;
+  if (credits <= 0) return false;
+  await prisma.user.update({
+    where: { id: userId },
+    data: { resumePackCredits: { decrement: 1 } },
+  });
+  return true;
 }

@@ -1,9 +1,8 @@
-// WBS 5.7 – Log export for client-side actions (e.g. PDF)
+// WBS 5.7, 10.7 – Log export for client-side PDF (also consumes pack credit if applicable)
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { getResumeAuth } from "@/lib/trial-auth";
+import { getResumeForExport, consumePackCreditIfNeeded, logExport } from "@/lib/export-api-helpers";
 
 const schema = z.object({
   format: z.enum(["pdf"]),
@@ -13,8 +12,8 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
+  const auth = await getResumeAuth();
+  if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -28,18 +27,12 @@ export async function POST(
     );
   }
 
-  const resume = await prisma.resume.findFirst({
-    where: { id, user: { email: session.user.email } },
-    select: { userId: true },
-  });
+  const result = await getResumeForExport(id, { requirePro: true });
+  if ("error" in result) return result.error;
 
-  if (!resume) {
-    return NextResponse.json({ error: "Resume not found" }, { status: 404 });
-  }
-
-  await prisma.exportLog.create({
-    data: { userId: resume.userId, resumeId: id, format: parsed.data.format },
-  });
+  const { userId } = result;
+  await logExport(userId, id, "pdf");
+  await consumePackCreditIfNeeded(userId);
 
   return NextResponse.json({ success: true });
 }

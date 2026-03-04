@@ -25,6 +25,7 @@ npx prisma db execute --stdin <<< "UPDATE \"User\" SET role = 'admin' WHERE emai
 
 ## Admin Routes
 
+- `/admin/login` – Admin sign in (credentials only, no OAuth)
 - `/admin` – Overview (stats, recent signups)
 - `/admin/users` – User list (search, filter, pagination)
 - `/admin/users/[id]` – User detail (edit role, plan, view resumes/exports)
@@ -34,3 +35,8 @@ npx prisma db execute --stdin <<< "UPDATE \"User\" SET role = 'admin' WHERE emai
 ## Access
 
 Only users with `role: "admin"` can access `/admin/*`. Non-admins are redirected to `/dashboard`.
+
+## Login Distinction
+
+- **User login** (`/login`) – For regular users. Supports credentials and OAuth (Google, LinkedIn). Redirects to `/dashboard`.
+- **Admin login** (`/admin/login`) – For administrators only. Credentials (email/password) only. Non-admin accounts get "Access denied" and are signed out. Unauthenticated access to any `/admin/*` (except login) redirects to `/admin/login`.

@@ -31,9 +31,11 @@ export default function AdminUsersPage() {
   const [subscriptionFilter, setSubscriptionFilter] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [page, setPage] = useState(1);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchUsers = () => {
     setLoading(true);
+    setError(null);
     const params = new URLSearchParams();
     params.set("page", String(page));
     params.set("limit", "20");
@@ -41,11 +43,19 @@ export default function AdminUsersPage() {
     if (subscriptionFilter) params.set("subscription", subscriptionFilter);
     if (roleFilter) params.set("role", roleFilter);
     fetch(`/api/admin/users?${params}`, { credentials: "include" })
-      .then((res) => (res.ok ? res.json() : { users: [], pagination: null }))
-      .then(({ users: u, pagination: p }) => {
-        setUsers(u);
-        setPagination(p);
+      .then((res) => {
+        if (!res.ok) {
+          if (res.status === 403) setError("Session expired. Please sign in again.");
+          else setError("Failed to load users.");
+          return { users: [], pagination: null };
+        }
+        return res.json();
       })
+      .then(({ users: u, pagination: p }) => {
+        setUsers(u ?? []);
+        setPagination(p ?? null);
+      })
+      .catch(() => setError("Failed to load users."))
       .finally(() => setLoading(false));
   };
 
@@ -89,6 +99,7 @@ export default function AdminUsersPage() {
           <option value="free">Free</option>
           <option value="trial">Trial</option>
           <option value="pro_monthly">Pro Monthly</option>
+          <option value="pro_trial_14">Pro Trial (14-day)</option>
           <option value="pro_annual">Pro Annual</option>
         </select>
         <select
@@ -108,10 +119,24 @@ export default function AdminUsersPage() {
         </button>
       </form>
 
+      {error && (
+        <div className="mt-6 rounded-lg bg-red-50 dark:bg-red-900/20 px-4 py-3 text-sm text-red-700 dark:text-red-400">
+          {error}
+          {error.includes("Session") && (
+            <a href="/admin/login" className="ml-2 underline font-medium">
+              Sign in
+            </a>
+          )}
+        </div>
+      )}
       {loading ? (
         <p className="mt-8 text-slate-500">Loading...</p>
       ) : (
         <>
+          {!error && users.length === 0 && (
+            <p className="mt-6 text-slate-500">No users found.</p>
+          )}
+          {!error && users.length > 0 && (
           <div className="mt-6 overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
             <table className="w-full text-sm">
               <thead className="bg-slate-50 dark:bg-slate-800/50">
@@ -140,7 +165,7 @@ export default function AdminUsersPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="capitalize">{u.subscription.replace("_", " ")}</span>
+                      <span className="capitalize">{(u.subscription ?? "free").replace(/_/g, " ")}</span>
                     </td>
                     <td className="px-4 py-3">
                       <span
@@ -172,7 +197,8 @@ export default function AdminUsersPage() {
             </table>
           </div>
 
-          {pagination && pagination.totalPages > 1 && (
+          )}
+          {!error && pagination && pagination.totalPages > 1 && (
             <div className="mt-4 flex items-center justify-between">
               <p className="text-sm text-slate-500">
                 Page {pagination.page} of {pagination.totalPages} ({pagination.total} users)

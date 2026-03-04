@@ -1,9 +1,7 @@
-// WBS 5.5 – Subscription status for export gating (includes trial)
+// WBS 5.5 – Subscription status for export gating (includes trial, pro_trial_14)
 "use client";
 
 import { useEffect, useState } from "react";
-
-const PRO_SUBSCRIPTIONS = ["pro_monthly", "pro_annual"];
 
 export function useSubscription(): {
   subscription: string;
@@ -11,29 +9,40 @@ export function useSubscription(): {
   isTrial: boolean;
   loading: boolean;
   displayName: string | null;
+  subscriptionExpiresAt: string | null;
+  isImpersonating: boolean;
+  resumePackCredits: number;
 } {
   const [subscription, setSubscription] = useState("free");
+  const [isPro, setIsPro] = useState(false);
   const [isTrial, setIsTrial] = useState(false);
   const [displayName, setDisplayName] = useState<string | null>(null);
+  const [subscriptionExpiresAt, setSubscriptionExpiresAt] = useState<string | null>(null);
+  const [isImpersonating, setIsImpersonating] = useState(false);
+  const [resumePackCredits, setResumePackCredits] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/user/profile", { credentials: "include" })
-      .then((res) => (res.ok ? res.json() : { subscription: "free", isTrial: false }))
+      .then((res) => (res.ok ? res.json() : { subscription: "free", isTrial: false, isPro: false }))
       .then((data) => {
         setSubscription(data.subscription ?? "free");
+        setIsPro(data.isPro === true);
         setIsTrial(data.isTrial === true);
         setDisplayName(data.name || data.email || null);
+        setSubscriptionExpiresAt(data.subscriptionExpiresAt ?? null);
+        setIsImpersonating(data.isImpersonating === true);
+        setResumePackCredits(data.resumePackCredits ?? 0);
       })
       .catch(() => {
         setSubscription("free");
+        setIsPro(false);
         setIsTrial(false);
         setDisplayName(null);
+        setIsImpersonating(false);
       })
       .finally(() => setLoading(false));
   }, []);
 
-  const isPro = PRO_SUBSCRIPTIONS.includes(subscription);
-
-  return { subscription, isPro, isTrial, loading, displayName };
+  return { subscription, isPro, isTrial, loading, displayName, subscriptionExpiresAt, isImpersonating, resumePackCredits };
 }

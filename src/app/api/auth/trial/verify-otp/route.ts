@@ -7,6 +7,7 @@ import { createTrialToken, getTrialCookieName } from "@/lib/trial-jwt";
 import { subMinutes } from "date-fns";
 
 const TRIAL_DURATION_MINUTES = 5;
+const TRIAL_EXTEND_MINUTES = 3; // extra time for returning trial users
 const MAX_VERIFY_ATTEMPTS = 5;
 const LOCKOUT_MINUTES = 15;
 
@@ -91,8 +92,19 @@ export async function POST(req: Request) {
       },
     });
 
+    // Extend trial for returning trial users (had a verified trial session before)
+    const previousTrial = await prisma.trialSession.count({
+      where: {
+        email: normalizedEmail,
+        verifiedAt: { not: null },
+        id: { not: trialSession.id },
+      },
+    });
+    const extraMinutes = previousTrial > 0 ? TRIAL_EXTEND_MINUTES : 0;
+    const totalMinutes = TRIAL_DURATION_MINUTES + extraMinutes;
+
     const sessionExpiresAt = new Date(
-      Date.now() + TRIAL_DURATION_MINUTES * 60 * 1000
+      Date.now() + totalMinutes * 60 * 1000
     );
 
     // Create or find trial User
@@ -149,7 +161,7 @@ export async function POST(req: Request) {
       "Path=/",
       "HttpOnly",
       "SameSite=Lax",
-      `Max-Age=${TRIAL_DURATION_MINUTES * 60}`,
+      `Max-Age=${totalMinutes * 60}`,
       ...(isProd ? ["Secure"] : []),
     ].join("; ");
 

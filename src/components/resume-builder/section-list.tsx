@@ -23,9 +23,11 @@ import { SortableSection } from "./sortable-section";
 interface Props {
   sections: ResumeSection[];
   onChange: (sections: ResumeSection[]) => void;
+  resumeId?: string;
 }
 
 const SECTION_LABELS: Record<ResumeSection["type"], string> = {
+  contact: "Contact",
   summary: "Summary",
   experience: "Experience",
   education: "Education",
@@ -33,7 +35,7 @@ const SECTION_LABELS: Record<ResumeSection["type"], string> = {
   projects: "Projects",
 };
 
-export function SectionList({ sections, onChange }: Props) {
+export function SectionList({ sections, onChange, resumeId }: Props) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
@@ -81,6 +83,7 @@ export function SectionList({ sections, onChange }: Props) {
                 section={section}
                 onChange={(updated) => updateSection(section.id, updated)}
                 onRemove={() => removeSection(section.id)}
+                resumeId={resumeId}
               />
             </SortableSection>
           ))}

@@ -24,15 +24,23 @@ function extractText(sections: ResumeSection[]): string {
   for (const s of sections) {
     if (s.type === "summary" && s.data.text) parts.push(s.data.text);
     if (s.type === "experience") {
-      const d = s.data;
-      if (d.title) parts.push(d.title);
-      if (d.company) parts.push(d.company);
-      if (d.bullets) parts.push(...d.bullets);
+      const d = s.data as { entries?: Array<{ title: string; company: string; bullets?: string[] }> };
+      const entries = d.entries ?? [d as { title: string; company: string; bullets?: string[] }];
+      const expList = Array.isArray(entries) ? entries : [entries];
+      for (const e of expList) {
+        if (e.title) parts.push(e.title);
+        if (e.company) parts.push(e.company);
+        if (e.bullets) parts.push(...e.bullets);
+      }
     }
     if (s.type === "education") {
-      const d = s.data;
-      if (d.degree) parts.push(d.degree);
-      if (d.school) parts.push(d.school);
+      const d = s.data as { entries?: Array<{ degree: string; school: string }> };
+      const entries = d.entries ?? [d as { degree: string; school: string }];
+      const eduList = Array.isArray(entries) ? entries : [entries];
+      for (const e of eduList) {
+        if (e.degree) parts.push(e.degree);
+        if (e.school) parts.push(e.school);
+      }
     }
     if (s.type === "skills" && s.data.items) parts.push(...s.data.items);
     if (s.type === "projects") {
@@ -84,7 +92,12 @@ export function computeAtsScore(sections: ResumeSection[]): AtsResult {
   // Bullet points (action-oriented)
   let bulletCount = 0;
   for (const s of expSections) {
-    bulletCount += (s.data.bullets?.filter(Boolean).length ?? 0);
+    const d = s.data as { entries?: Array<{ bullets?: string[] }> };
+    const entries = d.entries ?? [d as { bullets?: string[] }];
+    const expList = Array.isArray(entries) ? entries : [entries];
+    for (const e of expList) {
+      bulletCount += (e.bullets?.filter(Boolean).length ?? 0);
+    }
   }
   const hasGoodBullets = bulletCount >= 3;
   checks.push({ name: "Achievement bullets (3+)", pass: hasGoodBullets, detail: `${bulletCount} bullets` });

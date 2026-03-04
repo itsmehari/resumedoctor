@@ -1,13 +1,49 @@
 "use client";
 
-// WBS 4.4 – Template selector UI (5 Indian-style templates)
+// WBS 4.4, 4.8e – Template selector UI
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { ResumePreview } from "@/components/resume-builder/resume-preview";
-import { DEFAULT_RESUME_CONTENT } from "@/types/resume";
+import { DEFAULT_RESUME_CONTENT, type ResumeSection } from "@/types/resume";
 import { trackEvent } from "@/lib/analytics";
+
+function TemplateThumbnail({
+  templateId,
+  thumbnailUrl,
+  primaryColor,
+  sections,
+}: {
+  templateId: string;
+  thumbnailUrl?: string;
+  primaryColor: string;
+  sections: ResumeSection[];
+}) {
+  const [imgFailed, setImgFailed] = useState(false);
+  const useImg = thumbnailUrl && !imgFailed;
+  return (
+    <div className="w-full h-full flex items-center justify-center min-h-0">
+      {useImg ? (
+        <img
+          src={thumbnailUrl}
+          alt=""
+          className="max-w-full max-h-full object-contain"
+          onError={() => setImgFailed(true)}
+        />
+      ) : (
+        <div className="w-full max-w-[200px] scale-75 origin-center">
+          <ResumePreview
+            sections={sections}
+            templateId={templateId}
+            primaryColor={primaryColor}
+            className="shadow-md"
+          />
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface TemplateInfo {
   id: string;
@@ -17,14 +53,30 @@ interface TemplateInfo {
   category?: string;
   colors: { primary: string };
   trialAvailable?: boolean;
+  thumbnailUrl?: string;
 }
+
+const CATEGORIES = [
+  { value: "", label: "All categories" },
+  { value: "professional", label: "Professional" },
+  { value: "modern", label: "Modern" },
+  { value: "creative", label: "Creative" },
+  { value: "classic", label: "Classic" },
+  { value: "minimal", label: "Minimal" },
+  { value: "ats", label: "ATS" },
+  { value: "fresher", label: "Fresher" },
+  { value: "tech", label: "Tech" },
+  { value: "executive", label: "Executive" },
+];
 
 export default function TemplatesPage() {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [templates, setTemplates] = useState<TemplateInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [createLoading, setCreateLoading] = useState<string | null>(null);
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [previewTemplate, setPreviewTemplate] = useState<TemplateInfo | null>(null);
 
   useEffect(() => {
     fetch("/api/templates", { credentials: "include" })
@@ -60,6 +112,9 @@ export default function TemplatesPage() {
   };
 
   const sampleSections = DEFAULT_RESUME_CONTENT.sections;
+  const filteredTemplates = categoryFilter
+    ? templates.filter((t) => (t.category ?? "").toLowerCase() === categoryFilter.toLowerCase())
+    : templates;
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-900/50">
@@ -94,25 +149,43 @@ export default function TemplatesPage() {
             ATS-friendly designs for the Indian job market. Choose a template and start building.
           </p>
 
+          {!loading && (
+            <div className="mt-8 flex justify-center">
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100"
+              >
+                {CATEGORIES.map((c) => (
+                  <option key={c.value} value={c.value}>
+                    {c.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           {loading ? (
             <p className="mt-12 text-center text-slate-500">Loading templates...</p>
           ) : (
             <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {templates.map((t) => (
+              {filteredTemplates.map((t) => (
                 <article
                   key={t.id}
                   className="group rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden shadow-sm hover:shadow-lg hover:border-primary-500/50 transition-all"
                 >
-                  <div className="aspect-[3/4] bg-slate-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center p-4">
-                    <div className="w-full max-w-[200px] scale-75 origin-center">
-                      <ResumePreview
-                        sections={sampleSections}
-                        templateId={t.id}
-                        primaryColor={t.colors.primary}
-                        className="shadow-md"
-                      />
-                    </div>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setPreviewTemplate(t)}
+                    className="block w-full text-left aspect-[3/4] bg-slate-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center p-4 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                  >
+                    <TemplateThumbnail
+                      templateId={t.id}
+                      thumbnailUrl={t.thumbnailUrl}
+                      primaryColor={t.colors.primary}
+                      sections={sampleSections}
+                    />
+                  </button>
                   <div className="p-5">
                     <h3 className="font-semibold text-slate-900 dark:text-slate-100">
                       {t.name}
@@ -122,9 +195,16 @@ export default function TemplatesPage() {
                     </p>
                     <button
                       type="button"
+                      onClick={() => setPreviewTemplate(t)}
+                      className="mt-3 text-sm text-primary-600 hover:underline"
+                    >
+                      Preview
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => handleUseTemplate(t.id)}
                       disabled={!!createLoading}
-                      className="mt-4 w-full rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-primary-700 disabled:opacity-50 transition-colors"
+                      className="mt-2 w-full rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-primary-700 disabled:opacity-50 transition-colors"
                     >
                       {createLoading === t.id ? "Creating..." : "Use this template"}
                     </button>
@@ -132,6 +212,48 @@ export default function TemplatesPage() {
                 </article>
               ))}
             </div>
+          )}
+
+          {previewTemplate && (
+            <>
+              <div
+                className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+                onClick={() => setPreviewTemplate(null)}
+                aria-hidden
+              />
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-auto">
+                <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-auto p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                      {previewTemplate.name}
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => setPreviewTemplate(null)}
+                      className="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-2xl leading-none"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4 bg-slate-50 dark:bg-slate-800/50">
+                    <ResumePreview
+                      sections={sampleSections}
+                      templateId={previewTemplate.id}
+                      primaryColor={previewTemplate.colors.primary}
+                      className="shadow-md"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleUseTemplate(previewTemplate.id)}
+                    disabled={!!createLoading}
+                    className="mt-4 w-full rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-primary-700 disabled:opacity-50"
+                  >
+                    {createLoading === previewTemplate.id ? "Creating..." : "Use this template"}
+                  </button>
+                </div>
+              </div>
+            </>
           )}
 
           <p className="mt-12 text-center text-sm text-slate-500 dark:text-slate-400">

@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Download, Trash2, Unlink } from "lucide-react";
+import { Download, Trash2, Unlink, FileText, CreditCard } from "lucide-react";
 import { useSubscription } from "@/hooks/use-subscription";
 import { getSubscriptionLabel } from "@/lib/subscription-labels";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -34,6 +35,25 @@ export function SettingsContent() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [unlinkLoading, setUnlinkLoading] = useState<string | null>(null);
+  const [exportHistory, setExportHistory] = useState<Array<{ id: string; resumeId: string; resumeTitle: string; format: string; createdAt: string }>>([]);
+  const [avatarLoading, setAvatarLoading] = useState(false);
+  const [notificationMarketing, setNotificationMarketing] = useState(true);
+  const [notificationProduct, setNotificationProduct] = useState(true);
+  const [emailChangeLoading, setEmailChangeLoading] = useState(false);
+  const [emailChangeMsg, setEmailChangeMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [newEmail, setNewEmail] = useState("");
+  const [emailChangePassword, setEmailChangePassword] = useState("");
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+  const [twoFactorSetupOpen, setTwoFactorSetupOpen] = useState(false);
+  const [twoFactorVerifyCode, setTwoFactorVerifyCode] = useState("");
+  const [twoFactorVerifyLoading, setTwoFactorVerifyLoading] = useState(false);
+  const [twoFactorQrCode, setTwoFactorQrCode] = useState<string | null>(null);
+  const [twoFactorBackupCodes, setTwoFactorBackupCodes] = useState<string[] | null>(null);
+  const [twoFactorDisableOpen, setTwoFactorDisableOpen] = useState(false);
+  const [twoFactorDisablePassword, setTwoFactorDisablePassword] = useState("");
+  const [twoFactorDisableCode, setTwoFactorDisableCode] = useState("");
+  const [twoFactorDisableLoading, setTwoFactorDisableLoading] = useState(false);
+  const [invoices, setInvoices] = useState<Array<{ id: string; amount: number; currency: string; plan: string; status: string; pdfUrl?: string; createdAt: string }>>([]);
 
   useEffect(() => {
     if (session?.user?.email) {
@@ -42,8 +62,20 @@ export function SettingsContent() {
         .then((data) => {
           if (data.name) setName(data.name);
           if (data.image) setImageUrl(data.image);
+          if (data.notificationPrefs) {
+            setNotificationMarketing(data.notificationPrefs?.marketing !== false);
+            setNotificationProduct(data.notificationPrefs?.productUpdates !== false);
+          }
         })
         .catch(console.error);
+      fetch("/api/user/2fa/status", { credentials: "include" })
+        .then((r) => (r.ok ? r.json() : { enabled: false }))
+        .then((d) => setTwoFactorEnabled(d.enabled ?? false))
+        .catch(() => setTwoFactorEnabled(false));
+      fetch("/api/user/invoices", { credentials: "include" })
+        .then((r) => (r.ok ? r.json() : { invoices: [] }))
+        .then((d) => setInvoices(d.invoices ?? []))
+        .catch(() => setInvoices([]));
       fetch("/api/user/accounts", { credentials: "include" })
         .then((res) => (res.ok ? res.json() : { accounts: [], hasPassword: true }))
         .then((data: { accounts?: ConnectedAccount[]; hasPassword?: boolean }) => {
@@ -51,6 +83,12 @@ export function SettingsContent() {
           setHasPassword(data.hasPassword ?? true);
         })
         .catch(() => {});
+      fetch("/api/user/export-history", { credentials: "include" })
+        .then((res) => (res.ok ? res.json() : { logs: [] }))
+        .then((data: { logs?: Array<{ id: string; resumeId: string; resumeTitle: string; format: string; createdAt: string }> }) => {
+          setExportHistory(data.logs ?? []);
+        })
+        .catch(() => setExportHistory([]));
     }
   }, [session?.user?.email]);
 
@@ -62,7 +100,11 @@ export function SettingsContent() {
       const res = await fetch("/api/user/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name || null, image: imageUrl || null }),
+        body: JSON.stringify({
+          name: name || null,
+          image: imageUrl || null,
+          notificationPrefs: { marketing: notificationMarketing, productUpdates: notificationProduct },
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -144,6 +186,117 @@ export function SettingsContent() {
     }
   }
 
+  async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAvatarLoading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/user/avatar/upload", { method: "POST", body: fd, credentials: "include" });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        setImageUrl(data.url);
+        setMessage({ type: "success", text: "Profile picture updated" });
+      } else {
+        setMessage({ type: "error", text: data.error ?? "Upload failed" });
+      }
+    } catch {
+      setMessage({ type: "error", text: "Upload failed" });
+    } finally {
+      setAvatarLoading(false);
+      e.target.value = "";
+    }
+  }
+
+  async function handleEmailChange(e: React.FormEvent) {
+    e.preventDefault();
+    setEmailChangeMsg(null);
+    if (!newEmail.trim()) return;
+    setEmailChangeLoading(true);
+    try {
+      const res = await fetch("/api/user/change-email/request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ newEmail: newEmail.trim(), password: emailChangePassword }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setEmailChangeMsg({ type: "success", text: "Verification email sent to your new address. Check your inbox." });
+        setNewEmail("");
+        setEmailChangePassword("");
+      } else {
+        setEmailChangeMsg({ type: "error", text: data.error ?? "Failed" });
+      }
+    } catch {
+      setEmailChangeMsg({ type: "error", text: "Something went wrong" });
+    }
+    setEmailChangeLoading(false);
+  }
+
+  async function handle2FASetup() {
+    setTwoFactorSetupOpen(true);
+    setTwoFactorQrCode(null);
+    setTwoFactorVerifyCode("");
+    try {
+      const res = await fetch("/api/user/2fa/setup", { method: "POST", credentials: "include" });
+      const data = await res.json();
+      if (res.ok && data.qrCode) setTwoFactorQrCode(data.qrCode);
+    } catch {
+      setTwoFactorSetupOpen(false);
+    }
+  }
+
+  async function handle2FAVerify(e: React.FormEvent) {
+    e.preventDefault();
+    if (!twoFactorVerifyCode.trim()) return;
+    setTwoFactorVerifyLoading(true);
+    try {
+      const res = await fetch("/api/user/2fa/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ code: twoFactorVerifyCode.trim() }),
+      });
+      const data = await res.json();
+      if (res.ok && data.backupCodes) {
+        setTwoFactorBackupCodes(data.backupCodes);
+        setTwoFactorEnabled(true);
+      } else {
+        alert(data.error ?? "Invalid code");
+      }
+    } catch {
+      alert("Something went wrong");
+    }
+    setTwoFactorVerifyLoading(false);
+  }
+
+  async function handle2FADisable(e: React.FormEvent) {
+    e.preventDefault();
+    setTwoFactorDisableLoading(true);
+    try {
+      const res = await fetch("/api/user/2fa/disable", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ password: twoFactorDisablePassword, code: twoFactorDisableCode }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setTwoFactorEnabled(false);
+        setTwoFactorDisableOpen(false);
+        setTwoFactorDisablePassword("");
+        setTwoFactorDisableCode("");
+      } else {
+        alert(data.error ?? "Failed");
+      }
+    } catch {
+      alert("Something went wrong");
+    }
+    setTwoFactorDisableLoading(false);
+  }
+
   async function handleUnlink(provider: string) {
     setUnlinkLoading(provider);
     try {
@@ -202,18 +355,86 @@ export function SettingsContent() {
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Email</label>
               <input type="email" value={session.user?.email || ""} disabled className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/50 px-3 py-2 text-slate-500 cursor-not-allowed" />
-              <p className="mt-1 text-xs text-slate-500">Email cannot be changed.</p>
+              <p className="mt-1 text-xs text-slate-500">Change email below (requires verification).</p>
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Name</label>
               <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-slate-100" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Profile picture URL</label>
-              <input type="url" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://..." className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-slate-100" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Profile picture</label>
+              <div className="flex items-center gap-4">
+                {imageUrl && (
+                  <img src={imageUrl} alt="Avatar" className="w-16 h-16 rounded-full object-cover border border-slate-200 dark:border-slate-600" />
+                )}
+                <div>
+                  <label className="inline-flex cursor-pointer items-center rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50">
+                    {avatarLoading ? "Uploading..." : "Upload image"}
+                    <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="sr-only" onChange={handleAvatarUpload} disabled={avatarLoading} />
+                  </label>
+                  <p className="mt-1 text-xs text-slate-500">JPEG, PNG, WebP, GIF. Max 2MB.</p>
+                </div>
+              </div>
+              <input type="url" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="Or paste image URL" className="mt-2 block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-slate-100 text-sm" />
             </div>
             <button type="submit" disabled={loading} className="rounded-lg bg-primary-600 px-4 py-2.5 font-medium text-white hover:bg-primary-700 disabled:opacity-50">{loading ? "Saving..." : "Save changes"}</button>
           </form>
+        </section>
+
+        <section className="mt-8 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+          <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">Change email</h2>
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">You will receive a verification link at your new address.</p>
+          <form onSubmit={handleEmailChange} className="space-y-4 max-w-md">
+            {emailChangeMsg && (
+              <div className={`rounded-lg px-4 py-3 text-sm ${emailChangeMsg.type === "success" ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400" : "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400"}`}>{emailChangeMsg.text}</div>
+            )}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">New email</label>
+              <input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} placeholder="new@example.com" className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 bg-white dark:bg-slate-800" required />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Current password</label>
+              <input type="password" value={emailChangePassword} onChange={(e) => setEmailChangePassword(e.target.value)} placeholder="Enter password" className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 bg-white dark:bg-slate-800" required />
+            </div>
+            <button type="submit" disabled={emailChangeLoading} className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 disabled:opacity-50">{emailChangeLoading ? "Sending..." : "Send verification email"}</button>
+          </form>
+        </section>
+
+        <section className="mt-8 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+          <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">Notification preferences</h2>
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">Choose which emails you want to receive.</p>
+          <div className="space-y-3">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={notificationMarketing} onChange={(e) => setNotificationMarketing(e.target.checked)} className="rounded border-slate-300 dark:border-slate-600" />
+              <span className="text-sm text-slate-700 dark:text-slate-300">Marketing and tips</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={notificationProduct} onChange={(e) => setNotificationProduct(e.target.checked)} className="rounded border-slate-300 dark:border-slate-600" />
+              <span className="text-sm text-slate-700 dark:text-slate-300">Product updates</span>
+            </label>
+          </div>
+          <p className="mt-2 text-xs text-slate-500">Saved when you click Save changes in Profile.</p>
+        </section>
+
+        <section className="mt-8 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+          <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Export history</h2>
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">Recent exports of your resumes.</p>
+          {exportHistory.length === 0 ? (
+            <p className="text-sm text-slate-500">No exports yet.</p>
+          ) : (
+            <ul className="space-y-2 max-h-48 overflow-y-auto">
+              {exportHistory.map((log) => (
+                <li key={log.id} className="flex items-center justify-between py-2 px-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 text-sm">
+                  <span className="flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-slate-500" />
+                    <span className="font-medium truncate max-w-[200px]" title={log.resumeTitle}>{log.resumeTitle}</span>
+                    <span className="uppercase text-xs text-slate-500">{log.format}</span>
+                  </span>
+                  <span className="text-slate-500 text-xs">{formatDistanceToNow(new Date(log.createdAt), { addSuffix: true })}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
 
         <section className="mt-8 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
@@ -260,6 +481,57 @@ export function SettingsContent() {
                 </li>
               ))}
             </ul>
+          )}
+        </section>
+
+        <section className="mt-8 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+          <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Two-factor authentication</h2>
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">Add an extra layer of security with an authenticator app (e.g. Google Authenticator, Authy).</p>
+          {twoFactorEnabled ? (
+            <div>
+              <p className="text-sm text-green-600 dark:text-green-400 font-medium mb-2">2FA is enabled</p>
+              <button type="button" onClick={() => setTwoFactorDisableOpen(true)} className="rounded-lg border border-red-300 dark:border-red-800 px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20">Disable 2FA</button>
+            </div>
+          ) : (
+            <button type="button" onClick={handle2FASetup} className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700">Enable 2FA</button>
+          )}
+          {twoFactorSetupOpen && (
+            <div className="mt-6 p-4 rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/50">
+              {twoFactorBackupCodes ? (
+                <div>
+                  <h3 className="font-medium text-slate-900 dark:text-slate-100 mb-2">2FA enabled – save your backup codes</h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">Store these codes in a safe place. Each can be used once if you lose your authenticator.</p>
+                  <div className="font-mono text-sm bg-white dark:bg-slate-800 p-3 rounded mb-3">{twoFactorBackupCodes.join("  ")}</div>
+                  <button type="button" onClick={() => { setTwoFactorSetupOpen(false); setTwoFactorBackupCodes(null); setTwoFactorQrCode(null); }} className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white">Done</button>
+                </div>
+              ) : twoFactorQrCode ? (
+                <form onSubmit={handle2FAVerify}>
+                  <h3 className="font-medium text-slate-900 dark:text-slate-100 mb-2">Scan with your authenticator app</h3>
+                  <img src={twoFactorQrCode} alt="QR code" className="mb-4 rounded" />
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">Enter the 6-digit code from your app:</p>
+                  <input type="text" value={twoFactorVerifyCode} onChange={(e) => setTwoFactorVerifyCode(e.target.value.replace(/\D/g, "").slice(0, 8))} placeholder="000000" className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 mb-2" maxLength={8} />
+                  <div className="flex gap-2">
+                    <button type="submit" disabled={twoFactorVerifyLoading || twoFactorVerifyCode.length < 6} className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50">Verify & enable</button>
+                    <button type="button" onClick={() => { setTwoFactorSetupOpen(false); setTwoFactorQrCode(null); setTwoFactorVerifyCode(""); }} className="rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm text-slate-700 dark:text-slate-300">Cancel</button>
+                  </div>
+                </form>
+              ) : (
+                <p className="text-slate-500">Loading QR code...</p>
+              )}
+            </div>
+          )}
+          {twoFactorDisableOpen && (
+            <div className="mt-6 p-4 rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/50">
+              <h3 className="font-medium text-slate-900 dark:text-slate-100 mb-2">Disable 2FA</h3>
+              <form onSubmit={handle2FADisable} className="space-y-3">
+                <input type="password" value={twoFactorDisablePassword} onChange={(e) => setTwoFactorDisablePassword(e.target.value)} placeholder="Password" className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2" required />
+                <input type="text" value={twoFactorDisableCode} onChange={(e) => setTwoFactorDisableCode(e.target.value)} placeholder="6-digit code or backup code" className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2" required />
+                <div className="flex gap-2">
+                  <button type="submit" disabled={twoFactorDisableLoading} className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50">Disable</button>
+                  <button type="button" onClick={() => { setTwoFactorDisableOpen(false); setTwoFactorDisablePassword(""); setTwoFactorDisableCode(""); }} className="rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm text-slate-700 dark:text-slate-300">Cancel</button>
+                </div>
+              </form>
+            </div>
           )}
         </section>
 

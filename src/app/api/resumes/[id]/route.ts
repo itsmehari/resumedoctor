@@ -1,8 +1,9 @@
-// WBS 3.2, 3.3 – Resume get, update, delete (supports trial)
+// WBS 3.2, 3.3, 4.6 – Resume get, update, delete (supports trial, template migration)
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { parseResumeContent } from "@/lib/resume-utils";
+import { migrateResumeContent } from "@/lib/template-migration";
 import { getResumeAuth } from "@/lib/trial-auth";
 
 const MAX_VERSIONS = 10;
@@ -26,9 +27,11 @@ export async function GET(
     return NextResponse.json({ error: "Resume not found" }, { status: 404 });
   }
 
+  const parsed = parseResumeContent(resume.content);
+  const migrated = migrateResumeContent(parsed, resume.templateId);
   return NextResponse.json({
     ...resume,
-    content: parseResumeContent(resume.content),
+    content: migrated,
   });
 }
 
@@ -112,9 +115,11 @@ export async function PATCH(
       data: updates,
     });
 
+    const contentParsed = parseResumeContent(updated.content);
+    const contentMigrated = migrateResumeContent(contentParsed, updated.templateId);
     return NextResponse.json({
       ...updated,
-      content: parseResumeContent(updated.content),
+      content: contentMigrated,
     });
   } catch (err) {
     console.error("Update resume error:", err);

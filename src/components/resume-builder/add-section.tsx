@@ -12,6 +12,7 @@ interface Props {
 }
 
 const SECTION_TYPES: { type: SectionType; label: string }[] = [
+  { type: "contact", label: "Contact" },
   { type: "summary", label: "Summary" },
   { type: "experience", label: "Experience" },
   { type: "education", label: "Education" },
@@ -22,6 +23,7 @@ const SECTION_TYPES: { type: SectionType; label: string }[] = [
 export function AddSection({ sections, onAdd }: Props) {
   const [open, setOpen] = useState(false);
   const used = new Set(sections.map((s) => s.type));
+  const canAddContact = !used.has("contact");
   const canAddSummary = !used.has("summary");
 
   return (
@@ -42,7 +44,9 @@ export function AddSection({ sections, onAdd }: Props) {
           />
           <div className="absolute top-full left-0 right-0 mt-2 py-2 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 z-20">
             {SECTION_TYPES.map(({ type, label }) => {
-              const disabled = type === "summary" && !canAddSummary;
+              const disabled =
+                (type === "contact" && !canAddContact) ||
+                (type === "summary" && !canAddSummary);
               return (
                 <button
                   key={type}
