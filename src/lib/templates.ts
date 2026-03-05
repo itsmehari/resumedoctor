@@ -16,6 +16,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-sans",
     sectionTitleClass: "font-semibold text-slate-900 border-b border-slate-200 pb-1 mb-2",
     accentClass: "",
+    headerVariant: "default",
+    skillsVariant: "plain",
     trialAvailable: true,
   },
   {
@@ -30,6 +32,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-sans",
     sectionTitleClass: "font-semibold text-slate-900 border-b-2 border-blue-600 pb-1 mb-3",
     accentClass: "",
+    headerVariant: "top-bar",
+    skillsVariant: "tags",
     trialAvailable: true,
   },
   {
@@ -44,6 +48,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-sans",
     sectionTitleClass: "font-bold text-slate-900 border-l-4 border-emerald-600 pl-3 mb-3",
     accentClass: "border-l-2 border-emerald-200 pl-4",
+    headerVariant: "default",
+    skillsVariant: "tags",
     trialAvailable: true,
   },
   {
@@ -58,6 +64,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-sans",
     sectionTitleClass: "font-semibold text-slate-800 border-b border-slate-200 pb-1 mb-2 text-xs tracking-widest uppercase",
     accentClass: "",
+    headerVariant: "centered",
+    skillsVariant: "tags",
     trialAvailable: false,
   },
   {
@@ -72,6 +80,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-sans",
     sectionTitleClass: "font-semibold text-slate-800 border-b border-slate-300 pb-0.5 mb-2 text-sm",
     accentClass: "",
+    headerVariant: "default",
+    skillsVariant: "plain",
     trialAvailable: false,
   },
   {
@@ -86,6 +96,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-serif",
     sectionTitleClass: "font-semibold text-slate-900 border-b-2 border-slate-300 pb-2 mb-4",
     accentClass: "",
+    headerVariant: "centered",
+    skillsVariant: "plain",
     trialAvailable: false,
   },
   {
@@ -107,6 +119,9 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-sans",
     sectionTitleClass: "font-semibold text-slate-900 mb-2 text-sm uppercase tracking-wide",
     accentClass: "",
+    headerVariant: "top-bar",
+    skillsVariant: "tags",
+    sidebarBg: true,
     trialAvailable: true,
   },
   {
@@ -121,6 +136,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-serif",
     sectionTitleClass: "font-semibold text-slate-800 border-b border-slate-300 pb-1 mb-2 text-xs tracking-wider uppercase",
     accentClass: "border-l-2 border-violet-400 pl-3",
+    headerVariant: "default",
+    skillsVariant: "plain",
     trialAvailable: false,
   },
 
@@ -137,6 +154,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-sans",
     sectionTitleClass: "font-medium text-slate-600 border-b border-slate-100 pb-2 mb-4 text-xs tracking-widest uppercase",
     accentClass: "",
+    headerVariant: "default",
+    skillsVariant: "plain",
     trialAvailable: true,
   },
   {
@@ -151,6 +170,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-sans",
     sectionTitleClass: "font-medium text-teal-800 pb-1 mb-3 text-sm",
     accentClass: "",
+    headerVariant: "top-bar",
+    skillsVariant: "tags",
     trialAvailable: false,
   },
   {
@@ -165,6 +186,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-sans",
     sectionTitleClass: "font-semibold text-neutral-900 mb-1 text-sm",
     accentClass: "",
+    headerVariant: "default",
+    skillsVariant: "plain",
     trialAvailable: true,
   },
   {
@@ -179,6 +202,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-sans",
     sectionTitleClass: "font-bold text-slate-900 border-b border-slate-400 pb-0.5 mb-2",
     accentClass: "",
+    headerVariant: "default",
+    skillsVariant: "plain",
     trialAvailable: false,
   },
   {
@@ -193,6 +218,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-serif",
     sectionTitleClass: "font-semibold text-amber-950 border-b border-amber-700 pb-1 mb-2",
     accentClass: "",
+    headerVariant: "default",
+    skillsVariant: "plain",
     trialAvailable: false,
   },
   {
@@ -207,6 +234,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-sans",
     sectionTitleClass: "font-bold text-slate-900 border-l-4 border-sky-700 pl-3 mb-2",
     accentClass: "border-l-2 border-sky-200 pl-4",
+    headerVariant: "top-bar",
+    skillsVariant: "tags",
     trialAvailable: true,
   },
   {
@@ -221,6 +250,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-sans",
     sectionTitleClass: "font-semibold text-slate-900 border-b-2 border-green-600 pb-1 mb-3",
     accentClass: "",
+    headerVariant: "centered",
+    skillsVariant: "tags",
     trialAvailable: false,
   },
   {
@@ -235,6 +266,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-sans",
     sectionTitleClass: "font-semibold text-slate-800 border-b border-violet-300 pb-1 mb-2 text-xs tracking-wider",
     accentClass: "",
+    headerVariant: "top-bar",
+    skillsVariant: "tags",
     trialAvailable: false,
   },
 
@@ -251,6 +284,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-sans",
     sectionTitleClass: "font-medium text-blue-900 border-b border-blue-200 pb-2 mb-3 text-sm",
     accentClass: "",
+    headerVariant: "centered",
+    skillsVariant: "tags",
     trialAvailable: true,
   },
   {
@@ -265,6 +300,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-sans",
     sectionTitleClass: "font-medium text-orange-900 border-b border-orange-200 pb-2 mb-3 text-sm",
     accentClass: "",
+    headerVariant: "centered",
+    skillsVariant: "tags",
     trialAvailable: false,
   },
   {
@@ -279,6 +316,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-serif",
     sectionTitleClass: "font-semibold text-pink-900 border-b border-pink-200 pb-1 mb-2 text-xs tracking-wider",
     accentClass: "",
+    headerVariant: "top-bar",
+    skillsVariant: "tags",
     trialAvailable: false,
   },
   {
@@ -293,6 +332,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-sans",
     sectionTitleClass: "font-semibold text-slate-900 border-l-4 border-teal-600 pl-3 mb-2",
     accentClass: "border-l-2 border-teal-200 pl-4",
+    headerVariant: "default",
+    skillsVariant: "tags",
     trialAvailable: false,
   },
 
@@ -309,6 +350,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-sans",
     sectionTitleClass: "font-bold text-slate-900 border-b-2 border-emerald-600 pb-1 mb-3 text-sm",
     accentClass: "border-l-4 border-emerald-600 pl-4",
+    headerVariant: "top-bar",
+    skillsVariant: "tags",
     trialAvailable: true,
   },
   {
@@ -323,6 +366,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-serif",
     sectionTitleClass: "font-bold text-slate-900 mb-3 text-base",
     accentClass: "border-l-4 border-slate-700 pl-4",
+    headerVariant: "centered",
+    skillsVariant: "plain",
     trialAvailable: false,
   },
   {
@@ -337,6 +382,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-sans",
     sectionTitleClass: "font-bold text-slate-900 uppercase tracking-wider mb-3 text-sm text-sky-900",
     accentClass: "",
+    headerVariant: "top-bar",
+    skillsVariant: "tags",
     trialAvailable: false,
   },
   {
@@ -351,6 +398,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-mono",
     sectionTitleClass: "font-bold text-slate-900 border-l-4 border-green-700 pl-2 mb-2 text-sm",
     accentClass: "border-l-2 border-green-300 pl-3",
+    headerVariant: "default",
+    skillsVariant: "tags",
     trialAvailable: true,
   },
   {
@@ -365,6 +414,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-sans",
     sectionTitleClass: "font-semibold text-slate-900 border-b-2 border-blue-600 pb-0.5 mb-2 text-sm",
     accentClass: "",
+    headerVariant: "top-bar",
+    skillsVariant: "tags",
     trialAvailable: false,
   },
   {
@@ -379,6 +430,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-sans",
     sectionTitleClass: "font-bold text-pink-900 border-b border-pink-200 pb-1 mb-2 text-xs tracking-widest",
     accentClass: "",
+    headerVariant: "top-bar",
+    skillsVariant: "tags",
     trialAvailable: false,
   },
 
@@ -395,6 +448,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-serif",
     sectionTitleClass: "font-semibold text-slate-800 border-b border-slate-200 pb-1 mb-2 text-sm tracking-wide",
     accentClass: "",
+    headerVariant: "top-bar",
+    skillsVariant: "tags",
     trialAvailable: true,
   },
   {
@@ -409,6 +464,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-serif",
     sectionTitleClass: "font-bold text-purple-900 mb-2 text-base",
     accentClass: "border-l-4 border-purple-400 pl-4",
+    headerVariant: "centered",
+    skillsVariant: "tags",
     trialAvailable: false,
   },
   {
@@ -423,6 +480,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-serif",
     sectionTitleClass: "font-semibold text-stone-900 border-b-2 border-stone-500 pb-1 mb-2",
     accentClass: "",
+    headerVariant: "default",
+    skillsVariant: "plain",
     trialAvailable: false,
   },
   {
@@ -437,6 +496,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     wrapperClass: "font-sans",
     sectionTitleClass: "font-semibold text-slate-900 border-b border-cyan-700 pb-1 mb-2",
     accentClass: "",
+    headerVariant: "top-bar",
+    skillsVariant: "tags",
     trialAvailable: false,
   },
 ];

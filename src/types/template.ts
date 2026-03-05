@@ -3,6 +3,12 @@
 
 export type TemplateFontFamily = "sans" | "serif" | "mono";
 
+/** How the contact/name header is rendered */
+export type TemplateHeaderVariant = "default" | "top-bar" | "centered";
+
+/** How the skills section is rendered */
+export type TemplateSkillsVariant = "plain" | "tags" | "dots";
+
 export interface TemplateColors {
   /** Primary accent (headings, borders, links) */
   primary: string;
@@ -62,6 +68,12 @@ export interface TemplateMetadata {
   trialAvailable?: boolean;
   /** WBS 4.8 – Thumbnail URL for template selector */
   thumbnailUrl?: string;
+  /** Header/name block rendering style */
+  headerVariant?: TemplateHeaderVariant;
+  /** Skills section rendering style */
+  skillsVariant?: TemplateSkillsVariant;
+  /** Two-column: give the sidebar a tinted background in the template primary color */
+  sidebarBg?: boolean;
 }
 
 export type TemplateId = string;
