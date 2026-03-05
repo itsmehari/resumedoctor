@@ -1,4 +1,4 @@
-# Zesty CI – WBS 1.6
+# ResumeDoctor CI – WBS 1.6, 13.6
 name: CI
 
 on:
@@ -33,3 +33,17 @@ jobs:
         run: npm run build
         env:
           SKIP_ENV_VALIDATION: "true"
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+
+      - name: Create Sentry release
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+        with:
+          environment: production

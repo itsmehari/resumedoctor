@@ -1,12 +1,19 @@
 "use client";
 
-// WBS 3.6, 6.5, 6.8 – Experience editor with AI + error handling
+// WBS 3.6, 6.5, 6.8 – Experience editor with AI + graceful degradation fallback
 import { useState } from "react";
 import type { ExperienceSection, ExperienceEntry } from "@/types/resume";
 import { MonthYearPicker } from "../month-year-picker";
 import { generateSectionId } from "@/lib/resume-utils";
 import { Sparkles } from "lucide-react";
 import { useToast } from "@/contexts/toast-context";
+
+const BULLET_TIPS = [
+  "Start with an action verb: Led, Built, Reduced, Improved, Launched…",
+  "Quantify results: 'Reduced API latency by 35%' beats 'Improved performance'.",
+  "Use the STAR format: Situation → Task → Action → Result.",
+  "Match keywords from the job description for ATS alignment.",
+];
 
 type ExperienceData = { entries: ExperienceEntry[] };
 
@@ -41,6 +48,7 @@ export function ExperienceEditor({ data, onChange, resumeId }: Props) {
   const [suggestOpen, setSuggestOpen] = useState<number | null>(null);
   const [suggestLoading, setSuggestLoading] = useState(false);
   const [suggestJobDesc, setSuggestJobDesc] = useState("");
+  const [showBulletTips, setShowBulletTips] = useState(false);
   const { toast } = useToast();
 
   const updateEntry = (index: number, updates: Partial<ExperienceEntry>) => {
@@ -97,6 +105,9 @@ export function ExperienceEditor({ data, onChange, resumeId }: Props) {
             variant: "error",
             action: { label: "Upgrade to Pro", href: "/pricing" },
           });
+        } else if (res.status === 503) {
+          setShowBulletTips(true);
+          toast("AI unavailable. Manual writing tips shown below.", { variant: "error" });
         } else {
           toast(json.error ?? "Failed to improve. Try again.", {
             variant: "error",
@@ -105,10 +116,8 @@ export function ExperienceEditor({ data, onChange, resumeId }: Props) {
         }
       }
     } catch {
-      toast("Something went wrong. Try again.", {
-        variant: "error",
-        action: { label: "Retry", onClick: () => handleImproveBullet(entryIdx, bulletIdx) },
-      });
+      setShowBulletTips(true);
+      toast("Something went wrong. Manual tips shown below.", { variant: "error" });
     } finally {
       setImproveKey(null);
     }
@@ -243,17 +252,38 @@ export function ExperienceEditor({ data, onChange, resumeId }: Props) {
           <div>
             <div className="flex items-center justify-between mb-1">
               <label className="block text-xs font-medium text-slate-600 dark:text-slate-400">Key achievements</label>
-              {resumeId && (
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setSuggestOpen(suggestOpen === idx ? null : idx)}
-                  className="text-xs text-primary-600 hover:underline dark:text-primary-400 flex items-center gap-0.5"
+                  onClick={() => setShowBulletTips((v) => !v)}
+                  className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                  title="Writing tips"
                 >
-                  <Sparkles className="h-3 w-3" />
-                  Suggest bullets
+                  Tips
                 </button>
-              )}
+                {resumeId && (
+                  <button
+                    type="button"
+                    onClick={() => setSuggestOpen(suggestOpen === idx ? null : idx)}
+                    className="text-xs text-primary-600 hover:underline dark:text-primary-400 flex items-center gap-0.5"
+                  >
+                    <Sparkles className="h-3 w-3" />
+                    Suggest bullets
+                  </button>
+                )}
+              </div>
             </div>
+            {showBulletTips && idx === 0 && (
+              <div className="mb-2 rounded border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 p-2">
+                <p className="text-xs font-semibold text-amber-800 dark:text-amber-300 mb-1">Bullet writing tips</p>
+                <ul className="space-y-0.5">
+                  {BULLET_TIPS.map((t, i) => (
+                    <li key={i} className="text-xs text-amber-700 dark:text-amber-300">{i + 1}. {t}</li>
+                  ))}
+                </ul>
+                <button type="button" onClick={() => setShowBulletTips(false)} className="mt-1 text-xs text-amber-600 hover:underline">Dismiss</button>
+              </div>
+            )}
             {suggestOpen === idx && resumeId && (
               <div className="mb-3 p-2 rounded border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/50">
                 <textarea

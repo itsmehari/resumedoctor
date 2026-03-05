@@ -106,6 +106,12 @@ function DashboardContent() {
             {!isTrial && (
               <>
                 <Link
+                  href="/jobs"
+                  className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+                >
+                  Jobs
+                </Link>
+                <Link
                   href="/settings"
                   className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
                 >

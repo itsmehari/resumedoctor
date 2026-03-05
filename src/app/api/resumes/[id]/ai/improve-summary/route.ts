@@ -1,4 +1,4 @@
-// WBS 6.4, 6.7 – AI improve professional summary (rate limited)
+// WBS 6.4, 6.6, 6.7 – AI improve professional summary (rate limited + cached)
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getServerSession } from "next-auth";
@@ -6,6 +6,8 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { chatCompletion, isAiConfigured } from "@/lib/ai-client";
 import { checkAiRateLimit, recordAiUsage } from "@/lib/ai-rate-limit";
+import { getCachedAiResponse, setCachedAiResponse } from "@/lib/ai-cache";
+import { recordFeatureUsage } from "@/lib/feature-usage";
 
 const schema = z.object({
   text: z.string().min(1, "Summary text required").max(2000),
@@ -64,6 +66,13 @@ export async function POST(
       );
     }
 
+    const cached = await getCachedAiResponse<{ text: string }>("improve-summary", { text: parsed.data.text });
+    if (cached) {
+      await recordAiUsage(user.id, "improve-summary");
+      await recordFeatureUsage(user.id, "ai", { action: "improve-summary", cached: true });
+      return NextResponse.json(cached);
+    }
+
     const generated = await chatCompletion(
       [
         {
@@ -83,6 +92,8 @@ export async function POST(
     }
 
     await recordAiUsage(user.id, "improve-summary");
+    await recordFeatureUsage(user.id, "ai", { action: "improve-summary" });
+    await setCachedAiResponse("improve-summary", { text: parsed.data.text }, { text: generated });
     return NextResponse.json({ text: generated });
   } catch (err) {
     console.error("AI improve summary error:", err);

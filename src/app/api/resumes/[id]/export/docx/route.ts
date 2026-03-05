@@ -1,10 +1,11 @@
-// WBS 5.4 – DOCX export (Pro tier)
+// WBS 5.4, 11.5 – DOCX export (Pro tier, feature tracked)
 import { NextResponse } from "next/server";
 import {
   getResumeForExport,
   logExport,
 } from "@/lib/export-api-helpers";
 import { buildDocx } from "@/lib/docx-export";
+import { recordFeatureUsage } from "@/lib/feature-usage";
 
 function slugify(s: string): string {
   return s
@@ -28,6 +29,7 @@ export async function GET(
   await logExport(userId, id, "docx");
   const { consumePackCreditIfNeeded } = await import("@/lib/export-api-helpers");
   await consumePackCreditIfNeeded(userId);
+  await recordFeatureUsage(userId, "export", { format: "docx" });
 
   const filename = `${slugify(resume.title)}-resume.docx`;
   return new NextResponse(new Uint8Array(buffer), {

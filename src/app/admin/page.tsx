@@ -26,7 +26,13 @@ export default function AdminPage() {
   const [analytics, setAnalytics] = useState<{
     subscriptionMetrics?: { proCount?: number; conversionRate?: number };
     templateUsage?: Record<string, number>;
-    featureUsage?: { totalExports?: number; exports?: Record<string, number> };
+    featureUsage?: {
+      totalExports?: number;
+      exports?: Record<string, number>;
+      last30Days?: Record<string, number>;
+      aiLast30Days?: { total?: number; byAction?: Record<string, number> };
+      atsLast30Days?: number;
+    };
   } | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -145,7 +151,38 @@ export default function AdminPage() {
           </div>
         </div>
 
-        <div className="space-y-8">
+          <div className="space-y-8">
+          {analytics?.featureUsage?.last30Days && (
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+              <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">
+                Feature Usage (last 30 days)
+              </h2>
+              <div className="space-y-2">
+                {[
+                  { label: "AI Calls", value: analytics.featureUsage.aiLast30Days?.total ?? 0 },
+                  { label: "ATS Runs", value: analytics.featureUsage.atsLast30Days ?? 0 },
+                  { label: "Exports", value: analytics.featureUsage.last30Days["export"] ?? 0 },
+                  { label: "Cover Letters", value: analytics.featureUsage.last30Days["cover_letter"] ?? 0 },
+                ].map(({ label, value }) => (
+                  <div key={label} className="flex justify-between text-sm text-slate-600 dark:text-slate-400">
+                    <span>{label}</span>
+                    <span className="font-medium text-slate-900 dark:text-slate-100">{value.toLocaleString()}</span>
+                  </div>
+                ))}
+                {analytics.featureUsage.aiLast30Days?.byAction && (
+                  <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700 space-y-1">
+                    <p className="text-xs font-medium text-slate-500 mb-1">AI by action</p>
+                    {Object.entries(analytics.featureUsage.aiLast30Days.byAction).map(([action, count]) => (
+                      <div key={action} className="flex justify-between text-xs text-slate-500">
+                        <span>{action}</span>
+                        <span>{count}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
           <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-6">
             <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">
               Template Usage

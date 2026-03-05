@@ -1,0 +1,114 @@
+# WBS 13.7 – Uptime monitor via GitHub Actions (every 5 minutes)
+# Pings /api/health and alerts via GitHub issue or Slack on failure.
+# Set secret SLACK_WEBHOOK_URL to receive Slack alerts (optional).
+name: Uptime Monitor
+
+on:
+  schedule:
+    # Runs every 5 minutes
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: uptime-monitor
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Ping health endpoint
+        id: health
+        run: |
+          HTTP_STATUS=$(curl -s -o /tmp/health_response.json -w "%{http_code}" \
+            --max-time 15 \
+            "https://resumedoctor.in/api/health")
+          echo "status=$HTTP_STATUS" >> $GITHUB_OUTPUT
+          echo "response=$(cat /tmp/health_response.json | head -c 500)" >> $GITHUB_OUTPUT
+          echo "Health endpoint returned HTTP $HTTP_STATUS"
+          cat /tmp/health_response.json
+
+      - name: Assert healthy
+        id: assert
+        run: |
+          if [ "${{ steps.health.outputs.status }}" != "200" ]; then
+            echo "FAILED: HTTP ${{ steps.health.outputs.status }}"
+            exit 1
+          fi
+          echo "OK: Site is up"
+
+      - name: Send Slack alert on failure
+        if: failure() && env.SLACK_WEBHOOK_URL != ''
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          curl -X POST "$SLACK_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "text": ":red_circle: *ResumeDoctor is DOWN*\nHealth check failed at '"$(date -u '+%Y-%m-%d %H:%M UTC')"'\nStatus: ${{ steps.health.outputs.status }}\nURL: https://resumedoctor.in/api/health\n\nResponse: `${{ steps.health.outputs.response }}`"
+            }'
+
+      - name: Create GitHub issue on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = `🔴 Uptime alert: site down at ${new Date().toISOString()}`;
+            const body = [
+              '## ResumeDoctor health check failed',
+              '',
+              `**Time:** ${new Date().toUTCString()}`,
+              `**URL:** https://resumedoctor.in/api/health`,
+              `**HTTP Status:** ${{ steps.health.outputs.status }}`,
+              '',
+              '```json',
+              `${{ steps.health.outputs.response }}`,
+              '```',
+              '',
+              '_This issue was created automatically by the uptime monitor workflow._',
+            ].join('\n');
+
+            // Check for an existing open uptime issue to avoid spam
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'uptime-alert',
+            });
+
+            if (issues.length === 0) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: ['uptime-alert', 'critical'],
+              });
+            }
+
+      - name: Close uptime issue on recovery
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'uptime-alert',
+            });
+            for (const issue of issues) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: `✅ **Site recovered** at ${new Date().toUTCString()}. Health check is passing again.`,
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                state: 'closed',
+              });
+            }

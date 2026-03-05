@@ -1,4 +1,4 @@
-// WBS 6.2, 6.7 – AI improve single bullet point (rate limited)
+// WBS 6.2, 6.6, 6.7 – AI improve single bullet point (rate limited + cached)
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getServerSession } from "next-auth";
@@ -6,6 +6,8 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { chatCompletion, isAiConfigured } from "@/lib/ai-client";
 import { checkAiRateLimit, recordAiUsage } from "@/lib/ai-rate-limit";
+import { getCachedAiResponse, setCachedAiResponse } from "@/lib/ai-cache";
+import { recordFeatureUsage } from "@/lib/feature-usage";
 
 const schema = z.object({
   bullet: z.string().min(1, "Bullet text required").max(500),
@@ -68,6 +70,13 @@ export async function POST(
     const contextNote = parsed.data.context
       ? `Context: ${parsed.data.context}\n\n`
       : "";
+    const cacheInput = { bullet: parsed.data.bullet, context: parsed.data.context };
+    const cached = await getCachedAiResponse<{ bullet: string }>("improve-bullet", cacheInput);
+    if (cached) {
+      await recordAiUsage(user.id, "improve-bullet");
+      await recordFeatureUsage(user.id, "ai", { action: "improve-bullet", cached: true });
+      return NextResponse.json(cached);
+    }
 
     const generated = await chatCompletion(
       [
@@ -89,6 +98,8 @@ export async function POST(
 
     const cleaned = generated.replace(/^["']|["']$/g, "").trim();
     await recordAiUsage(user.id, "improve-bullet");
+    await recordFeatureUsage(user.id, "ai", { action: "improve-bullet" });
+    await setCachedAiResponse("improve-bullet", cacheInput, { bullet: cleaned });
     return NextResponse.json({ bullet: cleaned });
   } catch (err) {
     console.error("AI improve bullet error:", err);

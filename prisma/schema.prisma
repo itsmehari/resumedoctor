@@ -45,6 +45,8 @@ model User {
   twoFactorTokens TwoFactorToken[]
   invoices        Invoice[]
   aiUsageLogs     AiUsageLog[]
+  featureUsageLogs FeatureUsageLog[]
+  jobApplications  JobApplication[]
   // WBS 10.7 – One-time Resume Pack (5 PDF exports for ₹99)
   resumePackCredits Int @default(0)
 }
@@ -275,6 +277,77 @@ model AiUsageLog {
   @@index([userId, createdAt])
 }
 
+// WBS 6.6 – AI response cache (hash-keyed, 24h TTL)
+model AiResponseCache {
+  id        String   @id @default(cuid())
+  hash      String   @unique // SHA256 of action+input
+  action    String
+  response  Json
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([hash])
+  @@index([expiresAt])
+}
+
+// WBS 11.5 – Feature usage log (AI calls, ATS runs, exports, cover letters)
+model FeatureUsageLog {
+  id        String   @id @default(cuid())
+  userId    String
+  feature   String   // ai | ats | export | cover_letter
+  meta      Json?    // e.g. { action: "improve-bullet", format: "pdf" }
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([feature, createdAt])
+}
+
+// WBS 9.1 – Job listing
+model Job {
+  id          String   @id @default(cuid())
+  title       String
+  company     String
+  location    String?
+  industry    String?
+  description String
+  skills      Json     @default("[]") // string[]
+  salaryMin   Int?
+  salaryMax   Int?
+  currency    String   @default("INR")
+  url         String?
+  source      String   @default("manual")
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  applications JobApplication[]
+
+  @@index([industry])
+  @@index([location])
+  @@index([active, createdAt])
+}
+
+// WBS 9.6 – Job application tracking per user
+model JobApplication {
+  id        String    @id @default(cuid())
+  userId    String
+  jobId     String
+  status    String    @default("saved") // saved | applied | interviewing | rejected | offer
+  notes     String?
+  appliedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job  Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobId])
+  @@index([userId])
+  @@index([jobId])
+}
+
 // WBS 7.8 – ATS score cache per resume version
 model AtsScoreCache {
   id          String   @id @default(cuid())
@@ -289,4 +362,29 @@ model AtsScoreCache {
 
   @@unique([resumeId, version])
   @@index([resumeId])
+}
+
+// Security – IP-based rate limiting for unauthenticated payment/account endpoints
+model IpRateLimit {
+  id        String   @id @default(cuid())
+  key       String   @unique  // "{endpoint}:{ip}"
+  count     Int      @default(1)
+  windowEnd DateTime
+
+  @@index([key])
+  @@index([windowEnd])
+}
+
+// Security – Audit log for critical destructive/financial operations
+model SecurityAuditLog {
+  id        String   @id @default(cuid())
+  action    String   // "delete_account" | "trial_activation" | "promo_attempt" | "promo_used"
+  userId    String?
+  ip        String?
+  meta      Json?    // extra context (email, promoCode, etc.)
+  success   Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([action, createdAt])
+  @@index([userId, createdAt])
 }

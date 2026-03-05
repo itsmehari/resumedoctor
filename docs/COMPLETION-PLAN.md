@@ -24,10 +24,10 @@
 
 | Done | WBS | PRD | Task | Effort | Deliverables |
 |------|-----|-----|------|--------|--------------|
-| [ ] | 6.6 | Backend § AI | Response caching (Redis or DB) | 4h | Cache by `hash(text + action)` for 24h; `AiResponseCache` table or Redis |
+| [x] | 6.6 | Backend § AI | Response caching (Redis or DB) | 4h | Cache by `hash(text + action)` for 24h; `AiResponseCache` table or Redis |
 | [x] | 6.7 | Backend § AI | Rate limiting per user tier | 2h | Free: 5/day, Pro: 50/day; `AiUsageLog` table or daily counter; 429 with `code: "RATE_LIMITED"` |
 | [x] | 6.8 | Frontend § AI | Error handling & fallbacks | 2h | Toast/notification component; retry button; "Upgrade" when rate limited |
-| [ ] | 6.8 | Frontend § AI | Graceful degradation on AI failure | 1h | Manual edit suggestions fallback when AI fails |
+| [x] | 6.8 | Frontend § AI | Graceful degradation on AI failure | 1h | Manual edit suggestions fallback when AI fails |
 
 ---
 
@@ -37,7 +37,7 @@
 |------|-----|-----|------|--------|--------------|
 | [x] | 10.6 | Backend § Payments | 14-day trial (₹1) activation flow | 4h | Self-serve verify page OR document manual flow; admin/manual activation |
 | [x] | 10.7 | Backend § Payments | One-time Resume Pack product | 4h | E.g. 5 PDF exports for ₹99; Stripe/UPI; DB flag or one-time token |
-| [ ] | 10.8 | Frontend § Payments | Subscription management (upgrade, cancel) | 6h | Stripe Customer Portal link OR cancel request UI; store `stripeCustomerId` |
+| [x] | 10.8 | Frontend § Payments | Subscription management (upgrade, cancel) | 6h | Stripe Customer Portal link OR cancel request UI; store `stripeCustomerId` |
 
 ---
 
@@ -46,7 +46,7 @@
 | Done | WBS | PRD | Task | Effort | Deliverables |
 |------|-----|-----|------|--------|--------------|
 | [x] | 11.4 | Backend § Admin | Template usage stats in admin | 1h | Ensure template usage chart/table visible in admin analytics |
-| [ ] | 11.5 | Backend § Admin | Feature usage (AI, ATS, exports) | 2h | Add `FeatureUsageLog` or extend; track AI calls, ATS runs, exports |
+| [x] | 11.5 | Backend § Admin | Feature usage (AI, ATS, exports) | 2h | Add `FeatureUsageLog` or extend; track AI calls, ATS runs, exports |
 | [x] | 11.8 | Backend § Admin | User search & impersonation | 4h | Search by email; "View as user" with expiring token; impersonation middleware |
 
 ---
@@ -170,3 +170,10 @@
 | 2026-03-04 | Initial plan created |
 | 2026-03-04 | Phase 1 complete: 6.7 AI rate limit, 6.8 Toast + retry, 11.4 Template stats, 4.6 Template versioning |
 | 2026-03-04 | Phase 2 & 3: 4.1 Template schema (layoutType, sidebarSections), 4.3 JSON-driven renderer (two-column Enfold), 4.8 Thumbnails (script, metadata, selector UI), 10.6 Trial activation, 10.7 Resume Pack, 11.8 Impersonation |
+| 2026-03-05 | 6.6 AI response caching (AiResponseCache DB table + SHA256 hash, 24h TTL) |
+| 2026-03-05 | 6.8 Graceful degradation: manual writing tips fallback in SummaryEditor + ExperienceEditor on AI failure/503 |
+| 2026-03-05 | 11.5 FeatureUsageLog DB table; tracking added to all AI routes, ATS route, PDF/DOCX/TXT export routes |
+| 2026-03-05 | Admin analytics API extended: featureUsage.last30Days, aiLast30Days (total + byAction), atsLast30Days |
+| 2026-03-05 | Phase 9 Job Matching MVP: Job + JobApplication schema, /api/jobs feed (paginated, filtered, keyword-scored), /api/jobs/[id]/apply (save/status tracking), /api/jobs/applications, /app/jobs UI (browse + my applications), seed script (12 Indian jobs), Jobs nav link in dashboard |
+| 2026-03-05 | Phase 12 Content: 5 new blog articles (professional summary, skills section, career gaps, resume formats, Naukri/LinkedIn tips) = 10 total; JSON-LD HowTo + Article schema added to examples/[slug] pages; richer Article schema on blog posts |
+| 2026-03-05 | Phase 13 DevOps: @sentry/nextjs installed; sentry.client/server/edge.config.ts; next.config.js wrapped with withSentryConfig; CI workflow updated for Sentry release + source map upload; db-backup.yml GitHub Action (daily pg_dump → S3/R2, 30-day retention); health check /api/health enhanced with status/version/timestamp; .env.example updated |

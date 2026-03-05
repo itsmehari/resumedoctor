@@ -1,4 +1,4 @@
-// WBS 3.1 – Resume content helpers
+// WBS 3.1, 9.3 – Resume content helpers + keyword extraction
 import type { ResumeContent, ResumeSection, ExperienceSection, EducationSection } from "@/types/resume";
 
 export function generateSectionId(): string {
@@ -88,6 +88,36 @@ export function parseResumeContent(content: unknown): ResumeContent {
     .filter((s): s is ResumeSection => !!s);
 
   return { sections, ...(meta && { meta }) };
+}
+
+/**
+ * WBS 9.3 – Extract keywords from resume content for job matching.
+ * Returns skills, job titles, and key nouns.
+ */
+export function extractResumeKeywords(content: unknown): string[] {
+  const parsed = parseResumeContent(content);
+  const keywords = new Set<string>();
+
+  for (const section of parsed.sections) {
+    if (section.type === "skills") {
+      const items = (section.data as { items?: string[] }).items ?? [];
+      items.forEach((i) => i?.trim() && keywords.add(i.trim()));
+    } else if (section.type === "experience") {
+      const entries = (section.data as { entries?: Array<{ title?: string; bullets?: string[] }> }).entries ?? [];
+      for (const entry of entries) {
+        if (entry.title?.trim()) keywords.add(entry.title.trim());
+        for (const bullet of entry.bullets ?? []) {
+          const words = bullet.split(/\s+/).filter((w) => w.length > 4);
+          words.forEach((w) => keywords.add(w.replace(/[^a-zA-Z0-9+#.]/g, "").trim()).toString());
+        }
+      }
+    } else if (section.type === "contact") {
+      const title = (section.data as { title?: string }).title;
+      if (title?.trim()) keywords.add(title.trim());
+    }
+  }
+
+  return Array.from(keywords).filter(Boolean).slice(0, 80);
 }
 
 /** Compute resume completion percentage (0–100) */

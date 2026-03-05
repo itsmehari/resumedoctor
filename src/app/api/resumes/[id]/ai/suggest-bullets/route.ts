@@ -1,4 +1,4 @@
-// WBS 6.3, 6.7 – AI suggest bullets for role from job description (rate limited)
+// WBS 6.3, 6.6, 6.7 – AI suggest bullets for role from job description (rate limited + cached)
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getServerSession } from "next-auth";
@@ -6,6 +6,8 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { chatCompletion, isAiConfigured } from "@/lib/ai-client";
 import { checkAiRateLimit, recordAiUsage } from "@/lib/ai-rate-limit";
+import { getCachedAiResponse, setCachedAiResponse } from "@/lib/ai-cache";
+import { recordFeatureUsage } from "@/lib/feature-usage";
 
 const schema = z.object({
   jobDescription: z.string().min(1, "Job description required").max(8000),
@@ -67,6 +69,18 @@ export async function POST(
       );
     }
 
+    const cacheInput = {
+      jobDescription: parsed.data.jobDescription,
+      role: parsed.data.role,
+      company: parsed.data.company,
+    };
+    const cachedBullets = await getCachedAiResponse<{ bullets: string[] }>("suggest-bullets", cacheInput);
+    if (cachedBullets) {
+      await recordAiUsage(user.id, "suggest-bullets");
+      await recordFeatureUsage(user.id, "ai", { action: "suggest-bullets", cached: true });
+      return NextResponse.json(cachedBullets);
+    }
+
     const roleNote = parsed.data.role ? `Role: ${parsed.data.role}\n` : "";
     const companyNote = parsed.data.company ? `Company: ${parsed.data.company}\n` : "";
     const existingNote =
@@ -113,6 +127,8 @@ Return ONLY a JSON array of strings, e.g. ["bullet 1", "bullet 2", ...] No other
     }
 
     await recordAiUsage(user.id, "suggest-bullets");
+    await recordFeatureUsage(user.id, "ai", { action: "suggest-bullets" });
+    await setCachedAiResponse("suggest-bullets", cacheInput, { bullets });
     return NextResponse.json({ bullets });
   } catch (err) {
     console.error("AI suggest bullets error:", err);

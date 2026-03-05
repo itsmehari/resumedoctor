@@ -1,9 +1,10 @@
-// WBS 7.4, 7.7, 7.8 – ATS score API (Pro gated, cached)
+// WBS 7.4, 7.7, 7.8, 11.5 – ATS score API (Pro gated, cached, feature tracked)
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { parseResumeContent } from "@/lib/resume-utils";
 import { getResumeAuth } from "@/lib/trial-auth";
 import { computeAtsScore } from "@/lib/ats-checker";
+import { recordFeatureUsage } from "@/lib/feature-usage";
 
 const PRO_SUBSCRIPTIONS = ["pro_monthly", "pro_annual"];
 const PRO_TRIAL_14 = "pro_trial_14";
@@ -63,6 +64,7 @@ export async function GET(
     });
   }
 
+  await recordFeatureUsage(auth.userId, "ats");
   const result = computeAtsScore(sections);
   await prisma.atsScoreCache.upsert({
     where: { resumeId_version: { resumeId: id, version } },

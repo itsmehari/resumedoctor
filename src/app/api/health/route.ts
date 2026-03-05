@@ -1,4 +1,4 @@
-// Health check for trial OTP – helps debug "Service temporarily unavailable"
+// WBS 13.7 – Health check / uptime monitoring endpoint
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { resend } from "@/lib/email";
@@ -47,7 +47,9 @@ export async function GET() {
 
   return NextResponse.json(
     {
-      trial_otp_ready: allOk,
+      status: allOk ? "ok" : "degraded",
+      version: process.env.NEXT_PUBLIC_APP_VERSION ?? "unknown",
+      timestamp: new Date().toISOString(),
       checks,
       hint: !allOk
         ? "Fix the failing checks above. Add env vars in Vercel → Settings → Environment Variables, then Redeploy."

@@ -1,0 +1,53 @@
+# WBS 13.8 – Automated database backup (daily via GitHub Actions)
+# Dumps the Neon/Supabase PostgreSQL database and uploads to an S3/R2 bucket.
+# Required secrets: DATABASE_URL (direct), BACKUP_S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION
+name: Database Backup
+
+on:
+  schedule:
+    # Runs every day at 02:00 UTC
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install postgresql-client
+        run: sudo apt-get install -y postgresql-client
+
+      - name: Dump database
+        env:
+          PGPASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: |
+          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+          FILENAME="resumedoctor_backup_${TIMESTAMP}.sql.gz"
+          pg_dump "${{ secrets.DATABASE_URL }}" | gzip > "${FILENAME}"
+          echo "BACKUP_FILE=${FILENAME}" >> $GITHUB_ENV
+
+      - name: Upload to S3 / R2
+        if: ${{ secrets.BACKUP_S3_BUCKET != '' }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION || 'ap-south-1' }}
+        run: |
+          aws s3 cp "${{ env.BACKUP_FILE }}" \
+            "s3://${{ secrets.BACKUP_S3_BUCKET }}/backups/${{ env.BACKUP_FILE }}" \
+            --storage-class STANDARD_IA
+
+      - name: Prune backups older than 30 days
+        if: ${{ secrets.BACKUP_S3_BUCKET != '' }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION || 'ap-south-1' }}
+        run: |
+          CUTOFF=$(date -d "30 days ago" +%Y-%m-%dT%H:%M:%S)
+          aws s3api list-objects-v2 \
+            --bucket "${{ secrets.BACKUP_S3_BUCKET }}" \
+            --prefix "backups/" \
+            --query "Contents[?LastModified<='${CUTOFF}'].Key" \
+            --output text | tr '\t' '\n' | while read key; do
+              [ -n "$key" ] && aws s3 rm "s3://${{ secrets.BACKUP_S3_BUCKET }}/${key}"
+            done

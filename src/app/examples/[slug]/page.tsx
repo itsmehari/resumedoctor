@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { siteUrl } from "@/lib/seo";
+import { siteUrl, siteName } from "@/lib/seo";
 import { getExampleBySlug, getExampleSlugs } from "@/lib/examples";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -15,9 +15,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const ex = getExampleBySlug(slug);
   if (!ex) return {};
   return {
-    title: ex.title,
+    title: `${ex.title} | ${siteName}`,
     description: ex.description,
     alternates: { canonical: `${siteUrl}/examples/${slug}` },
+    openGraph: {
+      title: ex.title,
+      description: ex.description,
+      url: `${siteUrl}/examples/${slug}`,
+    },
   };
 }
 
@@ -26,8 +31,32 @@ export default async function ExampleDetailPage({ params }: Props) {
   const ex = getExampleBySlug(slug);
   if (!ex) notFound();
 
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: ex.title,
+    description: ex.description,
+    author: { "@type": "Organization", name: siteName },
+    publisher: { "@type": "Organization", name: siteName, url: siteUrl },
+    mainEntityOfPage: { "@type": "WebPage", "@id": `${siteUrl}/examples/${slug}` },
+  };
+
+  const howToSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: `How to write a ${ex.role} resume`,
+    description: ex.description,
+    step: ex.tips.map((tip, i) => ({
+      "@type": "HowToStep",
+      position: i + 1,
+      text: tip,
+    })),
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }} />
       <header className="border-b border-slate-200 dark:border-slate-800">
         <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="text-xl font-bold text-primary-600">

@@ -1,7 +1,8 @@
-// WBS 5.1 – TXT export (free tier)
+// WBS 5.1, 11.5 – TXT export (free tier, feature tracked)
 import { NextResponse } from "next/server";
 import { getResumeForExport, logExport } from "@/lib/export-api-helpers";
 import { resumeToPlainText } from "@/lib/export-utils";
+import { recordFeatureUsage } from "@/lib/feature-usage";
 
 export async function GET(
   _req: Request,
@@ -16,6 +17,7 @@ export async function GET(
   const text = resumeToPlainText(sections, resume.title);
 
   await logExport(userId, id, "txt");
+  await recordFeatureUsage(userId, "export", { format: "txt" });
 
   const filename = `${slugify(resume.title)}-resume.txt`;
   return new NextResponse(text, {
