@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { ResumePreview } from "@/components/resume-builder/resume-preview";
-import { DEFAULT_RESUME_CONTENT, type ResumeSection } from "@/types/resume";
+import { DEMO_RESUME_CONTENT, type ResumeSection } from "@/types/resume";
 import { trackEvent } from "@/lib/analytics";
 
 function TemplateThumbnail({
@@ -23,7 +23,7 @@ function TemplateThumbnail({
   const [imgFailed, setImgFailed] = useState(false);
   const useImg = thumbnailUrl && !imgFailed;
   return (
-    <div className="w-full h-full flex items-center justify-center min-h-0">
+    <div className="w-full h-full overflow-hidden relative">
       {useImg ? (
         <img
           src={thumbnailUrl}
@@ -32,12 +32,14 @@ function TemplateThumbnail({
           onError={() => setImgFailed(true)}
         />
       ) : (
-        <div className="w-full max-w-[200px] scale-75 origin-center">
+        <div
+          className="origin-top-left"
+          style={{ transform: "scale(0.28)", width: "358%", height: "358%", transformOrigin: "top left" }}
+        >
           <ResumePreview
             sections={sections}
             templateId={templateId}
             primaryColor={primaryColor}
-            className="shadow-md"
           />
         </div>
       )}
@@ -111,7 +113,7 @@ export default function TemplatesPage() {
     }
   };
 
-  const sampleSections = DEFAULT_RESUME_CONTENT.sections;
+  const sampleSections = DEMO_RESUME_CONTENT.sections;
   const filteredTemplates = categoryFilter
     ? templates.filter((t) => (t.category ?? "").toLowerCase() === categoryFilter.toLowerCase())
     : templates;
