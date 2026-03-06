@@ -143,6 +143,45 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account }) {
       if (account?.provider === "credentials") return true;
       if (!user.email) return false;
+
+      // Auto-link OAuth accounts to existing users (e.g. user signed up with
+      // email+password and now tries to sign in with Google/LinkedIn).
+      const existing = await prisma.user.findUnique({
+        where: { email: user.email },
+        include: { accounts: true },
+      });
+
+      if (existing) {
+        const alreadyLinked = existing.accounts.some(
+          (a) => a.provider === account?.provider
+        );
+        if (!alreadyLinked && account) {
+          await prisma.account.create({
+            data: {
+              userId: existing.id,
+              type: account.type,
+              provider: account.provider,
+              providerAccountId: account.providerAccountId,
+              access_token: account.access_token,
+              refresh_token: account.refresh_token,
+              expires_at: account.expires_at,
+              token_type: account.token_type,
+              scope: account.scope,
+              id_token: account.id_token,
+            },
+          });
+          // Keep the existing user's name/image if not set
+          if (!existing.name && user.name) {
+            await prisma.user.update({
+              where: { id: existing.id },
+              data: { name: user.name, image: user.image ?? existing.image },
+            });
+          }
+        }
+        // Mutate user.id so the JWT callback gets the correct existing user id
+        user.id = existing.id;
+      }
+
       return true;
     },
   },

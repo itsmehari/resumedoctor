@@ -33,6 +33,9 @@ const SECTION_LABELS: Record<ResumeSection["type"], string> = {
   education: "Education",
   skills: "Skills",
   projects: "Projects",
+  certifications: "Certifications",
+  languages: "Languages",
+  awards: "Awards",
 };
 
 export function SectionList({ sections, onChange, resumeId }: Props) {

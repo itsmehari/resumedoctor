@@ -1,78 +1,101 @@
 // WBS 4.1 – Template JSON schema definition
-// Defines structure for sections, styling, fonts, and layout
 
 export type TemplateFontFamily = "sans" | "serif" | "mono";
 
-/** How the contact/name header is rendered */
-export type TemplateHeaderVariant = "default" | "top-bar" | "centered";
+// ─── Variant types ────────────────────────────────────────────────────────────
+
+/** How the contact/name header block is rendered */
+export type TemplateHeaderVariant =
+  | "default"       // Left-aligned name + inline contact text
+  | "top-bar"       // Full-width colored band, white name + contact
+  | "centered"      // Centered name in accent color, centered contact below
+  | "split"         // Name left, contact icon-grid right (two-zone header)
+  | "dark-sidebar"; // Name lives inside the dark sidebar (no separate header)
 
 /** How the skills section is rendered */
-export type TemplateSkillsVariant = "plain" | "tags" | "dots";
+export type TemplateSkillsVariant =
+  | "plain"    // "skill1 · skill2 · skill3"
+  | "tags"     // Pill badges with accent color border + tint
+  | "dots"     // 2-col grid with 5-dot proficiency scale
+  | "bars"     // Horizontal progress bars
+  | "compact"; // Comma-separated, tighter
+
+/** How each experience entry is rendered */
+export type TemplateExperienceVariant =
+  | "default"   // Classic: title/date row, company below, bullet list
+  | "timeline"; // Vertical line + circle dot per entry
+
+/** How section title headings are styled */
+export type TemplateSectionTitleVariant =
+  | "underline"    // Thin bottom border (most common)
+  | "left-border"  // Thick left border accent before text
+  | "uppercase"    // All-caps + letter spacing + subtle bottom line
+  | "filled-bg"    // Colored background band behind title
+  | "bold"         // Large bold, no decoration (executive style)
+  | "plain";       // No decoration, light muted text
+
+/** Overall structural layout of the resume */
+export type TemplateLayoutVariant =
+  | "single"       // One column, full width
+  | "two-column"   // Sidebar (left 33%) + main (right 67%)
+  | "dark-sidebar";// Full dark left panel (left 35%) + white right (65%)
+
+// ─── Color / layout sub-types ─────────────────────────────────────────────────
 
 export interface TemplateColors {
-  /** Primary accent (headings, borders, links) */
   primary: string;
-  /** Secondary accent (bullets, highlights) */
   accent?: string;
-  /** Body text color */
   text: string;
-  /** Muted/secondary text */
   muted?: string;
-  /** Border color */
   border?: string;
 }
 
-export type TemplateLayoutType = "single" | "two-column" | "header-split";
-
 export interface TemplateLayout {
-  /** Section spacing */
   spacing?: "compact" | "normal" | "spacious";
-  /** Section title style */
   sectionTitleStyle?: "underline" | "left-border" | "uppercase" | "plain" | "bold";
-  /** Line height for body */
   lineHeight?: "tight" | "normal" | "relaxed";
-  /** Single or two-column (sidebar) layout */
   columns?: "single" | "two-column";
-  /** WBS 4.1 – Explicit layout type */
-  layoutType?: TemplateLayoutType;
-  /** Section types to show in sidebar (when two-column) */
+  /** Explicit layout type – supersedes columns if set */
+  layoutType?: "single" | "two-column" | "header-split" | "dark-sidebar";
+  /** Section types to show in sidebar (two-column / dark-sidebar) */
   sidebarSections?: string[];
-  /** Optional section display order (default: use content order) */
   sectionOrder?: string[];
 }
 
+// ─── Main metadata interface ──────────────────────────────────────────────────
+
 export interface TemplateMetadata {
-  /** Unique ID (e.g. professional-in, fresher-in) */
   id: string;
-  /** Display name */
   name: string;
-  /** Short description for selector */
   description: string;
-  /** Template version for future migrations */
   version: string;
-  /** Font family for body text */
   fontFamily: TemplateFontFamily;
-  /** Color theme */
   colors: TemplateColors;
-  /** Layout options */
   layout?: TemplateLayout;
-  /** Tailwind classes for wrapper (legacy compatibility) */
+
+  // Legacy class-based styling (still used by template-styles.ts for PDF export)
   wrapperClass?: string;
-  /** Tailwind classes for section titles */
   sectionTitleClass?: string;
-  /** Tailwind classes for accent (e.g. left border) */
   accentClass?: string;
-  /** Category for filtering */
+
+  /** Category for filtering in the UI */
   category?: "professional" | "fresher" | "creative" | "minimal" | "corporate" | "executive" | "modern" | "classic" | "ats" | "tech";
-  /** Whether available for trial users */
+
   trialAvailable?: boolean;
-  /** WBS 4.8 – Thumbnail URL for template selector */
   thumbnailUrl?: string;
-  /** Header/name block rendering style */
+
+  // ── NEW: structural + visual variant controls ──────────────────────────────
+  /** Overall page layout */
+  layoutVariant?: TemplateLayoutVariant;
+  /** Header/contact block style */
   headerVariant?: TemplateHeaderVariant;
-  /** Skills section rendering style */
+  /** Skills rendering style */
   skillsVariant?: TemplateSkillsVariant;
-  /** Two-column: give the sidebar a tinted background in the template primary color */
+  /** Experience entry rendering style */
+  experienceVariant?: TemplateExperienceVariant;
+  /** Section title heading style */
+  sectionTitleVariant?: TemplateSectionTitleVariant;
+  /** Tinted sidebar bg (two-column layouts) */
   sidebarBg?: boolean;
 }
 

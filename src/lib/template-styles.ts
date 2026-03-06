@@ -57,10 +57,15 @@ export function getTemplateStyle(templateId: string): TemplateStyle {
   if (legacy) return legacy;
 
   const t = getTemplateOrFallback(resolved);
+  const layoutVariant = t.layoutVariant;
   const layoutType = t.layout?.layoutType;
   const columnsFromLayout = t.layout?.columns ?? "single";
   const columns =
-    layoutType === "two-column" || columnsFromLayout === "two-column"
+    layoutVariant === "two-column" ||
+    layoutVariant === "dark-sidebar" ||
+    layoutType === "two-column" ||
+    layoutType === "dark-sidebar" ||
+    columnsFromLayout === "two-column"
       ? "two-column"
       : "single";
   return {
@@ -77,5 +82,10 @@ export function getTemplateStyle(templateId: string): TemplateStyle {
 /** WBS 4.3 – Get sidebar section types from template metadata */
 export function getSidebarSections(templateId: string): string[] {
   const t = getTemplateOrFallback(resolveTemplateId(templateId));
-  return t.layout?.sidebarSections ?? ["contact", "summary", "skills"];
+  if (t.layout?.sidebarSections) return t.layout.sidebarSections;
+  // Dark sidebar default: contact + skills on left
+  if (t.layoutVariant === "dark-sidebar") {
+    return ["contact", "skills", "languages", "certifications"];
+  }
+  return ["contact", "summary", "skills"];
 }

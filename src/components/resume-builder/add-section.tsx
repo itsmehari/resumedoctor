@@ -11,20 +11,24 @@ interface Props {
   onAdd: (section: ReturnType<typeof createEmptySection>) => void;
 }
 
-const SECTION_TYPES: { type: SectionType; label: string }[] = [
-  { type: "contact", label: "Contact" },
-  { type: "summary", label: "Summary" },
-  { type: "experience", label: "Experience" },
-  { type: "education", label: "Education" },
-  { type: "skills", label: "Skills" },
-  { type: "projects", label: "Projects" },
+const SECTION_TYPES: { type: SectionType; label: string; description: string }[] = [
+  { type: "contact",        label: "Contact",        description: "Name, email, phone, location" },
+  { type: "summary",        label: "Summary",        description: "Professional overview / objective" },
+  { type: "experience",     label: "Experience",     description: "Work history with bullet points" },
+  { type: "education",      label: "Education",      description: "Degrees, schools, GPA" },
+  { type: "skills",         label: "Skills",         description: "Technical & soft skills" },
+  { type: "projects",       label: "Projects",       description: "Key projects & links" },
+  { type: "certifications", label: "Certifications", description: "AWS, Google, industry certs" },
+  { type: "languages",      label: "Languages",      description: "Spoken languages & proficiency" },
+  { type: "awards",         label: "Awards",         description: "Honours, recognitions & achievements" },
 ];
+
+// Only one contact + one summary allowed
+const UNIQUE_SECTIONS = new Set<SectionType>(["contact", "summary"]);
 
 export function AddSection({ sections, onAdd }: Props) {
   const [open, setOpen] = useState(false);
-  const used = new Set(sections.map((s) => s.type));
-  const canAddContact = !used.has("contact");
-  const canAddSummary = !used.has("summary");
+  const usedTypes = new Set(sections.map((s) => s.type));
 
   return (
     <div className="relative">
@@ -35,6 +39,7 @@ export function AddSection({ sections, onAdd }: Props) {
       >
         + Add section
       </button>
+
       {open && (
         <>
           <div
@@ -42,11 +47,9 @@ export function AddSection({ sections, onAdd }: Props) {
             onClick={() => setOpen(false)}
             aria-hidden
           />
-          <div className="absolute top-full left-0 right-0 mt-2 py-2 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 z-20">
-            {SECTION_TYPES.map(({ type, label }) => {
-              const disabled =
-                (type === "contact" && !canAddContact) ||
-                (type === "summary" && !canAddSummary);
+          <div className="absolute top-full left-0 right-0 mt-2 py-2 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-200 dark:border-slate-700 z-20 max-h-80 overflow-y-auto">
+            {SECTION_TYPES.map(({ type, label, description }) => {
+              const disabled = UNIQUE_SECTIONS.has(type) && usedTypes.has(type);
               return (
                 <button
                   key={type}
@@ -58,12 +61,23 @@ export function AddSection({ sections, onAdd }: Props) {
                     setOpen(false);
                   }}
                   className={cn(
-                    "w-full px-4 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-700",
-                    disabled && "opacity-50 cursor-not-allowed"
+                    "w-full px-4 py-2.5 text-left hover:bg-slate-50 dark:hover:bg-slate-700 flex items-start gap-3",
+                    disabled && "opacity-40 cursor-not-allowed"
                   )}
                 >
-                  {label}
-                  {disabled && " (already added)"}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                      {label}
+                      {disabled && (
+                        <span className="ml-1.5 text-xs text-slate-400 font-normal">
+                          (already added)
+                        </span>
+                      )}
+                    </p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                      {description}
+                    </p>
+                  </div>
                 </button>
               );
             })}
