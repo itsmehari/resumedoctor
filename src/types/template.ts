@@ -6,39 +6,45 @@ export type TemplateFontFamily = "sans" | "serif" | "mono";
 
 /** How the contact/name header block is rendered */
 export type TemplateHeaderVariant =
-  | "default"       // Left-aligned name + inline contact text
-  | "top-bar"       // Full-width colored band, white name + contact
+  | "default"       // Left-aligned name + inline contact text on one line
+  | "top-bar"       // Full-width colored band, white name + contact row
   | "centered"      // Centered name in accent color, centered contact below
-  | "split"         // Name left, contact icon-grid right (two-zone header)
-  | "dark-sidebar"; // Name lives inside the dark sidebar (no separate header)
+  | "split"         // Name (large) LEFT │ vertical divider │ contact items stacked RIGHT
+  | "dark-sidebar"; // Name lives inside the dark sidebar panel (no separate header block)
 
 /** How the skills section is rendered */
 export type TemplateSkillsVariant =
-  | "plain"    // "skill1 · skill2 · skill3"
-  | "tags"     // Pill badges with accent color border + tint
-  | "dots"     // 2-col grid with 5-dot proficiency scale
-  | "bars"     // Horizontal progress bars
-  | "compact"; // Comma-separated, tighter
+  | "plain"      // "skill1 · skill2 · skill3" mid-dot-separated
+  | "compact"    // Comma-separated, tighter for ATS templates
+  | "tags"       // Pill badges with accent color border + tint fill
+  | "dots"       // 2-col grid, each skill with a 5-dot proficiency scale
+  | "bars"       // Horizontal fill progress bar per skill
+  | "categories" // Grouped by category sub-headings (uses data.categories)
+  | "icon-grid"; // 2-col grid with small square accent-colored bullet icon
 
 /** How each experience entry is rendered */
 export type TemplateExperienceVariant =
-  | "default"   // Classic: title/date row, company below, bullet list
-  | "timeline"; // Vertical line + circle dot per entry
+  | "default"  // Classic: title/date row, company below, bullet list
+  | "timeline" // Vertical connector line + circle dot per entry
+  | "compact"; // Single row per job: Title @ Company · Dates (no bullets)
 
 /** How section title headings are styled */
 export type TemplateSectionTitleVariant =
-  | "underline"    // Thin bottom border (most common)
-  | "left-border"  // Thick left border accent before text
-  | "uppercase"    // All-caps + letter spacing + subtle bottom line
-  | "filled-bg"    // Colored background band behind title
-  | "bold"         // Large bold, no decoration (executive style)
-  | "plain";       // No decoration, light muted text
+  | "underline"    // Thin bottom border (most common, clean)
+  | "left-border"  // Thick 4px left-side accent border
+  | "uppercase"    // All-caps + wide letter spacing + subtle bottom rule
+  | "filled-bg"    // Colored background band behind the title text
+  | "bold"         // Large bold text, no decoration (executive)
+  | "plain"        // No decoration, light muted uppercase text
+  | "double-rule"  // Thin rule ABOVE + thin rule BELOW the title (newspaper classic)
+  | "tab"          // Title inside a small rounded colored pill/badge
+  | "dot-prefix";  // Small solid circle accent bullet before the title text
 
 /** Overall structural layout of the resume */
 export type TemplateLayoutVariant =
-  | "single"       // One column, full width
-  | "two-column"   // Sidebar (left 33%) + main (right 67%)
-  | "dark-sidebar";// Full dark left panel (left 35%) + white right (65%)
+  | "single"        // One column, full width
+  | "two-column"    // Left sidebar (33%) + main content (67%)
+  | "dark-sidebar"; // Full dark left panel (34%) + white right panel (66%)
 
 // ─── Color / layout sub-types ─────────────────────────────────────────────────
 
@@ -55,9 +61,7 @@ export interface TemplateLayout {
   sectionTitleStyle?: "underline" | "left-border" | "uppercase" | "plain" | "bold";
   lineHeight?: "tight" | "normal" | "relaxed";
   columns?: "single" | "two-column";
-  /** Explicit layout type – supersedes columns if set */
   layoutType?: "single" | "two-column" | "header-split" | "dark-sidebar";
-  /** Section types to show in sidebar (two-column / dark-sidebar) */
   sidebarSections?: string[];
   sectionOrder?: string[];
 }
@@ -73,29 +77,28 @@ export interface TemplateMetadata {
   colors: TemplateColors;
   layout?: TemplateLayout;
 
-  // Legacy class-based styling (still used by template-styles.ts for PDF export)
+  // Legacy class-based styling (used by template-styles.ts for PDF export)
   wrapperClass?: string;
   sectionTitleClass?: string;
   accentClass?: string;
 
-  /** Category for filtering in the UI */
   category?: "professional" | "fresher" | "creative" | "minimal" | "corporate" | "executive" | "modern" | "classic" | "ats" | "tech";
-
   trialAvailable?: boolean;
   thumbnailUrl?: string;
 
-  // ── NEW: structural + visual variant controls ──────────────────────────────
-  /** Overall page layout */
+  // ── Structural / visual variant controls ──────────────────────────────────
   layoutVariant?: TemplateLayoutVariant;
-  /** Header/contact block style */
   headerVariant?: TemplateHeaderVariant;
-  /** Skills rendering style */
   skillsVariant?: TemplateSkillsVariant;
-  /** Experience entry rendering style */
   experienceVariant?: TemplateExperienceVariant;
-  /** Section title heading style */
   sectionTitleVariant?: TemplateSectionTitleVariant;
-  /** Tinted sidebar bg (two-column layouts) */
+
+  // ── Per-template decorative features ─────────────────────────────────────
+  /** Render a thin 4px full-height accent strip on the left page edge */
+  accentStrip?: boolean;
+  /** Render a circle containing the person's initials in the header */
+  showInitialsAvatar?: boolean;
+  /** Tinted sidebar background in the template's primary color (two-column only) */
   sidebarBg?: boolean;
 }
 
