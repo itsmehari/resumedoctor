@@ -11,34 +11,59 @@ interface Props {
   onAdd: (section: ReturnType<typeof createEmptySection>) => void;
 }
 
-const SECTION_GROUPS: { group: string; items: { type: SectionType; label: string; description: string }[] }[] = [
+const SECTION_GROUPS: {
+  group: string;
+  hint: string;
+  color: string;
+  items: { type: SectionType; label: string; icon: string; description: string }[];
+}[] = [
   {
-    group: "Core",
+    group: "Identity",
+    hint: "Who you are",
+    color: "text-blue-600",
     items: [
-      { type: "contact",    label: "Contact",         description: "Name, email, phone, location, links" },
-      { type: "summary",    label: "Summary",         description: "Professional overview (3–5 years experience)" },
-      { type: "objective",  label: "Career Objective",description: "Goal statement for freshers & career changers" },
-      { type: "experience", label: "Experience",      description: "Work history with bullet achievements" },
-      { type: "education",  label: "Education",       description: "Degrees, schools, GPA, honours" },
-      { type: "skills",     label: "Skills",          description: "Technical & soft skills with categories" },
-      { type: "projects",   label: "Projects",        description: "Multiple projects with tech stack tags" },
+      { type: "contact",   icon: "◈", label: "Contact",          description: "Name, email, phone, location, GitHub, LinkedIn" },
+      { type: "summary",   icon: "◆", label: "Summary",          description: "Professional snapshot — for 3+ years experience" },
+      { type: "objective", icon: "◆", label: "Career Objective", description: "Goal statement — ideal for freshers & career changers" },
     ],
   },
   {
-    group: "Credentials",
+    group: "Work & Education",
+    hint: "Your journey",
+    color: "text-emerald-600",
     items: [
-      { type: "certifications", label: "Certifications", description: "AWS, Google, industry certifications" },
-      { type: "awards",         label: "Awards",          description: "Honours, prizes, recognition" },
-      { type: "publications",   label: "Publications",    description: "Research papers, articles, books" },
+      { type: "experience", icon: "◉", label: "Work Experience",  description: "Job titles, companies, bullet achievements" },
+      { type: "education",  icon: "◈", label: "Education",        description: "Degrees, schools, GPA, honours" },
+      { type: "volunteer",  icon: "◇", label: "Volunteer Work",   description: "NGO, community service, social impact" },
     ],
   },
   {
-    group: "Extras",
+    group: "Skills & Projects",
+    hint: "What you can do",
+    color: "text-violet-600",
     items: [
-      { type: "languages",  label: "Languages",     description: "Spoken languages with proficiency level" },
-      { type: "volunteer",  label: "Volunteer Work", description: "NGO work, community service" },
-      { type: "interests",  label: "Interests",     description: "Hobbies & personal interests" },
-      { type: "custom",     label: "Custom Section", description: "User-defined heading with bullets" },
+      { type: "skills",    icon: "◇", label: "Skills",    description: "Technical & soft skills — supports category grouping" },
+      { type: "projects",  icon: "◉", label: "Projects",  description: "Multiple projects with tech stack tags & bullets" },
+      { type: "languages", icon: "◎", label: "Languages", description: "Spoken languages with 5-level proficiency dots" },
+    ],
+  },
+  {
+    group: "Achievements",
+    hint: "What you've earned",
+    color: "text-amber-600",
+    items: [
+      { type: "certifications", icon: "◈", label: "Certifications", description: "AWS, Google, NPTEL, industry certs + credential ID" },
+      { type: "awards",         icon: "★", label: "Awards",         description: "Prizes, recognition, honours received" },
+      { type: "publications",   icon: "◆", label: "Publications",   description: "Research papers, articles, books, DOI links" },
+    ],
+  },
+  {
+    group: "Personal",
+    hint: "Your full picture",
+    color: "text-rose-500",
+    items: [
+      { type: "interests", icon: "♦", label: "Interests",       description: "Hobbies, passions, personal pursuits" },
+      { type: "custom",    icon: "◆", label: "Custom Section",  description: "Your own heading — courses, extras, anything else" },
     ],
   },
 ];
@@ -54,53 +79,74 @@ export function AddSection({ sections, onAdd }: Props) {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-600 px-4 py-3 text-sm text-slate-600 dark:text-slate-400 hover:border-primary-500 hover:text-primary-600 transition-colors w-full justify-center"
+        className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 px-4 py-3.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:border-primary-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/10 transition-all w-full"
       >
-        + Add section
+        <span className="text-lg leading-none">+</span>
+        Add section
       </button>
 
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} aria-hidden />
-          <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-200 dark:border-slate-700 z-20 max-h-[70vh] overflow-y-auto">
-            {SECTION_GROUPS.map((group) => (
-              <div key={group.group}>
-                <div className="px-4 pt-3 pb-1">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
-                    {group.group}
-                  </p>
-                </div>
-                {group.items.map(({ type, label, description }) => {
-                  const disabled = UNIQUE_SECTIONS.has(type) && usedTypes.has(type);
-                  return (
-                    <button
-                      key={type}
-                      type="button"
-                      disabled={disabled}
-                      onClick={() => {
-                        onAdd(createEmptySection(type, sections.length));
-                        setOpen(false);
-                      }}
-                      className={cn(
-                        "w-full px-4 py-2.5 text-left hover:bg-slate-50 dark:hover:bg-slate-700 flex items-start gap-3",
-                        disabled && "opacity-40 cursor-not-allowed"
-                      )}
-                    >
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
-                          {label}
-                          {disabled && (
-                            <span className="ml-1.5 text-xs text-slate-400 font-normal">(already added)</span>
+          <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 z-20 overflow-hidden">
+            <div className="max-h-[75vh] overflow-y-auto">
+              {SECTION_GROUPS.map((group, gi) => (
+                <div key={group.group}>
+                  {/* Group header */}
+                  <div className={`flex items-baseline gap-2 px-4 pt-4 ${gi > 0 ? "border-t border-slate-100 dark:border-slate-800" : ""}`}>
+                    <p className={`text-[11px] font-bold uppercase tracking-widest ${group.color}`}>
+                      {group.group}
+                    </p>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500">{group.hint}</p>
+                  </div>
+
+                  {/* Section items */}
+                  <div className="py-1.5 px-2">
+                    {group.items.map(({ type, label, icon, description }) => {
+                      const disabled = UNIQUE_SECTIONS.has(type) && usedTypes.has(type);
+                      const used = usedTypes.has(type) && !UNIQUE_SECTIONS.has(type);
+                      return (
+                        <button
+                          key={type}
+                          type="button"
+                          disabled={disabled}
+                          onClick={() => {
+                            onAdd(createEmptySection(type, sections.length));
+                            setOpen(false);
+                          }}
+                          className={cn(
+                            "w-full px-3 py-2.5 text-left rounded-lg flex items-start gap-3 transition-colors",
+                            disabled
+                              ? "opacity-35 cursor-not-allowed"
+                              : "hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
                           )}
-                        </p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">{description}</p>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            ))}
-            <div className="h-2" />
+                        >
+                          {/* Icon circle */}
+                          <span className={`mt-0.5 w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs ${group.color} bg-slate-100 dark:bg-slate-800`}>
+                            {icon}
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-snug">
+                                {label}
+                              </p>
+                              {disabled && (
+                                <span className="text-[10px] bg-slate-100 dark:bg-slate-700 text-slate-400 px-1.5 py-0 rounded-full">added</span>
+                              )}
+                              {used && !disabled && (
+                                <span className="text-[10px] bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 px-1.5 py-0 rounded-full">in use</span>
+                              )}
+                            </div>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">{description}</p>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+              <div className="h-3" />
+            </div>
           </div>
         </>
       )}
