@@ -179,26 +179,196 @@ export function buildDocx(
             })
           );
           for (const proj of projEntries2) {
-          children.push(
-            new Paragraph({
-              children: [
-                new TextRun({ text: proj.name || "Project", bold: true }),
-                ...(proj.link
-                  ? [new TextRun({ text: ` - ${proj.link}`, italics: true })]
-                  : []),
-              ],
-              spacing: { after: 100 },
-            })
-          );
-          for (const b of proj.bullets?.filter(Boolean) ?? []) {
             children.push(
               new Paragraph({
-                children: [new TextRun(`• ${b}`)],
-                indent: { left: 720 },
-                spacing: { after: 80 },
+                children: [
+                  new TextRun({ text: proj.name || "Project", bold: true }),
+                  ...(proj.link
+                    ? [new TextRun({ text: ` - ${proj.link}`, italics: true })]
+                    : []),
+                ],
+                spacing: { after: 100 },
+              })
+            );
+            for (const b of proj.bullets?.filter(Boolean) ?? []) {
+              children.push(
+                new Paragraph({
+                  children: [new TextRun(`• ${b}`)],
+                  indent: { left: 720 },
+                  spacing: { after: 80 },
+                })
+              );
+            }
+          }
+          children.push(new Paragraph({ text: "", spacing: { after: 200 } }));
+        }
+        break;
+      }
+
+      case "certifications": {
+        const certEntries = section.data.entries?.filter((e) => e.name) ?? [];
+        if (certEntries.length > 0) {
+          children.push(
+            new Paragraph({ text: "Certifications", heading: HeadingLevel.HEADING_1, spacing: { before: 300, after: 200 } })
+          );
+          for (const cert of certEntries) {
+            const meta = [cert.issuer, cert.date].filter(Boolean).join(", ");
+            children.push(
+              new Paragraph({
+                children: [
+                  new TextRun({ text: cert.name, bold: true }),
+                  ...(meta ? [new TextRun({ text: `  —  ${meta}`, italics: true })] : []),
+                ],
+                spacing: { after: 120 },
               })
             );
           }
+          children.push(new Paragraph({ text: "", spacing: { after: 200 } }));
+        }
+        break;
+      }
+
+      case "languages": {
+        const langEntries = section.data.entries?.filter((e) => e.name) ?? [];
+        if (langEntries.length > 0) {
+          children.push(
+            new Paragraph({ text: "Languages", heading: HeadingLevel.HEADING_1, spacing: { before: 300, after: 200 } })
+          );
+          for (const lang of langEntries) {
+            children.push(
+              new Paragraph({
+                children: [
+                  new TextRun({ text: lang.name, bold: true }),
+                  ...(lang.proficiency ? [new TextRun(`  —  ${lang.proficiency}`)] : []),
+                ],
+                spacing: { after: 120 },
+              })
+            );
+          }
+          children.push(new Paragraph({ text: "", spacing: { after: 200 } }));
+        }
+        break;
+      }
+
+      case "awards": {
+        const awardEntries = section.data.entries?.filter((e) => e.title) ?? [];
+        if (awardEntries.length > 0) {
+          children.push(
+            new Paragraph({ text: "Awards & Honours", heading: HeadingLevel.HEADING_1, spacing: { before: 300, after: 200 } })
+          );
+          for (const award of awardEntries) {
+            children.push(
+              new Paragraph({
+                children: [
+                  new TextRun({ text: award.title, bold: true }),
+                  ...(award.issuer ? [new TextRun(`  —  ${award.issuer}`)] : []),
+                  ...(award.date ? [new TextRun(`  (${award.date})`)] : []),
+                ],
+                spacing: { after: 100 },
+              })
+            );
+            if (award.description) {
+              children.push(
+                new Paragraph({ children: [new TextRun(award.description)], indent: { left: 720 }, spacing: { after: 80 } })
+              );
+            }
+          }
+          children.push(new Paragraph({ text: "", spacing: { after: 200 } }));
+        }
+        break;
+      }
+
+      case "objective": {
+        if (section.data.text?.trim()) {
+          children.push(
+            new Paragraph({ text: "Objective", heading: HeadingLevel.HEADING_1, spacing: { before: 300, after: 200 } }),
+            new Paragraph({ children: [new TextRun(section.data.text.trim())], spacing: { after: 300 } })
+          );
+        }
+        break;
+      }
+
+      case "volunteer": {
+        const volEntries = section.data.entries?.filter((e) => e.organization) ?? [];
+        if (volEntries.length > 0) {
+          children.push(
+            new Paragraph({ text: "Volunteer Work", heading: HeadingLevel.HEADING_1, spacing: { before: 300, after: 200 } })
+          );
+          for (const vol of volEntries) {
+            const dateStr = vol.startDate || vol.endDate ? `${vol.startDate ?? ""} – ${vol.endDate ?? "Present"}` : "";
+            children.push(
+              new Paragraph({
+                children: [
+                  new TextRun({ text: `${vol.role ?? "Volunteer"} at ${vol.organization}`, bold: true }),
+                  ...(dateStr ? [new TextRun(`  (${dateStr})`)] : []),
+                ],
+                spacing: { after: 100 },
+              })
+            );
+            for (const b of vol.bullets?.filter(Boolean) ?? []) {
+              children.push(
+                new Paragraph({ children: [new TextRun(`• ${b}`)], indent: { left: 720 }, spacing: { after: 80 } })
+              );
+            }
+          }
+          children.push(new Paragraph({ text: "", spacing: { after: 200 } }));
+        }
+        break;
+      }
+
+      case "publications": {
+        const pubEntries = section.data.entries?.filter((e) => e.title) ?? [];
+        if (pubEntries.length > 0) {
+          children.push(
+            new Paragraph({ text: "Publications", heading: HeadingLevel.HEADING_1, spacing: { before: 300, after: 200 } })
+          );
+          for (const pub of pubEntries) {
+            children.push(
+              new Paragraph({
+                children: [
+                  new TextRun({ text: pub.title, bold: true }),
+                  ...(pub.publisher ? [new TextRun(`  —  ${pub.publisher}`)] : []),
+                  ...(pub.date ? [new TextRun(`  (${pub.date})`)] : []),
+                ],
+                spacing: { after: 100 },
+              })
+            );
+            if (pub.url) {
+              children.push(
+                new Paragraph({ children: [new TextRun({ text: pub.url, italics: true })], indent: { left: 720 }, spacing: { after: 80 } })
+              );
+            }
+          }
+          children.push(new Paragraph({ text: "", spacing: { after: 200 } }));
+        }
+        break;
+      }
+
+      case "interests": {
+        const interestItems = section.data.items?.filter(Boolean) ?? [];
+        if (interestItems.length > 0) {
+          children.push(
+            new Paragraph({ text: "Interests", heading: HeadingLevel.HEADING_1, spacing: { before: 300, after: 200 } }),
+            new Paragraph({ children: [new TextRun(interestItems.join(" · "))], spacing: { after: 300 } })
+          );
+        }
+        break;
+      }
+
+      case "custom": {
+        if (section.data.heading || section.data.text || section.data.bullets?.some(Boolean)) {
+          children.push(
+            new Paragraph({ text: section.data.heading || "Additional Information", heading: HeadingLevel.HEADING_1, spacing: { before: 300, after: 200 } })
+          );
+          if (section.data.text?.trim()) {
+            children.push(
+              new Paragraph({ children: [new TextRun(section.data.text.trim())], spacing: { after: 200 } })
+            );
+          }
+          for (const b of section.data.bullets?.filter(Boolean) ?? []) {
+            children.push(
+              new Paragraph({ children: [new TextRun(`• ${b}`)], indent: { left: 720 }, spacing: { after: 80 } })
+            );
           }
           children.push(new Paragraph({ text: "", spacing: { after: 200 } }));
         }

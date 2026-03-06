@@ -1,108 +1,158 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import ReactMarkdown from "react-markdown";
 import type { Metadata } from "next";
-import { siteUrl, siteName } from "@/lib/seo";
+import { siteUrl } from "@/lib/seo";
 import { getPostBySlug, getPostSlugs } from "@/lib/blog";
-import { format } from "date-fns";
+import ReactMarkdown from "react-markdown";
 
-type Props = { params: Promise<{ slug: string }> };
+interface Props {
+  params: { slug: string };
+}
 
 export async function generateStaticParams() {
   return getPostSlugs().map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = getPostBySlug(params.slug);
   if (!post) return {};
   return {
-    title: post.title,
+    title: `${post.title} | ResumeDoctor Blog`,
     description: post.description,
-    alternates: { canonical: `${siteUrl}/blog/${slug}` },
+    alternates: { canonical: `${siteUrl}/blog/${post.slug}` },
     openGraph: {
       title: post.title,
       description: post.description,
-      url: `${siteUrl}/blog/${slug}`,
+      url: `${siteUrl}/blog/${post.slug}`,
+      type: "article",
+      publishedTime: post.date,
     },
   };
 }
 
-export default async function BlogPostPage({ params }: Props) {
-  const { slug } = await params;
-  const post = getPostBySlug(slug);
+export default function BlogPostPage({ params }: Props) {
+  const post = getPostBySlug(params.slug);
   if (!post) notFound();
 
-  const articleSchema = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: post.title,
-    description: post.description,
-    datePublished: post.date,
-    dateModified: post.date,
-    author: { "@type": "Organization", name: post.author, url: siteUrl },
-    publisher: { "@type": "Organization", name: siteName, url: siteUrl },
-    mainEntityOfPage: { "@type": "WebPage", "@id": `${siteUrl}/blog/${post.slug}` },
-    url: `${siteUrl}/blog/${post.slug}`,
-  };
+  const allSlugs = getPostSlugs();
+  const currentIndex = allSlugs.indexOf(params.slug);
+  const prevSlug = currentIndex > 0 ? allSlugs[currentIndex - 1] : null;
+  const nextSlug = currentIndex < allSlugs.length - 1 ? allSlugs[currentIndex + 1] : null;
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
-      />
-      <header className="border-b border-slate-200 dark:border-slate-800">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-slate-950">
+      {/* Header */}
+      <header className="sticky top-0 z-10 border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-950/90 backdrop-blur-sm">
         <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="text-xl font-bold text-primary-600">
             ResumeDoctor
           </Link>
-          <nav className="flex gap-4">
+          <nav className="flex items-center gap-4 text-sm">
             <Link href="/blog" className="text-slate-600 hover:text-primary-600 dark:text-slate-400">
-              Blog
+              ← Blog
             </Link>
-            <Link href="/" className="text-slate-600 hover:text-primary-600 dark:text-slate-400">
-              Home
+            <Link href="/try"
+              className="rounded-lg bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 font-semibold transition-colors">
+              Build free resume
             </Link>
           </nav>
         </div>
       </header>
 
-      <article className="flex-1 max-w-3xl mx-auto w-full px-4 py-12">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
-          {post.title}
-        </h1>
-        <p className="mt-2 text-slate-500 dark:text-slate-400">
-          {post.date ? format(new Date(post.date), "MMMM d, yyyy") : ""} · {post.readTime} min read · {post.author}
-        </p>
+      <main className="flex-1 max-w-3xl mx-auto w-full px-4 py-12">
 
-        <div className="mt-8 prose prose-slate dark:prose-invert max-w-none prose-headings:font-semibold prose-a:text-primary-600 prose-a:no-underline hover:prose-a:underline">
-          <ReactMarkdown
-            components={{
-              a: ({ href, children }) => {
-                if (href?.startsWith("/")) {
-                  return <Link href={href}>{children}</Link>;
-                }
-                return <a href={href} target="_blank" rel="noopener noreferrer">{children}</a>;
-              },
-            }}
-          >
-            {post.content}
-          </ReactMarkdown>
+        {/* Article header */}
+        <div className="mb-10">
+          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-4">
+            <Link href="/blog" className="hover:text-primary-600">Blog</Link>
+            <span>›</span>
+            <span>{post.title}</span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-slate-100 leading-tight tracking-tight">
+            {post.title}
+          </h1>
+          <p className="mt-4 text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
+            {post.description}
+          </p>
+          <div className="flex items-center gap-4 mt-5 pt-5 border-t border-slate-200 dark:border-slate-800">
+            <div className="w-9 h-9 rounded-full bg-primary-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+              {post.author?.slice(0, 1) ?? "R"}
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{post.author}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                {post.date
+                  ? new Date(post.date).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })
+                  : ""}
+                {" · "}{post.readTime} min read
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-700 flex gap-4">
-          <Link
-            href="/try"
-            className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700"
-          >
-            Create Your Resume
-          </Link>
-          <Link href="/blog" className="text-primary-600 hover:underline font-medium">
-            ← More articles
+        {/* CTA banner */}
+        <div className="rounded-2xl bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 p-5 mb-10 flex items-center justify-between gap-4 flex-wrap">
+          <p className="text-sm font-medium text-primary-900 dark:text-primary-200">
+            Ready to build your resume? Start free — takes under 5 minutes.
+          </p>
+          <Link href="/try"
+            className="flex-shrink-0 rounded-lg bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold px-5 py-2.5 transition-colors">
+            Try free →
           </Link>
         </div>
-      </article>
+
+        {/* Article body */}
+        <article className="prose prose-slate dark:prose-invert max-w-none
+          prose-h1:text-2xl prose-h1:font-bold prose-h1:mt-10 prose-h1:mb-4
+          prose-h2:text-xl prose-h2:font-bold prose-h2:mt-8 prose-h2:mb-3
+          prose-h3:text-base prose-h3:font-semibold prose-h3:mt-6 prose-h3:mb-2
+          prose-p:leading-relaxed prose-p:text-slate-700 dark:prose-p:text-slate-300
+          prose-li:text-slate-700 dark:prose-li:text-slate-300
+          prose-a:text-primary-600 prose-a:no-underline hover:prose-a:underline
+          prose-strong:text-slate-900 dark:prose-strong:text-slate-100
+          prose-code:text-primary-700 dark:prose-code:text-primary-300 prose-code:bg-slate-100 dark:prose-code:bg-slate-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm
+          prose-blockquote:border-primary-400 prose-blockquote:bg-slate-50 dark:prose-blockquote:bg-slate-900 prose-blockquote:py-1 prose-blockquote:rounded-r-lg
+          prose-ul:space-y-1 prose-ol:space-y-1
+        ">
+          <ReactMarkdown>{post.content}</ReactMarkdown>
+        </article>
+
+        {/* Bottom CTA */}
+        <div className="mt-14 rounded-2xl bg-gradient-to-br from-primary-600 to-primary-700 p-8 text-center">
+          <h2 className="text-xl font-bold text-white mb-2">
+            Put these tips into action right now
+          </h2>
+          <p className="text-white/80 text-sm mb-5">
+            Build your resume with our ATS-friendly templates — free to start.
+          </p>
+          <Link href="/try"
+            className="inline-flex items-center gap-2 rounded-xl bg-white hover:bg-slate-50 text-primary-700 font-bold px-7 py-3 transition-colors shadow">
+            Build my resume free →
+          </Link>
+        </div>
+
+        {/* Post navigation */}
+        <nav className="mt-10 pt-8 border-t border-slate-200 dark:border-slate-800 flex justify-between gap-4">
+          {prevSlug ? (
+            <Link href={`/blog/${prevSlug}`}
+              className="text-sm text-primary-600 hover:underline">
+              ← Previous article
+            </Link>
+          ) : <span />}
+          {nextSlug ? (
+            <Link href={`/blog/${nextSlug}`}
+              className="text-sm text-primary-600 hover:underline">
+              Next article →
+            </Link>
+          ) : <span />}
+        </nav>
+
+        <div className="mt-6 text-center">
+          <Link href="/blog" className="text-slate-500 hover:text-primary-600 text-sm hover:underline">
+            ← Back to all articles
+          </Link>
+        </div>
+      </main>
     </div>
   );
 }
