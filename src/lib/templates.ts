@@ -74,6 +74,7 @@ export const TEMPLATES: TemplateMetadata[] = [
     sectionTitleVariant: "left-border",
     accentStrip: false,
     showInitialsAvatar: false,
+    sectionIcons: true,
     trialAvailable: true,
   },
 
@@ -94,6 +95,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     sectionTitleVariant: "uppercase",
     accentStrip: false,
     showInitialsAvatar: true,
+    showPhotoPlaceholder: false,
+    sectionIcons: false,
     trialAvailable: false,
   },
 
@@ -134,6 +137,7 @@ export const TEMPLATES: TemplateMetadata[] = [
     sectionTitleVariant: "double-rule",
     accentStrip: false,
     showInitialsAvatar: false,
+    showPhotoPlaceholder: true,
     trialAvailable: false,
   },
 
@@ -178,6 +182,7 @@ export const TEMPLATES: TemplateMetadata[] = [
     sectionTitleVariant: "tab",
     accentStrip: true,
     showInitialsAvatar: false,
+    sectionIcons: true,
     trialAvailable: false,
   },
 
@@ -302,6 +307,7 @@ export const TEMPLATES: TemplateMetadata[] = [
     sectionTitleVariant: "left-border",
     accentStrip: true,
     showInitialsAvatar: false,
+    sectionIcons: true,
     trialAvailable: true,
   },
 
@@ -386,6 +392,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     sectionTitleVariant: "tab",
     accentStrip: false,
     showInitialsAvatar: true,
+    showPhotoPlaceholder: false,
+    sectionIcons: false,
     trialAvailable: false,
   },
 
@@ -473,6 +481,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     sectionTitleVariant: "bold",
     accentStrip: true,
     showInitialsAvatar: false,
+    showPhotoPlaceholder: true,
+    sectionIcons: false,
     trialAvailable: false,
   },
 
@@ -610,6 +620,8 @@ export const TEMPLATES: TemplateMetadata[] = [
     sectionTitleVariant: "bold",
     accentStrip: false,
     showInitialsAvatar: true,
+    showPhotoPlaceholder: false,
+    sectionIcons: true,
     trialAvailable: false,
   },
 

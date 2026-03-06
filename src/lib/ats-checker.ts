@@ -45,8 +45,11 @@ function extractText(sections: ResumeSection[]): string {
     if (s.type === "skills" && s.data.items) parts.push(...s.data.items);
     if (s.type === "projects") {
       const d = s.data;
-      if (d.name) parts.push(d.name);
-      if (d.bullets) parts.push(...(d.bullets || []));
+      const projEntries = "entries" in d ? d.entries : [d as { name?: string; bullets?: string[] }];
+      for (const p of projEntries) {
+        if (p.name) parts.push(p.name);
+        if (p.bullets) parts.push(...(p.bullets || []));
+      }
     }
   }
   return parts.join(" ").toLowerCase();

@@ -77,18 +77,22 @@ export function resumeToPlainText(
         }
         break;
 
-      case "projects":
-        const proj = section.data;
-        if (proj.name || proj.bullets?.some(Boolean)) {
+      case "projects": {
+        const pd = section.data;
+        const projEntries = "entries" in pd ? pd.entries : [pd as { name?: string; link?: string; bullets?: string[] }];
+        if (projEntries.some((p) => p.name || p.bullets?.some(Boolean))) {
           lines.push("PROJECTS");
-          lines.push(proj.name || "Project");
-          if (proj.link) lines.push(`Link: ${proj.link}`);
-          for (const b of proj.bullets?.filter(Boolean) ?? []) {
-            lines.push(`  • ${b}`);
+          for (const p of projEntries) {
+            lines.push(p.name || "Project");
+            if (p.link) lines.push(`Link: ${p.link}`);
+            for (const b of p.bullets?.filter(Boolean) ?? []) {
+              lines.push(`  • ${b}`);
+            }
           }
           lines.push("");
         }
         break;
+      }
     }
   }
 
@@ -172,22 +176,19 @@ export function resumeToHtml(
             <h2>Skills</h2>
             <p>${items.map(escapeHtml).join(" • ")}</p>
           </section>`;
-        case "projects":
-          const proj = section.data;
-          const projBullets = (proj.bullets?.filter(Boolean) ?? [])
-            .map((b) => `<li>${escapeHtml(b)}</li>`)
-            .join("");
-          return `
-          <section>
-            <h2>Projects</h2>
-            <div class="entry">
-              <div class="entry-header">
-                <span class="title">${escapeHtml(proj.name || "Project")}</span>
-              </div>
-              ${proj.link ? `<div class="company"><a href="${escapeHtml(proj.link)}">${escapeHtml(proj.link)}</a></div>` : ""}
-              ${projBullets ? `<ul>${projBullets}</ul>` : ""}
-            </div>
-          </section>`;
+        case "projects": {
+          const ph = section.data;
+          const phEntries = "entries" in ph ? ph.entries : [ph as { name?: string; link?: string; bullets?: string[] }];
+          const projHtml = phEntries.map((p) => {
+            const bHTML = (p.bullets?.filter(Boolean) ?? []).map((b: string) => `<li>${escapeHtml(b)}</li>`).join("");
+            return `<div class="entry">
+              <div class="entry-header"><span class="title">${escapeHtml(p.name || "Project")}</span></div>
+              ${p.link ? `<div class="company"><a href="${escapeHtml(p.link)}">${escapeHtml(p.link)}</a></div>` : ""}
+              ${bHTML ? `<ul>${bHTML}</ul>` : ""}
+            </div>`;
+          }).join("");
+          return `<section><h2>Projects</h2>${projHtml}</section>`;
+        }
         default:
           return "";
       }

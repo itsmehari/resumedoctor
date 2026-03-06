@@ -3,13 +3,18 @@
 export type SectionType =
   | "contact"
   | "summary"
+  | "objective"
   | "experience"
   | "education"
   | "skills"
   | "projects"
   | "certifications"
   | "languages"
-  | "awards";
+  | "awards"
+  | "volunteer"
+  | "publications"
+  | "interests"
+  | "custom";
 
 export interface BaseSection {
   id: string;
@@ -23,11 +28,15 @@ export interface ContactSection extends BaseSection {
   type: "contact";
   data: {
     name: string;
+    /** Professional headline shown below the name (e.g. "Senior Software Engineer") */
+    title?: string;
     email: string;
     phone: string;
     location: string;
     website?: string;
     linkedin?: string;
+    github?: string;
+    portfolio?: string;
   };
 }
 
@@ -35,18 +44,32 @@ export interface ContactSection extends BaseSection {
 
 export interface SummarySection extends BaseSection {
   type: "summary";
-  data: {
-    text: string;
-  };
+  data: { text: string };
+}
+
+// ─── Objective (fresher / career change variant of summary) ──────────────────
+
+export interface ObjectiveSection extends BaseSection {
+  type: "objective";
+  data: { text: string };
 }
 
 // ─── Experience ───────────────────────────────────────────────────────────────
+
+export type EmploymentType =
+  | "Full-time"
+  | "Part-time"
+  | "Contract"
+  | "Freelance"
+  | "Internship"
+  | "Apprenticeship";
 
 export interface ExperienceEntry {
   id: string;
   title: string;
   company: string;
   location?: string;
+  employmentType?: EmploymentType;
   startDate: string;
   endDate: string;
   current: boolean;
@@ -71,13 +94,14 @@ export interface EducationEntry {
   endDate: string;
   details?: string;
   gpa?: string;
+  honours?: string;
 }
 
 export interface EducationSection extends BaseSection {
   type: "education";
   data:
     | { entries: EducationEntry[] }
-    | Omit<EducationEntry, "id">; // legacy single-degree
+    | Omit<EducationEntry, "id">;
 }
 
 // ─── Skills ───────────────────────────────────────────────────────────────────
@@ -86,22 +110,39 @@ export interface SkillsSection extends BaseSection {
   type: "skills";
   data: {
     items: string[];
+    /** Optional category grouping for the "categories" variant */
     categories?: { name: string; items: string[] }[];
+    /** Per-skill level 1–5 for bars/dots rendering */
+    levels?: Record<string, number>;
   };
 }
 
-// ─── Projects ─────────────────────────────────────────────────────────────────
+// ─── Projects (multi-entry) ───────────────────────────────────────────────────
+
+export interface ProjectEntry {
+  id: string;
+  name: string;
+  description?: string;
+  link?: string;
+  bullets: string[];
+  tech?: string[];
+  startDate?: string;
+  endDate?: string;
+}
 
 export interface ProjectsSection extends BaseSection {
   type: "projects";
-  data: {
-    name: string;
-    description?: string;
-    link?: string;
-    bullets: string[];
-    startDate?: string;
-    endDate?: string;
-  };
+  data:
+    | { entries: ProjectEntry[] }
+    | {
+        // Legacy single-project format
+        name: string;
+        description?: string;
+        link?: string;
+        bullets: string[];
+        startDate?: string;
+        endDate?: string;
+      };
 }
 
 // ─── Certifications ───────────────────────────────────────────────────────────
@@ -117,9 +158,7 @@ export interface CertificationEntry {
 
 export interface CertificationsSection extends BaseSection {
   type: "certifications";
-  data: {
-    entries: CertificationEntry[];
-  };
+  data: { entries: CertificationEntry[] };
 }
 
 // ─── Languages ────────────────────────────────────────────────────────────────
@@ -134,9 +173,7 @@ export interface LanguageEntry {
 
 export interface LanguagesSection extends BaseSection {
   type: "languages";
-  data: {
-    entries: LanguageEntry[];
-  };
+  data: { entries: LanguageEntry[] };
 }
 
 // ─── Awards ───────────────────────────────────────────────────────────────────
@@ -151,8 +188,60 @@ export interface AwardEntry {
 
 export interface AwardsSection extends BaseSection {
   type: "awards";
+  data: { entries: AwardEntry[] };
+}
+
+// ─── Volunteer ────────────────────────────────────────────────────────────────
+
+export interface VolunteerEntry {
+  id: string;
+  role: string;
+  organization: string;
+  location?: string;
+  startDate: string;
+  endDate: string;
+  current: boolean;
+  bullets: string[];
+}
+
+export interface VolunteerSection extends BaseSection {
+  type: "volunteer";
+  data: { entries: VolunteerEntry[] };
+}
+
+// ─── Publications ─────────────────────────────────────────────────────────────
+
+export interface PublicationEntry {
+  id: string;
+  title: string;
+  publisher: string;
+  date: string;
+  authors?: string;
+  url?: string;
+  doi?: string;
+}
+
+export interface PublicationsSection extends BaseSection {
+  type: "publications";
+  data: { entries: PublicationEntry[] };
+}
+
+// ─── Interests ────────────────────────────────────────────────────────────────
+
+export interface InterestsSection extends BaseSection {
+  type: "interests";
+  data: { items: string[] };
+}
+
+// ─── Custom ───────────────────────────────────────────────────────────────────
+
+export interface CustomSection extends BaseSection {
+  type: "custom";
   data: {
-    entries: AwardEntry[];
+    /** User-defined section title */
+    heading: string;
+    bullets: string[];
+    text?: string;
   };
 }
 
@@ -161,13 +250,18 @@ export interface AwardsSection extends BaseSection {
 export type ResumeSection =
   | ContactSection
   | SummarySection
+  | ObjectiveSection
   | ExperienceSection
   | EducationSection
   | SkillsSection
   | ProjectsSection
   | CertificationsSection
   | LanguagesSection
-  | AwardsSection;
+  | AwardsSection
+  | VolunteerSection
+  | PublicationsSection
+  | InterestsSection
+  | CustomSection;
 
 // ─── Meta ─────────────────────────────────────────────────────────────────────
 
@@ -176,7 +270,6 @@ export interface ResumeContentMeta {
   fontFamily?: "sans" | "serif" | "mono";
   fontSize?: "small" | "normal" | "large";
   spacing?: "compact" | "normal" | "spacious";
-  /** WBS 4.6 – Template version for migration */
   templateVersion?: string;
 }
 
@@ -189,16 +282,11 @@ export interface ResumeContent {
 
 export const DEFAULT_RESUME_CONTENT: ResumeContent = {
   sections: [
-    {
-      id: "default-summary",
-      type: "summary",
-      order: 0,
-      data: { text: "" },
-    },
+    { id: "default-summary", type: "summary", order: 0, data: { text: "" } },
   ],
 };
 
-/** Rich demo content for template thumbnails and trial users */
+/** Rich demo content used for template thumbnails and trial users */
 export const DEMO_RESUME_CONTENT: ResumeContent = {
   sections: [
     {
@@ -207,10 +295,13 @@ export const DEMO_RESUME_CONTENT: ResumeContent = {
       order: 0,
       data: {
         name: "Priya Sharma",
+        title: "Senior Software Engineer",
         email: "priya.sharma@email.com",
         phone: "+91 98765 43210",
         location: "Bangalore, India",
         linkedin: "linkedin.com/in/priyasharma",
+        github: "github.com/priyasharma",
+        portfolio: "priyasharma.dev",
       },
     },
     {
@@ -232,6 +323,7 @@ export const DEMO_RESUME_CONTENT: ResumeContent = {
             title: "Senior Software Engineer",
             company: "Tech Solutions Pvt Ltd",
             location: "Bangalore",
+            employmentType: "Full-time",
             startDate: "Jan 2022",
             endDate: "Present",
             current: true,
@@ -246,6 +338,7 @@ export const DEMO_RESUME_CONTENT: ResumeContent = {
             title: "Software Engineer",
             company: "StartupXYZ",
             location: "Remote",
+            employmentType: "Full-time",
             startDate: "Jun 2019",
             endDate: "Dec 2021",
             current: false,
@@ -271,6 +364,7 @@ export const DEMO_RESUME_CONTENT: ResumeContent = {
             startDate: "2015",
             endDate: "2019",
             gpa: "8.7 / 10",
+            honours: "Dean's List — 2017, 2018",
           },
         ],
       },
@@ -286,6 +380,10 @@ export const DEMO_RESUME_CONTENT: ResumeContent = {
           { name: "Backend", items: ["Node.js", "PostgreSQL", "REST APIs"] },
           { name: "DevOps", items: ["AWS", "Docker", "CI/CD"] },
         ],
+        levels: {
+          JavaScript: 5, TypeScript: 5, React: 5, "Node.js": 4,
+          PostgreSQL: 4, AWS: 3, Docker: 4, Git: 5,
+        },
       },
     },
     {
@@ -293,12 +391,27 @@ export const DEMO_RESUME_CONTENT: ResumeContent = {
       type: "projects",
       order: 5,
       data: {
-        name: "ResumeBuilder SaaS",
-        description: "AI-powered resume builder with ATS scoring",
-        link: "github.com/priya/resumebuilder",
-        bullets: [
-          "Built with Next.js 14, Prisma, and OpenAI GPT-4",
-          "Onboarded 2,000+ users in first 3 months post-launch",
+        entries: [
+          {
+            id: "demo-proj-1",
+            name: "ResumeBuilder SaaS",
+            description: "AI-powered resume builder with ATS scoring",
+            link: "github.com/priya/resumebuilder",
+            tech: ["Next.js", "Prisma", "OpenAI"],
+            bullets: [
+              "Built with Next.js 14, Prisma, and OpenAI GPT-4",
+              "Onboarded 2,000+ users in first 3 months post-launch",
+            ],
+          },
+          {
+            id: "demo-proj-2",
+            name: "Real-time Dashboard",
+            description: "Live analytics platform for logistics",
+            tech: ["React", "WebSockets", "Redis"],
+            bullets: [
+              "Reduced data refresh latency from 30s to under 500ms",
+            ],
+          },
         ],
       },
     },
@@ -352,15 +465,60 @@ export const DEMO_RESUME_CONTENT: ResumeContent = {
         ],
       },
     },
+    {
+      id: "demo-volunteer",
+      type: "volunteer",
+      order: 9,
+      data: {
+        entries: [
+          {
+            id: "demo-vol-1",
+            role: "Technical Mentor",
+            organization: "GirlScript Foundation",
+            location: "Bangalore",
+            startDate: "Mar 2021",
+            endDate: "Present",
+            current: true,
+            bullets: [
+              "Mentored 20+ women developers through project-based learning",
+              "Conducted monthly coding workshops on React & Node.js",
+            ],
+          },
+        ],
+      },
+    },
+    {
+      id: "demo-publications",
+      type: "publications",
+      order: 10,
+      data: {
+        entries: [
+          {
+            id: "demo-pub-1",
+            title: "Scalable Microservices with Node.js",
+            publisher: "Dev.to",
+            date: "Aug 2023",
+            authors: "Priya Sharma",
+            url: "dev.to/priyasharma/microservices",
+          },
+        ],
+      },
+    },
+    {
+      id: "demo-interests",
+      type: "interests",
+      order: 11,
+      data: {
+        items: ["Open Source Contribution", "Tech Blogging", "Badminton", "Classical Music"],
+      },
+    },
   ],
 };
 
 // ─── Utilities ────────────────────────────────────────────────────────────────
 
 function genId(): string {
-  if (typeof crypto !== "undefined" && crypto.randomUUID) {
-    return crypto.randomUUID();
-  }
+  if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();
   return `s-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 }
 
@@ -371,6 +529,8 @@ export function createEmptySection(type: SectionType, order: number): ResumeSect
       return { id, type: "contact", order, data: { name: "", email: "", phone: "", location: "" } };
     case "summary":
       return { id, type: "summary", order, data: { text: "" } };
+    case "objective":
+      return { id, type: "objective", order, data: { text: "" } };
     case "experience":
       return {
         id, type: "experience", order,
@@ -384,7 +544,10 @@ export function createEmptySection(type: SectionType, order: number): ResumeSect
     case "skills":
       return { id, type: "skills", order, data: { items: [""] } };
     case "projects":
-      return { id, type: "projects", order, data: { name: "", description: "", bullets: [""] } };
+      return {
+        id, type: "projects", order,
+        data: { entries: [{ id: genId(), name: "", description: "", bullets: [""], tech: [] }] },
+      };
     case "certifications":
       return {
         id, type: "certifications", order,
@@ -400,6 +563,20 @@ export function createEmptySection(type: SectionType, order: number): ResumeSect
         id, type: "awards", order,
         data: { entries: [{ id: genId(), title: "", date: "", description: "" }] },
       };
+    case "volunteer":
+      return {
+        id, type: "volunteer", order,
+        data: { entries: [{ id: genId(), role: "", organization: "", startDate: "", endDate: "", current: false, bullets: [""] }] },
+      };
+    case "publications":
+      return {
+        id, type: "publications", order,
+        data: { entries: [{ id: genId(), title: "", publisher: "", date: "" }] },
+      };
+    case "interests":
+      return { id, type: "interests", order, data: { items: [""] } };
+    case "custom":
+      return { id, type: "custom", order, data: { heading: "Additional Information", bullets: [""] } };
     default:
       return { id, type: "summary", order, data: { text: "" } };
   }

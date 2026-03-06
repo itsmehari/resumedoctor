@@ -100,6 +100,10 @@ export interface TemplateMetadata {
   showInitialsAvatar?: boolean;
   /** Tinted sidebar background in the template's primary color (two-column only) */
   sidebarBg?: boolean;
+  /** Show a small Unicode icon before each section title (e.g. ◉ Experience) */
+  sectionIcons?: boolean;
+  /** Show a dashed photo-placeholder circle in the header area */
+  showPhotoPlaceholder?: boolean;
 }
 
 export type TemplateId = string;

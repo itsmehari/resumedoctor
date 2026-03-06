@@ -29,6 +29,7 @@ interface Props {
 const SECTION_LABELS: Record<ResumeSection["type"], string> = {
   contact: "Contact",
   summary: "Summary",
+  objective: "Career Objective",
   experience: "Experience",
   education: "Education",
   skills: "Skills",
@@ -36,6 +37,10 @@ const SECTION_LABELS: Record<ResumeSection["type"], string> = {
   certifications: "Certifications",
   languages: "Languages",
   awards: "Awards",
+  volunteer: "Volunteer Work",
+  publications: "Publications",
+  interests: "Interests",
+  custom: "Custom Section",
 };
 
 export function SectionList({ sections, onChange, resumeId }: Props) {

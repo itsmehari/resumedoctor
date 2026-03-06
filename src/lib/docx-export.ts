@@ -168,8 +168,9 @@ export function buildDocx(
       }
 
       case "projects": {
-        const proj = section.data;
-        if (proj.name || proj.bullets?.some(Boolean)) {
+        const pd2 = section.data;
+        const projEntries2 = "entries" in pd2 ? pd2.entries : [pd2 as { name?: string; link?: string; bullets?: string[] }];
+        if (projEntries2.some((p) => p.name || p.bullets?.some(Boolean))) {
           children.push(
             new Paragraph({
               text: "Projects",
@@ -177,6 +178,7 @@ export function buildDocx(
               spacing: { before: 300, after: 200 },
             })
           );
+          for (const proj of projEntries2) {
           children.push(
             new Paragraph({
               children: [
@@ -196,6 +198,7 @@ export function buildDocx(
                 spacing: { after: 80 },
               })
             );
+          }
           }
           children.push(new Paragraph({ text: "", spacing: { after: 200 } }));
         }
