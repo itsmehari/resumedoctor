@@ -91,17 +91,35 @@ export function ExportButtons({
         logging: false,
         backgroundColor: "#ffffff",
       });
-      const imgData = canvas.toDataURL("image/png", 1.0);
       const pdf = new jsPDF({
         orientation: "portrait",
         unit: "mm",
         format: "a4",
       });
-      const w = pdf.internal.pageSize.getWidth();
-      const h = pdf.internal.pageSize.getHeight();
-      const ratio = canvas.width / canvas.height;
-      const imgH = w / ratio;
-      pdf.addImage(imgData, "PNG", 0, 0, w, imgH);
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      // A4 aspect: height/width = 297/210. One page height in canvas px = canvas.width * (297/210)
+      const pageHeightPx = canvas.width * (pageH / pageW);
+      const totalPages = Math.ceil(canvas.height / pageHeightPx);
+
+      for (let p = 0; p < totalPages; p++) {
+        if (p > 0) pdf.addPage();
+        const srcY = p * pageHeightPx;
+        const srcH = Math.min(pageHeightPx, canvas.height - srcY);
+        if (srcH <= 0) break;
+        const pageCanvas = document.createElement("canvas");
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = srcH;
+        const ctx = pageCanvas.getContext("2d");
+        if (ctx) {
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+          ctx.drawImage(canvas, 0, srcY, canvas.width, srcH, 0, 0, canvas.width, srcH);
+        }
+        const imgData = pageCanvas.toDataURL("image/png", 1.0);
+        const sliceH = pageH * (srcH / pageHeightPx);
+        pdf.addImage(imgData, "PNG", 0, 0, pageW, sliceH);
+      }
 
       await fetch(`/api/resumes/${resumeId}/export/log`, {
         method: "POST",
