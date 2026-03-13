@@ -6,12 +6,23 @@ import { generateSectionId } from "@/lib/resume-utils";
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 export async function extractTextFromPdf(buffer: Buffer): Promise<string> {
-  // Use Node-specific export to avoid pdfjs-dist webpack bundling issues (Object.defineProperty)
-  const mod = await import("pdf-parse/node");
-  const pdfParse = typeof mod === "function" ? mod : (mod as { default?: (b: Buffer) => Promise<{ text?: string }> }).default;
-  if (!pdfParse) throw new Error("pdf-parse not available");
-  const data = await pdfParse(buffer);
-  return (data?.text || "").trim();
+  // Use unpdf first (serverless-friendly); fallback to pdf-parse
+  try {
+    const { extractText, getDocumentProxy } = await import("unpdf");
+    const pdf = await getDocumentProxy(new Uint8Array(buffer));
+    const { text } = await extractText(pdf, { mergePages: true });
+    return (text || "").trim();
+  } catch {
+    try {
+      const mod = await import("pdf-parse");
+      const pdfParse = (mod as { default?: (b: Buffer) => Promise<{ text?: string }> }).default;
+      if (!pdfParse) throw new Error("pdf-parse not available");
+      const data = await pdfParse(buffer);
+      return (data?.text || "").trim();
+    } catch (e) {
+      throw new Error("Could not extract text from PDF. Please ensure the file is a valid, text-based PDF.");
+    }
+  }
 }
 
 export async function extractTextFromDocx(buffer: Buffer): Promise<string> {
@@ -59,6 +70,89 @@ const ACCEPTED_TYPES = [
 
 export function isImportSupported(): boolean {
   return isAiConfigured();
+}
+
+const TEMPLATE_LIST = [
+  "professional-in: Professional – corporate standard",
+  "cascade: Cascade – color bar header, tag skills",
+  "concept: Concept – timeline career, left-border headings",
+  "crisp: Crisp – centered header, initials avatar",
+  "cubic: Cubic – compact, icon-grid skills",
+  "diamond: Diamond – two-column, professional",
+  "enfold: Enfold – modern single column",
+  "influx: Influx – creative layout",
+  "minimal-in: Minimal – clean, minimal",
+  "minimo: Minimo – ultra compact",
+  "ats-minimal: ATS Minimal – strict ATS",
+  "ats-strict: ATS Strict – maximum ATS",
+  "nanica: Nanica – elegant",
+  "modern: Modern – contemporary",
+  "skill-based: Skill-based – skills focus",
+  "hybrid: Hybrid – balanced layout",
+  "fresher-in: Fresher – for students/entry-level",
+  "student: Student – academic",
+  "muse: Muse – creative",
+  "combined: Combined – mixed sections",
+  "midcareer-in: Midcareer – mid-level",
+  "executive: Executive – senior/executive",
+  "executive-modern: Executive Modern – executive contemporary",
+  "tech: Tech – technology roles",
+  "it: IT – IT industry",
+  "iconic: Iconic – standout design",
+  "creative-in: Creative – creative roles",
+  "initials: Initials – avatar-focused",
+  "traditional: Traditional – classic",
+  "general: General – versatile",
+];
+
+export interface SuggestedTemplate {
+  id: string;
+  name: string;
+  reason: string;
+}
+
+/** Use AI to suggest 2 best templates from parsed resume content */
+export async function suggestTemplatesFromResume(parsed: ResumeContent): Promise<SuggestedTemplate[]> {
+  if (!isAiConfigured()) return [];
+  const contact = parsed.sections?.find((s) => s.type === "contact")?.data as { title?: string; name?: string } | undefined;
+  const summary = parsed.sections?.find((s) => s.type === "summary")?.data as { text?: string } | undefined;
+  const exp = parsed.sections?.find((s) => s.type === "experience")?.data as { entries?: { title: string }[] } | undefined;
+  const skills = parsed.sections?.find((s) => s.type === "skills")?.data as { items?: string[] } | undefined;
+  const role = contact?.title || exp?.entries?.[0]?.title || "";
+  const summaryText = summary?.text || "";
+  const skillList = skills?.items?.slice(0, 10).join(", ") || "";
+  const prompt = `Given this resume profile:
+- Role/Title: ${role}
+- Summary snippet: ${summaryText.slice(0, 300)}
+- Top skills: ${skillList}
+
+From our template library (id: name - description):
+${TEMPLATE_LIST.join("\n")}
+
+Pick exactly 2 template IDs that best suit this candidate for the Indian job market. Consider: role level (fresher/mid/executive), industry (tech/HR/general), and layout needs.
+
+Return ONLY valid JSON array of 2 objects: [{"id":"template-id","name":"Display Name","reason":"Brief reason in 10 words"}]. No markdown.`;
+
+  const content = await chatCompletion(
+    [
+      { role: "system", content: "You recommend resume templates. Output only valid JSON array. No markdown, no extra text." },
+      { role: "user", content: prompt },
+    ],
+    { maxTokens: 300 }
+  );
+  if (!content) return [];
+  const cleaned = content.replace(/```json|```/g, "").trim();
+  try {
+    const arr = JSON.parse(cleaned);
+    if (!Array.isArray(arr) || arr.length < 2) return [];
+    return arr.slice(0, 2).map((a: { id?: string; name?: string; reason?: string }) => ({
+      id: String(a?.id || "professional-in"),
+      name: String(a?.name || "Professional"),
+      reason: String(a?.reason || "Well suited"),
+    }));
+  } catch {
+    return [];
+  }
 }
 
 /** Parse raw resume text into structured ResumeContent using AI */
