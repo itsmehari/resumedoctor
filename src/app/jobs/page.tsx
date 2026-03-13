@@ -4,6 +4,7 @@
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { AuthNav } from "@/components/auth-nav";
 import { useRouter } from "next/navigation";
 import { Search, MapPin, Briefcase, Bookmark, BookmarkCheck, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
@@ -155,10 +156,9 @@ export default function JobsPage() {
       <header className="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="text-xl font-bold text-primary-600">ResumeDoctor</Link>
-          <nav className="flex gap-6 text-sm">
-            <Link href="/dashboard" className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">Dashboard</Link>
+          <nav className="flex items-center gap-4">
             <Link href="/jobs" className="font-medium text-primary-600">Jobs</Link>
-            <Link href="/settings" className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">Settings</Link>
+            <AuthNav />
           </nav>
         </div>
       </header>

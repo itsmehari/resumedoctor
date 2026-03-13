@@ -7,6 +7,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import { MoreVertical, Copy, Trash2, FileText, Upload } from "lucide-react";
+import { UserMenu } from "@/components/user-menu";
 import { ResumeImportModal } from "@/components/resume-import-modal";
 import { useSubscription } from "@/hooks/use-subscription";
 import { useTrialTimer } from "@/hooks/use-trial-timer";
@@ -36,6 +37,7 @@ function DashboardContent() {
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
   const [importOpen, setImportOpen] = useState(false);
   const upgraded = searchParams.get("upgraded") === "1";
+  const openImportParam = searchParams.get("openImport") === "1";
 
   const welcomeName = displayName || session?.user?.name || session?.user?.email;
   const isAuthenticated = !!session || isTrial;
@@ -51,6 +53,10 @@ function DashboardContent() {
   useEffect(() => {
     fetchResumes();
   }, []);
+
+  useEffect(() => {
+    if (openImportParam) setImportOpen(true);
+  }, [openImportParam]);
 
   const handleDuplicate = async (r: ResumeItem) => {
     setActionLoading(r.id);
@@ -136,12 +142,7 @@ function DashboardContent() {
               </>
             )}
             {session ? (
-              <button
-                onClick={() => signOut({ callbackUrl: "/" })}
-                className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
-              >
-                Sign out
-              </button>
+              <UserMenu compact />
             ) : isTrial ? (
               <Link
                 href="/signup"

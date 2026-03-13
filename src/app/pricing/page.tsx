@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { AuthNav } from "@/components/auth-nav";
 import { Check, Copy } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 
@@ -64,13 +65,11 @@ export default function PricingPage() {
           <Link href="/" className="text-xl font-bold text-primary-600">
             ResumeDoctor
           </Link>
-          <nav className="flex gap-4">
-            <Link href="/dashboard" className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">
-              Dashboard
-            </Link>
+          <nav className="flex items-center gap-4">
             <Link href="/" className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">
               ← Back
             </Link>
+            <AuthNav />
           </nav>
         </div>
       </header>

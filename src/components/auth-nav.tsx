@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { UserMenu } from "@/components/user-menu";
 
 const linkBase = "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100";
 const linkInverted = "text-white/90 hover:text-white";
@@ -26,13 +27,11 @@ export function AuthNav({ inverted }: { inverted?: boolean }) {
 
   if (session?.user) {
     return (
-      <nav className="flex items-center gap-4">
+      <nav className="flex items-center gap-3 sm:gap-4">
         <Link href="/pricing" className={linkCls}>Pricing</Link>
         <Link href="/dashboard" className={linkCls}>Dashboard</Link>
-        <Link href="/settings" className={linkCls}>Settings</Link>
-        <button onClick={() => signOut({ callbackUrl: "/" })} className={linkCls}>
-          Sign out
-        </button>
+        <Link href="/dashboard?openImport=1" className={linkCls}>Import</Link>
+        <UserMenu inverted={inverted} compact={inverted} />
         <Link href="/resumes/new" className={ctaCls}>Create Resume</Link>
       </nav>
     );

@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { AuthNav } from "@/components/auth-nav";
 import { formatDistanceToNow } from "date-fns";
 import { FileText, Plus, Trash2 } from "lucide-react";
 
@@ -73,13 +74,11 @@ export default function CoverLettersPage() {
           <Link href="/" className="text-xl font-bold text-primary-600">
             ResumeDoctor
           </Link>
-          <nav className="flex gap-4">
-            <Link href="/dashboard" className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">
-              Dashboard
-            </Link>
+          <nav className="flex items-center gap-4">
             <Link href="/cover-letters" className="text-primary-600 font-medium">
               Cover Letters
             </Link>
+            <AuthNav />
           </nav>
         </div>
       </header>

@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { AuthNav } from "@/components/auth-nav";
 import { ResumePreview } from "@/components/resume-builder/resume-preview";
 import { DEMO_RESUME_CONTENT, type ResumeSection } from "@/types/resume";
 import { trackEvent } from "@/lib/analytics";
@@ -125,19 +126,11 @@ export default function TemplatesPage() {
           <Link href="/" className="text-xl font-bold text-primary-600">
             ResumeDoctor
           </Link>
-          <nav className="flex gap-4">
-            {session ? (
-              <Link href="/dashboard" className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">
-                Dashboard
-              </Link>
-            ) : (
-              <Link href="/login" className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">
-                Sign in
-              </Link>
-            )}
-            <Link href="/try" className="text-primary-600 font-medium hover:text-primary-700">
-              Try free
+          <nav className="flex items-center gap-4">
+            <Link href="/pricing" className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">
+              Pricing
             </Link>
+            <AuthNav />
           </nav>
         </div>
       </header>

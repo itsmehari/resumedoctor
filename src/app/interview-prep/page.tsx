@@ -1,5 +1,6 @@
 // Phase 4 – Interview prep (lite): common questions + AI-generated answers
 import Link from "next/link";
+import { AuthNav } from "@/components/auth-nav";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -23,13 +24,11 @@ export default function InterviewPrepPage() {
           <Link href="/" className="text-xl font-bold text-primary-600">
             ResumeDoctor
           </Link>
-          <nav className="flex gap-4">
-            <Link href="/dashboard" className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100">
-              Dashboard
-            </Link>
+          <nav className="flex items-center gap-4">
             <Link href="/jobs" className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100">
               Jobs
             </Link>
+            <AuthNav />
           </nav>
         </div>
       </header>
