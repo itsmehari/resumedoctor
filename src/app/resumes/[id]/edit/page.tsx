@@ -12,7 +12,12 @@ import { computeResumeProgress } from "@/lib/resume-utils";
 import { ResumePreview } from "@/components/resume-builder/resume-preview";
 import { AddSection } from "@/components/resume-builder/add-section";
 import { ExportButtons } from "@/components/resume-builder/export-buttons";
+import { ShareResumeButton } from "@/components/resume-builder/share-resume-button";
 import { AtsScorePanel } from "@/components/resume-builder/ats-score-panel";
+import { JobPastePanel } from "@/components/resume-builder/job-paste-panel";
+import { LiveFeedbackPanel } from "@/components/resume-builder/live-feedback-panel";
+import { IndiaTipsPanel } from "@/components/resume-builder/india-tips-panel";
+import { StepWizard } from "@/components/resume-builder/step-wizard";
 import type { ResumeSection } from "@/types/resume";
 
 export default function EditResumePage() {
@@ -28,7 +33,7 @@ export default function EditResumePage() {
   const [customizeOpen, setCustomizeOpen] = useState(false);
 
   const meta = resume?.content?.meta ?? {};
-  const handleCustomize = (updates: { primaryColor?: string; fontFamily?: "sans" | "serif" | "mono"; fontSize?: "small" | "normal" | "large"; spacing?: "compact" | "normal" | "spacious" }) => {
+  const handleCustomize = (updates: { primaryColor?: string; fontFamily?: "sans" | "serif" | "mono"; fontSize?: "small" | "normal" | "large"; spacing?: "compact" | "normal" | "spacious"; dateFormat?: "DD/MM/YYYY" | "MM/YYYY"; documentType?: "Resume" | "CV" }) => {
     if (!resume) return;
     const newMeta = { ...meta, ...updates };
     const newContent = { ...resume.content, meta: newMeta };
@@ -130,6 +135,10 @@ export default function EditResumePage() {
             )}
             <span className="text-sm text-slate-500 dark:text-slate-400" title="Resume completion">
               {computeResumeProgress(sections)}% complete
+            </span>
+            <StepWizard sections={sections} />
+            <span className="text-xs text-slate-400 dark:text-slate-500 hidden md:inline">
+              Recruiters spend ~7 seconds on first scan
             </span>
             <input
               type="text"
@@ -244,7 +253,7 @@ export default function EditResumePage() {
                       ))}
                     </div>
                     <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Spacing</p>
-                    <div className="flex flex-wrap gap-1">
+                    <div className="flex flex-wrap gap-1 mb-3">
                       {(["compact", "normal", "spacious"] as const).map((s) => (
                         <button
                           key={s}
@@ -253,6 +262,32 @@ export default function EditResumePage() {
                           className={`rounded px-2 py-1 text-xs capitalize ${meta.spacing === s ? "bg-primary-100 text-primary-800 dark:bg-primary-900/50 dark:text-primary-200" : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"}`}
                         >
                           {s}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Date format (India)</p>
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {(["MM/YYYY", "DD/MM/YYYY"] as const).map((d) => (
+                        <button
+                          key={d}
+                          type="button"
+                          onClick={() => handleCustomize({ dateFormat: (meta as { dateFormat?: string }).dateFormat === d ? undefined : d })}
+                          className={`rounded px-2 py-1 text-xs ${(meta as { dateFormat?: string }).dateFormat === d ? "bg-primary-100 text-primary-800 dark:bg-primary-900/50 dark:text-primary-200" : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"}`}
+                        >
+                          {d}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Document type</p>
+                    <div className="flex flex-wrap gap-1">
+                      {(["Resume", "CV"] as const).map((t) => (
+                        <button
+                          key={t}
+                          type="button"
+                          onClick={() => handleCustomize({ documentType: (meta as { documentType?: string }).documentType === t ? undefined : t })}
+                          className={`rounded px-2 py-1 text-xs ${(meta as { documentType?: string }).documentType === t ? "bg-primary-100 text-primary-800 dark:bg-primary-900/50 dark:text-primary-200" : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"}`}
+                        >
+                          {t}
                         </button>
                       ))}
                     </div>
@@ -268,6 +303,7 @@ export default function EditResumePage() {
             >
               Cover Letter
             </Link>
+            <ShareResumeButton resumeId={id} disabled={isTrial} />
             <ExportButtons
               resumeId={id}
               resumeTitle={resume.title}
@@ -300,6 +336,11 @@ export default function EditResumePage() {
       <main className="flex-1 flex flex-col lg:flex-row overflow-hidden">
         <div className="flex-1 overflow-y-auto p-4 lg:p-6">
           <div className="max-w-2xl mx-auto space-y-6">
+            <JobPastePanel
+              resumeId={id}
+              sections={sections}
+              onSectionsChange={handleSectionsChange}
+            />
             {computeResumeProgress(sections) < 30 && sections.length < 4 && (
               <div className="rounded-xl border border-primary-200 dark:border-primary-800 bg-primary-50/50 dark:bg-primary-900/20 p-4">
                 <h3 className="font-medium text-primary-900 dark:text-primary-100">Quick start</h3>
@@ -315,7 +356,9 @@ export default function EditResumePage() {
 
         <div className="lg:w-[500px] xl:w-[550px] flex-shrink-0 border-l border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800/30 overflow-y-auto p-4">
           <div className="sticky top-4 relative space-y-6">
+            <LiveFeedbackPanel sections={sections} />
             <AtsScorePanel resumeId={id} sections={sections} isPro={isPro} />
+            <IndiaTipsPanel />
             <div>
             <p className="text-xs text-slate-500 mb-2">Preview</p>
             <div ref={previewRef} className="relative">

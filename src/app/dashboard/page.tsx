@@ -6,7 +6,8 @@ import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
-import { MoreVertical, Copy, Trash2, FileText } from "lucide-react";
+import { MoreVertical, Copy, Trash2, FileText, Upload } from "lucide-react";
+import { ResumeImportModal } from "@/components/resume-import-modal";
 import { useSubscription } from "@/hooks/use-subscription";
 import { useTrialTimer } from "@/hooks/use-trial-timer";
 import { getSubscriptionLabel, getTemplateDisplayName } from "@/lib/subscription-labels";
@@ -33,6 +34,7 @@ function DashboardContent() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ResumeItem | null>(null);
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
+  const [importOpen, setImportOpen] = useState(false);
   const upgraded = searchParams.get("upgraded") === "1";
 
   const welcomeName = displayName || session?.user?.name || session?.user?.email;
@@ -110,6 +112,12 @@ function DashboardContent() {
                   className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
                 >
                   Jobs
+                </Link>
+                <Link
+                  href="/interview-prep"
+                  className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+                >
+                  Interview Prep
                 </Link>
                 <Link
                   href="/settings"
@@ -211,6 +219,13 @@ function DashboardContent() {
                 >
                   Cover Letters
                 </Link>
+                <button
+                  onClick={() => setImportOpen(true)}
+                  className="rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors inline-flex items-center gap-2"
+                >
+                  <Upload className="h-4 w-4" />
+                  Import
+                </button>
                 <Link
                   href="/resumes/new"
                   className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 transition-colors"
@@ -240,6 +255,13 @@ function DashboardContent() {
                   >
                     {isTrial ? "Choose a template" : "Create Resume"}
                   </Link>
+                  <button
+                    onClick={() => setImportOpen(true)}
+                    className="inline-flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                  >
+                    <Upload className="h-4 w-4" />
+                    Import PDF/DOCX
+                  </button>
                   {!isTrial && (
                     <Link
                       href="/try/templates"
@@ -341,6 +363,14 @@ function DashboardContent() {
         )}
       </main>
 
+      <ResumeImportModal
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        onSuccess={(id) => {
+          fetchResumes();
+          window.location.href = `/resumes/${id}/edit`;
+        }}
+      />
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}

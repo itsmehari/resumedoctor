@@ -132,3 +132,17 @@ export function computeAtsScore(sections: ResumeSection[]): AtsResult {
 
   return { score, suggestions, checks };
 }
+
+// Phase 1.4 – Live content feedback: lightweight, instant suggestions (no API)
+export interface LiveFeedbackTip {
+  type: "warning" | "improvement" | "good";
+  message: string;
+  section?: string;
+}
+
+export function computeLiveFeedback(sections: ResumeSection[]): LiveFeedbackTip[] {
+  const result = computeAtsScore(sections);
+  return result.suggestions
+    .filter((s) => s.type !== "good" || result.score < 80)
+    .slice(0, 6);
+}

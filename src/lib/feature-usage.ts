@@ -1,7 +1,7 @@
 // WBS 11.5 – Feature usage tracking
 import { prisma } from "@/lib/prisma";
 
-export type Feature = "ai" | "ats" | "export" | "cover_letter";
+export type Feature = "ai" | "ats" | "export" | "cover_letter" | "import";
 
 export async function recordFeatureUsage(
   userId: string,

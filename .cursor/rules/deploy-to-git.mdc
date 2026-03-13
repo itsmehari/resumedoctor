@@ -1,0 +1,10 @@
+---
+description: Deploy to Git for Vercel – do not run locally unless requested
+alwaysApply: true
+---
+
+# Deployment: Always Git, Not Local
+
+- **Push to Git** – Deploy changes by committing and pushing to the connected Git repository. Vercel will pick up the push and deploy.
+- **Do NOT run locally** – Do not run `npm run dev`, `pnpm dev`, or other local dev commands.
+- **Exception** – Only run or test locally when the user explicitly says "deploy to local" or asks for local testing.

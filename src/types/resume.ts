@@ -271,6 +271,10 @@ export interface ResumeContentMeta {
   fontSize?: "small" | "normal" | "large";
   spacing?: "compact" | "normal" | "spacious";
   templateVersion?: string;
+  /** Phase 2 – Indian formats: "DD/MM/YYYY" | "MM/YYYY" (default) */
+  dateFormat?: "DD/MM/YYYY" | "MM/YYYY";
+  /** Phase 2 – "Resume" (default) or "Curriculum Vitae" / "CV" */
+  documentType?: "Resume" | "CV";
 }
 
 export interface ResumeContent {

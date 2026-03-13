@@ -81,8 +81,8 @@ export default function PricingPage() {
         </h1>
         <p className="mt-4 text-slate-600 dark:text-slate-400 text-center max-w-xl mx-auto">
           {region?.currency === "USD"
-            ? "Upgrade to Pro for PDF & Word export. Pricing in USD."
-            : "Upgrade to Pro for PDF & Word export. Pay via UPI / Google Pay."}
+            ? "Upgrade to Pro for PDF & Word export. No hidden fees. Pricing in USD."
+            : "Upgrade to Pro for PDF & Word export. No hidden fees. Pay via UPI / Google Pay."}
         </p>
         {region && (
           <p className="mt-1 text-center text-xs text-slate-500 dark:text-slate-400">

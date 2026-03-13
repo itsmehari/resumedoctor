@@ -184,14 +184,16 @@ model OtpAttempt {
 
 // Resume & Sections (WBS 3.1)
 model Resume {
-  id        String   @id @default(cuid())
-  userId    String
-  title     String   @default("Untitled Resume")
-  templateId String  @default("professional-v1")
-  content   Json     // sections, blocks - flexible structure
-  version   Int      @default(1)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  userId      String
+  title       String   @default("Untitled Resume")
+  templateId  String   @default("professional-v1")
+  content     Json     // sections, blocks - flexible structure
+  version     Int      @default(1)
+  publicSlug  String?  @unique // Phase 1.3 – shareable link e.g. /r/abc123
+  importSource String? // Phase 1.1 – "pdf" | "docx" | null
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   versions     ResumeVersion[]

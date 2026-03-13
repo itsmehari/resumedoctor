@@ -6,6 +6,7 @@ import type { ExperienceSection, ExperienceEntry } from "@/types/resume";
 import { MonthYearPicker } from "../month-year-picker";
 import { generateSectionId } from "@/lib/resume-utils";
 import { Sparkles } from "lucide-react";
+import { VoiceInputButton } from "@/components/ui/voice-input-button";
 import { useToast } from "@/contexts/toast-context";
 
 const BULLET_TIPS = [
@@ -322,6 +323,14 @@ export function ExperienceEditor({ data, onChange, resumeId }: Props) {
                   className="flex-1 rounded border border-slate-300 dark:border-slate-600 px-2 py-1.5 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
                 />
                 <div className="flex items-center gap-0.5">
+                  <VoiceInputButton
+                    onResult={(text) => {
+                      const next = [...entry.bullets];
+                      next[i] = text;
+                      updateEntry(idx, { bullets: next });
+                    }}
+                    className="shrink-0"
+                  />
                   {resumeId && b.trim() && (
                     <button
                       type="button"

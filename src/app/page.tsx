@@ -383,7 +383,7 @@ export default function HomePage() {
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100">
               Simple, transparent pricing
             </h2>
-            <p className="mt-4 text-slate-500 dark:text-slate-400">Start free. Upgrade only when you need more.</p>
+            <p className="mt-4 text-slate-500 dark:text-slate-400">Start free. Upgrade only when you need more. No hidden fees.</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
@@ -401,7 +401,7 @@ export default function HomePage() {
               price="₹299"
               period="/month"
               badge="Most popular"
-              features={["Unlimited resumes", "All 30 templates", "PDF + DOCX download", "Unlimited AI bullets", "Priority support", "LinkedIn import (coming)"]}
+              features={["Unlimited resumes", "All 30 templates", "PDF + DOCX download", "Unlimited AI bullets", "Priority support", "LinkedIn PDF import"]}
               cta="Start Pro — ₹299/mo"
               ctaHref="/pricing"
               variant="filled"

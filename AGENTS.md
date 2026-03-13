@@ -50,6 +50,15 @@ Or:
 
 ---
 
+## Deployment
+
+**Always deploy to Git** for Vercel to pick up changes. Do not run the project locally unless the user explicitly says "deploy to local".
+
+- Push changes to the connected Git repository so Vercel auto-deploys.
+- Do **not** run `npm run dev` or other local dev commands unless the user asks for local deployment/testing.
+
+---
+
 ## Conventions
 
 - **File names:** `kebab-case`

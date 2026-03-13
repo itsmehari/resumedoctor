@@ -10,7 +10,8 @@ export type AiAction =
   | "improve-bullet"
   | "improve-summary"
   | "suggest-bullets"
-  | "customize-cover";
+  | "customize-cover"
+  | "tailor-for-job";
 
 export interface RateLimitResult {
   allowed: boolean;

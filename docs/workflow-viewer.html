@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ResumeDoctor — User Workflow Diagrams</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --muted: #64748b;
+    --accent: #8b5cf6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Header */
+  .header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 60%, #7c3aed 100%);
+    padding: 24px 32px;
+    color: white;
+  }
+  .header h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; }
+  .header p  { font-size: 0.85rem; opacity: 0.75; margin-top: 4px; }
+  .header-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .badge { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 20px; padding: 4px 12px; font-size: 0.75rem; font-weight: 600; }
+
+  /* ── Tabs */
+  .tab-bar {
+    display: flex;
+    gap: 4px;
+    padding: 16px 32px 0;
+    background: white;
+    border-bottom: 2px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tab-bar::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    padding: 10px 18px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted);
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    border-radius: 6px 6px 0 0;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .tab-btn:hover { color: var(--primary); background: #eff6ff; }
+  .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: #eff6ff; }
+
+  /* ── Content area */
+  .content { padding: 24px 32px 48px; max-width: 100%; }
+  .diagram-panel { display: none; }
+  .diagram-panel.active { display: block; }
+
+  .panel-header { margin-bottom: 20px; }
+  .panel-header h2 { font-size: 1.2rem; font-weight: 700; color: var(--text); }
+  .panel-header p  { font-size: 0.82rem; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+
+  /* ── Diagram wrapper */
+  .diagram-wrap {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .diagram-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #f8fafc;
+    border-bottom: 1px solid var(--border);
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .toolbar-left { display: flex; align-items: center; gap: 8px; }
+  .toolbar-right { display: flex; align-items: center; gap: 6px; }
+  .diagram-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+  .legend-item { display: flex; align-items: center; font-size: 0.7rem; color: var(--muted); }
+  .zoom-btn {
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--muted);
+    transition: all 0.15s;
+  }
+  .zoom-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .zoom-label { font-size: 0.75rem; color: var(--muted); min-width: 38px; text-align: center; }
+
+  .diagram-scroll {
+    overflow: auto;
+    cursor: grab;
+    user-select: none;
+    background:
+      radial-gradient(circle, #e2e8f0 1px, transparent 1px) 0 0 / 24px 24px;
+    background-color: #f8fafc;
+    min-height: 300px;
+    max-height: 78vh;
+    padding: 24px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+  .diagram-scroll:active { cursor: grabbing; }
+  .diagram-inner {
+    transform-origin: top left;
+    transition: transform 0.1s ease;
+    width: fit-content;
+  }
+  .diagram-scroll .mermaid { display: block; }
+  .diagram-scroll .mermaid svg { max-width: none !important; height: auto; }
+
+  /* ── Legend chips */
+  .legend-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .legend-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600;
+    border: 1px solid;
+  }
+
+  /* ── Stats chips (overview) */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .stat-card {
+    background: white; border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; text-align: center;
+  }
+  .stat-card .num { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
+  .stat-card .lbl { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+  /* ── Mermaid overrides */
+  .mermaid { min-width: 600px; }
+
+  /* ── Responsive */
+  @media (max-width: 640px) {
+    .header, .content { padding-left: 16px; padding-right: 16px; }
+    .tab-bar { padding-left: 16px; }
+    .tab-btn { padding: 8px 12px; font-size: 0.75rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-row">
+    <div>
+      <h1>🩺 ResumeDoctor — User Workflow</h1>
+      <p>Interactive system diagrams · Click tabs to switch · Scroll/drag to pan · Zoom controls available</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <span class="badge">5 Diagrams</span>
+      <span class="badge">34 Routes</span>
+      <span class="badge">14 Section Types</span>
+    </div>
+  </div>
+</div>
+
+<!-- Tab bar -->
+<div class="tab-bar" id="tabBar">
+  <button class="tab-btn active" onclick="switchTab(0)">🗺 Full System</button>
+  <button class="tab-btn" onclick="switchTab(1)">⚡ Happy Path</button>
+  <button class="tab-btn" onclick="switchTab(2)">🔐 Auth States</button>
+  <button class="tab-btn" onclick="switchTab(3)">📄 Builder Variants</button>
+  <button class="tab-btn" onclick="switchTab(4)">🗄 Data Model</button>
+</div>
+
+<div class="content">
+
+  <!-- ── TAB 0: Full System -->
+  <div class="diagram-panel active" id="panel-0">
+    <div class="panel-header">
+      <h2>Full System Flowchart</h2>
+      <p>Every page, API endpoint, and user decision in ResumeDoctor — from landing to applying. 10 colour-coded subgraphs.</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card"><div class="num">34</div><div class="lbl">App routes</div></div>
+      <div class="stat-card"><div class="num">40+</div><div class="lbl">API endpoints</div></div>
+      <div class="stat-card"><div class="num">14</div><div class="lbl">Section types</div></div>
+      <div class="stat-card"><div class="num">30</div><div class="lbl">Templates</div></div>
+      <div class="stat-card"><div class="num">3</div><div class="lbl">AI features</div></div>
+      <div class="stat-card"><div class="num">4</div><div class="lbl">Export formats</div></div>
+    </div>
+
+    <div class="diagram-wrap">
+      <div class="diagram-toolbar">
+        <div class="toolbar-left">
+          <span class="diagram-label">Complete Flow</span>
+        </div>
+        <div class="toolbar-right">
+          <button class="zoom-btn" onclick="zoom(0,-0.15)">−</button>
+          <span class="zoom-label" id="zoom-label-0">100%</span>
+          <button class="zoom-btn" onclick="zoom(0,+0.15)">+</button>
+          <button class="zoom-btn" onclick="resetZoom(0)">Reset</button>
+        </div>
+      </div>
+      <div class="diagram-scroll" id="scroll-0">
+        <div class="diagram-inner" id="inner-0">
+          <div class="mermaid" id="diag-0">
+flowchart TD
+    subgraph ENTRY["🌐 Entry"]
+        A([User visits resumedoctor.in])
+        A --> B{Has account?}
+    end
+
+    subgraph AUTH["🔐 Authentication"]
+        SIGN_UP["📝 /signup\nEnter email + password"]
+        LOGIN["🔑 /login\nEmail / Google / GitHub"]
+        VERIFY["📧 /verify-email\nConfirm email token"]
+        TFA["🔒 /login/2fa\nOTP verification"]
+        FORGOT["❓ /forgot-password"]
+        RESET["🔄 /reset-password"]
+        SIGN_UP --> VERIFY
+        VERIFY --> DASH
+        LOGIN --> TFA_CHECK{2FA enabled?}
+        TFA_CHECK -->|Yes| TFA
+        TFA_CHECK -->|No| DASH
+        TFA --> DASH
+        FORGOT --> RESET
+        RESET --> LOGIN
+    end
+
+    subgraph TRY["⚡ Try Free — No Signup"]
+        TRY_HOME["/try\nEnter email for trial"]
+        TRY_TEMPL["/try/templates\nPick template"]
+        TRY_OTP["📲 Verify OTP via email"]
+        TRIAL_BUILDER["🛠 Trial Resume Builder"]
+        TRY_HOME --> TRY_OTP
+        TRY_OTP --> TRY_TEMPL
+        TRY_TEMPL --> TRIAL_BUILDER
+        TRIAL_BUILDER --> UPGRADE_CTA{Export or save?}
+        UPGRADE_CTA -->|Trial limit| PRICING
+        UPGRADE_CTA -->|Export PDF| EXPORT_PDF
+    end
+
+    subgraph DASH_AREA["🏠 Dashboard /dashboard"]
+        DASH["Dashboard\nMy Resumes list"]
+        DASH --> DA{Choose action}
+        DA -->|+ New resume| NEW_RES
+        DA -->|Edit existing| BUILDER
+        DA -->|Duplicate| DUP["API: duplicate"]
+        DA -->|Cover letters| CL_HUB
+        DA -->|Jobs| JOBS
+        DA -->|Settings| SETTINGS
+        DA -->|Upgrade| PRICING
+        DUP --> BUILDER
+    end
+
+    subgraph TEMPL_AREA["🎨 Templates"]
+        TEMPL_PAGE["/templates\n30 thumbnails"]
+        NEW_RES["/resumes/new\nPick template"]
+        TEMPL_PAGE --> NEW_RES
+        NEW_RES --> BUILDER
+    end
+
+    subgraph BUILDER_AREA["📄 Resume Builder /resumes/[id]/edit"]
+        BUILDER["Builder\n← Editor | Preview →"]
+        SECTIONS["14 Section Types\nContact · Summary · Objective\nExperience · Education · Skills\nProjects · Certifications · Languages\nAwards · Volunteer · Publications\nInterests · Custom"]
+        PREVIEW["Live Preview\n30 templates × 7 variant axes"]
+        BUILDER --> SECTIONS
+        BUILDER --> PREVIEW
+        SECTIONS --> PREVIEW
+    end
+
+    subgraph AI_AREA["🤖 AI Features"]
+        AI_BULLETS["✨ Suggest bullets\n/ai/suggest-bullets"]
+        AI_IMPROVE["📝 Improve bullet\n/ai/improve-bullet"]
+        AI_SUMMARY["📋 Improve summary\n/ai/improve-summary"]
+        OPENAI[(OpenAI GPT-4)]
+        AI_BULLETS --> OPENAI
+        AI_IMPROVE --> OPENAI
+        AI_SUMMARY --> OPENAI
+        OPENAI --> SECTIONS
+    end
+
+    subgraph ATS_AREA["📊 ATS Score Checker"]
+        ATS_CHECK["API: /resumes/[id]/ats\nKeyword · length · completeness"]
+        ATS_RESULT{"Score?"}
+        ATS_CHECK --> ATS_RESULT
+        ATS_RESULT -->|under 70| SECTIONS
+        ATS_RESULT -->|70 plus| EXPORT
+    end
+
+    subgraph EXPORT["📥 Export"]
+        EXP_CHOICE{Format?}
+        EXPORT_PDF["PDF /export/html"]
+        EXPORT_DOCX["DOCX /export/docx\nPro only"]
+        EXPORT_TXT["TXT /export/txt"]
+        EXP_CHOICE -->|PDF free| EXPORT_PDF
+        EXP_CHOICE -->|DOCX| DOCX_CHECK{Is Pro?}
+        EXP_CHOICE -->|TXT| EXPORT_TXT
+        DOCX_CHECK -->|Yes| EXPORT_DOCX
+        DOCX_CHECK -->|No| PRICING
+    end
+
+    subgraph APPLY["📨 Apply"]
+        PORTALS["Naukri · LinkedIn · Indeed\nInternshala · TimesJobs · Shine"]
+    end
+
+    subgraph CL_AREA["✉ Cover Letters"]
+        CL_HUB["/cover-letters"]
+        CL_NEW["/cover-letters/new"]
+        CL_EDIT["/cover-letters/[id]/edit"]
+        CL_HUB --> CL_NEW --> CL_EDIT
+    end
+
+    subgraph PRICING_AREA["💳 Pricing"]
+        PRICING["/pricing\nFree vs Pro"]
+        PAY["Razorpay / payment"]
+        PRO_ACT["Pro activated"]
+        PRICING --> PAY --> PRO_ACT --> DASH
+    end
+
+    subgraph SETTINGS_AREA["⚙ Settings"]
+        SETTINGS["/settings\nPassword · 2FA · Email\nAvatar · GDPR · Delete"]
+    end
+
+    A --> B
+    B -->|New user| SIGN_UP
+    B -->|Returning| LOGIN
+    B -->|Try free| TRY_HOME
+    B -->|Browse| TEMPL_PAGE
+    BUILDER --> AI_AREA
+    BUILDER --> ATS_CHECK
+    BUILDER --> EXP_CHOICE
+    EXPORT_PDF --> PORTALS
+    EXPORT_DOCX --> PORTALS
+
+    classDef page     fill:#dbeafe,stroke:#3b82f6,color:#1e3a8a
+    classDef api      fill:#d1fae5,stroke:#10b981,color:#064e3b
+    classDef decision fill:#fef3c7,stroke:#f59e0b,color:#78350f
+    classDef external fill:#f3e8ff,stroke:#8b5cf6,color:#4c1d95
+    classDef ai       fill:#ede9fe,stroke:#7c3aed,color:#2e1065
+
+    class A,SIGN_UP,LOGIN,VERIFY,TFA,FORGOT,RESET,TRY_HOME,TRY_TEMPL,DASH,TEMPL_PAGE,NEW_RES,BUILDER,SETTINGS,PRICING,CL_HUB,CL_NEW,CL_EDIT page
+    class ATS_CHECK,AI_BULLETS,AI_IMPROVE,AI_SUMMARY,EXPORT_PDF,EXPORT_DOCX,EXPORT_TXT api
+    class B,TFA_CHECK,DA,UPGRADE_CTA,ATS_RESULT,EXP_CHOICE,DOCX_CHECK decision
+    class PORTALS,PAY,OPENAI external
+    class AI_BULLETS,AI_IMPROVE,AI_SUMMARY ai
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend-row">
+      <span class="legend-chip" style="background:#dbeafe;border-color:#3b82f6;color:#1e3a8a;"><span class="legend-dot" style="background:#3b82f6"></span>Page / Route</span>
+      <span class="legend-chip" style="background:#d1fae5;border-color:#10b981;color:#064e3b;"><span class="legend-dot" style="background:#10b981"></span>API Endpoint</span>
+      <span class="legend-chip" style="background:#fef3c7;border-color:#f59e0b;color:#78350f;"><span class="legend-dot" style="background:#f59e0b"></span>Decision</span>
+      <span class="legend-chip" style="background:#f3e8ff;border-color:#8b5cf6;color:#4c1d95;"><span class="legend-dot" style="background:#8b5cf6"></span>External Service</span>
+      <span class="legend-chip" style="background:#ede9fe;border-color:#7c3aed;color:#2e1065;"><span class="legend-dot" style="background:#7c3aed"></span>AI Feature</span>
+    </div>
+  </div>
+
+  <!-- ── TAB 1: Happy Path -->
+  <div class="diagram-panel" id="panel-1">
+    <div class="panel-header">
+      <h2>Happy Path — 8-Step Journey</h2>
+      <p>The ideal user flow from landing to applying, with zero friction. Under 5 minutes start-to-finish.</p>
+    </div>
+    <div class="diagram-wrap">
+      <div class="diagram-toolbar">
+        <div class="toolbar-left"><span class="diagram-label">Simplified Journey</span></div>
+        <div class="toolbar-right">
+          <button class="zoom-btn" onclick="zoom(1,-0.15)">−</button>
+          <span class="zoom-label" id="zoom-label-1">100%</span>
+          <button class="zoom-btn" onclick="zoom(1,+0.15)">+</button>
+          <button class="zoom-btn" onclick="resetZoom(1)">Reset</button>
+        </div>
+      </div>
+      <div class="diagram-scroll" id="scroll-1">
+        <div class="diagram-inner" id="inner-1">
+          <div class="mermaid" id="diag-1">
+flowchart LR
+    A([🌐 Land\nresunedoctor.in]) --> B([📝 Sign Up\nor Try Free])
+    B --> C([🎨 Pick Template\n30 options])
+    C --> D([🛠 Build Resume\n14 section types])
+    D --> E([🤖 AI Assist\nbullets · summary · keywords])
+    E --> F([📊 ATS Check\nscore and missing keywords])
+    F --> G([📥 Export\nPDF · DOCX · TXT])
+    G --> H([📨 Apply\nNaukri · LinkedIn · Indeed])
+
+    style A fill:#2563eb,color:white,stroke:none
+    style B fill:#7c3aed,color:white,stroke:none
+    style C fill:#0891b2,color:white,stroke:none
+    style D fill:#059669,color:white,stroke:none
+    style E fill:#6d28d9,color:white,stroke:none
+    style F fill:#d97706,color:white,stroke:none
+    style G fill:#dc2626,color:white,stroke:none
+    style H fill:#0284c7,color:white,stroke:none
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+      <div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:16px;border-left:4px solid #2563eb;">
+        <div style="font-weight:700;font-size:0.85rem;color:#1e293b;">Step 1 — Land</div>
+        <div style="font-size:0.75rem;color:#64748b;margin-top:4px;">Landing page with stats, templates, testimonials, pricing teaser</div>
+      </div>
+      <div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:16px;border-left:4px solid #7c3aed;">
+        <div style="font-weight:700;font-size:0.85rem;color:#1e293b;">Step 2 — Auth</div>
+        <div style="font-size:0.75rem;color:#64748b;margin-top:4px;">Email signup, Google/GitHub OAuth, or Try Free with OTP — no card needed</div>
+      </div>
+      <div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:16px;border-left:4px solid #0891b2;">
+        <div style="font-weight:700;font-size:0.85rem;color:#1e293b;">Step 3 — Template</div>
+        <div style="font-size:0.75rem;color:#64748b;margin-top:4px;">30 templates × 7 visual variant axes = 210 possible looks</div>
+      </div>
+      <div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:16px;border-left:4px solid #059669;">
+        <div style="font-weight:700;font-size:0.85rem;color:#1e293b;">Step 4 — Build</div>
+        <div style="font-size:0.75rem;color:#64748b;margin-top:4px;">14 section types, drag-to-reorder, live preview synced in real time</div>
+      </div>
+      <div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:16px;border-left:4px solid #6d28d9;">
+        <div style="font-weight:700;font-size:0.85rem;color:#1e293b;">Step 5 — AI</div>
+        <div style="font-size:0.75rem;color:#64748b;margin-top:4px;">OpenAI GPT-4 writes bullet points, polishes summary, improves weak lines</div>
+      </div>
+      <div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:16px;border-left:4px solid #d97706;">
+        <div style="font-weight:700;font-size:0.85rem;color:#1e293b;">Step 6 — ATS</div>
+        <div style="font-size:0.75rem;color:#64748b;margin-top:4px;">Score 0–100, keyword gaps highlighted, one-click fixes suggested</div>
+      </div>
+      <div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:16px;border-left:4px solid #dc2626;">
+        <div style="font-weight:700;font-size:0.85rem;color:#1e293b;">Step 7 — Export</div>
+        <div style="font-size:0.75rem;color:#64748b;margin-top:4px;">PDF (free), DOCX (Pro), TXT for ATS paste. Every export is logged.</div>
+      </div>
+      <div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:16px;border-left:4px solid #0284c7;">
+        <div style="font-weight:700;font-size:0.85rem;color:#1e293b;">Step 8 — Apply</div>
+        <div style="font-size:0.75rem;color:#64748b;margin-top:4px;">Naukri, LinkedIn, Indeed India, Internshala, TimesJobs, Shine, Foundit</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB 2: Auth States -->
+  <div class="diagram-panel" id="panel-2">
+    <div class="panel-header">
+      <h2>Authentication State Machine</h2>
+      <p>All user states and valid transitions — Anonymous → Trial → Free → Pro. Includes 2FA and account deletion.</p>
+    </div>
+    <div class="diagram-wrap">
+      <div class="diagram-toolbar">
+        <div class="toolbar-left"><span class="diagram-label">State Machine</span></div>
+        <div class="toolbar-right">
+          <button class="zoom-btn" onclick="zoom(2,-0.15)">−</button>
+          <span class="zoom-label" id="zoom-label-2">100%</span>
+          <button class="zoom-btn" onclick="zoom(2,+0.15)">+</button>
+          <button class="zoom-btn" onclick="resetZoom(2)">Reset</button>
+        </div>
+      </div>
+      <div class="diagram-scroll" id="scroll-2">
+        <div class="diagram-inner" id="inner-2">
+          <div class="mermaid" id="diag-2">
+stateDiagram-v2
+    [*] --> Anonymous
+
+    Anonymous --> TrialUser     : /try + OTP verified
+    Anonymous --> SigningUp     : /signup form submitted
+    Anonymous --> LoggingIn     : /login credentials entered
+
+    SigningUp --> PendingVerify : account created
+    PendingVerify --> FreeUser  : email link clicked
+
+    LoggingIn --> Requires2FA   : 2FA is enabled
+    LoggingIn --> FreeUser      : credentials OK, no 2FA
+    Requires2FA --> FreeUser    : TOTP code passed
+
+    TrialUser --> FreeUser      : converts via /signup
+    TrialUser --> Anonymous     : session expires (24h)
+
+    FreeUser --> ProUser        : payment success
+    FreeUser --> FreeUser       : build resume, export PDF, ATS check
+    ProUser --> ProUser         : export DOCX, all 30 templates, unlimited AI
+
+    FreeUser --> Anonymous      : logout
+    ProUser --> Anonymous       : logout
+    FreeUser --> [*]            : delete account
+    ProUser --> [*]             : delete account
+
+    note right of TrialUser
+      No signup required.
+      OTP via email only.
+      Limited saves.
+    end note
+
+    note right of ProUser
+      ₹299/month.
+      Unlimited resumes.
+      DOCX + all templates.
+    end note
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;">
+        <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:14px;text-align:center;">
+          <div style="font-size:1.4rem;">👤</div>
+          <div style="font-weight:700;font-size:0.82rem;color:#1e293b;margin-top:4px;">Anonymous</div>
+          <div style="font-size:0.72rem;color:#64748b;margin-top:2px;">Browsing, landing page only</div>
+        </div>
+        <div style="background:#fef3c7;border:1px solid #fbbf24;border-radius:10px;padding:14px;text-align:center;">
+          <div style="font-size:1.4rem;">⚡</div>
+          <div style="font-weight:700;font-size:0.82rem;color:#92400e;margin-top:4px;">Trial User</div>
+          <div style="font-size:0.72rem;color:#78350f;margin-top:2px;">OTP only · 24h session</div>
+        </div>
+        <div style="background:#dbeafe;border:1px solid #3b82f6;border-radius:10px;padding:14px;text-align:center;">
+          <div style="font-size:1.4rem;">🆓</div>
+          <div style="font-weight:700;font-size:0.82rem;color:#1e3a8a;margin-top:4px;">Free User</div>
+          <div style="font-size:0.72rem;color:#1d4ed8;margin-top:2px;">1 resume · PDF · 10 templates</div>
+        </div>
+        <div style="background:#ede9fe;border:1px solid #7c3aed;border-radius:10px;padding:14px;text-align:center;">
+          <div style="font-size:1.4rem;">⭐</div>
+          <div style="font-weight:700;font-size:0.82rem;color:#4c1d95;margin-top:4px;">Pro User</div>
+          <div style="font-size:0.72rem;color:#5b21b6;margin-top:2px;">Unlimited · DOCX · All 30</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB 3: Builder Variants -->
+  <div class="diagram-panel" id="panel-3">
+    <div class="panel-header">
+      <h2>Resume Builder — Section & Variant Map</h2>
+      <p>All 7 visual variant axes applied per template. Every combination of layout, header, decorator, and section rendering.</p>
+    </div>
+    <div class="diagram-wrap">
+      <div class="diagram-toolbar">
+        <div class="toolbar-left"><span class="diagram-label">Variant Tree</span></div>
+        <div class="toolbar-right">
+          <button class="zoom-btn" onclick="zoom(3,-0.15)">−</button>
+          <span class="zoom-label" id="zoom-label-3">100%</span>
+          <button class="zoom-btn" onclick="zoom(3,+0.15)">+</button>
+          <button class="zoom-btn" onclick="resetZoom(3)">Reset</button>
+        </div>
+      </div>
+      <div class="diagram-scroll" id="scroll-3">
+        <div class="diagram-inner" id="inner-3">
+          <div class="mermaid" id="diag-3">
+flowchart TD
+    BUILDER["📄 Resume Builder\nresumes/id/edit"]
+
+    subgraph LAYOUT["Layout (3 variants)"]
+        L1["single column\naccentStrip optional"]
+        L2["two-column\nsidebarBg optional"]
+        L3["dark-sidebar\ncoloured left panel"]
+    end
+
+    subgraph HEADER["Header (5 variants)"]
+        H1["default\nname + contact inline"]
+        H2["top-bar\nfull-width colour band"]
+        H3["centered\nname centred + avatar"]
+        H4["split\nlarge name | divider | contacts"]
+        H5["dark-sidebar\nname inside dark panel"]
+    end
+
+    subgraph DECO["Page Decorators"]
+        D1["sectionIcons\nUnicode symbol per section type"]
+        D2["showInitialsAvatar\ninitials circle in header"]
+        D3["showPhotoPlaceholder\ndashed photo circle"]
+        D4["accentStrip\n4px coloured left edge bar"]
+    end
+
+    subgraph SKILLS["Skills Variants (7)"]
+        SV1["plain — dot-separated list"]
+        SV2["compact — comma list"]
+        SV3["tags — pill chips"]
+        SV4["dots — 5-dot proficiency"]
+        SV5["bars — progress bars with %"]
+        SV6["categories — grouped by topic"]
+        SV7["icon-grid — 2-col grid with square bullets"]
+    end
+
+    subgraph EXP["Experience Variants (3)"]
+        EV1["default — title + bullets"]
+        EV2["timeline — vertical line + circles"]
+        EV3["compact — single row, no bullets"]
+    end
+
+    subgraph TITLESTYLE["Section Title Styles (9)"]
+        TV1["underline — bottom border"]
+        TV2["left-border — coloured left bar"]
+        TV3["uppercase — spaced caps + rule"]
+        TV4["filled-bg — tinted background"]
+        TV5["bold — large weight"]
+        TV6["plain — small caps muted"]
+        TV7["double-rule — lines above and below"]
+        TV8["tab — rounded pill / badge"]
+        TV9["dot-prefix — coloured dot left of text"]
+    end
+
+    subgraph SECTIONS["14 Section Types"]
+        SEC["Contact · Summary · Objective\nExperience · Education · Skills\nProjects · Certifications · Languages\nAwards · Volunteer · Publications\nInterests · Custom"]
+    end
+
+    BUILDER --> LAYOUT
+    BUILDER --> HEADER
+    BUILDER --> DECO
+    BUILDER --> SKILLS
+    BUILDER --> EXP
+    BUILDER --> TITLESTYLE
+    BUILDER --> SECTIONS
+
+    classDef varBox fill:#eff6ff,stroke:#bfdbfe,color:#1e3a8a
+    classDef secBox  fill:#f0fdf4,stroke:#bbf7d0,color:#14532d
+    class L1,L2,L3,H1,H2,H3,H4,H5,D1,D2,D3,D4,SV1,SV2,SV3,SV4,SV5,SV6,SV7,EV1,EV2,EV3,TV1,TV2,TV3,TV4,TV5,TV6,TV7,TV8,TV9 varBox
+    class SEC secBox
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;padding:14px 18px;background:white;border:1px solid #e2e8f0;border-radius:12px;font-size:0.8rem;color:#475569;line-height:1.7;">
+      <strong style="color:#1e293b;">Combination math:</strong>
+      3 layouts × 5 headers × 7 skills × 3 experience × 9 title styles = <strong style="color:#2563eb;">2,835 possible visual combinations</strong> before decorators.
+      Each of the 30 templates is assigned a unique combination to ensure no two templates look alike.
+    </div>
+  </div>
+
+  <!-- ── TAB 4: Data Model -->
+  <div class="diagram-panel" id="panel-4">
+    <div class="panel-header">
+      <h2>Database Entity Relationship</h2>
+      <p>PostgreSQL schema managed via Prisma ORM. 7 core entities and their relationships.</p>
+    </div>
+    <div class="diagram-wrap">
+      <div class="diagram-toolbar">
+        <div class="toolbar-left"><span class="diagram-label">ER Diagram</span></div>
+        <div class="toolbar-right">
+          <button class="zoom-btn" onclick="zoom(4,-0.15)">−</button>
+          <span class="zoom-label" id="zoom-label-4">100%</span>
+          <button class="zoom-btn" onclick="zoom(4,+0.15)">+</button>
+          <button class="zoom-btn" onclick="resetZoom(4)">Reset</button>
+        </div>
+      </div>
+      <div class="diagram-scroll" id="scroll-4">
+        <div class="diagram-inner" id="inner-4">
+          <div class="mermaid" id="diag-4">
+erDiagram
+    USER {
+        string  id          PK
+        string  email       UK
+        string  name
+        boolean emailVerified
+        boolean twoFactorEnabled
+        string  plan        "free | pro"
+        string  avatarUrl
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    RESUME {
+        string   id         PK
+        string   userId     FK
+        string   title
+        string   templateId
+        json     content    "ResumeSection[]"
+        json     meta       "primaryColor, font, spacing"
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    COVER_LETTER {
+        string   id         PK
+        string   userId     FK
+        string   title
+        string   templateId
+        json     content
+        datetime createdAt
+    }
+
+    EXPORT_LOG {
+        string   id         PK
+        string   resumeId   FK
+        string   userId     FK
+        string   format     "pdf | docx | txt | html"
+        string   ipAddress
+        datetime exportedAt
+    }
+
+    TRIAL_SESSION {
+        string   id           PK
+        string   email
+        string   sessionToken UK
+        datetime expiresAt
+        boolean  converted
+        datetime createdAt
+    }
+
+    TRIAL_ACTIVATION {
+        string   id          PK
+        string   email
+        string   status      "pending | approved | rejected"
+        string   plan        "pro"
+        datetime requestedAt
+        datetime reviewedAt
+    }
+
+    JOB_APPLICATION {
+        string   id        PK
+        string   userId    FK
+        string   jobId     FK
+        string   status    "applied | interviewing | offered"
+        datetime appliedAt
+    }
+
+    USER         ||--o{ RESUME          : "owns"
+    USER         ||--o{ COVER_LETTER    : "creates"
+    USER         ||--o{ EXPORT_LOG      : "generates"
+    USER         ||--o{ JOB_APPLICATION : "tracks"
+    RESUME       ||--o{ EXPORT_LOG      : "logged in"
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;">
+      <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:14px;">
+        <div style="font-weight:700;font-size:0.8rem;color:#1e293b;margin-bottom:6px;">USER</div>
+        <div style="font-size:0.72rem;color:#64748b;line-height:1.6;">Central entity. Owns all resumes, cover letters, and applications. Plan field gates Pro features.</div>
+      </div>
+      <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:14px;">
+        <div style="font-weight:700;font-size:0.8rem;color:#1e293b;margin-bottom:6px;">RESUME</div>
+        <div style="font-size:0.72rem;color:#64748b;line-height:1.6;">Stores full <code style="background:#f1f5f9;padding:1px 4px;border-radius:3px;">ResumeSection[]</code> as JSON. Template ID links to the 30 registered templates.</div>
+      </div>
+      <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:14px;">
+        <div style="font-weight:700;font-size:0.8rem;color:#1e293b;margin-bottom:6px;">EXPORT_LOG</div>
+        <div style="font-size:0.72rem;color:#64748b;line-height:1.6;">Every PDF/DOCX/TXT download is timestamped and IP-logged for abuse prevention and analytics.</div>
+      </div>
+      <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:14px;">
+        <div style="font-weight:700;font-size:0.8rem;color:#1e293b;margin-bottom:6px;">TRIAL_SESSION</div>
+        <div style="font-size:0.72rem;color:#64748b;line-height:1.6;">24-hour no-signup sessions. OTP-authenticated. <code style="background:#f1f5f9;padding:1px 4px;border-radius:3px;">converted: true</code> when user signs up.</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<script>
+  // ── Mermaid init
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'default',
+    themeVariables: {
+      primaryColor: '#dbeafe',
+      primaryTextColor: '#1e3a8a',
+      primaryBorderColor: '#3b82f6',
+      lineColor: '#94a3b8',
+      secondaryColor: '#f0fdf4',
+      tertiaryColor: '#fef3c7',
+      fontSize: '14px',
+    },
+    flowchart: { curve: 'basis', padding: 20, htmlLabels: true },
+    er: { diagramPadding: 30, layoutDirection: 'TB' },
+  });
+
+  // ── Tab switching
+  const panels = document.querySelectorAll('.diagram-panel');
+  const tabs = document.querySelectorAll('.tab-btn');
+  function switchTab(i) {
+    panels.forEach((p, idx) => p.classList.toggle('active', idx === i));
+    tabs.forEach((t, idx) => t.classList.toggle('active', idx === i));
+  }
+
+  // ── Zoom
+  const scales = [1, 1, 1, 1, 1];
+  function zoom(tabIdx, delta) {
+    scales[tabIdx] = Math.min(3, Math.max(0.3, scales[tabIdx] + delta));
+    applyZoom(tabIdx);
+  }
+  function resetZoom(tabIdx) {
+    scales[tabIdx] = 1;
+    applyZoom(tabIdx);
+  }
+  function applyZoom(tabIdx) {
+    const inner = document.getElementById('inner-' + tabIdx);
+    if (inner) inner.style.transform = `scale(${scales[tabIdx]})`;
+    const lbl = document.getElementById('zoom-label-' + tabIdx);
+    if (lbl) lbl.textContent = Math.round(scales[tabIdx] * 100) + '%';
+  }
+
+  // ── Pan (drag to scroll)
+  document.querySelectorAll('.diagram-scroll').forEach(el => {
+    let isDragging = false, startX = 0, startY = 0, scrollLeft = 0, scrollTop = 0;
+    el.addEventListener('mousedown', e => {
+      isDragging = true;
+      startX = e.pageX - el.offsetLeft;
+      startY = e.pageY - el.offsetTop;
+      scrollLeft = el.scrollLeft;
+      scrollTop = el.scrollTop;
+    });
+    el.addEventListener('mouseleave', () => isDragging = false);
+    el.addEventListener('mouseup', () => isDragging = false);
+    el.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      e.preventDefault();
+      const x = e.pageX - el.offsetLeft;
+      const y = e.pageY - el.offsetTop;
+      el.scrollLeft = scrollLeft - (x - startX);
+      el.scrollTop = scrollTop - (y - startY);
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -17,6 +17,10 @@ Zety-style resume/CV builder SaaS. India-first, freemium model. Domain: resumedo
 - Templates: `src/templates/` or `public/templates/`
 - Docs: `docs/`
 
+## Deployment
+- **Always deploy to Git** – push changes to the repository for Vercel to pick up. Do not run locally.
+- Do **not** run `npm run dev` or local dev unless the user explicitly says "deploy to local".
+
 ## Before Editing
 - Check for existing similar code to avoid duplication.
 - Ensure API routes validate input (Zod) and check auth.
