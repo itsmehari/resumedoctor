@@ -77,7 +77,8 @@ export async function POST(req: Request) {
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Import failed";
-    console.error("Resume import parse error:", err);
+    const stack = err instanceof Error ? err.stack : undefined;
+    console.error("Resume import parse error:", message, stack);
     return NextResponse.json(
       { error: message },
       { status: message.includes("Unsupported") || message.includes("Invalid") ? 400 : 500 }

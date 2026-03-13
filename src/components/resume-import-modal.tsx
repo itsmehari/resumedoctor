@@ -82,7 +82,7 @@ export function ResumeImportModal({
       if (!res.ok) throw new Error(data.error || "Import failed");
       setParsed({
         sections: data.parsed?.sections ?? [],
-        title: data.title ?? file.name.replace(/\.[^/.]+$/, "") || "Imported Resume",
+        title: (data.title ?? file.name.replace(/\.[^/.]+$/, "")) || "Imported Resume",
       });
       setSuggestedTemplates(data.suggestedTemplates ?? []);
       setSelectedTemplateId(data.suggestedTemplates?.[0]?.id ?? null);

@@ -8,41 +8,69 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 export async function extractTextFromPdf(buffer: Buffer): Promise<string> {
   const PDF_ERR =
     "Could not extract text from PDF. Try a different file or convert to DOCX.";
+  const u8 = new Uint8Array(buffer);
+  const errors: string[] = [];
 
-  // 1. pdf2json – zero deps, works on Vercel (needRawText=true for getRawTextContent)
+  // 1. pdfjs-serverless – designed for serverless (Vercel, Cloudflare, etc.)
   try {
-    const PDFParser = (await import("pdf2json")).default;
-    const text = await new Promise<string>((resolve, reject) => {
-      const parser = new PDFParser(null, true);
-      parser.on("pdfParser_dataError", (e: { parserError?: Error } | Error) =>
-        reject((e && typeof e === "object" && "parserError" in e ? (e as { parserError?: Error }).parserError : e) ?? new Error("pdf2json error"))
-      );
-      parser.on("pdfParser_dataReady", () => {
-        try {
-          const raw = parser.getRawTextContent?.();
-          resolve(typeof raw === "string" ? raw : "");
-        } catch {
-          resolve("");
-        }
-      });
-      parser.parseBuffer(buffer);
-    });
-    if (text && text.trim().length > 0) return text.trim();
-  } catch {
-    // fall through
+    const { getDocument } = await import("pdfjs-serverless");
+    const doc = await getDocument({
+      data: u8,
+      useSystemFonts: true,
+      isEvalSupported: false,
+    }).promise;
+    const parts: string[] = [];
+    for (let i = 1; i <= doc.numPages; i++) {
+      const page = await doc.getPage(i);
+      const textContent = await page.getTextContent();
+      const pageText = (textContent.items as Array<{ str?: string }>)
+        .map((item) => item.str ?? "")
+        .join(" ");
+      parts.push(pageText);
+    }
+    const text = parts.join("\n").trim();
+    if (text && text.length > 0) return text;
+  } catch (e) {
+    errors.push(`pdfjs-serverless: ${e instanceof Error ? e.message : String(e)}`);
   }
 
-  // 2. unpdf – serverless-optimized
+  // 2. unpdf – serverless wrapper
   try {
     const { extractText, getDocumentProxy } = await import("unpdf");
-    const pdf = await getDocumentProxy(new Uint8Array(buffer));
+    const pdf = await getDocumentProxy(u8);
     const { text } = await extractText(pdf, { mergePages: true });
     if (text && text.trim().length > 0) return text.trim();
-  } catch {
-    // fall through
+  } catch (e) {
+    errors.push(`unpdf: ${e instanceof Error ? e.message : String(e)}`);
   }
 
-  // 3. pdf-parse – legacy fallback
+  // 3. pdf2json – fallback (can fail with nodeUtil in Next.js)
+  try {
+    const mod = await import("pdf2json");
+    const PDFParser = mod.default ?? (mod as { PDFParser?: unknown }).PDFParser;
+    if (PDFParser) {
+      const text = await new Promise<string>((resolve, reject) => {
+        const parser = new (PDFParser as new (a: unknown, b: boolean) => { on: (ev: string, cb: (e: unknown) => void) => void; getRawTextContent?: () => string; parseBuffer: (b: Buffer) => void })(null, true);
+        parser.on("pdfParser_dataError", (e: unknown) =>
+          reject(e && typeof e === "object" && "parserError" in e ? (e as { parserError?: Error }).parserError : e)
+        );
+        parser.on("pdfParser_dataReady", () => {
+          try {
+            const raw = parser.getRawTextContent?.();
+            resolve(typeof raw === "string" ? raw : "");
+          } catch {
+            resolve("");
+          }
+        });
+        parser.parseBuffer(buffer);
+      });
+      if (text && text.trim().length > 0) return text.trim();
+    }
+  } catch (e) {
+    errors.push(`pdf2json: ${e instanceof Error ? e.message : String(e)}`);
+  }
+
+  // 4. pdf-parse – legacy fallback
   try {
     const mod = await import("pdf-parse");
     const fn = (mod as { default?: (b: Buffer) => Promise<{ text?: string }> }).default ?? mod;
@@ -51,10 +79,11 @@ export async function extractTextFromPdf(buffer: Buffer): Promise<string> {
       const t = data?.text?.trim();
       if (t) return t;
     }
-  } catch {
-    // fall through
+  } catch (e) {
+    errors.push(`pdf-parse: ${e instanceof Error ? e.message : String(e)}`);
   }
 
+  console.error("PDF extraction failed. Methods tried:", errors.join("; "));
   throw new Error(PDF_ERR);
 }
 
