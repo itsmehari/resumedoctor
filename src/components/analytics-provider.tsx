@@ -1,6 +1,6 @@
 "use client";
 
-// Phase 1, 3: Load GA4 + Meta + LinkedIn only when consent given; track page views
+// Phase 1, 3: Load GA4 + Meta + LinkedIn + Clarity only when consent given; track page views
 import Script from "next/script";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
@@ -10,6 +10,7 @@ import { trackPageView } from "@/lib/analytics";
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "G-K4VS43PF7T";
 const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 const LINKEDIN_ID = process.env.NEXT_PUBLIC_LINKEDIN_PARTNER_ID;
+const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID ?? "vnpelcljv4";
 
 export function AnalyticsProvider() {
   const pathname = usePathname();
@@ -80,6 +81,15 @@ export function AnalyticsProvider() {
           strategy="afterInteractive"
         />
       )}
+      <Script id="microsoft-clarity" strategy="afterInteractive">
+        {`
+          (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+          })(window, document, "clarity", "script", "${CLARITY_ID}");
+        `}
+      </Script>
     </>
   );
 }
