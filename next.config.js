@@ -8,7 +8,7 @@ const nextConfig = {
   reactStrictMode: true,
   output: "standalone",
   experimental: {
-    serverComponentsExternalPackages: ["pdf-parse", "unpdf"],
+    serverComponentsExternalPackages: ["pdf-parse", "unpdf", "pdf2json"],
   },
 
   async headers() {

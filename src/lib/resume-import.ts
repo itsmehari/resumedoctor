@@ -6,23 +6,56 @@ import { generateSectionId } from "@/lib/resume-utils";
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 export async function extractTextFromPdf(buffer: Buffer): Promise<string> {
-  // Use unpdf first (serverless-friendly); fallback to pdf-parse
+  const PDF_ERR =
+    "Could not extract text from PDF. Try a different file or convert to DOCX.";
+
+  // 1. pdf2json – zero deps, works on Vercel (needRawText=true for getRawTextContent)
+  try {
+    const PDFParser = (await import("pdf2json")).default;
+    const text = await new Promise<string>((resolve, reject) => {
+      const parser = new PDFParser(null, true);
+      parser.on("pdfParser_dataError", (e: { parserError?: Error } | Error) =>
+        reject((e && typeof e === "object" && "parserError" in e ? (e as { parserError?: Error }).parserError : e) ?? new Error("pdf2json error"))
+      );
+      parser.on("pdfParser_dataReady", () => {
+        try {
+          const raw = parser.getRawTextContent?.();
+          resolve(typeof raw === "string" ? raw : "");
+        } catch {
+          resolve("");
+        }
+      });
+      parser.parseBuffer(buffer);
+    });
+    if (text && text.trim().length > 0) return text.trim();
+  } catch {
+    // fall through
+  }
+
+  // 2. unpdf – serverless-optimized
   try {
     const { extractText, getDocumentProxy } = await import("unpdf");
     const pdf = await getDocumentProxy(new Uint8Array(buffer));
     const { text } = await extractText(pdf, { mergePages: true });
-    return (text || "").trim();
+    if (text && text.trim().length > 0) return text.trim();
   } catch {
-    try {
-      const mod = await import("pdf-parse");
-      const pdfParse = (mod as { default?: (b: Buffer) => Promise<{ text?: string }> }).default;
-      if (!pdfParse) throw new Error("pdf-parse not available");
-      const data = await pdfParse(buffer);
-      return (data?.text || "").trim();
-    } catch (e) {
-      throw new Error("Could not extract text from PDF. Please ensure the file is a valid, text-based PDF.");
-    }
+    // fall through
   }
+
+  // 3. pdf-parse – legacy fallback
+  try {
+    const mod = await import("pdf-parse");
+    const fn = (mod as { default?: (b: Buffer) => Promise<{ text?: string }> }).default ?? mod;
+    if (typeof fn === "function") {
+      const data = await fn(buffer);
+      const t = data?.text?.trim();
+      if (t) return t;
+    }
+  } catch {
+    // fall through
+  }
+
+  throw new Error(PDF_ERR);
 }
 
 export async function extractTextFromDocx(buffer: Buffer): Promise<string> {
