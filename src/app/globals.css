@@ -14,9 +14,21 @@
   }
 }
 
+html {
+  overflow-x: hidden;
+}
+
 body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-rgb));
+  overflow-x: hidden;
+}
+
+/* Improve touch targets and tap response on mobile */
+button,
+a,
+[role="button"] {
+  touch-action: manipulation;
 }
 
 @layer utilities {

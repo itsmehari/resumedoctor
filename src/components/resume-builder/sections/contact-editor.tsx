@@ -34,7 +34,7 @@ export function ContactEditor({ data, onChange }: Props) {
       </div>
 
       {/* Email + Phone */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className={labelCls}>Email</label>
           <input type="email" value={data.email} onChange={(e) => onChange({ ...data, email: e.target.value })}
@@ -55,7 +55,7 @@ export function ContactEditor({ data, onChange }: Props) {
       </div>
 
       {/* LinkedIn + GitHub */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className={labelCls}>LinkedIn <span className="font-normal text-slate-400">(optional)</span></label>
           <input type="text" value={data.linkedin ?? ""} onChange={(e) => set("linkedin", e.target.value)}
@@ -69,7 +69,7 @@ export function ContactEditor({ data, onChange }: Props) {
       </div>
 
       {/* Portfolio + Website */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className={labelCls}>Portfolio <span className="font-normal text-slate-400">(optional)</span></label>
           <input type="url" value={data.portfolio ?? ""} onChange={(e) => set("portfolio", e.target.value)}

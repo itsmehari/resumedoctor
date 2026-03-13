@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AuthNav } from "@/components/auth-nav";
+import { MobileNavMenu } from "@/components/mobile-nav-menu";
 import { HomeJsonLd, FaqJsonLd, HowToJsonLd, FAQ_ITEMS } from "@/components/seo/json-ld";
 import { siteUrl } from "@/lib/seo";
 import type { Metadata } from "next";
@@ -52,9 +53,9 @@ export default function HomePage() {
 
       {/* ── HEADER ──────────────────────────────────────────────────────── */}
       <header className="sticky top-0 z-30 border-b border-white/10 bg-primary-600 backdrop-blur-sm">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-          <Link href="/" className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-            <span className="w-7 h-7 rounded-lg bg-white/15 flex items-center justify-center text-sm font-black">R</span>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3 min-h-16 py-3 sm:py-0">
+          <Link href="/" className="text-lg sm:text-xl font-bold text-white tracking-tight flex items-center gap-2 shrink-0">
+            <span className="w-7 h-7 rounded-lg bg-white/15 flex items-center justify-center text-sm font-black shrink-0">R</span>
             ResumeDoctor
           </Link>
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-white/80">
@@ -62,7 +63,10 @@ export default function HomePage() {
             <Link href="/pricing"   className="hover:text-white transition-colors">Pricing</Link>
             <Link href="/blog"      className="hover:text-white transition-colors">Blog</Link>
           </nav>
-          <AuthNav inverted />
+          <div className="flex items-center gap-2">
+            <MobileNavMenu inverted />
+            <AuthNav inverted />
+          </div>
         </div>
       </header>
 

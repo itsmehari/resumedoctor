@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
-import { MoreVertical, Copy, Trash2, FileText, Upload } from "lucide-react";
+import { MoreVertical, Copy, Trash2, FileText, Upload, Menu, X } from "lucide-react";
 import { UserMenu } from "@/components/user-menu";
 import { ResumeImportModal } from "@/components/resume-import-modal";
 import { useSubscription } from "@/hooks/use-subscription";
@@ -36,6 +36,7 @@ function DashboardContent() {
   const [deleteTarget, setDeleteTarget] = useState<ResumeItem | null>(null);
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
   const [importOpen, setImportOpen] = useState(false);
+  const [navOpen, setNavOpen] = useState(false);
   const upgraded = searchParams.get("upgraded") === "1";
   const openImportParam = searchParams.get("openImport") === "1";
 
@@ -95,13 +96,13 @@ function DashboardContent() {
   return (
     <div className="min-h-screen flex flex-col">
       <header className="border-b border-slate-200 dark:border-slate-800">
-        <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-primary-600">
+        <div className="max-w-4xl mx-auto px-4 min-h-16 flex items-center justify-between gap-3 py-3">
+          <Link href="/" className="text-lg sm:text-xl font-bold text-primary-600 shrink-0">
             ResumeDoctor
           </Link>
-          <nav className="flex items-center gap-4">
+          <nav className="flex items-center gap-2 sm:gap-4">
             <span
-              className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+              className={`rounded-full px-2.5 py-0.5 text-xs font-medium shrink-0 ${
                 isPro
                   ? "bg-primary-100 text-primary-800 dark:bg-primary-900/40 dark:text-primary-200"
                   : isTrial
@@ -113,41 +114,49 @@ function DashboardContent() {
             </span>
             {!isTrial && (
               <>
-                <Link
-                  href="/jobs"
-                  className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
-                >
-                  Jobs
-                </Link>
-                <Link
-                  href="/interview-prep"
-                  className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
-                >
-                  Interview Prep
-                </Link>
-                <Link
-                  href="/settings"
-                  className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
-                >
-                  Settings
-                </Link>
-                {isAdmin && (
-                  <Link
-                    href="/admin"
-                    className="text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300 font-medium"
-                  >
-                    Admin
+                <div className="hidden lg:flex items-center gap-4">
+                  <Link href="/jobs" className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 text-sm">
+                    Jobs
                   </Link>
-                )}
+                  <Link href="/interview-prep" className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 text-sm">
+                    Interview Prep
+                  </Link>
+                  <Link href="/settings" className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 text-sm">
+                    Settings
+                  </Link>
+                  {isAdmin && (
+                    <Link href="/admin" className="text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300 font-medium text-sm">
+                      Admin
+                    </Link>
+                  )}
+                </div>
+                <div className="lg:hidden relative">
+                  <button
+                    type="button"
+                    onClick={() => setNavOpen(!navOpen)}
+                    className="flex items-center justify-center w-10 h-10 rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 min-h-[44px] min-w-[44px] touch-manipulation"
+                    aria-label={navOpen ? "Close menu" : "Open menu"}
+                  >
+                    {navOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                  </button>
+                  {navOpen && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setNavOpen(false)} aria-hidden="true" />
+                      <div className="absolute right-0 top-full mt-1 z-50 w-44 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-xl py-2">
+                        <Link href="/jobs" onClick={() => setNavOpen(false)} className="block px-4 py-3 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">Jobs</Link>
+                        <Link href="/interview-prep" onClick={() => setNavOpen(false)} className="block px-4 py-3 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">Interview Prep</Link>
+                        <Link href="/settings" onClick={() => setNavOpen(false)} className="block px-4 py-3 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">Settings</Link>
+                        {isAdmin && <Link href="/admin" onClick={() => setNavOpen(false)} className="block px-4 py-3 text-sm text-amber-600 dark:text-amber-400 font-medium hover:bg-amber-50 dark:hover:bg-amber-900/20">Admin</Link>}
+                      </div>
+                    </>
+                  )}
+                </div>
               </>
             )}
             {session ? (
               <UserMenu compact />
             ) : isTrial ? (
-              <Link
-                href="/signup"
-                className="text-primary-600 hover:text-primary-700 font-medium text-sm"
-              >
+              <Link href="/signup" className="text-primary-600 hover:text-primary-700 font-medium text-sm min-h-[44px] inline-flex items-center touch-manipulation">
                 Sign up to save
               </Link>
             ) : null}
@@ -194,7 +203,7 @@ function DashboardContent() {
                 </Link>
               </div>
             )}
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
               <div>
                 <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                   My Resumes
@@ -205,31 +214,32 @@ function DashboardContent() {
                   </p>
                 )}
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap gap-2 sm:gap-3">
                 {!isPro && (
                   <Link
                     href="/pricing"
-                    className="rounded-lg border border-primary-600 px-4 py-2 text-sm font-medium text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors"
+                    className="rounded-lg border border-primary-600 px-3 sm:px-4 py-2.5 text-sm font-medium text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors min-h-[44px] inline-flex items-center touch-manipulation"
                   >
                     Upgrade to Pro
                   </Link>
                 )}
                 <Link
                   href="/cover-letters"
-                  className="rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                  className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 sm:px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors min-h-[44px] inline-flex items-center touch-manipulation"
                 >
                   Cover Letters
                 </Link>
                 <button
+                  type="button"
                   onClick={() => setImportOpen(true)}
-                  className="rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors inline-flex items-center gap-2"
+                  className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 sm:px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors inline-flex items-center gap-2 min-h-[44px] touch-manipulation"
                 >
-                  <Upload className="h-4 w-4" />
+                  <Upload className="h-4 w-4 shrink-0" />
                   Import
                 </button>
                 <Link
                   href="/resumes/new"
-                  className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 transition-colors"
+                  className="rounded-lg bg-primary-600 px-3 sm:px-4 py-2.5 text-sm font-medium text-white hover:bg-primary-700 transition-colors min-h-[44px] inline-flex items-center touch-manipulation"
                 >
                   + Create Resume
                 </Link>

@@ -27,18 +27,18 @@ export function ConsentBanner() {
             </Link>
           </p>
         </div>
-        <div className="flex gap-3 shrink-0">
+        <div className="flex flex-wrap gap-3 shrink-0">
           <button
             type="button"
             onClick={reject}
-            className="rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+            className="rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2.5 min-h-[44px] text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             Decline
           </button>
           <button
             type="button"
             onClick={accept}
-            className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700"
+            className="rounded-lg bg-primary-600 px-4 py-2.5 min-h-[44px] text-sm font-medium text-white hover:bg-primary-700"
           >
             Accept
           </button>

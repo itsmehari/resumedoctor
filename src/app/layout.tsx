@@ -1,5 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Poppins } from "next/font/google";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
@@ -49,7 +55,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${poppins.variable} ${inter.variable} font-sans antialiased flex flex-col min-h-screen`}>
+      <body className={`${poppins.variable} ${inter.variable} font-sans antialiased flex flex-col min-h-screen overflow-x-hidden`}>
         <Providers>
           <div className="flex-1 flex flex-col">{children}</div>
           <Footer />
