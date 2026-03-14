@@ -11,7 +11,7 @@ export async function extractTextFromPdf(buffer: Buffer): Promise<string> {
   const u8 = new Uint8Array(buffer);
   const errors: string[] = [];
 
-  // 1. pdfjs-serverless – designed for serverless (Vercel, Cloudflare, etc.)
+  // 1. pdfjs-serverless – full extraction with position-aware reading order
   try {
     const { getDocument } = await import("pdfjs-serverless");
     const doc = await getDocument({
@@ -23,12 +23,20 @@ export async function extractTextFromPdf(buffer: Buffer): Promise<string> {
     for (let i = 1; i <= doc.numPages; i++) {
       const page = await doc.getPage(i);
       const textContent = await page.getTextContent();
-      const pageText = (textContent.items as Array<{ str?: string }>)
-        .map((item) => item.str ?? "")
-        .join(" ");
-      parts.push(pageText);
+      const items = textContent.items as Array<{ str?: string; transform?: number[] }>;
+      // Sort by position: Y desc (top first), then X asc (left to right) for correct reading order
+      const sorted = [...items].sort((a, b) => {
+        const ay = a.transform?.[5] ?? 0;
+        const by = b.transform?.[5] ?? 0;
+        if (Math.abs(ay - by) > 2) return by - ay; // higher Y = top of page in PDF coords
+        const ax = a.transform?.[4] ?? 0;
+        const bx = b.transform?.[4] ?? 0;
+        return ax - bx;
+      });
+      const pageText = sorted.map((item) => item.str ?? "").join(" ").replace(/\s+/g, " ").trim();
+      if (pageText) parts.push(pageText);
     }
-    const text = parts.join("\n").trim();
+    const text = parts.join("\n\n").replace(/\n{3,}/g, "\n\n").trim();
     if (text && text.length > 0) return text;
   } catch (e) {
     errors.push(`pdfjs-serverless: ${e instanceof Error ? e.message : String(e)}`);
@@ -173,41 +181,43 @@ export interface SuggestedTemplate {
   reason: string;
 }
 
-/** Use AI to suggest 2 best templates from parsed resume content */
+const TEMPLATE_SUGGEST_COUNT = 10;
+
+/** Use AI to suggest 10 best templates from parsed resume content */
 export async function suggestTemplatesFromResume(parsed: ResumeContent): Promise<SuggestedTemplate[]> {
   if (!isAiConfigured()) return [];
   const contact = parsed.sections?.find((s) => s.type === "contact")?.data as { title?: string; name?: string } | undefined;
-  const summary = parsed.sections?.find((s) => s.type === "summary")?.data as { text?: string } | undefined;
+  const summary = parsed.sections?.find((s) => s.type === "summary" || s.type === "objective")?.data as { text?: string } | undefined;
   const exp = parsed.sections?.find((s) => s.type === "experience")?.data as { entries?: { title: string }[] } | undefined;
   const skills = parsed.sections?.find((s) => s.type === "skills")?.data as { items?: string[] } | undefined;
   const role = contact?.title || exp?.entries?.[0]?.title || "";
   const summaryText = summary?.text || "";
-  const skillList = skills?.items?.slice(0, 10).join(", ") || "";
+  const skillList = skills?.items?.slice(0, 15).join(", ") || "";
   const prompt = `Given this resume profile:
 - Role/Title: ${role}
-- Summary snippet: ${summaryText.slice(0, 300)}
+- Summary snippet: ${summaryText.slice(0, 400)}
 - Top skills: ${skillList}
 
 From our template library (id: name - description):
 ${TEMPLATE_LIST.join("\n")}
 
-Pick exactly 2 template IDs that best suit this candidate for the Indian job market. Consider: role level (fresher/mid/executive), industry (tech/HR/general), and layout needs.
+Pick exactly ${TEMPLATE_SUGGEST_COUNT} template IDs that best suit this candidate for the Indian job market. Consider: role level (fresher/mid/executive), industry (tech/HR/general), layout needs. Rank by fit (best first).
 
-Return ONLY valid JSON array of 2 objects: [{"id":"template-id","name":"Display Name","reason":"Brief reason in 10 words"}]. No markdown.`;
+Return ONLY valid JSON array of ${TEMPLATE_SUGGEST_COUNT} objects: [{"id":"template-id","name":"Display Name","reason":"Brief reason in 10 words"}]. No markdown.`;
 
   const content = await chatCompletion(
     [
       { role: "system", content: "You recommend resume templates. Output only valid JSON array. No markdown, no extra text." },
       { role: "user", content: prompt },
     ],
-    { maxTokens: 300 }
+    { maxTokens: 800 }
   );
   if (!content) return [];
   const cleaned = content.replace(/```json|```/g, "").trim();
   try {
     const arr = JSON.parse(cleaned);
-    if (!Array.isArray(arr) || arr.length < 2) return [];
-    return arr.slice(0, 2).map((a: { id?: string; name?: string; reason?: string }) => ({
+    if (!Array.isArray(arr) || arr.length < 1) return [];
+    return arr.slice(0, TEMPLATE_SUGGEST_COUNT).map((a: { id?: string; name?: string; reason?: string }) => ({
       id: String(a?.id || "professional-in"),
       name: String(a?.name || "Professional"),
       reason: String(a?.reason || "Well suited"),
@@ -223,10 +233,11 @@ export async function parseResumeWithAi(rawText: string): Promise<ResumeContent>
     return { sections: [] };
   }
 
-  const truncated = rawText.slice(0, 12000);
-  const prompt = `Parse this resume text into structured JSON. Extract:
-- contact: name, email, phone, location, linkedin, github, portfolio, website
-- summary: professional summary (2-3 sentences)
+  // Use full text up to 40k chars – AI analyzes everything for complete extraction
+  const textToParse = rawText.slice(0, 40000);
+  const prompt = `Analyze this FULL resume text and extract EVERYTHING into structured JSON. Do not skip any section, bullet, or detail. Extract:
+- contact: name, email, phone, location, linkedin, github, portfolio, website (required - extract from header/top)
+- summary or objective: professional summary or career objective (2-3 sentences), use type "summary" or "objective"
 - experience: array of { title, company, location, startDate, endDate, current, bullets[] }
 - education: array of { degree, school, location, startDate, endDate, gpa?, honours? }
 - skills: items array (and optionally categories: { name, items[] })
@@ -243,11 +254,15 @@ Return ONLY valid JSON in this exact shape (no markdown, no extra text):
   ]
 }
 
+IMPORTANT - Use EXACT field names in data:
+- contact.data: name, title, email, phone, location, linkedin, github, portfolio, website (no fullName or jobTitle - use name and title)
+- summary.data: text (not description or summary)
+- experience.data.entries[].bullets (array of strings, not description)
 Use order: 0=contact, 1=summary, 2=experience, 3=education, 4=skills, 5=projects, etc.
-Generate UUID-like ids (e.g. "sec-1", "sec-2"). If a section has no data, omit it.
+CRITICAL: Extract every bullet, every skill, every certification, every detail. Preserve all content – do not summarize or omit.
 Resume text:
 ---
-${truncated}
+${textToParse}
 ---`;
 
   const content = await chatCompletion(
@@ -259,7 +274,7 @@ ${truncated}
       },
       { role: "user", content: prompt },
     ],
-    { maxTokens: 4000 }
+    { maxTokens: 8000 }
   );
 
   if (!content) return { sections: [] };
@@ -289,7 +304,100 @@ ${truncated}
     }
   }
 
+  // Fallback: if contact is missing/empty but raw text has email/phone, extract and add
+  const contactSection = sections.find((s) => s.type === "contact");
+  const contactData = contactSection?.data as { name?: string; email?: string; phone?: string; location?: string } | undefined;
+  const needsFallback =
+    (!contactSection || !contactData?.name?.trim() || !contactData?.email?.trim()) &&
+    rawText.length >= 100;
+  if (needsFallback) {
+    const fallback = extractContactFallback(rawText);
+    if (fallback.email || fallback.phone || fallback.name) {
+      const existing = contactSection
+        ? (contactSection.data as Record<string, unknown>)
+        : {};
+      const merged = {
+        name: (existing.name as string) || fallback.name || "",
+        title: (existing.title as string) || undefined,
+        email: (existing.email as string) || fallback.email || "",
+        phone: (existing.phone as string) || fallback.phone || "",
+        location: (existing.location as string) || fallback.location || "",
+        linkedin: (existing.linkedin as string) || undefined,
+        github: (existing.github as string) || undefined,
+        portfolio: (existing.portfolio as string) || undefined,
+        website: (existing.website as string) || undefined,
+      };
+      const sec: ResumeSection = (contactSection
+        ? { ...contactSection, data: merged }
+        : {
+            id: generateSectionId(),
+            type: "contact",
+            order: 0,
+            data: merged,
+          }) as ResumeSection;
+      if (contactSection) {
+        const idx = sections.indexOf(contactSection);
+        sections[idx] = sec;
+      } else {
+        sections.unshift(sec);
+        sections.forEach((s, i) => {
+          (s as { order: number }).order = i;
+        });
+      }
+    }
+  }
+
   return { sections };
+}
+
+/** Fallback: regex-extract email, phone, and first line (often name) when AI returns empty contact */
+function extractContactFallback(rawText: string): {
+  name?: string;
+  email?: string;
+  phone?: string;
+  location?: string;
+} {
+  const lines = rawText.split(/\n/).map((l) => l.trim()).filter(Boolean);
+  let email = "";
+  let phone = "";
+  let name = "";
+  let location = "";
+
+  const emailRe = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
+  const phoneRe = /(?:\+91[\s-]?)?[6-9]\d{9}|(?:\+1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/;
+
+  for (const line of lines.slice(0, 20)) {
+    if (!email && emailRe.test(line)) {
+      const m = line.match(emailRe);
+      if (m) email = m[0];
+    }
+    if (!phone && phoneRe.test(line)) {
+      const m = line.match(phoneRe);
+      if (m) phone = m[0];
+    }
+    if (!name && line.length >= 3 && line.length <= 80 && !emailRe.test(line) && !phoneRe.test(line)) {
+      if (!/^(?:RESUME|CV|Curriculum|Contact|Email|Phone)/i.test(line)) {
+        name = line;
+      }
+    }
+    if (!location && (/\b(?:India|Chennai|Mumbai|Bangalore|Delhi|Hyderabad|Pune|Kolkata)\b/i.test(line) || /\b[A-Z][a-z]+,\s*[A-Z][a-z]+\b/.test(line))) {
+      const m = line.match(/([A-Za-z][A-Za-z\s,.-]+(?:India|IN)?)/);
+      if (m) location = m[1].trim();
+    }
+    if (email && phone && name) break;
+  }
+
+  return { name: name || undefined, email: email || undefined, phone: phone || undefined, location: location || undefined };
+}
+
+/** Pick first non-empty value from object by keys (handles alternate AI field names) */
+function pickFirst(obj: Record<string, unknown> | null | undefined, keys: string[]): unknown {
+  if (!obj || typeof obj !== "object") return undefined;
+  for (const k of keys) {
+    const v = obj[k];
+    if (v != null && String(v).trim()) return v;
+  }
+  return undefined;
 }
 
 function normalizeSection(
@@ -302,49 +410,73 @@ function normalizeSection(
   if (!d) return null;
 
   switch (type) {
-    case "contact":
+    case "contact": {
+      const name = pickFirst(d, ["name", "fullName", "full_name"]);
+      const title = pickFirst(d, ["title", "professionalTitle", "jobTitle", "headline"]);
+      const email = pickFirst(d, ["email"]);
+      const phone = pickFirst(d, ["phone", "mobile", "contact"]);
+      const location = pickFirst(d, ["location", "city", "address"]);
+      const website = pickFirst(d, ["website", "url"]);
+      const linkedin = pickFirst(d, ["linkedin", "linkedIn"]);
+      const github = pickFirst(d, ["github"]);
+      const portfolio = pickFirst(d, ["portfolio"]);
       return {
         id,
         type: "contact",
         order,
         data: {
-          name: String(d.name ?? ""),
-          title: d.title ? String(d.title) : undefined,
-          email: String(d.email ?? ""),
-          phone: String(d.phone ?? ""),
-          location: String(d.location ?? ""),
-          website: d.website ? String(d.website) : undefined,
-          linkedin: d.linkedin ? String(d.linkedin) : undefined,
-          github: d.github ? String(d.github) : undefined,
-          portfolio: d.portfolio ? String(d.portfolio) : undefined,
+          name: String(name ?? ""),
+          title: title ? String(title) : undefined,
+          email: String(email ?? ""),
+          phone: String(phone ?? ""),
+          location: String(location ?? ""),
+          website: website ? String(website) : undefined,
+          linkedin: linkedin ? String(linkedin) : undefined,
+          github: github ? String(github) : undefined,
+          portfolio: portfolio ? String(portfolio) : undefined,
         },
       };
+    }
 
-    case "summary":
-      return {
-        id,
-        type: "summary",
-        order,
-        data: { text: String(d.text ?? "") },
-      };
+    case "summary": {
+      const text = pickFirst(d, ["text", "summary", "description", "content"]);
+      const t = String(text ?? "").trim();
+      return t ? { id, type: "summary", order, data: { text: t } } : null;
+    }
+
+    case "objective": {
+      const text = pickFirst(d, ["text", "objective", "summary", "description"]);
+      const t = String(text ?? "").trim();
+      return t ? { id, type: "objective", order, data: { text: t } } : null;
+    }
 
     case "experience": {
       const entries = Array.isArray(d.entries) ? d.entries : [d];
       const normalized = entries
         .map((e) => {
           const x = e as Record<string, unknown>;
-          if (!x?.title && !x?.company) return null;
+          const title = pickFirst(x, ["title", "position", "role", "jobTitle"]);
+          const company = pickFirst(x, ["company", "organization", "employer"]);
+          if (!title && !company) return null;
+          const rawBullets = Array.isArray(x.bullets)
+            ? (x.bullets as string[]).filter(Boolean)
+            : [];
+          const desc = pickFirst(x, ["description", "responsibilities"]);
+          const descBullets = typeof desc === "string"
+            ? desc.split(/[•\n]/).map((b) => b.trim()).filter(Boolean)
+            : Array.isArray(desc)
+              ? (desc as string[]).filter(Boolean)
+              : [];
+          const bullets = rawBullets.length ? rawBullets : descBullets.length ? descBullets : [""];
           return {
             id: generateSectionId(),
-            title: String(x.title ?? ""),
-            company: String(x.company ?? ""),
+            title: String(title ?? ""),
+            company: String(company ?? ""),
             location: x.location ? String(x.location) : undefined,
-            startDate: String(x.startDate ?? ""),
-            endDate: String(x.endDate ?? ""),
+            startDate: String(x.startDate ?? x.start ?? ""),
+            endDate: String(x.endDate ?? x.end ?? ""),
             current: !!x.current,
-            bullets: Array.isArray(x.bullets)
-              ? (x.bullets as string[]).filter(Boolean)
-              : [""],
+            bullets,
           };
         })
         .filter(Boolean) as Array<{

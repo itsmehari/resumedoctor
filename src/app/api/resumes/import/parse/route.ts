@@ -63,11 +63,21 @@ export async function POST(req: Request) {
     let suggested = await suggestTemplatesFromResume(parsed);
     suggested = suggested
       .filter((s) => allowedIds.includes(s.id))
-      .slice(0, 2);
+      .slice(0, 10);
     if (suggested.length === 0) {
       const fallback = auth.isTrial ? TRIAL_TEMPLATE_IDS[0] : "professional-in";
       const t = getTemplate(fallback ?? "professional-in");
       suggested = [{ id: fallback ?? "professional-in", name: t?.name ?? "Professional", reason: "Best fit for your profile" }];
+    }
+    // Pad to at least 10 options from allowed templates if AI returned fewer
+    const used = new Set(suggested.map((s) => s.id));
+    for (const id of allowedIds) {
+      if (used.size >= 10) break;
+      if (!used.has(id)) {
+        const t = getTemplate(id);
+        suggested.push({ id, name: t?.name ?? id, reason: "Alternative option" });
+        used.add(id);
+      }
     }
 
     return NextResponse.json({

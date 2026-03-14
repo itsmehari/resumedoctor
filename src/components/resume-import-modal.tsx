@@ -84,8 +84,9 @@ export function ResumeImportModal({
         sections: data.parsed?.sections ?? [],
         title: (data.title ?? file.name.replace(/\.[^/.]+$/, "")) || "Imported Resume",
       });
-      setSuggestedTemplates(data.suggestedTemplates ?? []);
-      setSelectedTemplateId(data.suggestedTemplates?.[0]?.id ?? null);
+      const templates = data.suggestedTemplates ?? [];
+      setSuggestedTemplates(templates);
+      setSelectedTemplateId(templates[0]?.id ?? null);
       setStep("choose");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Import failed");
@@ -213,9 +214,9 @@ export function ResumeImportModal({
           ) : (
             <>
               <p className="text-sm text-slate-600 dark:text-slate-400">
-                AI suggested these 2 templates for your profile. Pick one to preview and create your resume.
+                AI suggested these 10 templates for your profile. Pick one to preview and create your resume.
               </p>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 max-h-[60vh] overflow-y-auto pr-1">
                 {suggestedTemplates.map((t) => (
                   <button
                     key={t.id}

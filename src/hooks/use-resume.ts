@@ -10,6 +10,7 @@ interface ResumeData {
   templateId: string;
   version: number;
   content: ResumeContent;
+  importSource?: string | null;
 }
 
 const DEBOUNCE_MS = 2500;

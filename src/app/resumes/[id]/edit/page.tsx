@@ -341,7 +341,17 @@ export default function EditResumePage() {
               sections={sections}
               onSectionsChange={handleSectionsChange}
             />
-            {computeResumeProgress(sections) < 30 && sections.length < 4 && (
+            {resume.importSource && sections.length > 0 && (
+              <div className="rounded-xl border border-violet-200 dark:border-violet-800 bg-violet-50/50 dark:bg-violet-900/20 p-4">
+                <h3 className="font-medium text-violet-900 dark:text-violet-100 flex items-center gap-2">
+                  <span className="text-violet-500">✦</span> Imported resume
+                </h3>
+                <p className="mt-1 text-sm text-violet-800 dark:text-violet-200">
+                  Use AI to enhance: click the sparkle icon next to any bullet to improve it, or paste a job description above and use &quot;Tailor for job&quot; for role-specific suggestions.
+                </p>
+              </div>
+            )}
+            {computeResumeProgress(sections) < 30 && sections.length < 4 && !resume.importSource && (
               <div className="rounded-xl border border-primary-200 dark:border-primary-800 bg-primary-50/50 dark:bg-primary-900/20 p-4">
                 <h3 className="font-medium text-primary-900 dark:text-primary-100">Quick start</h3>
                 <p className="mt-1 text-sm text-primary-800 dark:text-primary-200">
