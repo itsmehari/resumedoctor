@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { AuthNav } from "@/components/auth-nav";
+import { SiteHeader } from "@/components/site-header";
 import { Check, Copy } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 
@@ -60,19 +60,7 @@ export default function PricingPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b border-slate-200 dark:border-slate-800">
-        <div className="max-w-6xl mx-auto px-4 min-h-16 py-3 flex flex-wrap items-center justify-between gap-3">
-          <Link href="/" className="text-xl font-bold text-primary-600">
-            ResumeDoctor
-          </Link>
-          <nav className="flex flex-wrap items-center gap-2 sm:gap-4">
-            <Link href="/" className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">
-              ← Back
-            </Link>
-            <AuthNav />
-          </nav>
-        </div>
-      </header>
+      <SiteHeader variant="app" />
 
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-16">
         <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 text-center">

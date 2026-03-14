@@ -1,12 +1,7 @@
 // Phase 4 – Interview prep (lite): common questions + AI-generated answers
-import Link from "next/link";
-import { AuthNav } from "@/components/auth-nav";
-import type { Metadata } from "next";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Interview Prep | ResumeDoctor",
-  description: "Practice common interview questions with AI-generated answers.",
-};
+import { UserDashboardLayout } from "@/components/user-dashboard-layout";
 
 const SAMPLE_QUESTIONS = [
   "Tell me about yourself.",
@@ -18,46 +13,33 @@ const SAMPLE_QUESTIONS = [
 
 export default function InterviewPrepPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-900">
-      <header className="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/50">
-        <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-primary-600">
-            ResumeDoctor
-          </Link>
-          <nav className="flex items-center gap-4">
-            <Link href="/jobs" className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100">
-              Jobs
-            </Link>
-            <AuthNav />
-          </nav>
-        </div>
-      </header>
-      <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-12">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-          Interview Prep
-        </h1>
-        <p className="mt-2 text-slate-600 dark:text-slate-400">
-          Practice common interview questions. Coming soon: AI-generated sample answers.
+    <UserDashboardLayout
+      title="Interview Prep"
+      subtitle="Practice common interview questions. Coming soon: AI-generated sample answers."
+    >
+      <div className="space-y-4">
+        <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          Common questions to prepare for:
         </p>
-        <div className="mt-8 space-y-4">
-          <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-            Common questions to prepare for:
+        <ul className="space-y-3">
+          {SAMPLE_QUESTIONS.map((q, i) => (
+            <li
+              key={i}
+              className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-5 py-4 text-slate-800 dark:text-slate-200 shadow-sm hover:shadow-md transition-shadow"
+            >
+              {q}
+            </li>
+          ))}
+        </ul>
+        <div className="mt-8 rounded-xl border border-primary-200/60 dark:border-primary-800/40 bg-primary-50/50 dark:bg-primary-900/20 p-5">
+          <p className="text-sm text-primary-800 dark:text-primary-200 font-medium">
+            Pro tip
           </p>
-          <ul className="space-y-2">
-            {SAMPLE_QUESTIONS.map((q, i) => (
-              <li
-                key={i}
-                className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 text-slate-800 dark:text-slate-200"
-              >
-                {q}
-              </li>
-            ))}
-          </ul>
+          <p className="mt-1 text-sm text-primary-700/90 dark:text-primary-300/90">
+            Use the &quot;Tailor for job&quot; feature in the resume builder to align your experience with the job description before your interview.
+          </p>
         </div>
-        <p className="mt-8 text-sm text-slate-500 dark:text-slate-400">
-          Pro tip: Use the &quot;Tailor for job&quot; feature in the resume builder to align your experience with the job description before your interview.
-        </p>
-      </main>
-    </div>
+      </div>
+    </UserDashboardLayout>
   );
 }

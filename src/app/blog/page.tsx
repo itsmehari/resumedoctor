@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { siteUrl } from "@/lib/seo";
 import { getAllPosts } from "@/lib/blog";
 import { format } from "date-fns";
+import { SiteHeader } from "@/components/site-header";
 
 export const metadata: Metadata = {
   title: "Resume & Career Tips",
@@ -14,21 +15,7 @@ export const metadata: Metadata = {
 export default function BlogIndexPage() {
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b border-slate-200 dark:border-slate-800">
-        <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-primary-600">
-            ResumeDoctor
-          </Link>
-          <nav className="flex gap-4">
-            <Link href="/" className="text-slate-600 hover:text-primary-600 dark:text-slate-400">
-              Home
-            </Link>
-            <Link href="/try" className="text-slate-600 hover:text-primary-600 dark:text-slate-400">
-              Try Free
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader variant="app" maxWidth="3xl" />
 
       <main className="flex-1 max-w-3xl mx-auto w-full px-4 py-12">
         <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">

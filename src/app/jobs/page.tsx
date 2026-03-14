@@ -4,7 +4,7 @@
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { AuthNav } from "@/components/auth-nav";
+import { UserDashboardLayout } from "@/components/user-dashboard-layout";
 import { useRouter } from "next/navigation";
 import { Search, MapPin, Briefcase, Bookmark, BookmarkCheck, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
@@ -152,24 +152,12 @@ export default function JobsPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-900">
-      <header className="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-primary-600">ResumeDoctor</Link>
-          <nav className="flex items-center gap-4">
-            <Link href="/jobs" className="font-medium text-primary-600">Jobs</Link>
-            <AuthNav />
-          </nav>
-        </div>
-      </header>
-
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Job Board</h1>
-            <p className="text-slate-500 text-sm mt-1">Curated jobs across India. Select a resume for keyword-match scoring.</p>
-          </div>
-          <div className="flex gap-2 text-sm border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
+    <UserDashboardLayout
+      title="Job Board"
+      subtitle="Curated jobs across India. Select a resume for keyword-match scoring."
+    >
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <div className="flex gap-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-sm">
             <button
               onClick={() => setActiveTab("browse")}
               className={`px-4 py-2 font-medium transition-colors ${activeTab === "browse" ? "bg-primary-600 text-white" : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"}`}
@@ -188,7 +176,7 @@ export default function JobsPage() {
         {activeTab === "browse" && (
           <>
             {/* Filters */}
-            <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 mb-6">
+            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-4 mb-6 shadow-sm">
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -409,8 +397,7 @@ export default function JobsPage() {
             )}
           </div>
         )}
-      </main>
-    </div>
+    </UserDashboardLayout>
   );
 }
 

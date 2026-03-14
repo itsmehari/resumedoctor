@@ -3,6 +3,7 @@
 // WBS 10.6 – Self-serve 14-day trial verification (user paid ₹1 via UPI)
 import { useState } from "react";
 import Link from "next/link";
+import { SiteHeader } from "@/components/site-header";
 
 export default function VerifyTrialPage() {
   const [email, setEmail] = useState("");
@@ -37,16 +38,7 @@ export default function VerifyTrialPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b border-slate-200 dark:border-slate-800">
-        <div className="max-w-xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-primary-600">
-            ResumeDoctor
-          </Link>
-          <Link href="/pricing" className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">
-            ← Pricing
-          </Link>
-        </div>
-      </header>
+      <SiteHeader variant="app" maxWidth="xl" />
       <main className="flex-1 max-w-xl mx-auto w-full px-4 py-12">
         <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
           Activate 14-day Pro trial

@@ -3,6 +3,7 @@
 import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { SiteHeader } from "@/components/site-header";
 import { trackEvent, trackMetaEvent, trackMetaCustom, trackLinkedInConversion } from "@/lib/analytics";
 
 function TryPageContent() {
@@ -77,19 +78,7 @@ function TryPageContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-primary-50 to-white dark:from-slate-900 dark:to-slate-950">
-      <header className="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-sm">
-        <div className="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-primary-600">
-            ResumeDoctor
-          </Link>
-          <Link
-            href="/login"
-            className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary-600"
-          >
-            Sign in
-          </Link>
-        </div>
-      </header>
+      <SiteHeader variant="app" maxWidth="2xl" />
 
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">

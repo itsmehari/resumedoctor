@@ -4,6 +4,7 @@
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { SiteHeader } from "@/components/site-header";
 import { ResumePreview } from "@/components/resume-builder/resume-preview";
 import type { ResumeSection } from "@/types/resume";
 
@@ -65,19 +66,7 @@ export default function PublicResumePage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-100 dark:bg-slate-900">
-      <header className="border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 py-3 px-4">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <h1 className="font-semibold text-slate-900 dark:text-slate-100 truncate">
-            {resume.title}
-          </h1>
-          <Link
-            href="/"
-            className="text-sm font-medium text-primary-600 hover:text-primary-700"
-          >
-            Create your resume
-          </Link>
-        </div>
-      </header>
+      <SiteHeader variant="app" maxWidth="4xl" />
       <main className="flex-1 py-8 px-4 overflow-auto">
         <div className="max-w-[800px] mx-auto">
           <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden">

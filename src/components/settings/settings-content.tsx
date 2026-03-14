@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { Download, Trash2, Unlink, FileText, CreditCard } from "lucide-react";
 import { useSubscription } from "@/hooks/use-subscription";
 import { getSubscriptionLabel } from "@/lib/subscription-labels";
+import { UserDashboardLayout } from "@/components/user-dashboard-layout";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { trackEvent } from "@/lib/analytics";
 
@@ -329,22 +330,11 @@ export function SettingsContent() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="border-b border-slate-200 dark:border-slate-800">
-        <div className="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-primary-600">ResumeDoctor</Link>
-          <nav className="flex gap-4">
-            <Link href="/dashboard" className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">Dashboard</Link>
-            <Link href="/settings" className="text-primary-600 font-medium">Settings</Link>
-          </nav>
-        </div>
-      </header>
-
-      <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-12">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Account settings</h1>
-        <p className="mt-2 text-slate-600 dark:text-slate-400">Manage your profile, security, and subscription.</p>
-
-        <section className="mt-8 rounded-xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm">
+    <UserDashboardLayout
+      title="Account settings"
+      subtitle="Manage your profile, security, and subscription."
+    >
+        <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
           <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">Profile</h2>
           <form onSubmit={handleProfileSubmit} className="space-y-4">
             {message && (
@@ -381,7 +371,7 @@ export function SettingsContent() {
           </form>
         </section>
 
-        <section className="mt-8 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+        <section className="mt-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
           <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">Change email</h2>
           <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">You will receive a verification link at your new address.</p>
           <form onSubmit={handleEmailChange} className="space-y-4 max-w-md">
@@ -400,7 +390,7 @@ export function SettingsContent() {
           </form>
         </section>
 
-        <section className="mt-8 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+        <section className="mt-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
           <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">Notification preferences</h2>
           <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">Choose which emails you want to receive.</p>
           <div className="space-y-3">
@@ -416,7 +406,7 @@ export function SettingsContent() {
           <p className="mt-2 text-xs text-slate-500">Saved when you click Save changes in Profile.</p>
         </section>
 
-        <section className="mt-8 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+        <section className="mt-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
           <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Export history</h2>
           <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">Recent exports of your resumes.</p>
           {exportHistory.length === 0 ? (
@@ -437,7 +427,7 @@ export function SettingsContent() {
           )}
         </section>
 
-        <section className="mt-8 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+        <section className="mt-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
           <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Subscription</h2>
           <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
             Current plan: <span className="font-medium">{getSubscriptionLabel(subscription)}</span>
@@ -463,7 +453,7 @@ export function SettingsContent() {
           )}
         </section>
 
-        <section className="mt-8 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+        <section className="mt-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
           <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Connected accounts</h2>
           <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">Sign in options linked to your account.</p>
           {accounts.length === 0 ? (
@@ -484,7 +474,7 @@ export function SettingsContent() {
           )}
         </section>
 
-        <section className="mt-8 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+        <section className="mt-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
           <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Two-factor authentication</h2>
           <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">Add an extra layer of security with an authenticator app (e.g. Google Authenticator, Authy).</p>
           {twoFactorEnabled ? (
@@ -535,7 +525,7 @@ export function SettingsContent() {
           )}
         </section>
 
-        <section className="mt-8 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+        <section className="mt-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
           <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Security</h2>
           <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">Change your password.</p>
           {hasPassword ? (
@@ -565,7 +555,7 @@ export function SettingsContent() {
         </section>
 
         {isPro && (
-          <section className="mt-8 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+          <section className="mt-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
             <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Billing & cancellation</h2>
             <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
               You’re on Pro. To cancel before the next billing cycle or switch between monthly and annual, contact us at support or use the link below.
@@ -574,7 +564,7 @@ export function SettingsContent() {
           </section>
         )}
 
-        <section className="mt-8 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+        <section className="mt-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
           <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Data & Privacy</h2>
           <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">Download your data or delete your account.</p>
           <div className="flex flex-wrap gap-4">
@@ -586,9 +576,8 @@ export function SettingsContent() {
             </button>
           </div>
         </section>
-      </main>
 
       <ConfirmDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen} title="Delete account?" description="All your data will be permanently deleted. This cannot be undone." confirmLabel="Delete my account" variant="danger" onConfirm={handleDeleteAccount} loading={deleteLoading} />
-    </div>
+    </UserDashboardLayout>
   );
 }

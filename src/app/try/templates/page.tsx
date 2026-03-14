@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ResumePreview } from "@/components/resume-builder/resume-preview";
 import { DEFAULT_RESUME_CONTENT, type ResumeSection } from "@/types/resume";
+import { SiteHeader } from "@/components/site-header";
 import { trackEvent } from "@/lib/analytics";
 
 interface TemplateInfo {
@@ -93,16 +94,7 @@ export default function TryTemplatesPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-900/50">
-      <header className="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
-        <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-primary-600">
-            ResumeDoctor
-          </Link>
-          <span className="text-sm text-slate-500 dark:text-slate-400">
-            5 min left · Choose a template
-          </span>
-        </div>
-      </header>
+      <SiteHeader variant="app" maxWidth="4xl" />
 
       <main className="flex-1 px-4 py-12">
         <div className="max-w-4xl mx-auto">
