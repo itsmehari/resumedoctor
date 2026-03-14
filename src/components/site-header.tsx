@@ -108,10 +108,10 @@ export function SiteHeader({
   const showDashboardNav = navVariant === "dashboard" && !isTrial;
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200/80 dark:border-slate-800 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md shadow-[0_1px_0_0_rgba(0,0,0,0.05)] dark:shadow-[0_1px_0_0_rgba(255,255,255,0.05)]">
-      {/* Subtle gradient accent line */}
+    <header className="sticky top-0 z-30 border-b border-slate-200/80 dark:border-slate-800 bg-white/98 dark:bg-slate-950/98 backdrop-blur-xl shadow-[0_4px_20px_-4px_rgba(13,101,217,0.08)] dark:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.4)]">
+      {/* Gradient accent line */}
       <div
-        className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary-600/30 to-transparent opacity-60"
+        className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary-500/50 to-transparent"
         aria-hidden
       />
       <div

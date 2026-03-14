@@ -95,28 +95,28 @@ function DashboardContent() {
       {!isPro && (
         <Link
           href="/pricing"
-          className="rounded-lg border border-primary-600 px-3 sm:px-4 py-2.5 text-sm font-medium text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors min-h-[44px] inline-flex items-center touch-manipulation"
+          className="rounded-xl border-2 border-primary-500 px-4 py-2.5 text-sm font-semibold text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-all shadow-sm min-h-[44px] inline-flex items-center touch-manipulation"
         >
           Upgrade to Pro
         </Link>
       )}
       <Link
         href="/cover-letters"
-        className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 sm:px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors min-h-[44px] inline-flex items-center touch-manipulation"
+        className="rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-white hover:border-slate-400 hover:shadow-md dark:hover:bg-slate-800/80 transition-all min-h-[44px] inline-flex items-center touch-manipulation"
       >
         Cover Letters
       </Link>
       <button
         type="button"
         onClick={() => setImportOpen(true)}
-        className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 sm:px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors inline-flex items-center gap-2 min-h-[44px] touch-manipulation"
+        className="rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-white hover:border-slate-400 hover:shadow-md dark:hover:bg-slate-800/80 transition-all inline-flex items-center gap-2 min-h-[44px] touch-manipulation"
       >
         <Upload className="h-4 w-4 shrink-0" />
         Import
       </button>
       <Link
         href="/resumes/new"
-        className="rounded-lg bg-primary-600 px-3 sm:px-4 py-2.5 text-sm font-medium text-white hover:bg-primary-700 transition-colors min-h-[44px] inline-flex items-center touch-manipulation"
+        className="rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 hover:shadow-lg hover:shadow-primary-500/25 transition-all min-h-[44px] inline-flex items-center touch-manipulation"
       >
         + Create Resume
       </Link>
@@ -187,38 +187,44 @@ function DashboardContent() {
               <p className="text-slate-500">Loading resumes...</p>
             </div>
           ) : resumes.length === 0 ? (
-            <div className="rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-slate-50/50 dark:bg-slate-900/30 p-14 text-center">
-              <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900/40 dark:to-primary-800/30 flex items-center justify-center">
-                <FileText className="h-8 w-8 text-primary-600 dark:text-primary-400" />
-              </div>
-              <p className="mt-6 text-lg font-semibold text-slate-900 dark:text-slate-100">
-                No resumes yet
-              </p>
-              <p className="mt-2 text-slate-600 dark:text-slate-400 max-w-sm mx-auto">
-                Create your first resume in minutes. Choose a template and start building your ATS-ready resume.
-              </p>
-              <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-                <Link
-                  href={isTrial ? "/try/templates" : "/resumes/new"}
-                  className="inline-flex items-center justify-center rounded-lg bg-primary-600 px-5 py-3 text-sm font-medium text-white hover:bg-primary-700 transition-colors shadow-sm"
-                >
-                  {isTrial ? "Choose a template" : "Create your first resume"}
-                </Link>
-                <button
-                  onClick={() => setImportOpen(true)}
-                  className="inline-flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 px-5 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                >
-                  <Upload className="h-4 w-4" />
-                  Import PDF or DOCX
-                </button>
-                {!isTrial && (
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-500/10 via-primary-400/5 to-slate-100 dark:from-primary-600/20 dark:via-primary-500/10 dark:to-slate-900 border border-primary-200/50 dark:border-primary-700/30 p-16 text-center shadow-xl">
+              {/* Decorative elements */}
+              <div className="absolute top-8 left-1/4 w-32 h-32 rounded-full bg-primary-400/10 blur-2xl" aria-hidden />
+              <div className="absolute bottom-12 right-1/4 w-40 h-40 rounded-full bg-primary-500/10 blur-3xl" aria-hidden />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(13,101,217,0.06),transparent_50%)] dark:bg-[radial-gradient(circle_at_50%_30%,rgba(59,130,246,0.08),transparent_50%)]" aria-hidden />
+              <div className="relative">
+                <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center shadow-lg shadow-primary-500/30">
+                  <FileText className="h-10 w-10 text-white" />
+                </div>
+                <p className="mt-8 text-xl font-bold text-slate-900 dark:text-slate-100">
+                  No resumes yet
+                </p>
+                <p className="mt-3 text-slate-600 dark:text-slate-400 max-w-md mx-auto text-base">
+                  Create your first resume in minutes. Choose a template and start building your ATS-ready resume.
+                </p>
+                <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
                   <Link
-                    href="/try/templates"
-                    className="inline-flex rounded-lg border border-slate-300 dark:border-slate-600 px-5 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    href={isTrial ? "/try/templates" : "/resumes/new"}
+                    className="inline-flex items-center justify-center rounded-xl bg-primary-600 px-6 py-3.5 text-base font-semibold text-white hover:bg-primary-700 hover:shadow-lg hover:shadow-primary-500/30 transition-all"
                   >
-                    Browse templates
+                    {isTrial ? "Choose a template" : "Create your first resume"}
                   </Link>
-                )}
+                  <button
+                    onClick={() => setImportOpen(true)}
+                    className="inline-flex items-center gap-2 rounded-xl border-2 border-slate-300 dark:border-slate-600 px-6 py-3 text-base font-medium text-slate-700 dark:text-slate-300 hover:bg-white hover:border-slate-400 hover:shadow-md dark:hover:bg-slate-800 transition-all"
+                  >
+                    <Upload className="h-5 w-5" />
+                    Import PDF or DOCX
+                  </button>
+                  {!isTrial && (
+                    <Link
+                      href="/try/templates"
+                      className="inline-flex rounded-xl border-2 border-slate-300 dark:border-slate-600 px-6 py-3 text-base font-medium text-slate-700 dark:text-slate-300 hover:bg-white hover:border-slate-400 hover:shadow-md dark:hover:bg-slate-800 transition-all"
+                    >
+                      Browse templates
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
           ) : (
@@ -226,7 +232,7 @@ function DashboardContent() {
               {resumes.map((r) => (
                 <li
                   key={r.id}
-                  className="group rounded-xl border border-slate-200 dark:border-slate-700 border-l-4 border-l-primary-500/0 hover:border-l-primary-500 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200"
+                  className="group rounded-xl border border-slate-200 dark:border-slate-700 border-l-4 border-l-primary-500/0 hover:border-l-primary-500 bg-white dark:bg-slate-900 shadow-md hover:shadow-xl hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200"
                 >
                   <div className="flex items-center">
                     <div className="flex-1 min-w-0 flex items-center justify-between p-4">

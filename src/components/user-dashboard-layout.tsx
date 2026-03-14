@@ -19,7 +19,7 @@ export function UserDashboardLayout({
   actions,
 }: UserDashboardLayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-slate-50 via-white to-slate-50/80 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       <SiteHeader variant="app" navVariant="dashboard" maxWidth="6xl" />
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-8">
         {(title || actions) && (
@@ -27,12 +27,12 @@ export function UserDashboardLayout({
             {(title || subtitle) && (
               <div>
                 {title && (
-                  <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
                     {title}
                   </h1>
                 )}
                 {subtitle && (
-                  <p className="mt-1 text-slate-600 dark:text-slate-400">
+                  <p className="mt-2 text-slate-600 dark:text-slate-400 text-sm sm:text-base">
                     {subtitle}
                   </p>
                 )}
