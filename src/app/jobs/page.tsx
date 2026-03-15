@@ -33,6 +33,7 @@ interface JobsResponse {
   totalPages: number;
 }
 
+const STATUS_ORDER = ["saved", "applied", "interviewing", "rejected", "offer"] as const;
 const STATUS_LABELS: Record<string, string> = {
   saved: "Saved",
   applied: "Applied",
@@ -77,6 +78,7 @@ export default function JobsPage() {
   const [resumes, setResumes] = useState<Array<{ id: string; title: string }>>([]);
   const [appliedStatus, setAppliedStatus] = useState<Record<string, string>>({});
   const [activeTab, setActiveTab] = useState<"browse" | "applications">("browse");
+  const [applicationsView, setApplicationsView] = useState<"list" | "pipeline">("list");
   const [applications, setApplications] = useState<Array<{ jobId: string; status: string; job: Job; updatedAt: string }>>([]);
 
   useEffect(() => {
@@ -86,8 +88,8 @@ export default function JobsPage() {
   useEffect(() => {
     if (session?.user?.email) {
       fetch("/api/resumes", { credentials: "include" })
-        .then((r) => (r.ok ? r.json() : { resumes: [] }))
-        .then((d) => setResumes(d.resumes ?? []));
+        .then((r) => (r.ok ? r.json() : []))
+        .then((d) => setResumes(Array.isArray(d) ? d : (d.resumes ?? [])));
     }
   }, [session?.user?.email]);
 
@@ -365,35 +367,100 @@ export default function JobsPage() {
                 <button onClick={() => setActiveTab("browse")} className="mt-4 text-sm text-primary-600 hover:underline">Browse jobs →</button>
               </div>
             ) : (
-              <div className="space-y-3">
-                {applications.map((a) => (
-                  <div key={a.jobId} className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 flex items-center justify-between gap-4">
-                    <div className="min-w-0">
-                      <p className="font-medium text-slate-900 dark:text-slate-100 text-sm">{a.job.title}</p>
-                      <p className="text-xs text-slate-500">{a.job.company} · {a.job.location}</p>
-                    </div>
-                    <div className="flex items-center gap-3 shrink-0">
-                      <select
-                        value={a.status}
-                        onChange={(e) => handleApply(a.jobId, e.target.value)}
-                        className={`text-xs rounded px-2 py-1 border border-slate-200 dark:border-slate-600 font-medium cursor-pointer ${STATUS_COLORS[a.status] ?? STATUS_COLORS.saved}`}
-                      >
-                        {Object.entries(STATUS_LABELS).map(([v, l]) => (
-                          <option key={v} value={v}>{l}</option>
-                        ))}
-                      </select>
-                      {a.job.url && (
-                        <a href={a.job.url} target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700 dark:text-primary-400">
-                          <ExternalLink className="h-4 w-4" />
-                        </a>
-                      )}
-                      <button onClick={() => handleUnsave(a.jobId)} className="text-slate-400 hover:text-red-500" title="Remove">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
+              <>
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-sm text-slate-500">View:</span>
+                  <button
+                    onClick={() => setApplicationsView("list")}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium ${applicationsView === "list" ? "bg-primary-600 text-white" : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"}`}
+                  >
+                    List
+                  </button>
+                  <button
+                    onClick={() => setApplicationsView("pipeline")}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium ${applicationsView === "pipeline" ? "bg-primary-600 text-white" : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"}`}
+                  >
+                    Pipeline
+                  </button>
+                </div>
+
+                {applicationsView === "list" ? (
+                  <div className="space-y-3">
+                    {applications.map((a) => (
+                      <div key={a.jobId} className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 flex items-center justify-between gap-4">
+                        <div className="min-w-0">
+                          <p className="font-medium text-slate-900 dark:text-slate-100 text-sm">{a.job.title}</p>
+                          <p className="text-xs text-slate-500">{a.job.company} · {a.job.location}</p>
+                        </div>
+                        <div className="flex items-center gap-3 shrink-0">
+                          <select
+                            value={a.status}
+                            onChange={(e) => handleApply(a.jobId, e.target.value)}
+                            className={`text-xs rounded px-2 py-1 border border-slate-200 dark:border-slate-600 font-medium cursor-pointer ${STATUS_COLORS[a.status] ?? STATUS_COLORS.saved}`}
+                          >
+                            {Object.entries(STATUS_LABELS).map(([v, l]) => (
+                              <option key={v} value={v}>{l}</option>
+                            ))}
+                          </select>
+                          {a.job.url && (
+                            <a href={a.job.url} target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700 dark:text-primary-400">
+                              <ExternalLink className="h-4 w-4" />
+                            </a>
+                          )}
+                          <button onClick={() => handleUnsave(a.jobId)} className="text-slate-400 hover:text-red-500" title="Remove">
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                ) : (
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 overflow-x-auto pb-2">
+                    {STATUS_ORDER.map((statusKey) => {
+                      const columnApps = applications.filter((a) => a.status === statusKey);
+                      return (
+                        <div key={statusKey} className="min-w-[180px] rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-3 flex flex-col">
+                          <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2 flex items-center justify-between">
+                            {STATUS_LABELS[statusKey]}
+                            <span className="rounded-full bg-slate-200 dark:bg-slate-700 px-1.5 text-[10px]">{columnApps.length}</span>
+                          </h3>
+                          <div className="space-y-2 flex-1 overflow-y-auto max-h-[60vh]">
+                            {columnApps.length === 0 ? (
+                              <p className="text-xs text-slate-400 py-2">None</p>
+                            ) : (
+                              columnApps.map((a) => (
+                                <div key={a.jobId} className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 p-3 shadow-sm">
+                                  <p className="font-medium text-slate-900 dark:text-slate-100 text-xs leading-tight">{a.job.title}</p>
+                                  <p className="text-[10px] text-slate-500 mt-0.5 truncate">{a.job.company}</p>
+                                  <div className="flex items-center gap-1 mt-2">
+                                    <select
+                                      value={a.status}
+                                      onChange={(e) => handleApply(a.jobId, e.target.value)}
+                                      className="text-[10px] rounded px-1.5 py-0.5 border border-slate-200 dark:border-slate-600 font-medium cursor-pointer w-full max-w-[100px] bg-white dark:bg-slate-800"
+                                    >
+                                      {STATUS_ORDER.map((k) => (
+                                        <option key={k} value={k}>{STATUS_LABELS[k]}</option>
+                                      ))}
+                                    </select>
+                                    {a.job.url && (
+                                      <a href={a.job.url} target="_blank" rel="noopener noreferrer" className="text-primary-600 shrink-0" title="Open">
+                                        <ExternalLink className="h-3 w-3" />
+                                      </a>
+                                    )}
+                                    <button onClick={() => handleUnsave(a.jobId)} className="text-slate-400 hover:text-red-500 shrink-0" title="Remove">
+                                      <Trash2 className="h-3 w-3" />
+                                    </button>
+                                  </div>
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}

@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { siteUrl } from "@/lib/seo";
 import { getPostBySlug, getPostSlugs } from "@/lib/blog";
+import { ArticleJsonLd } from "@/components/seo/json-ld";
 import ReactMarkdown from "react-markdown";
 
 interface Props {
@@ -42,6 +43,13 @@ export default function BlogPostPage({ params }: Props) {
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-slate-950">
+      <ArticleJsonLd
+        title={post.title}
+        description={post.description}
+        slug={post.slug}
+        date={post.date}
+        author={post.author}
+      />
       <SiteHeader variant="app" maxWidth="3xl" />
 
       <main className="flex-1 max-w-3xl mx-auto w-full px-4 py-12">

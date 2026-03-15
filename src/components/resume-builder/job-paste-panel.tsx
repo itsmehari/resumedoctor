@@ -199,6 +199,70 @@ export function JobPastePanel({
     toast("Bullet updated", { variant: "success" });
   };
 
+  const applyAll = () => {
+    if (!result) return;
+    let next = [...sections];
+    const appliedKeys = new Set<string>();
+
+    if (result.summarySuggestion && !applied.has("summary")) {
+      const summarySection = next.find((s) => s.type === "summary");
+      if (summarySection) {
+        next = next.map((s) =>
+          s.id === summarySection.id
+            ? { ...s, data: { ...(s.data as { text?: string }), text: result.summarySuggestion } }
+            : s
+        ) as ResumeSection[];
+      } else {
+        next = [...next, {
+          id: genId(),
+          type: "summary" as const,
+          order: next.length,
+          data: { text: result.summarySuggestion! },
+        }];
+      }
+      appliedKeys.add("summary");
+    }
+
+    if ((result.keywords?.length || result.skillsToAdd?.length) && (!applied.has("keywords") || !applied.has("skills"))) {
+      const skillsSection = next.find((s) => s.type === "skills");
+      const existing = skillsSection && "items" in skillsSection.data
+        ? (skillsSection.data.items ?? []).filter(Boolean) as string[]
+        : [];
+      const toAdd = Array.from(new Set([...(result.keywords ?? []), ...(result.skillsToAdd ?? [])]));
+      const newItems = Array.from(new Set([...existing, ...toAdd]));
+      if (skillsSection) {
+        next = next.map((s) =>
+          s.id === skillsSection.id ? { ...s, data: { ...(s.data as { items?: string[] }), items: newItems } } : s
+        ) as ResumeSection[];
+      } else {
+        next = [...next, { id: genId(), type: "skills" as const, order: next.length, data: { items: newItems } }];
+      }
+      appliedKeys.add("keywords");
+      appliedKeys.add("skills");
+    }
+
+    if (result.bulletSuggestions?.length) {
+      for (const b of result.bulletSuggestions) {
+        const expSection = next.find((sec) => sec.type === "experience" && sec.id === b.sectionId) ?? next.find((sec) => sec.type === "experience");
+        if (!expSection || expSection.type !== "experience") continue;
+        const entries = "entries" in expSection.data ? expSection.data.entries : [expSection.data];
+        const entry = entries[b.entryIndex];
+        if (!entry || !("bullets" in entry)) continue;
+        const bullets = [...(entry.bullets ?? [])];
+        bullets[b.bulletIndex] = b.suggested;
+        const newEntries = entries.map((e, i) => (i === b.entryIndex ? { ...e, bullets } : e));
+        next = next.map((sec) =>
+          sec.id === expSection.id ? { ...sec, data: { ...sec.data, entries: newEntries } } : sec
+        ) as ResumeSection[];
+        appliedKeys.add(`bullet-${b.sectionId}-${b.entryIndex}-${b.bulletIndex}`);
+      }
+    }
+
+    onSectionsChange(next);
+    setApplied((prev) => new Set([...prev, ...appliedKeys]));
+    toast("All suggestions applied", { variant: "success" });
+  };
+
   return (
     <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden">
       <button
@@ -265,6 +329,19 @@ export function JobPastePanel({
           </button>
           {result && (
             <div className="space-y-3 pt-2">
+              <div className="flex items-center justify-between gap-2 pb-2 border-b border-slate-200 dark:border-slate-700">
+                <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                  Apply suggestions one-by-one below, or apply all at once.
+                </p>
+                <button
+                  type="button"
+                  onClick={applyAll}
+                  className="inline-flex items-center gap-1 rounded-lg bg-primary-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-primary-700"
+                >
+                  <Check className="h-3.5 w-3.5" />
+                  Apply all
+                </button>
+              </div>
               {result.keywords?.length > 0 && (
                 <div>
                   <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">

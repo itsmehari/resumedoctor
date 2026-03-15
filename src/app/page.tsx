@@ -295,17 +295,28 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* Style filter pills */}
+          {/* Style filter pills – link to /templates with category */}
           <div className="flex flex-wrap gap-2 justify-center mb-10">
-            {["All", "Modern", "Classic", "Creative", "Minimal", "Two-Column", "Dark Sidebar"].map((label) => (
-              <span key={label}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium border cursor-default transition-colors ${
+            {([
+              { label: "All", category: "" },
+              { label: "Modern", category: "modern" },
+              { label: "Classic", category: "classic" },
+              { label: "Creative", category: "creative" },
+              { label: "Minimal", category: "minimal" },
+              { label: "Two-Column", category: "executive" },
+              { label: "Dark Sidebar", category: "ats" },
+            ] as const).map(({ label, category }) => (
+              <Link
+                key={label}
+                href={category ? `/templates?category=${category}` : "/templates"}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
                   label === "All"
                     ? "bg-primary-600 text-white border-primary-600"
                     : "border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-primary-400 hover:text-primary-600"
-                }`}>
+                }`}
+              >
                 {label}
-              </span>
+              </Link>
             ))}
           </div>
 
@@ -491,6 +502,7 @@ const FEATURES = [
     title: "30+ ATS-friendly templates",
     description: "Every template is tested against Applicant Tracking Systems used by top Indian companies. Modern, clean, recruiter-approved.",
     badge: null,
+    guideHref: "/blog/ats-friendly-resume-complete-guide",
   },
   {
     icon: PATHS.ai,
@@ -498,6 +510,7 @@ const FEATURES = [
     title: "AI bullet point generator",
     description: "Enter your role and AI writes achievement-focused bullets that pass ATS keyword filters and impress recruiters.",
     badge: "New",
+    guideHref: null,
   },
   {
     icon: PATHS.ats,
@@ -505,6 +518,7 @@ const FEATURES = [
     title: "ATS score checker",
     description: "See your resume's ATS match score instantly. Know exactly which keywords to add before hitting submit.",
     badge: null,
+    guideHref: "/blog/ats-friendly-resume-complete-guide",
   },
   {
     icon: PATHS.download,
@@ -544,6 +558,7 @@ const CAREER_STAGES = [
     sections: ["Career Objective", "Education", "Projects", "Skills", "Certifications", "Interests"],
     cta: "Build fresher resume",
     href: "/try",
+    guideHref: "/blog/how-to-write-cv-for-freshers",
   },
   {
     emoji: "💼",
@@ -553,6 +568,7 @@ const CAREER_STAGES = [
     sections: ["Professional Summary", "Work Experience", "Skills", "Education", "Awards"],
     cta: "Build experience resume",
     href: "/try",
+    guideHref: "/blog/how-to-write-professional-summary",
   },
   {
     emoji: "🔄",
@@ -562,6 +578,7 @@ const CAREER_STAGES = [
     sections: ["Career Objective", "Transferable Skills", "Experience", "Education", "Volunteer"],
     cta: "Build career change resume",
     href: "/try",
+    guideHref: "/blog/handling-career-gaps-on-resume",
   },
   {
     emoji: "🔬",
@@ -571,6 +588,7 @@ const CAREER_STAGES = [
     sections: ["Summary", "Publications", "Research", "Education", "Certifications", "Awards"],
     cta: "Build academic CV",
     href: "/try",
+    guideHref: "/blog/resume-formats-india-guide",
   },
 ];
 
@@ -800,9 +818,9 @@ function TemplateShowcaseCard({ title, style, badge, accent, layout, slots }: {
   );
 }
 
-function CareerCard({ emoji, title, color, accent, sections, cta, href }: {
+function CareerCard({ emoji, title, color, accent, sections, cta, href, guideHref }: {
   emoji: string; title: string; color: string; accent: string;
-  sections: string[]; cta: string; href: string;
+  sections: string[]; cta: string; href: string; guideHref?: string;
 }) {
   return (
     <div className={`rounded-2xl border-2 ${color} bg-white dark:bg-slate-900 p-6 flex flex-col h-full hover:shadow-md transition-all`}>
@@ -816,11 +834,18 @@ function CareerCard({ emoji, title, color, accent, sections, cta, href }: {
           </li>
         ))}
       </ul>
-      <Link href={href}
-        className={`text-xs font-semibold ${accent} hover:underline flex items-center gap-1`}>
-        {cta}
-        <Icon path={PATHS.arrow} size={12} />
-      </Link>
+      <div className="flex flex-wrap items-center gap-3">
+        <Link href={href}
+          className={`text-xs font-semibold ${accent} hover:underline flex items-center gap-1`}>
+          {cta}
+          <Icon path={PATHS.arrow} size={12} />
+        </Link>
+        {guideHref && (
+          <Link href={guideHref} className="text-xs text-slate-500 dark:text-slate-400 hover:underline">
+            Read guide →
+          </Link>
+        )}
+      </div>
     </div>
   );
 }

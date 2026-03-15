@@ -155,3 +155,44 @@ export function HowToJsonLd() {
 }
 
 export { FAQ_ITEMS };
+
+/** Article JSON-LD for blog posts (WBS 12.7) */
+export function ArticleJsonLd({
+  title,
+  description,
+  slug,
+  date,
+  author,
+}: {
+  title: string;
+  description: string;
+  slug: string;
+  date: string;
+  author: string;
+}) {
+  const article = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: title,
+    description,
+    url: `${siteUrl}/blog/${slug}`,
+    datePublished: date,
+    author: {
+      "@type": "Organization",
+      name: author || siteName,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: siteName,
+      url: siteUrl,
+      logo: { "@type": "ImageObject", url: `${siteUrl}/favicon.png` },
+    },
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(article) }}
+    />
+  );
+}

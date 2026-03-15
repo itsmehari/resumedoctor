@@ -172,13 +172,40 @@ function DashboardContent() {
 
           {/* Welcome section when user has resumes */}
           {!loading && resumes.length > 0 && welcomeName && (
-            <div className="mb-8 rounded-xl bg-gradient-to-br from-primary-50 to-primary-100/50 dark:from-primary-900/20 dark:to-primary-800/10 border border-primary-200/60 dark:border-primary-800/40 p-6 shadow-sm">
+            <div className="mb-6 rounded-xl bg-gradient-to-br from-primary-50 to-primary-100/50 dark:from-primary-900/20 dark:to-primary-800/10 border border-primary-200/60 dark:border-primary-800/40 p-6 shadow-sm">
               <p className="text-primary-800 dark:text-primary-200 font-medium">
                 Hi {welcomeName.split(/[\s@]/)[0]}! You have {resumes.length} resume{resumes.length !== 1 ? "s" : ""} in your library.
               </p>
               <p className="mt-1 text-sm text-primary-700/80 dark:text-primary-300/80">
                 Keep your resume sharp—update it when you achieve something new.
               </p>
+            </div>
+          )}
+
+          {/* Next steps card when user has resumes */}
+          {!loading && resumes.length > 0 && (
+            <div className="mb-8 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
+              <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Next steps</p>
+              <div className="flex flex-wrap gap-2">
+                <Link
+                  href={resumes[0] ? `/resumes/${resumes[0].id}/edit` : "/resumes/new"}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-600 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                >
+                  Improve ATS score
+                </Link>
+                <Link
+                  href="/cover-letters/new"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-600 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                >
+                  Add a cover letter
+                </Link>
+                <Link
+                  href="/jobs"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-600 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                >
+                  Browse jobs
+                </Link>
+              </div>
             </div>
           )}
 

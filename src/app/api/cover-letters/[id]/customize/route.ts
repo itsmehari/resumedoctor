@@ -1,10 +1,11 @@
-// WBS 8.4 – AI customize cover letter for job (Groq or OpenAI)
+// WBS 8.4 – AI customize cover letter for job (Groq or OpenAI, rate limited)
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { chatCompletion, isAiConfigured } from "@/lib/ai-client";
+import { checkAiRateLimit, recordAiUsage } from "@/lib/ai-rate-limit";
 
 const schema = z.object({
   jobDescription: z.string().min(1, "Job description required").max(10000),
@@ -39,6 +40,19 @@ export async function POST(
 
   if (!letter) {
     return NextResponse.json({ error: "Cover letter not found" }, { status: 404 });
+  }
+
+  const rateLimit = await checkAiRateLimit(user.id, "customize-cover");
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      {
+        error: `AI limit reached (${rateLimit.used}/${rateLimit.limit} today). Upgrade to Pro for more.`,
+        code: "RATE_LIMITED",
+        limit: rateLimit.limit,
+        used: rateLimit.used,
+      },
+      { status: 429 }
+    );
   }
 
   try {
@@ -94,6 +108,7 @@ Write a tailored cover letter:`,
       return NextResponse.json({ error: "No content generated" }, { status: 500 });
     }
 
+    await recordAiUsage(user.id, "customize-cover");
     await prisma.coverLetter.update({
       where: { id },
       data: { content: generated },

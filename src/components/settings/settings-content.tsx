@@ -21,7 +21,7 @@ interface ConnectedAccount {
 export function SettingsContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { subscription, isPro } = useSubscription();
+  const { subscription, isPro, resumePackCredits } = useSubscription();
   const [name, setName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [loading, setLoading] = useState(false);
@@ -55,6 +55,7 @@ export function SettingsContent() {
   const [twoFactorDisableCode, setTwoFactorDisableCode] = useState("");
   const [twoFactorDisableLoading, setTwoFactorDisableLoading] = useState(false);
   const [invoices, setInvoices] = useState<Array<{ id: string; amount: number; currency: string; plan: string; status: string; pdfUrl?: string; createdAt: string }>>([]);
+  const [cancelSubscriptionOpen, setCancelSubscriptionOpen] = useState(false);
 
   useEffect(() => {
     if (session?.user?.email) {
@@ -428,26 +429,50 @@ export function SettingsContent() {
         </section>
 
         <section className="mt-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
-          <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Subscription</h2>
+          <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
+            <CreditCard className="h-5 w-5 text-slate-500" />
+            Billing & subscription
+          </h2>
           <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-            Current plan: <span className="font-medium">{getSubscriptionLabel(subscription)}</span>
+            Current plan: <span className="font-medium text-slate-900 dark:text-slate-100">{getSubscriptionLabel(subscription)}</span>
+            {resumePackCredits > 0 && (
+              <span className="ml-2 text-primary-600 dark:text-primary-400 font-medium">
+                · {resumePackCredits} export credit{resumePackCredits !== 1 ? "s" : ""}
+              </span>
+            )}
           </p>
           {!isPro ? (
             <div className="space-y-3">
-              <Link href="/pricing" onClick={() => trackEvent("upgrade_click", { source: "settings" })} className="inline-block rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-primary-700">
+              <Link
+                href="/pricing"
+                onClick={() => trackEvent("upgrade_click", { source: "settings" })}
+                className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-primary-700"
+              >
                 Upgrade to Pro
               </Link>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Get PDF & Word export, no watermarks. Choose monthly or annual on the pricing page.
+                Get PDF & Word export, unlimited ATS checks, and more AI. Secure payment, cancel anytime.
               </p>
             </div>
           ) : (
-            <div className="space-y-3">
-              <Link href="/pricing" className="inline-block rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">
-                Change plan
-              </Link>
+            <div className="space-y-4">
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="/pricing"
+                  className="inline-flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                >
+                  Manage subscription
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setCancelSubscriptionOpen(true)}
+                  className="inline-flex items-center gap-2 rounded-lg border border-red-200 dark:border-red-800 px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                >
+                  Cancel subscription
+                </button>
+              </div>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                To cancel or change billing, visit the pricing page or contact support.
+                To switch between monthly and annual, use Manage subscription. To cancel, use the button above.
               </p>
             </div>
           )}
@@ -554,7 +579,7 @@ export function SettingsContent() {
           )}
         </section>
 
-        {isPro && (
+        {false && isPro && (
           <section className="mt-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
             <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Billing & cancellation</h2>
             <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
@@ -578,6 +603,19 @@ export function SettingsContent() {
         </section>
 
       <ConfirmDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen} title="Delete account?" description="All your data will be permanently deleted. This cannot be undone." confirmLabel="Delete my account" variant="danger" onConfirm={handleDeleteAccount} loading={deleteLoading} />
+      <ConfirmDialog
+        open={cancelSubscriptionOpen}
+        onOpenChange={setCancelSubscriptionOpen}
+        title="Cancel subscription?"
+        description="You'll keep Pro until the end of your current billing period. After that you'll lose PDF & Word export, unlimited ATS checks, and unlimited AI. To cancel, we'll take you to the pricing page where you can contact support or follow cancellation instructions."
+        confirmLabel="Go to pricing"
+        cancelLabel="Keep Pro"
+        variant="default"
+        onConfirm={() => {
+          setCancelSubscriptionOpen(false);
+          window.location.href = "/pricing";
+        }}
+      />
     </UserDashboardLayout>
   );
 }

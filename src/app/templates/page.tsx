@@ -1,9 +1,9 @@
 "use client";
 
 // WBS 4.4, 4.8e – Template selector UI
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { SiteHeader } from "@/components/site-header";
 import { ResumePreview } from "@/components/resume-builder/resume-preview";
@@ -74,12 +74,18 @@ const CATEGORIES = [
 
 export default function TemplatesPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { data: session } = useSession();
   const [templates, setTemplates] = useState<TemplateInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [createLoading, setCreateLoading] = useState<string | null>(null);
-  const [categoryFilter, setCategoryFilter] = useState("");
+  const initialCategory = useMemo(() => searchParams.get("category") ?? "", [searchParams]);
+  const [categoryFilter, setCategoryFilter] = useState(initialCategory);
   const [previewTemplate, setPreviewTemplate] = useState<TemplateInfo | null>(null);
+
+  useEffect(() => {
+    setCategoryFilter(initialCategory);
+  }, [initialCategory]);
 
   useEffect(() => {
     fetch("/api/templates", { credentials: "include" })
@@ -136,7 +142,12 @@ export default function TemplatesPage() {
             <div className="mt-8 flex justify-center">
               <select
                 value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setCategoryFilter(v);
+                  const url = v ? `/templates?category=${v}` : "/templates";
+                  router.replace(url, { scroll: false });
+                }}
                 className="rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100"
               >
                 {CATEGORIES.map((c) => (

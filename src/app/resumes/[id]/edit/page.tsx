@@ -191,8 +191,9 @@ export default function EditResumePage() {
                 type="button"
                 onClick={() => setCustomizeOpen(!customizeOpen)}
                 className="flex items-center gap-1 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                title="Customize template: color, font, spacing"
               >
-                Customize
+                Customize template
               </button>
               {customizeOpen && (
                 <>

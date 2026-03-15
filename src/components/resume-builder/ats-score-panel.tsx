@@ -9,6 +9,7 @@ interface AtsResult {
   score: number;
   suggestions: Array<{ type: string; message: string; section?: string }>;
   checks: Array<{ name: string; pass: boolean; detail?: string }>;
+  teaser?: boolean;
 }
 
 interface Props {
@@ -21,12 +22,27 @@ export function AtsScorePanel({ resumeId, sections, isPro }: Props) {
   const [result, setResult] = useState<AtsResult | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const [teaserUsed, setTeaserUsed] = useState(false);
+
   const fetchScore = () => {
-    if (!isPro) return;
     setLoading(true);
+    setResult(null);
     fetch(`/api/resumes/${resumeId}/ats`, { credentials: "include" })
-      .then((r) => (r.ok ? r.json() : null))
-      .then(setResult)
+      .then((r) => {
+        if (r.status === 403) {
+          const code = r.headers.get("content-type")?.includes("json") ? null : "TEASER_USED";
+          return r.json().then((d) => ({ ok: false, code: d.code ?? code, error: d.error }));
+        }
+        return r.ok ? r.json().then((d) => ({ ok: true, data: d })) : r.json().then((d) => ({ ok: false, error: d.error }));
+      })
+      .then((out) => {
+        if (out.ok && out.data) {
+          setResult(out.data);
+          if (out.data.teaser) setTeaserUsed(true);
+        } else if ((out as { code?: string }).code === "TEASER_USED") {
+          setTeaserUsed(true);
+        }
+      })
       .finally(() => setLoading(false));
   };
 
@@ -35,15 +51,42 @@ export function AtsScorePanel({ resumeId, sections, isPro }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resumeId, isPro]);
 
-  if (!isPro) {
+  if (!isPro && !teaserUsed) {
+    return (
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4 bg-slate-50 dark:bg-slate-800/50">
+        <h3 className="font-semibold text-slate-900 dark:text-slate-100 text-sm">
+          ATS Checker
+        </h3>
+        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 mb-3">
+          Get one free ATS score and top 3 suggestions per resume. Upgrade to Pro for full suggestions and re-checks.
+        </p>
+        <button
+          type="button"
+          onClick={fetchScore}
+          disabled={loading}
+          className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 disabled:opacity-50"
+        >
+          {loading ? "Checking…" : "Check ATS score (1 free)"}
+        </button>
+      </div>
+    );
+  }
+
+  if (!isPro && teaserUsed && !result) {
     return (
       <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4 bg-slate-50 dark:bg-slate-800/50">
         <h3 className="font-semibold text-slate-900 dark:text-slate-100 text-sm">
           ATS Checker
         </h3>
         <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-          Upgrade to Pro to get your resume scored for ATS compatibility.
+          You&apos;ve used your free check for this resume. Upgrade to Pro to see all suggestions and re-check anytime.
         </p>
+        <a
+          href="/pricing"
+          className="mt-2 inline-block text-sm font-medium text-primary-600 hover:underline"
+        >
+          Upgrade to Pro →
+        </a>
       </div>
     );
   }
@@ -139,10 +182,15 @@ export function AtsScorePanel({ resumeId, sections, isPro }: Props) {
         </div>
       )}
 
+      {result.teaser && (
+        <p className="text-xs text-primary-600 dark:text-primary-400 font-medium">
+          Upgrade to Pro to see all suggestions and re-check anytime.
+        </p>
+      )}
       {result.suggestions.length > 0 && (
         <div className="space-y-2 pt-2 border-t border-slate-200 dark:border-slate-700">
           <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-            Suggestions
+            Suggestions {result.teaser ? "(top 3)" : ""}
           </p>
           {result.suggestions.map((s, i) => (
             <div key={i} className="flex items-start gap-2 text-sm">

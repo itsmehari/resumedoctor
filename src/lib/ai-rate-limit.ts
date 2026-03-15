@@ -11,7 +11,8 @@ export type AiAction =
   | "improve-summary"
   | "suggest-bullets"
   | "customize-cover"
-  | "tailor-for-job";
+  | "tailor-for-job"
+  | "interview-answer";
 
 export interface RateLimitResult {
   allowed: boolean;
