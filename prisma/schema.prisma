@@ -47,8 +47,20 @@ model User {
   aiUsageLogs     AiUsageLog[]
   featureUsageLogs FeatureUsageLog[]
   jobApplications  JobApplication[]
+  productEvents    ProductEvent[]
+  superprofilePurchases SuperprofilePurchaseEvent[]
   // WBS 10.7 – One-time Resume Pack (5 PDF exports for ₹99)
   resumePackCredits Int @default(0)
+
+  // SaaS lifecycle – billing (Stripe when configured; manual UPI remains supported)
+  billingProvider   String? // stripe | manual
+  stripeCustomerId  String? @unique
+  // Onboarding checklist (merged with server-detected progress)
+  onboardingChecklist   Json?
+  onboardingCompletedAt DateTime?
+  // Pro ₹1 trial – expiry reminder emails (cron + Resend)
+  proTrialReminder3dSentAt DateTime?
+  proTrialReminder1dSentAt DateTime?
 }
 
 // WBS 10.6 – 14-day trial activation requests (user pays ₹1, submits UPI ref)
@@ -89,11 +101,57 @@ model Invoice {
   status    String   @default("paid") // paid | pending | refunded
   pdfUrl    String?
   createdAt DateTime @default(now())
+  /// Stripe Checkout Session or PaymentIntent id (idempotent webhook handling)
+  externalRef String? @unique
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([createdAt])
+}
+
+/// SuperProfile checkout webhook idempotency (custom automation POSTs after purchase)
+model SuperprofilePurchaseEvent {
+  id              String   @id @default(cuid())
+  idempotencyKey  String   @unique
+  email           String
+  productKey      String // pro_monthly | pro_annual | pro_trial_14 | resume_pack
+  userId          String
+  payloadSnapshot Json?
+  createdAt       DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([email])
+  @@index([createdAt])
+}
+
+/// First-party product analytics (mirrors key GA4 names where applicable)
+model ProductEvent {
+  id        String   @id @default(cuid())
+  userId    String?
+  name      String
+  props     Json?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([name, createdAt])
+  @@index([userId, createdAt])
+}
+
+/// Captured before account deletion or when a user cancels from Settings
+model ChurnFeedback {
+  id        String   @id @default(cuid())
+  userId    String?
+  userEmail String?
+  reason    String
+  detail    String?
+  source    String   @default("delete_account") // delete_account | cancel_subscription
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([source, createdAt])
 }
 
 model Account {

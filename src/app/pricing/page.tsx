@@ -6,6 +6,12 @@ import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { Check, Copy } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
+import { StripeCheckoutButtons } from "@/components/pricing/stripe-checkout-buttons";
+import {
+  SuperprofileProCtas,
+  SuperprofileResumePackCta,
+  SuperprofileTrialCta,
+} from "@/components/pricing/superprofile-pricing-links";
 
 interface Plan {
   id: string;
@@ -158,13 +164,16 @@ export default function PricingPage() {
                     </li>
                   ))}
                 </ul>
-                <Link
-                  href="#trial-qr"
-                  onClick={() => trackEvent("trial_click", { source: "pricing" })}
-                  className="mt-6 block text-center rounded-lg border-2 border-amber-600 text-amber-700 dark:text-amber-400 px-4 py-3 font-medium hover:bg-amber-50 dark:hover:bg-amber-900/20"
-                >
-                  Pay ₹1 & start trial
-                </Link>
+                <SuperprofileTrialCta />
+                {!process.env.NEXT_PUBLIC_SUPERPROFILE_URL_TRIAL_14 && (
+                  <Link
+                    href="#trial-qr"
+                    onClick={() => trackEvent("trial_click", { source: "pricing" })}
+                    className="mt-6 block text-center rounded-lg border-2 border-amber-600 text-amber-700 dark:text-amber-400 px-4 py-3 font-medium hover:bg-amber-50 dark:hover:bg-amber-900/20"
+                  >
+                    Pay ₹1 & start trial
+                  </Link>
+                )}
               </div>
             )}
             <div className="rounded-xl border border-primary-500 dark:border-primary-400 shadow-lg ring-1 ring-primary-500/20 p-6 flex flex-col">
@@ -195,6 +204,7 @@ export default function PricingPage() {
                   </li>
                 ))}
               </ul>
+              <SuperprofileProCtas />
               <Link
                 href="/settings"
                 onClick={() => trackEvent("upgrade_click", { source: "pricing" })}
@@ -202,6 +212,7 @@ export default function PricingPage() {
               >
                 Upgrade to Pro
               </Link>
+              <StripeCheckoutButtons isIndia={!!isIndia} />
             </div>
           </div>
 
@@ -262,14 +273,17 @@ export default function PricingPage() {
                   {isIndia ? "₹99" : "$2.99"}
                 </p>
               </div>
-              <div className="shrink-0">
-                <a
-                  href="mailto:resumedoctorweb@gmail.com?subject=Resume%20Pack%20purchase"
-                  className="inline-block rounded-lg border-2 border-slate-300 dark:border-slate-600 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-                >
-                  Email to purchase
-                </a>
-                <p className="mt-1 text-xs text-slate-500 text-center">We&apos;ll add credits after payment</p>
+              <div className="shrink-0 flex flex-col sm:items-end gap-3">
+                <SuperprofileResumePackCta />
+                <div className="text-center sm:text-right">
+                  <a
+                    href="mailto:resumedoctorweb@gmail.com?subject=Resume%20Pack%20purchase"
+                    className="inline-block rounded-lg border-2 border-slate-300 dark:border-slate-600 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  >
+                    Email to purchase
+                  </a>
+                  <p className="mt-1 text-xs text-slate-500">We&apos;ll add credits after payment</p>
+                </div>
               </div>
             </div>
           </section>
