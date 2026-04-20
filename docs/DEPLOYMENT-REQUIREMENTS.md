@@ -1,6 +1,6 @@
 # ResumeDoctor – Deployment Requirements & Live Production Checklist (resumedoctor.in)
 
-**Last Updated:** 2026-02-27  
+**Last Updated:** 2026-04-11  
 **Target:** Vercel + Supabase/Neon (recommended) or AWS/GCP
 
 ---
@@ -78,6 +78,27 @@ RESEND_API_KEY=re_...
 # Monitoring
 SENTRY_DSN=
 ```
+
+### 2.1 SuperProfile (India checkout + webhook)
+
+Set these in **Vercel → Environment Variables** (Production). Values are the **public customer checkout URLs** from each SuperProfile Payment Page (**Copy link** in the editor preview). They are **not** the same as the dashboard editor URL (`/create-payment-page/...`).
+
+| Variable | Maps to `productKey` in webhook |
+|----------|--------------------------------|
+| `NEXT_PUBLIC_SUPERPROFILE_URL_PRO_MONTHLY` | `pro_monthly` |
+| `NEXT_PUBLIC_SUPERPROFILE_URL_PRO_ANNUAL` | `pro_annual` |
+| `NEXT_PUBLIC_SUPERPROFILE_URL_TRIAL_14` | `pro_trial_14` |
+| `NEXT_PUBLIC_SUPERPROFILE_URL_RESUME_PACK` | `resume_pack` |
+
+Also set **`SUPERPROFILE_WEBHOOK_SECRET`** (long random string). The app accepts `Authorization: Bearer <secret>` or `X-Superprofile-Webhook-Secret: <secret>` on `POST /api/webhooks/superprofile`.
+
+**Fulfillment endpoint (production):** `https://www.resumedoctor.in/api/webhooks/superprofile` (or `${NEXT_PUBLIC_APP_URL}/api/webhooks/superprofile`).
+
+**Automation payload (JSON):** `idempotencyKey` (unique per payment), `email` (must match a ResumeDoctor user), `productKey` one of `pro_monthly` | `pro_annual` | `pro_trial_14` | `resume_pack`. For `resume_pack` only, include optional `credits` (1–100; default 5).
+
+**Database:** Apply migration `prisma/migrations/20260411140000_superprofile_purchase_events` on production (`pnpm prisma migrate deploy` against prod `DATABASE_URL`).
+
+**SuperProfile editor URLs (internal reference; IDs are account-specific):** Page Details editor: `https://superprofile.bio/create-payment-page/<PAGE_ID>?productType=1` — e.g. Pro Monthly `69db33e8da78960013e814b3`, Pro Annual `69dca13af2e2e30013365462`, 14-day trial `69e5cabddd64680013de4395`, Resume Pack `69e5caf05275a70013fc8928`.
 
 ---
 
