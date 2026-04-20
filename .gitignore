@@ -11,6 +11,8 @@ out
 dist
 build
 bundled
+tsconfig.tsbuildinfo
+*.tsbuildinfo
 
 # Environment
 .env
