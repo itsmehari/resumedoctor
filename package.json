@@ -17,7 +17,14 @@
     "db:seed": "prisma db seed",
     "postinstall": "prisma generate",
     "test:email": "node --env-file=.env.local scripts/test-resend.mjs",
-    "thumbnails": "node scripts/generate-thumbnails.mjs"
+    "thumbnails": "node scripts/generate-thumbnails.mjs",
+    "git:wip": "node scripts/git-wip.mjs",
+    "git:wip:status": "node scripts/git-wip.mjs status",
+    "git:wip:stash": "node scripts/git-wip.mjs stash",
+    "git:wip:pop": "node scripts/git-wip.mjs pop",
+    "git:wip:list": "node scripts/git-wip.mjs list",
+    "git:wip:restore-tracked": "node scripts/git-wip.mjs restore-tracked",
+    "git:wip:clean-untracked": "node scripts/git-wip.mjs clean-untracked"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",
