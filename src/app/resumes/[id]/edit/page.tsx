@@ -28,7 +28,8 @@ export default function EditResumePage() {
     useResume(id);
   const { isPro, isTrial, resumePackCredits } = useSubscription();
   const { secondsLeft, expired } = useTrialTimer(isTrial);
-  const [templates, setTemplates] = useState<Array<{ id: string; name: string }>>([]);
+  const [templates, setTemplates] = useState<Array<{ id: string; name: string; isProOnly?: boolean }>>([]);
+  const [templateHint, setTemplateHint] = useState<string | null>(null);
   const [templateOpen, setTemplateOpen] = useState(false);
   const [customizeOpen, setCustomizeOpen] = useState(false);
 
@@ -45,7 +46,11 @@ export default function EditResumePage() {
       .then((res) => (res.ok ? res.json() : { templates: [] }))
       .then((data) =>
         setTemplates(
-          (data.templates ?? []).map((t: { id: string; name: string }) => ({ id: t.id, name: t.name }))
+          (data.templates ?? []).map((t: { id: string; name: string; isProOnly?: boolean }) => ({
+            id: t.id,
+            name: t.name,
+            isProOnly: t.isProOnly,
+          }))
         )
       );
   }, []);
@@ -147,15 +152,23 @@ export default function EditResumePage() {
               className="bg-transparent font-semibold text-slate-900 dark:text-slate-100 border-none focus:outline-none focus:ring-0 px-2 py-1 rounded"
             />
             {templates.length > 0 && (
-              <div className="relative">
+              <div className="relative flex flex-col gap-1">
                 <button
                   type="button"
-                  onClick={() => setTemplateOpen(!templateOpen)}
+                  onClick={() => { setTemplateHint(null); setTemplateOpen(!templateOpen); }}
                   className="flex items-center gap-1 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
                   <span>{currentTemplateName}</span>
                   <span className="text-slate-400">▼</span>
                 </button>
+                {templateHint && (
+                  <p className="text-xs text-amber-700 dark:text-amber-300 max-w-[220px]">
+                    {templateHint}{" "}
+                    <Link href="/pricing" className="underline font-medium">
+                      Pricing
+                    </Link>
+                  </p>
+                )}
                 {templateOpen && (
                   <>
                     <div
@@ -163,24 +176,35 @@ export default function EditResumePage() {
                       onClick={() => setTemplateOpen(false)}
                       aria-hidden="true"
                     />
-                    <div className="absolute left-0 top-full mt-1 z-20 min-w-[160px] max-h-[280px] overflow-y-auto rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-lg py-1">
-                      {templates.map((t) => (
+                    <div className="absolute left-0 top-full mt-1 z-20 min-w-[200px] max-h-[280px] overflow-y-auto rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-lg py-1">
+                      {templates.map((t) => {
+                        const locked = Boolean(t.isProOnly) && !isPro;
+                        return (
                         <button
                           key={t.id}
                           type="button"
                           onClick={() => {
+                            if (locked) {
+                              setTemplateHint("This design needs Pro (all 30 templates). See Pricing to upgrade.");
+                              return;
+                            }
+                            setTemplateHint(null);
                             updateTemplateId(t.id);
                             setTemplateOpen(false);
                           }}
                           className={`w-full text-left px-3 py-2 text-sm ${
                             resume.templateId === t.id
                               ? "bg-primary-50 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300"
+                              : locked
+                                ? "text-slate-400 dark:text-slate-500 cursor-not-allowed"
                               : "text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                           }`}
                         >
                           {t.name}
+                          {locked ? " · Pro" : ""}
                         </button>
-                      ))}
+                        );
+                      })}
                     </div>
                   </>
                 )}

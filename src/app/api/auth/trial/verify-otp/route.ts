@@ -4,6 +4,8 @@ import { compare } from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { createTrialToken, getTrialCookieName } from "@/lib/trial-jwt";
+import { recordProductEvent } from "@/lib/product-events";
+import { AnalyticsEvents } from "@/lib/analytics-event-names";
 import { subMinutes } from "date-fns";
 
 const TRIAL_DURATION_MINUTES = 5;
@@ -145,6 +147,12 @@ export async function POST(req: Request) {
         verifiedAt: new Date(),
         sessionExpiresAt,
       },
+    });
+
+    await recordProductEvent({
+      userId: user.id,
+      name: AnalyticsEvents.trial_start,
+      props: { source: "otp_verify" },
     });
 
     const token = await createTrialToken(

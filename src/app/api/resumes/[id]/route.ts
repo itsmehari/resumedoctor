@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { parseResumeContent } from "@/lib/resume-utils";
 import { migrateResumeContent } from "@/lib/template-migration";
 import { getResumeAuth } from "@/lib/trial-auth";
+import { getTemplateAccessContext, resolveToAllowedTemplateId } from "@/lib/template-access";
 
 const MAX_VERSIONS = 10;
 
@@ -77,7 +78,18 @@ export async function PATCH(
       updates.title = parsed.data.title;
     }
     if (parsed.data.templateId !== undefined) {
-      updates.templateId = parsed.data.templateId;
+      const access = await getTemplateAccessContext();
+      if (!access) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      const picked = resolveToAllowedTemplateId(parsed.data.templateId, access.allowedTemplateIds);
+      if (!picked) {
+        return NextResponse.json(
+          { error: "This template requires Pro. Upgrade to unlock all 30 designs.", code: "TEMPLATE_LOCKED" },
+          { status: 403 }
+        );
+      }
+      updates.templateId = picked;
     }
 
     if (parsed.data.content !== undefined) {

@@ -62,5 +62,21 @@
     "industry": "Sales",
     "description": "Resume tips for sales roles. Targets, achievements, and client handling.",
     "tips": ["Open with a summary that states your domain (B2B, retail, etc.) and key wins.", "Quantify: targets met, growth %, new accounts, deal size.", "Mention CRM tools and sales methodologies if relevant."]
+  },
+  {
+    "slug": "hr-manager-resume",
+    "title": "HR Manager Resume Example",
+    "role": "HR Manager",
+    "industry": "All",
+    "description": "How to present HR experience, talent acquisition, and people operations on your resume.",
+    "tips": ["Lead with a summary covering years in HR, specializations (TA, L&D, operations), and scale (team size, headcount).", "Quantify: hiring volume, attrition reduction, engagement scores, policy rollouts.", "List HRIS, ATS, and tools (Workday, Zoho, Naukri, LinkedIn Recruiter)."]
+  },
+  {
+    "slug": "product-manager-resume",
+    "title": "Product Manager Resume Example",
+    "role": "Product Manager",
+    "industry": "IT / Tech",
+    "description": "Resume structure for product managers. Roadmaps, metrics, and cross-functional impact.",
+    "tips": ["Open with a summary: years in PM, domain (B2B, B2C, SaaS), and key outcomes (revenue, adoption, NPS).", "Use bullet points with metrics: feature adoption %, retention impact, roadmap delivery.", "Include collaboration with engineering, design, and business; mention tools (Jira, Figma, analytics)."]
   }
 ]

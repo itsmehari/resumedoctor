@@ -5,6 +5,14 @@
     {
       "path": "/api/health",
       "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/trial-expiry-reminders",
+      "schedule": "30 2 * * *"
+    },
+    {
+      "path": "/api/cron/trial-expired-downgrade",
+      "schedule": "15 2 * * *"
     }
   ]
 }

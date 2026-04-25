@@ -4,9 +4,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
-import { Check, Copy } from "lucide-react";
+import { Check } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
-import { StripeCheckoutButtons } from "@/components/pricing/stripe-checkout-buttons";
 import {
   SuperprofileProCtas,
   SuperprofileResumePackCta,
@@ -74,8 +73,8 @@ export default function PricingPage() {
         </h1>
         <p className="mt-4 text-slate-600 dark:text-slate-400 text-center max-w-xl mx-auto">
           {region?.currency === "USD"
-            ? "Upgrade to Pro for PDF & Word export. No hidden fees. Pricing in USD."
-            : "Upgrade to Pro for PDF & Word export. No hidden fees. Pay via UPI / Google Pay."}
+            ? "Pro is a one-time purchase (lifetime access for that tier)—PDF & Word export, no auto-renewal. USD pricing where applicable."
+            : "Pro is a one-time purchase (no subscription renewals). Pay through SuperProfile using the links below with the same email as your account."}
         </p>
         {region && (
           <p className="mt-1 text-center text-xs text-slate-500 dark:text-slate-400">
@@ -146,7 +145,10 @@ export default function PricingPage() {
             </div>
 
             {isIndia && (
-              <div className="rounded-xl border border-amber-500/60 dark:border-amber-400/60 bg-amber-50/30 dark:bg-amber-900/10 p-6 flex flex-col">
+              <div
+                id="india-trial"
+                className="rounded-xl border border-amber-500/60 dark:border-amber-400/60 bg-amber-50/30 dark:bg-amber-900/10 p-6 flex flex-col"
+              >
                 <span className="text-xs font-medium text-amber-700 dark:text-amber-400 uppercase tracking-wide">Try first</span>
                 <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mt-1">14-day Pro trial</h2>
                 <div className="mt-4 flex items-baseline gap-1">
@@ -154,7 +156,7 @@ export default function PricingPage() {
                   <span className="text-slate-500 dark:text-slate-400">one-time</span>
                 </div>
                 <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-                  Full Pro for 14 days · Pay via UPI
+                  Full Pro for 14 days · Pay on SuperProfile
                 </p>
                 <ul className="mt-6 space-y-3 flex-1">
                   {FEATURES_PRO.map((f) => (
@@ -166,17 +168,16 @@ export default function PricingPage() {
                 </ul>
                 <SuperprofileTrialCta />
                 {!process.env.NEXT_PUBLIC_SUPERPROFILE_URL_TRIAL_14 && (
-                  <Link
-                    href="#trial-qr"
-                    onClick={() => trackEvent("trial_click", { source: "pricing" })}
-                    className="mt-6 block text-center rounded-lg border-2 border-amber-600 text-amber-700 dark:text-amber-400 px-4 py-3 font-medium hover:bg-amber-50 dark:hover:bg-amber-900/20"
-                  >
-                    Pay ₹1 & start trial
-                  </Link>
+                  <p className="mt-4 text-center text-xs text-amber-800 dark:text-amber-200">
+                    SuperProfile trial link is not configured yet. Check back soon or contact support.
+                  </p>
                 )}
               </div>
             )}
-            <div className="rounded-xl border border-primary-500 dark:border-primary-400 shadow-lg ring-1 ring-primary-500/20 p-6 flex flex-col">
+            <div
+              id="pro-superprofile"
+              className="rounded-xl border border-primary-500 dark:border-primary-400 shadow-lg ring-1 ring-primary-500/20 p-6 flex flex-col"
+            >
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Pro</h2>
                 {proAnnual?.savings && (
@@ -210,9 +211,16 @@ export default function PricingPage() {
                 onClick={() => trackEvent("upgrade_click", { source: "pricing" })}
                 className="mt-6 block text-center rounded-lg bg-primary-600 px-4 py-3 font-medium text-white hover:bg-primary-700"
               >
-                Upgrade to Pro
+                Account & billing (signed in)
               </Link>
-              <StripeCheckoutButtons isIndia={!!isIndia} />
+              {!(
+                process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_MONTHLY ||
+                process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_ANNUAL
+              ) && (
+                <p className="mt-3 text-center text-xs text-slate-500 dark:text-slate-400">
+                  SuperProfile Pro links are not configured yet. Contact support to purchase.
+                </p>
+              )}
             </div>
           </div>
 
@@ -257,7 +265,7 @@ export default function PricingPage() {
               </tbody>
             </table>
             <p className="mt-3 text-center text-xs text-slate-500 dark:text-slate-400">
-              Secure payment · Cancel anytime
+              Payments via SuperProfile · One-time purchase · No automatic renewals
             </p>
           </section>
 
@@ -275,107 +283,13 @@ export default function PricingPage() {
               </div>
               <div className="shrink-0 flex flex-col sm:items-end gap-3">
                 <SuperprofileResumePackCta />
-                <div className="text-center sm:text-right">
-                  <a
-                    href="mailto:resumedoctorweb@gmail.com?subject=Resume%20Pack%20purchase"
-                    className="inline-block rounded-lg border-2 border-slate-300 dark:border-slate-600 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-                  >
-                    Email to purchase
-                  </a>
-                  <p className="mt-1 text-xs text-slate-500">We&apos;ll add credits after payment</p>
-                </div>
+                {!process.env.NEXT_PUBLIC_SUPERPROFILE_URL_RESUME_PACK && (
+                  <p className="text-center sm:text-right text-xs text-slate-500">Resume pack checkout on SuperProfile is not configured yet.</p>
+                )}
               </div>
             </div>
           </section>
           </>
-        )}
-
-        {/* QR checkout – India / UPI */}
-        {region?.currency === "INR" && (
-          <div className="mt-16 space-y-12">
-            <section id="trial-qr" className="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-900/10 p-8 flex flex-col items-center">
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-                14-day trial for ₹1 – Scan to pay
-              </h2>
-              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 text-center">
-                Pay ₹1 via Google Pay, PhonePe, or any UPI app · Full Pro for 14 days
-              </p>
-              <div className="mt-4 rounded-lg bg-white/80 dark:bg-slate-800/80 p-4 text-left max-w-sm">
-                <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-2">How trial works</p>
-                <ol className="text-sm text-slate-700 dark:text-slate-300 space-y-1.5 list-decimal list-inside">
-                  <li>Sign up or log in on ResumeDoctor</li>
-                  <li>Pay ₹1 via UPI (scan QR below)</li>
-                  <li>Email us your registered email + UPI reference</li>
-                  <li>We activate 14 days of Pro within 24 hours</li>
-                </ol>
-              </div>
-              <div className="mt-4 flex flex-wrap justify-center gap-2">
-                <span className="rounded-lg bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-600">Google Pay</span>
-                <span className="rounded-lg bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-600">PhonePe</span>
-                <span className="rounded-lg bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-600">Paytm</span>
-              </div>
-              <div className="mt-6 w-48 h-48 rounded-lg border-2 border-amber-300 dark:border-amber-700 flex items-center justify-center bg-white dark:bg-slate-900 overflow-hidden">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/checkout-trial-qr.png"
-                  alt="Scan to pay ₹1 – 14-day trial"
-                  className="w-full h-full object-contain"
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                    (e.currentTarget.nextElementSibling as HTMLElement)?.classList.remove("hidden");
-                  }}
-                />
-                <span className="hidden text-slate-400 dark:text-slate-500 text-sm text-center px-4">
-                  Add checkout-trial-qr.png (₹1 UPI QR) to /public
-                </span>
-              </div>
-              <p className="mt-4 text-xs text-slate-500 dark:text-slate-400">
-                Sign up first, then pay ₹1 via UPI.{" "}
-                <Link href="/pricing/verify-trial" className="text-primary-600 hover:underline font-medium">
-                  Submit your UPI ref to activate
-                </Link> within 24 hours.
-              </p>
-              {process.env.NEXT_PUBLIC_UPI_ID && (
-                <div className="mt-4 flex items-center gap-2">
-                  <input type="text" readOnly value={process.env.NEXT_PUBLIC_UPI_ID} className="rounded border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm bg-slate-50 dark:bg-slate-800" />
-                  <button
-                    type="button"
-                    onClick={() => { navigator.clipboard.writeText(process.env.NEXT_PUBLIC_UPI_ID || ""); }}
-                    className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm flex items-center gap-1 hover:bg-slate-50 dark:hover:bg-slate-800"
-                  >
-                    <Copy className="h-4 w-4" /> Copy UPI
-                  </button>
-                </div>
-              )}
-            </section>
-
-            <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-8 flex flex-col items-center">
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-                Pro plan – Scan to pay
-              </h2>
-              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 text-center">
-                Pay via Google Pay, PhonePe, or any UPI app
-              </p>
-              <div className="mt-6 w-48 h-48 rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-600 flex items-center justify-center bg-slate-50 dark:bg-slate-800/50 overflow-hidden">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/checkout-qr.png"
-                  alt="Scan to pay – UPI / Google Pay"
-                  className="w-full h-full object-contain"
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                    (e.currentTarget.nextElementSibling as HTMLElement)?.classList.remove("hidden");
-                  }}
-                />
-                <span className="hidden text-slate-400 dark:text-slate-500 text-sm text-center px-4">
-                  Add checkout-qr.png to /public
-                </span>
-              </div>
-              <p className="mt-4 text-xs text-slate-400 dark:text-slate-500">
-                Pro plan — PDF & Word export. Email us after payment to activate.
-              </p>
-            </section>
-          </div>
         )}
 
         <section className="mt-16 pt-12 border-t border-slate-200 dark:border-slate-700" aria-labelledby="pricing-faq-heading">
@@ -387,28 +301,29 @@ export default function PricingPage() {
               <dt className="font-semibold text-slate-900 dark:text-slate-100">How do I pay for Pro?</dt>
               <dd className="mt-1 text-sm text-slate-600 dark:text-slate-400">
                 {region?.currency === "INR"
-                  ? "Pay via UPI (Google Pay, PhonePe, or any UPI app) by scanning the QR code. Sign up first if you haven&apos;t. Email us your registered email after payment to activate."
-                  : "Pay with card or other methods. Contact us for activation after payment."}
+                  ? "Use the SuperProfile buttons on this page. Sign in to ResumeDoctor with the same email you use for SuperProfile so your account can be activated automatically when payment completes."
+                  : "Use the SuperProfile checkout for your region. Use the same email on SuperProfile and ResumeDoctor."}
               </dd>
             </div>
             {region?.currency === "INR" && (
               <div>
                 <dt className="font-semibold text-slate-900 dark:text-slate-100">How does the 14-day trial work?</dt>
                 <dd className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-                  Pay ₹1 via UPI, email us your registered email, and we&apos;ll activate 14 days of full Pro (PDF & Word export, ATS checker). No automatic renewal.
+                  Use the SuperProfile ₹1 trial link, then Pro unlocks for 14 days on the email you used. No automatic renewal.
                 </dd>
               </div>
             )}
             <div>
               <dt className="font-semibold text-slate-900 dark:text-slate-100">What&apos;s included in the free plan?</dt>
               <dd className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-                Unlimited resumes, TXT export, print/HTML preview, and all section types.
+                Unlimited resumes, TXT export, print/HTML preview, 10 base templates, and all section types.
               </dd>
             </div>
             <div>
-              <dt className="font-semibold text-slate-900 dark:text-slate-100">Can I cancel Pro anytime?</dt>
+              <dt className="font-semibold text-slate-900 dark:text-slate-100">Is Pro a subscription? Can I get a refund?</dt>
               <dd className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-                Yes. You can cancel before the next billing cycle from Settings → Billing. Contact us for refund requests.
+                Pro is a one-time payment for ongoing access to Pro features (no auto-renewal). For refunds
+                or billing help, use Settings → Billing or email us from the pricing page. We respond within 1–2 business days.
               </dd>
             </div>
           </dl>

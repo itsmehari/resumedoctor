@@ -8,6 +8,7 @@ const links = [
   { href: "/templates", label: "Templates" },
   { href: "/pricing", label: "Pricing" },
   { href: "/blog", label: "Blog" },
+  { href: "/examples", label: "Examples" },
 ];
 
 export function MobileNavMenu({ inverted }: { inverted?: boolean }) {

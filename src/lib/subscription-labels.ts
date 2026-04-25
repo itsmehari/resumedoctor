@@ -1,10 +1,19 @@
 // Subscription plan display labels
-export function getSubscriptionLabel(subscription: string): string {
+export function getSubscriptionLabel(
+  subscription: string,
+  subscriptionExpiresAt?: string | null
+): string {
+  if (subscription === "pro_trial_14" && subscriptionExpiresAt) {
+    if (new Date(subscriptionExpiresAt) <= new Date()) {
+      return "Free";
+    }
+    return "Pro (14-day trial)";
+  }
   switch (subscription) {
     case "pro_monthly":
-      return "Pro (Monthly)";
+      return "Pro (one-time — monthly plan)";
     case "pro_annual":
-      return "Pro (Annual)";
+      return "Pro (one-time — annual plan)";
     case "pro_trial_14":
       return "Pro (14-day trial)";
     case "trial":

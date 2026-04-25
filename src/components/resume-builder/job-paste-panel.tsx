@@ -259,7 +259,7 @@ export function JobPastePanel({
     }
 
     onSectionsChange(next);
-    setApplied((prev) => new Set([...prev, ...appliedKeys]));
+    setApplied((prev) => new Set([...Array.from(prev), ...Array.from(appliedKeys)]));
     toast("All suggestions applied", { variant: "success" });
   };
 

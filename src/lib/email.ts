@@ -111,3 +111,35 @@ export async function sendTestEmail(to: string) {
 
   return error ? { ok: false, error } : { ok: true, data };
 }
+
+/** Pro ₹1 trial – reminder before subscriptionExpiresAt (cron + Resend) */
+export async function sendProTrialExpiryReminder(
+  email: string,
+  opts: { daysLeft: number; renewUrl: string }
+) {
+  if (!resend) return { ok: false, error: "Email not configured" };
+
+  const { daysLeft, renewUrl } = opts;
+  const subject =
+    daysLeft <= 1
+      ? `Your Pro trial ends tomorrow – ${appName}`
+      : `Your Pro trial ends in ${daysLeft} days – ${appName}`;
+
+  const { data, error } = await resend.emails.send({
+    from: fromEmail,
+    to: email,
+    subject,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2 style="color: #1e293b;">Your Pro trial is ending soon</h2>
+        <p>You still have full access to PDF & Word export, ATS checks, and extra AI for about <strong>${daysLeft}</strong> day${daysLeft === 1 ? "" : "s"}.</p>
+        <p style="margin: 24px 0;">
+          <a href="${renewUrl}" style="background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block;">Renew or upgrade</a>
+        </p>
+        <p style="color: #64748b; font-size: 14px;">If you already upgraded, you can ignore this email.</p>
+      </div>
+    `,
+  });
+
+  return error ? { ok: false, error } : { ok: true, data };
+}

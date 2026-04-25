@@ -1,9 +1,9 @@
 import { siteUrl } from "@/lib/seo";
 
 const PRICING_FAQ = [
-  { q: "How do I pay for Pro?", a: "Pay via UPI (Google Pay, PhonePe, or any UPI app) by scanning the QR code. Email us after payment to activate your Pro account." },
-  { q: "What's included in the free plan?", a: "Unlimited resumes, TXT export, print/HTML preview, and all section types. You can create and edit as many resumes as you need." },
-  { q: "Can I cancel Pro anytime?", a: "Yes. Pro is billed monthly. You can cancel before the next billing cycle. Contact us for refund requests." },
+  { q: "How do I pay for Pro?", a: "Pay through SuperProfile on the pricing page. Use the same email as your ResumeDoctor account for automatic activation." },
+  { q: "What's included in the free plan?", a: "Unlimited resumes, TXT export, print/HTML preview, 10 base resume templates, and all section types." },
+  { q: "Is Pro a subscription? Can I get a refund?", a: "Pro is a one-time purchase with no automatic renewals. Contact support for refund requests; we treat them case by case." },
 ];
 
 export function PricingJsonLd() {

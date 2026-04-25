@@ -5,9 +5,9 @@ import { prisma } from "@/lib/prisma";
 import { parseResumeContent } from "@/lib/resume-utils";
 import { DEFAULT_RESUME_CONTENT, DEMO_RESUME_CONTENT } from "@/types/resume";
 import { getResumeAuth } from "@/lib/trial-auth";
-import { AVAILABLE_TEMPLATE_IDS, TRIAL_TEMPLATE_IDS } from "@/lib/templates";
-
-const LEGACY_TRIAL = ["trial-classic", "trial-modern", "trial-bold", "trial-minimal", "trial-professional"];
+import { getTemplateAccessContext, resolveToAllowedTemplateId } from "@/lib/template-access";
+import { recordProductEvent } from "@/lib/product-events";
+import { AnalyticsEvents } from "@/lib/analytics-event-names";
 
 export async function GET() {
   const auth = await getResumeAuth();
@@ -39,8 +39,8 @@ const createSchema = z.object({
 });
 
 export async function POST(req: Request) {
-  const auth = await getResumeAuth();
-  if (!auth) {
+  const access = await getTemplateAccessContext();
+  if (!access) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -50,21 +50,23 @@ export async function POST(req: Request) {
     const title = parsed.success ? parsed.data.title : undefined;
     const prefillDemo = parsed.success ? parsed.data.prefillDemo : false;
     let templateId = parsed.success ? parsed.data.templateId : undefined;
+    const allowed = access.allowedTemplateIds;
+    const defaultId = access.isTrial
+      ? allowed[0] ?? "professional-in"
+      : "professional-in";
 
-    // Trial users restricted to trial templates; full users get all Indian templates
-    if (auth.isTrial) {
-      const allowed = [...TRIAL_TEMPLATE_IDS, ...LEGACY_TRIAL];
-      templateId = allowed.includes(templateId || "") ? templateId : TRIAL_TEMPLATE_IDS[0] ?? LEGACY_TRIAL[0];
+    if (templateId) {
+      const picked = resolveToAllowedTemplateId(templateId, allowed);
+      templateId = picked ?? defaultId;
     } else {
-      const allowed = [...AVAILABLE_TEMPLATE_IDS, ...LEGACY_TRIAL];
-      templateId = allowed.includes(templateId || "") ? templateId : "professional-in";
+      templateId = defaultId;
     }
 
     const initialContent =
-      auth.isTrial && prefillDemo ? DEMO_RESUME_CONTENT : DEFAULT_RESUME_CONTENT;
+      access.isTrial && prefillDemo ? DEMO_RESUME_CONTENT : DEFAULT_RESUME_CONTENT;
     const resume = await prisma.resume.create({
       data: {
-        userId: auth.userId,
+        userId: access.userId,
         title: title || (prefillDemo ? "My Resume" : "Untitled Resume"),
         templateId,
         content: initialContent as object,
@@ -78,6 +80,12 @@ export async function POST(req: Request) {
         version: 1,
         content: resume.content as object,
       },
+    });
+
+    await recordProductEvent({
+      userId: access.userId,
+      name: AnalyticsEvents.resume_created,
+      props: { template_id: templateId ?? resume.templateId },
     });
 
     return NextResponse.json(resume);

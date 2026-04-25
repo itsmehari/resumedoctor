@@ -4,7 +4,8 @@ import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { siteUrl } from "@/lib/seo";
 import { getPostBySlug, getPostSlugs } from "@/lib/blog";
-import { ArticleJsonLd } from "@/components/seo/json-ld";
+import { getRelatedExamplesForBlog, getRelatedPostsForBlog } from "@/lib/content-links";
+import { ArticleJsonLd, BreadcrumbJsonLd } from "@/components/seo/json-ld";
 import ReactMarkdown from "react-markdown";
 
 interface Props {
@@ -40,6 +41,8 @@ export default function BlogPostPage({ params }: Props) {
   const currentIndex = allSlugs.indexOf(params.slug);
   const prevSlug = currentIndex > 0 ? allSlugs[currentIndex - 1] : null;
   const nextSlug = currentIndex < allSlugs.length - 1 ? allSlugs[currentIndex + 1] : null;
+  const relatedPosts = getRelatedPostsForBlog(params.slug);
+  const relatedExamples = getRelatedExamplesForBlog(params.slug);
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-slate-950">
@@ -49,6 +52,13 @@ export default function BlogPostPage({ params }: Props) {
         slug={post.slug}
         date={post.date}
         author={post.author}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: siteUrl },
+          { name: "Blog", url: `${siteUrl}/blog` },
+          { name: post.title, url: `${siteUrl}/blog/${post.slug}` },
+        ]}
       />
       <SiteHeader variant="app" maxWidth="3xl" />
 
@@ -123,6 +133,44 @@ export default function BlogPostPage({ params }: Props) {
             Build my resume free →
           </Link>
         </div>
+
+        {/* Related articles */}
+        {relatedPosts.length > 0 && (
+          <section className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-3">Related articles</h2>
+            <ul className="space-y-2">
+              {relatedPosts.map((p) => (
+                <li key={p.slug}>
+                  <Link href={`/blog/${p.slug}`} className="text-primary-600 hover:underline font-medium">
+                    {p.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {/* Resume examples for you */}
+        {relatedExamples.length > 0 && (
+          <section className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-800">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-3">Resume examples for you</h2>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+              Role-specific structure and tips to build your resume.
+            </p>
+            <ul className="space-y-2">
+              {relatedExamples.map((ex) => (
+                <li key={ex.slug}>
+                  <Link href={`/examples/${ex.slug}`} className="text-primary-600 hover:underline font-medium">
+                    {ex.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <Link href="/examples" className="inline-block mt-2 text-sm text-primary-600 hover:underline">
+              View all resume examples →
+            </Link>
+          </section>
+        )}
 
         {/* Post navigation */}
         <nav className="mt-10 pt-8 border-t border-slate-200 dark:border-slate-800 flex justify-between gap-4">

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 
@@ -49,16 +48,11 @@ export function SuperprofileTrialCta() {
         eventLabel="trial_14"
       />
       {hint}
-      <p className="text-xs text-center text-slate-500">
-        <Link href="#trial-qr" className="text-amber-700 dark:text-amber-400 hover:underline">
-          Or pay via UPI below
-        </Link>
-      </p>
     </div>
   );
 }
 
-/** Pro monthly / annual on SuperProfile — shown above Stripe when URLs set. */
+/** Pro monthly / annual on SuperProfile */
 export function SuperprofileProCtas() {
   const monthly = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_MONTHLY;
   const annual = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_ANNUAL;

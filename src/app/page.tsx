@@ -526,6 +526,7 @@ const FEATURES = [
     title: "PDF & DOCX export",
     description: "Download pixel-perfect PDF for portals, or editable DOCX for interviews. One click, no watermarks on Pro.",
     badge: null,
+    guideHref: null,
   },
   {
     icon: PATHS.shield,
@@ -533,6 +534,7 @@ const FEATURES = [
     title: "Secure cloud storage",
     description: "All your resumes saved securely in the cloud. Access, edit, and download from any device anytime.",
     badge: null,
+    guideHref: null,
   },
   {
     icon: PATHS.sparkle,
@@ -540,6 +542,7 @@ const FEATURES = [
     title: "14 section types",
     description: "Contact, Experience, Projects, Skills, Certifications, Publications, Volunteer Work, Custom sections — build the complete picture.",
     badge: "New",
+    guideHref: "/blog/skills-section-guide",
   },
 ];
 
@@ -704,8 +707,8 @@ function HeroVisual() {
   );
 }
 
-function FeatureCard({ icon, color, title, description, badge }: {
-  icon: string; color: string; title: string; description: string; badge: string | null;
+function FeatureCard({ icon, color, title, description, badge, guideHref }: {
+  icon: string; color: string; title: string; description: string; badge: string | null; guideHref?: string | null;
 }) {
   return (
     <div className="relative rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 hover:shadow-md transition-all group hover:border-primary-300 dark:hover:border-primary-700">
@@ -719,6 +722,11 @@ function FeatureCard({ icon, color, title, description, badge }: {
       </div>
       <h3 className="font-bold text-slate-900 dark:text-slate-100 mb-2 text-base">{title}</h3>
       <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{description}</p>
+      {guideHref && (
+        <Link href={guideHref} className="mt-3 inline-block text-xs text-primary-600 dark:text-primary-400 hover:underline">
+          Read guide →
+        </Link>
+      )}
     </div>
   );
 }

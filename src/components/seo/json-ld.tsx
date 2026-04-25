@@ -196,3 +196,87 @@ export function ArticleJsonLd({
     />
   );
 }
+
+/** BreadcrumbList for blog and example pages (Todo 13) */
+export function BreadcrumbJsonLd({
+  items,
+}: {
+  items: { name: string; url: string }[];
+}) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: item.url,
+    })),
+  };
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+/** ItemList for /examples index (WBS 12.7) */
+export function ExamplesItemListJsonLd({
+  examples,
+}: {
+  examples: { slug: string; title: string; description: string }[];
+}) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Resume Examples by Role – India",
+    description: "Free resume examples for Software Engineer, Fresher, Data Analyst, Marketing, BPO, and more.",
+    numberOfItems: examples.length,
+    itemListElement: examples.map((ex, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: ex.title,
+      description: ex.description,
+      url: `${siteUrl}/examples/${ex.slug}`,
+    })),
+  };
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+/** HowTo for /examples/[slug] – "How to write a [Role] resume" (WBS 12.7) */
+export function ExampleHowToJsonLd({
+  title,
+  description,
+  slug,
+  steps,
+}: {
+  title: string;
+  description: string;
+  slug: string;
+  steps: string[];
+}) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: `How to Write a ${title.replace(/ Resume Example$/i, "")} Resume`,
+    description,
+    url: `${siteUrl}/examples/${slug}`,
+    step: steps.map((text, i) => ({
+      "@type": "HowToStep",
+      position: i + 1,
+      text,
+    })),
+  };
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}

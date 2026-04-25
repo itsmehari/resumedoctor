@@ -81,6 +81,16 @@ export async function logExport(
   await prisma.exportLog.create({
     data: { userId, resumeId, format },
   });
+  const total = await prisma.exportLog.count({ where: { userId } });
+  if (total === 1) {
+    const { recordProductEvent } = await import("@/lib/product-events");
+    const { AnalyticsEvents } = await import("@/lib/analytics-event-names");
+    await recordProductEvent({
+      userId,
+      name: AnalyticsEvents.first_export,
+      props: { format },
+    });
+  }
 }
 
 /** WBS 10.7 – Consume one Resume Pack credit for PDF/DOCX (free users only) */

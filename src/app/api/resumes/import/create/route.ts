@@ -1,14 +1,13 @@
 // Create resume from parsed content + chosen template
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getResumeAuth } from "@/lib/trial-auth";
+import { getTemplateAccessContext, resolveToAllowedTemplateId } from "@/lib/template-access";
 import { parseResumeContent } from "@/lib/resume-utils";
-import { AVAILABLE_TEMPLATE_IDS, TRIAL_TEMPLATE_IDS } from "@/lib/templates";
 import { recordFeatureUsage } from "@/lib/feature-usage";
 
 export async function POST(req: Request) {
-  const auth = await getResumeAuth();
-  if (!auth) {
+  const access = await getTemplateAccessContext();
+  if (!access) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -24,18 +23,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid parsed content" }, { status: 400 });
     }
 
-    const allowedTemplates = auth.isTrial ? TRIAL_TEMPLATE_IDS : AVAILABLE_TEMPLATE_IDS;
-    const resolvedTemplateId = templateId && allowedTemplates.includes(templateId)
-      ? templateId
-      : auth.isTrial
-        ? TRIAL_TEMPLATE_IDS[0] ?? "trial-professional"
-        : "professional-in";
+    const allowed = access.allowedTemplateIds;
+    const picked = templateId ? resolveToAllowedTemplateId(templateId, allowed) : null;
+    const resolvedTemplateId =
+      picked ?? (access.isTrial ? allowed[0] ?? "professional-in" : "professional-in");
 
     const content = parseResumeContent({ sections: parsed.sections, meta: parsed.meta });
 
     const resume = await prisma.resume.create({
       data: {
-        userId: auth.userId,
+        userId: access.userId,
         title: (title ?? "Imported Resume").slice(0, 200),
         templateId: resolvedTemplateId,
         content: content as object,
@@ -51,7 +48,7 @@ export async function POST(req: Request) {
       },
     });
 
-    await recordFeatureUsage(auth.userId, "import", {
+    await recordFeatureUsage(access.userId, "import", {
       action: "resume-import",
       format: "pdf",
       sectionsCount: content.sections?.length ?? 0,

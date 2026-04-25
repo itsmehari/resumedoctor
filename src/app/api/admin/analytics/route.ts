@@ -1,5 +1,6 @@
 // Admin – Subscription metrics, template usage, feature usage
 import { NextResponse } from "next/server";
+import { addWeeks, startOfWeek, subWeeks } from "date-fns";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin-auth";
 
@@ -10,6 +11,8 @@ export async function GET() {
   }
 
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const now = new Date();
 
   const [
     usersByPlan,
@@ -22,6 +25,7 @@ export async function GET() {
     aiUsageByAction,
     totalAiUsage,
     totalAtsRuns,
+    productEventFunnel,
   ] = await Promise.all([
     prisma.user.groupBy({ by: ["subscription"], _count: { id: true } }),
     prisma.resume.groupBy({ by: ["templateId"], _count: { id: true } }),
@@ -41,6 +45,25 @@ export async function GET() {
     }),
     prisma.aiUsageLog.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
     prisma.atsScoreCache.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
+    prisma.productEvent.groupBy({
+      by: ["name"],
+      where: {
+        createdAt: { gte: sevenDaysAgo },
+        name: {
+          in: [
+            "sign_up",
+            "resume_created",
+            "trial_start",
+            "checkout_started",
+            "first_export",
+            "payment_success",
+            "onboarding_completed",
+            "onboarding_step_completed",
+          ],
+        },
+      },
+      _count: true,
+    }),
   ]);
 
   const planBreakdown: Record<string, number> = {};
@@ -70,6 +93,39 @@ export async function GET() {
 
   const conversionRate = totalUsers > 0 ? (proCount / totalUsers) * 100 : 0;
 
+  const funnelLast7Days: Record<string, number> = {};
+  for (const row of productEventFunnel) {
+    funnelLast7Days[row.name] = row._count;
+  }
+
+  const cohortWeeks: Array<{ weekStart: string; signups: number; paid: number }> = [];
+  for (let i = 3; i >= 0; i--) {
+    const weekStart = startOfWeek(subWeeks(now, i), { weekStartsOn: 1 });
+    const weekEnd = addWeeks(weekStart, 1);
+    const signups = await prisma.user.count({
+      where: { createdAt: { gte: weekStart, lt: weekEnd } },
+    });
+    const cohortUsers = await prisma.user.findMany({
+      where: { createdAt: { gte: weekStart, lt: weekEnd } },
+      select: { id: true },
+    });
+    const ids = cohortUsers.map((u) => u.id);
+    let paid = 0;
+    if (ids.length > 0) {
+      const paidRows = await prisma.productEvent.findMany({
+        where: { userId: { in: ids }, name: "payment_success" },
+        distinct: ["userId"],
+        select: { userId: true },
+      });
+      paid = paidRows.length;
+    }
+    cohortWeeks.push({
+      weekStart: weekStart.toISOString().slice(0, 10),
+      signups,
+      paid,
+    });
+  }
+
   return NextResponse.json({
     subscriptionMetrics: {
       proCount,
@@ -85,6 +141,10 @@ export async function GET() {
       last30Days: featureTotals,
       aiLast30Days: { total: totalAiUsage, byAction: aiByAction },
       atsLast30Days: totalAtsRuns,
+    },
+    productEvents: {
+      funnelLast7Days,
+      cohortSignupToPaid: cohortWeeks,
     },
   });
 }

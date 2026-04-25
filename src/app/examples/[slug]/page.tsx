@@ -4,6 +4,8 @@ import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { siteUrl } from "@/lib/seo";
 import { getExampleBySlug, getExampleSlugs, getAllExamples } from "@/lib/examples";
+import { getRelatedPostsForExample } from "@/lib/content-links";
+import { BreadcrumbJsonLd, ExampleHowToJsonLd } from "@/components/seo/json-ld";
 
 interface Props {
   params: { slug: string };
@@ -57,6 +59,8 @@ const SECTION_SUGGESTIONS: Record<string, string[]> = {
   "accountant-resume-example":  ["Summary", "Experience", "Education", "Skills", "Certifications"],
   "teacher-educator-resume":    ["Summary", "Experience", "Education", "Skills", "Volunteer", "Awards"],
   "sales-executive-resume":     ["Summary", "Experience", "Skills", "Awards", "Education"],
+  "hr-manager-resume":          ["Summary", "Experience", "Skills", "Education", "Certifications", "Awards"],
+  "product-manager-resume":     ["Summary", "Experience", "Projects", "Skills", "Education", "Certifications"],
 };
 
 export default function ExampleDetailPage({ params }: Props) {
@@ -69,9 +73,23 @@ export default function ExampleDetailPage({ params }: Props) {
   const nextEx = currentIndex < allExamples.length - 1 ? allExamples[currentIndex + 1] : null;
 
   const suggestedSections = SECTION_SUGGESTIONS[ex.slug] ?? ["Summary", "Experience", "Education", "Skills"];
+  const relatedPosts = getRelatedPostsForExample(params.slug);
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-slate-950">
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: siteUrl },
+          { name: "Resume Examples", url: `${siteUrl}/examples` },
+          { name: ex.title, url: `${siteUrl}/examples/${ex.slug}` },
+        ]}
+      />
+      <ExampleHowToJsonLd
+        title={ex.title}
+        description={ex.description}
+        slug={ex.slug}
+        steps={ex.tips}
+      />
       <SiteHeader variant="app" maxWidth="4xl" />
 
       <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-12">
@@ -182,6 +200,31 @@ export default function ExampleDetailPage({ params }: Props) {
               </Link>
               <p className="text-white/50 text-xs mt-2">No sign up required to preview</p>
             </div>
+
+            {/* Related blog posts */}
+            {relatedPosts.length > 0 && (
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+                <div className="bg-slate-50 dark:bg-slate-900 px-4 py-3 border-b border-slate-200 dark:border-slate-800">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">Related blog posts</h3>
+                </div>
+                <ul className="divide-y divide-slate-100 dark:divide-slate-800">
+                  {relatedPosts.map((p) => (
+                    <li key={p.slug}>
+                      <Link href={`/blog/${p.slug}`}
+                        className="block px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
+                        <p className="text-sm text-slate-900 dark:text-slate-100 font-medium">{p.title}</p>
+                      </Link>
+                    </li>
+                  ))}
+                  <li>
+                    <Link href="/blog"
+                      className="block px-4 py-3 text-sm text-primary-600 hover:underline font-medium">
+                      All articles →
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+            )}
 
             {/* Other examples */}
             <div className="rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">

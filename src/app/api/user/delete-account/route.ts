@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { checkIpRateLimit, getClientIp, auditLog } from "@/lib/ip-rate-limit";
+import { AnalyticsEvents } from "@/lib/analytics-event-names";
 
 // 3 attempts per IP per 24 hours – prevents repeated automated deletion attempts
 const IP_RATE_LIMIT = { windowMs: 24 * 60 * 60 * 1000, maxRequests: 3 };
@@ -37,6 +38,10 @@ export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}));
   const confirmed = body.confirm === true;
   const confirmedEmail: string | undefined = body.email;
+  const churnReason: string | undefined =
+    typeof body.churnReason === "string" ? body.churnReason.slice(0, 200) : undefined;
+  const churnDetail: string | undefined =
+    typeof body.churnDetail === "string" ? body.churnDetail.slice(0, 2000) : undefined;
 
   if (!confirmed) {
     return NextResponse.json(
@@ -68,7 +73,27 @@ export async function POST(req: Request) {
   }
 
   try {
-    await prisma.user.delete({ where: { id: user.id } });
+    await prisma.$transaction(async (tx) => {
+      if (churnReason) {
+        await tx.churnFeedback.create({
+          data: {
+            userId: user.id,
+            userEmail: session.user.email,
+            reason: churnReason,
+            detail: churnDetail,
+            source: "delete_account",
+          },
+        });
+      }
+      await tx.productEvent.create({
+        data: {
+          userId: user.id,
+          name: AnalyticsEvents.churn_completed,
+          props: churnReason ? { reason_code: churnReason } : undefined,
+        },
+      });
+      await tx.user.delete({ where: { id: user.id } });
+    });
 
     await auditLog("delete_account", {
       userId: user.id,

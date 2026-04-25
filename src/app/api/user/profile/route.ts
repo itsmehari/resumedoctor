@@ -6,6 +6,9 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getTrialFromRequest } from "@/lib/trial-auth";
 import { getEffectiveAuth } from "@/lib/effective-auth";
+import { getMergedOnboardingForUser, type OnboardingStepKey } from "@/lib/onboarding";
+import { recordProductEvent } from "@/lib/product-events";
+import { AnalyticsEvents } from "@/lib/analytics-event-names";
 
 const updateSchema = z.object({
   name: z.string().min(1).max(100).optional(),
@@ -14,6 +17,14 @@ const updateSchema = z.object({
     .object({
       marketing: z.boolean().optional(),
       productUpdates: z.boolean().optional(),
+    })
+    .optional(),
+  onboardingChecklist: z
+    .object({
+      template_chosen: z.boolean().optional(),
+      section_filled: z.boolean().optional(),
+      ats_run: z.boolean().optional(),
+      export_done: z.boolean().optional(),
     })
     .optional(),
 });
@@ -75,10 +86,26 @@ export async function PATCH(req: Request) {
       );
     }
 
+    const existingUser = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true, onboardingChecklist: true },
+    });
+    if (!existingUser) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const before = await getMergedOnboardingForUser(existingUser.id);
+
     const data: Record<string, unknown> = {};
     if (parsed.data.name !== undefined) data.name = parsed.data.name;
     if (parsed.data.image !== undefined) data.image = parsed.data.image === "" ? null : parsed.data.image;
     if (parsed.data.notificationPrefs !== undefined) data.notificationPrefs = parsed.data.notificationPrefs ?? undefined;
+
+    if (parsed.data.onboardingChecklist) {
+      const prev = (existingUser.onboardingChecklist ?? {}) as Record<string, boolean>;
+      const mergedManual = { ...prev, ...parsed.data.onboardingChecklist };
+      data.onboardingChecklist = mergedManual;
+    }
 
     const user = await prisma.user.update({
       where: { email: session.user.email },
@@ -93,6 +120,25 @@ export async function PATCH(req: Request) {
         notificationPrefs: true,
       },
     });
+
+    if (parsed.data.onboardingChecklist) {
+      const after = await getMergedOnboardingForUser(existingUser.id);
+      const keys: OnboardingStepKey[] = [
+        "template_chosen",
+        "section_filled",
+        "ats_run",
+        "export_done",
+      ];
+      for (const key of keys) {
+        if (after.steps[key] && !before.steps[key]) {
+          await recordProductEvent({
+            userId: existingUser.id,
+            name: AnalyticsEvents.onboarding_step_completed,
+            props: { step_name: key },
+          });
+        }
+      }
+    }
 
     return NextResponse.json(user);
   } catch (err) {

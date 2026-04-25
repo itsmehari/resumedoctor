@@ -126,8 +126,8 @@
 - [x] 4.3 Template renderer (JSON-driven)
 - [x] 4.8 Template thumbnails
 
-### Phase 3 – Subscription & Admin (~2–3 days)
-- [ ] 10.8 Subscription management
+### Phase 3 – Subscription & Admin (~2–3 days) ✓ DONE
+- [x] 10.8 Subscription management
 - [x] 10.6 Trial activation flow
 - [x] 11.8 User impersonation
 
@@ -177,3 +177,4 @@
 | 2026-03-05 | Phase 9 Job Matching MVP: Job + JobApplication schema, /api/jobs feed (paginated, filtered, keyword-scored), /api/jobs/[id]/apply (save/status tracking), /api/jobs/applications, /app/jobs UI (browse + my applications), seed script (12 Indian jobs), Jobs nav link in dashboard |
 | 2026-03-05 | Phase 12 Content: 5 new blog articles (professional summary, skills section, career gaps, resume formats, Naukri/LinkedIn tips) = 10 total; JSON-LD HowTo + Article schema added to examples/[slug] pages; richer Article schema on blog posts |
 | 2026-03-05 | Phase 13 DevOps: @sentry/nextjs installed; sentry.client/server/edge.config.ts; next.config.js wrapped with withSentryConfig; CI workflow updated for Sentry release + source map upload; db-backup.yml GitHub Action (daily pg_dump → S3/R2, 30-day retention); health check /api/health enhanced with status/version/timestamp; .env.example updated |
+| 2026-03-17 | Todo 12 & 13 executed: 10 examples (HR Manager, Product Manager), 12 blog posts (checklist, tailor resume), ItemList/HowTo/BreadcrumbList JSON-LD, content-links.ts, blog↔examples internal linking; topic-based related articles (BLOG_TO_BLOG) |

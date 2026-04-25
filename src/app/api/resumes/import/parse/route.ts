@@ -1,6 +1,6 @@
 // Parse resume file + AI suggest 2 templates (no DB create)
 import { NextResponse } from "next/server";
-import { getResumeAuth } from "@/lib/trial-auth";
+import { getTemplateAccessContext } from "@/lib/template-access";
 import {
   extractTextFromFile,
   validateFile,
@@ -10,11 +10,11 @@ import {
   ACCEPTED_TYPES,
 } from "@/lib/resume-import";
 import { parseResumeContent } from "@/lib/resume-utils";
-import { AVAILABLE_TEMPLATE_IDS, TRIAL_TEMPLATE_IDS, getTemplate } from "@/lib/templates";
+import { getTemplate } from "@/lib/templates";
 
 export async function POST(req: Request) {
-  const auth = await getResumeAuth();
-  if (!auth) {
+  const access = await getTemplateAccessContext();
+  if (!access) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -59,13 +59,13 @@ export async function POST(req: Request) {
       meta: parsed.meta,
     };
 
-    const allowedIds = auth.isTrial ? TRIAL_TEMPLATE_IDS : AVAILABLE_TEMPLATE_IDS;
+    const allowedIds = access.allowedTemplateIds;
     let suggested = await suggestTemplatesFromResume(parsed);
     suggested = suggested
       .filter((s) => allowedIds.includes(s.id))
       .slice(0, 10);
     if (suggested.length === 0) {
-      const fallback = auth.isTrial ? TRIAL_TEMPLATE_IDS[0] : "professional-in";
+      const fallback = access.isTrial ? allowedIds[0] : "professional-in";
       const t = getTemplate(fallback ?? "professional-in");
       suggested = [{ id: fallback ?? "professional-in", name: t?.name ?? "Professional", reason: "Best fit for your profile" }];
     }

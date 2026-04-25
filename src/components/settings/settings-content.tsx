@@ -9,7 +9,8 @@ import { Download, Trash2, Unlink, FileText, CreditCard } from "lucide-react";
 import { useSubscription } from "@/hooks/use-subscription";
 import { getSubscriptionLabel } from "@/lib/subscription-labels";
 import { UserDashboardLayout } from "@/components/user-dashboard-layout";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { DeleteAccountDialog } from "@/components/settings/delete-account-dialog";
+import { CancelSubscriptionDialog } from "@/components/settings/cancel-subscription-dialog";
 import { trackEvent } from "@/lib/analytics";
 
 interface ConnectedAccount {
@@ -21,7 +22,7 @@ interface ConnectedAccount {
 export function SettingsContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { subscription, isPro, resumePackCredits } = useSubscription();
+  const { subscription, isPro, resumePackCredits, subscriptionExpiresAt } = useSubscription();
   const [name, setName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,7 +35,6 @@ export function SettingsContent() {
   const [accounts, setAccounts] = useState<ConnectedAccount[]>([]);
   const [hasPassword, setHasPassword] = useState(true);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [deleteLoading, setDeleteLoading] = useState(false);
   const [unlinkLoading, setUnlinkLoading] = useState<string | null>(null);
   const [exportHistory, setExportHistory] = useState<Array<{ id: string; resumeId: string; resumeTitle: string; format: string; createdAt: string }>>([]);
   const [avatarLoading, setAvatarLoading] = useState(false);
@@ -168,24 +168,6 @@ export function SettingsContent() {
         a.click();
         URL.revokeObjectURL(url);
       });
-  }
-
-  async function handleDeleteAccount() {
-    setDeleteLoading(true);
-    try {
-      const res = await fetch("/api/user/delete-account", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ confirm: true }),
-      });
-      if (res.ok) {
-        await signOut({ redirect: false });
-        router.push("/");
-      }
-    } finally {
-      setDeleteLoading(false);
-      setDeleteConfirmOpen(false);
-    }
   }
 
   async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -434,7 +416,7 @@ export function SettingsContent() {
             Billing & subscription
           </h2>
           <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-            Current plan: <span className="font-medium text-slate-900 dark:text-slate-100">{getSubscriptionLabel(subscription)}</span>
+            Current plan: <span className="font-medium text-slate-900 dark:text-slate-100">{getSubscriptionLabel(subscription, subscriptionExpiresAt)}</span>
             {resumePackCredits > 0 && (
               <span className="ml-2 text-primary-600 dark:text-primary-400 font-medium">
                 · {resumePackCredits} export credit{resumePackCredits !== 1 ? "s" : ""}
@@ -451,7 +433,7 @@ export function SettingsContent() {
                 Upgrade to Pro
               </Link>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Get PDF & Word export, unlimited ATS checks, and more AI. Secure payment, cancel anytime.
+                Get PDF & Word export, unlimited ATS checks, more AI, and all 30 templates. Pay on the pricing page through SuperProfile; one-time purchase, no auto-renewal. Refunds on request.
               </p>
             </div>
           ) : (
@@ -461,18 +443,18 @@ export function SettingsContent() {
                   href="/pricing"
                   className="inline-flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
-                  Manage subscription
+                  View plans & pricing
                 </Link>
                 <button
                   type="button"
                   onClick={() => setCancelSubscriptionOpen(true)}
-                  className="inline-flex items-center gap-2 rounded-lg border border-red-200 dark:border-red-800 px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                  className="inline-flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
-                  Cancel subscription
+                  Refund or feedback
                 </button>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                To switch between monthly and annual, use Manage subscription. To cancel, use the button above.
+                You have lifetime access from your purchase (via SuperProfile). For billing help or a refund, use Refund or feedback below, or see pricing.
               </p>
             </div>
           )}
@@ -602,20 +584,16 @@ export function SettingsContent() {
           </div>
         </section>
 
-      <ConfirmDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen} title="Delete account?" description="All your data will be permanently deleted. This cannot be undone." confirmLabel="Delete my account" variant="danger" onConfirm={handleDeleteAccount} loading={deleteLoading} />
-      <ConfirmDialog
-        open={cancelSubscriptionOpen}
-        onOpenChange={setCancelSubscriptionOpen}
-        title="Cancel subscription?"
-        description="You'll keep Pro until the end of your current billing period. After that you'll lose PDF & Word export, unlimited ATS checks, and unlimited AI. To cancel, we'll take you to the pricing page where you can contact support or follow cancellation instructions."
-        confirmLabel="Go to pricing"
-        cancelLabel="Keep Pro"
-        variant="default"
-        onConfirm={() => {
-          setCancelSubscriptionOpen(false);
-          window.location.href = "/pricing";
+      <DeleteAccountDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        accountEmail={session?.user?.email ?? ""}
+        onDeleted={async () => {
+          await signOut({ redirect: false });
+          router.push("/");
         }}
       />
+      <CancelSubscriptionDialog open={cancelSubscriptionOpen} onOpenChange={setCancelSubscriptionOpen} />
     </UserDashboardLayout>
   );
 }

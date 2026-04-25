@@ -1,6 +1,7 @@
 // WBS 4.4 – Template list API
 import { NextResponse } from "next/server";
 import { TEMPLATES } from "@/lib/templates";
+import { isTemplateProOnly } from "@/lib/template-access";
 
 export async function GET() {
   return NextResponse.json({
@@ -13,6 +14,7 @@ export async function GET() {
       colors: t.colors,
       trialAvailable: t.trialAvailable,
       thumbnailUrl: t.thumbnailUrl ?? `/templates/thumbnails/${t.id}.png`,
+      isProOnly: isTemplateProOnly(t.id),
     })),
   });
 }

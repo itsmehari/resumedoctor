@@ -21,6 +21,7 @@ const publicNavLinks = [
   { href: "/templates", label: "Templates" },
   { href: "/pricing", label: "Pricing" },
   { href: "/blog", label: "Blog" },
+  { href: "/examples", label: "Examples" },
 ];
 
 const dashboardNavLinks = [
@@ -63,7 +64,7 @@ export function SiteHeader({
   const pathname = usePathname();
   const [dashboardNavOpen, setDashboardNavOpen] = useState(false);
   const { data: session, status } = useSession();
-  const { subscription, isPro, isTrial } = useSubscription();
+  const { subscription, isPro, isTrial, subscriptionExpiresAt } = useSubscription();
   const isAdmin = (session?.user as { role?: string })?.role === "admin";
 
   const inverted = variant === "home";
@@ -129,7 +130,7 @@ export function SiteHeader({
                     : "bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300"
               }`}
             >
-              {getSubscriptionLabel(subscription)}
+              {getSubscriptionLabel(subscription, subscriptionExpiresAt)}
             </span>
           )}
           {showDashboardNav ? (

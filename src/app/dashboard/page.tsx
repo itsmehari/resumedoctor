@@ -4,7 +4,7 @@
 import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import { MoreVertical, Copy, Trash2, FileText, Upload } from "lucide-react";
 import { UserDashboardLayout } from "@/components/user-dashboard-layout";
@@ -13,6 +13,7 @@ import { useSubscription } from "@/hooks/use-subscription";
 import { useTrialTimer } from "@/hooks/use-trial-timer";
 import { getTemplateDisplayName } from "@/lib/subscription-labels";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { OnboardingChecklist } from "@/components/dashboard/onboarding-checklist";
 
 interface ResumeItem {
   id: string;
@@ -29,6 +30,7 @@ function DashboardContent() {
   const { isPro, isTrial, displayName, isImpersonating } = useSubscription();
   const { secondsLeft, expired } = useTrialTimer(isTrial);
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [resumes, setResumes] = useState<ResumeItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -51,6 +53,15 @@ function DashboardContent() {
   useEffect(() => {
     fetchResumes();
   }, []);
+
+  useEffect(() => {
+    if (searchParams.get("upgraded") === "1") {
+      const next = new URLSearchParams(searchParams.toString());
+      next.delete("upgraded");
+      const q = next.toString();
+      router.replace(q ? `/dashboard?${q}` : "/dashboard", { scroll: false });
+    }
+  }, [searchParams, router]);
 
   useEffect(() => {
     if (openImportParam) setImportOpen(true);
@@ -150,6 +161,9 @@ function DashboardContent() {
                 Stop impersonating
               </button>
             </div>
+          )}
+          {status === "authenticated" && !isImpersonating && (
+            <OnboardingChecklist firstResumeId={resumes[0]?.id ?? null} />
           )}
           {upgraded && !isImpersonating && (
             <div className="mb-6 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 px-4 py-3 text-green-800 dark:text-green-200 text-sm shadow-sm">

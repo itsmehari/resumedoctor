@@ -24,22 +24,26 @@ export function AtsScorePanel({ resumeId, sections, isPro }: Props) {
 
   const [teaserUsed, setTeaserUsed] = useState(false);
 
+  type FetchOut = { ok: true; data: AtsResult } | { ok: false; error?: unknown; code?: string };
+
   const fetchScore = () => {
     setLoading(true);
     setResult(null);
     fetch(`/api/resumes/${resumeId}/ats`, { credentials: "include" })
-      .then((r) => {
+      .then(async (r): Promise<FetchOut> => {
         if (r.status === 403) {
           const code = r.headers.get("content-type")?.includes("json") ? null : "TEASER_USED";
-          return r.json().then((d) => ({ ok: false, code: d.code ?? code, error: d.error }));
+          const d = await r.json();
+          return { ok: false, code: d.code ?? code, error: d.error };
         }
-        return r.ok ? r.json().then((d) => ({ ok: true, data: d })) : r.json().then((d) => ({ ok: false, error: d.error }));
+        const d = await r.json();
+        return r.ok ? { ok: true, data: d } : { ok: false, error: d.error };
       })
       .then((out) => {
         if (out.ok && out.data) {
           setResult(out.data);
           if (out.data.teaser) setTeaserUsed(true);
-        } else if ((out as { code?: string }).code === "TEASER_USED") {
+        } else if (!out.ok && "code" in out && out.code === "TEASER_USED") {
           setTeaserUsed(true);
         }
       })

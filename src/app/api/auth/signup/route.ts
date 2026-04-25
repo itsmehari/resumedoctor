@@ -5,6 +5,8 @@ import { randomBytes } from "crypto";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { sendVerificationEmail } from "@/lib/email";
+import { recordProductEvent } from "@/lib/product-events";
+import { AnalyticsEvents } from "@/lib/analytics-event-names";
 
 const signupSchema = z.object({
   email: z.string().email("Invalid email"),
@@ -48,6 +50,11 @@ export async function POST(req: Request) {
             subscription: "free",
           },
         });
+        await recordProductEvent({
+          userId: existing.id,
+          name: AnalyticsEvents.sign_up,
+          props: { method: "email", path: "trial_upgrade" },
+        });
         return NextResponse.json(
           {
             message:
@@ -65,12 +72,18 @@ export async function POST(req: Request) {
     }
 
     const passwordHash = await hash(password, 12);
-    await prisma.user.create({
+    const created = await prisma.user.create({
       data: {
         email: normalizedEmail,
         passwordHash,
         name: name || null,
       },
+    });
+
+    await recordProductEvent({
+      userId: created.id,
+      name: AnalyticsEvents.sign_up,
+      props: { method: "email" },
     });
 
     // WBS 2.3 – Create verification token (email sending via Resend in production)

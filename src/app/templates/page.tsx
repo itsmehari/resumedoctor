@@ -1,14 +1,16 @@
 "use client";
 
 // WBS 4.4, 4.8e – Template selector UI
-import { useState, useEffect, useMemo } from "react";
+import { Suspense, useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { Lock } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { ResumePreview } from "@/components/resume-builder/resume-preview";
 import { DEMO_RESUME_CONTENT, type ResumeSection } from "@/types/resume";
 import { trackEvent } from "@/lib/analytics";
+import { useSubscription } from "@/hooks/use-subscription";
 
 function TemplateThumbnail({
   templateId,
@@ -57,6 +59,7 @@ interface TemplateInfo {
   colors: { primary: string };
   trialAvailable?: boolean;
   thumbnailUrl?: string;
+  isProOnly?: boolean;
 }
 
 const CATEGORIES = [
@@ -72,10 +75,11 @@ const CATEGORIES = [
   { value: "executive", label: "Executive" },
 ];
 
-export default function TemplatesPage() {
+function TemplatesPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { data: session } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
+  const { isPro, loading: subLoading } = useSubscription();
   const [templates, setTemplates] = useState<TemplateInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [createLoading, setCreateLoading] = useState<string | null>(null);
@@ -95,6 +99,15 @@ export default function TemplatesPage() {
   }, []);
 
   const handleUseTemplate = async (templateId: string) => {
+    const t = templates.find((x) => x.id === templateId);
+    if (t?.isProOnly && !isPro) {
+      if (sessionStatus !== "authenticated") {
+        router.push(`/login?callbackUrl=${encodeURIComponent("/templates")}`);
+        return;
+      }
+      router.push("/pricing");
+      return;
+    }
     setCreateLoading(templateId);
     try {
       const res = await fetch("/api/resumes", {
@@ -181,8 +194,14 @@ export default function TemplatesPage() {
                     />
                   </button>
                   <div className="p-5">
-                    <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+                    <h3 className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
                       {t.name}
+                      {t.isProOnly && !isPro && !subLoading && (
+                        <span className="inline-flex items-center gap-0.5 text-xs font-medium text-amber-700 dark:text-amber-300">
+                          <Lock className="h-3.5 w-3.5" aria-hidden />
+                          Pro
+                        </span>
+                      )}
                     </h3>
                     <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                       {t.description}
@@ -197,10 +216,18 @@ export default function TemplatesPage() {
                     <button
                       type="button"
                       onClick={() => handleUseTemplate(t.id)}
-                      disabled={!!createLoading}
-                      className="mt-2 w-full rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-primary-700 disabled:opacity-50 transition-colors"
+                      disabled={!!createLoading || subLoading}
+                      className={`mt-2 w-full rounded-lg px-4 py-2.5 text-sm font-medium transition-colors disabled:opacity-50 ${
+                        t.isProOnly && !isPro
+                          ? "border-2 border-amber-500/60 text-amber-800 dark:text-amber-200 bg-amber-50/50 dark:bg-amber-900/20 hover:bg-amber-100/80 dark:hover:bg-amber-900/30"
+                          : "bg-primary-600 text-white hover:bg-primary-700"
+                      }`}
                     >
-                      {createLoading === t.id ? "Creating..." : "Use this template"}
+                      {createLoading === t.id
+                        ? "Creating..."
+                        : t.isProOnly && !isPro
+                          ? "Upgrade to use"
+                          : "Use this template"}
                     </button>
                   </div>
                 </article>
@@ -258,5 +285,20 @@ export default function TemplatesPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function TemplatesPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-900/50">
+        <SiteHeader variant="app" />
+        <main className="flex-1 flex items-center justify-center px-4">
+          <p className="text-slate-500">Loading...</p>
+        </main>
+      </div>
+    }>
+      <TemplatesPageContent />
+    </Suspense>
   );
 }

@@ -10,12 +10,15 @@ import {
   ACCEPTED_TYPES,
 } from "@/lib/resume-import";
 import { parseResumeContent } from "@/lib/resume-utils";
-import { AVAILABLE_TEMPLATE_IDS, TRIAL_TEMPLATE_IDS } from "@/lib/templates";
+import {
+  getTemplateAccessContext,
+  resolveToAllowedTemplateId,
+} from "@/lib/template-access";
 import { recordFeatureUsage } from "@/lib/feature-usage";
 
 export async function POST(req: Request) {
-  const auth = await getResumeAuth();
-  if (!auth) {
+  const access = await getTemplateAccessContext();
+  if (!access) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -61,14 +64,10 @@ export async function POST(req: Request) {
     const parsed = await parseResumeWithAi(rawText);
     const { sections } = parseResumeContent(parsed);
 
-    const allowedTemplates = auth.isTrial
-      ? TRIAL_TEMPLATE_IDS
-      : AVAILABLE_TEMPLATE_IDS;
-    const resolvedTemplateId = allowedTemplates.includes(templateId)
-      ? templateId
-      : auth.isTrial
-        ? TRIAL_TEMPLATE_IDS[0] ?? "trial-professional"
-        : "professional-in";
+    const allowed = access.allowedTemplateIds;
+    const picked = resolveToAllowedTemplateId(templateId, allowed);
+    const resolvedTemplateId =
+      picked ?? (access.isTrial ? allowed[0] ?? "professional-in" : "professional-in");
 
     const content = {
       sections: sections.length > 0 ? sections : parsed.sections,
@@ -78,7 +77,7 @@ export async function POST(req: Request) {
     const importFormat = file.type.includes("pdf") ? "pdf" : "docx";
     const resume = await prisma.resume.create({
       data: {
-        userId: auth.userId,
+        userId: access.userId,
         title: title.slice(0, 200),
         templateId: resolvedTemplateId,
         content: content as object,
@@ -94,7 +93,7 @@ export async function POST(req: Request) {
       },
     });
 
-    await recordFeatureUsage(auth.userId, "import", {
+    await recordFeatureUsage(access.userId, "import", {
       action: "resume-import",
       format: importFormat,
       sectionsCount: content.sections.length,
