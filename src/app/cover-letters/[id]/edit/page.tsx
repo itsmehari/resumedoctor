@@ -8,6 +8,7 @@ import { useSession } from "next-auth/react";
 import { Sparkles, FileDown, FileText, FileType, Save } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useToast } from "@/contexts/toast-context";
+import { SiteHeader } from "@/components/site-header";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 
@@ -263,26 +264,33 @@ export default function EditCoverLetterPage() {
 
   if (status === "loading" || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-slate-500">Loading...</p>
-      </div>
+      <>
+        <SiteHeader variant="app" navVariant="dashboard" />
+        <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
+          <p className="text-slate-500">Loading...</p>
+        </div>
+      </>
     );
   }
 
   if (!session || !letter) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <p className="text-slate-600">Cover letter not found</p>
-        <Link href="/cover-letters" className="text-primary-600 hover:underline">
-          Back to cover letters
-        </Link>
-      </div>
+      <>
+        <SiteHeader variant="app" navVariant="dashboard" />
+        <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center gap-4">
+          <p className="text-slate-600">Cover letter not found</p>
+          <Link href="/cover-letters" className="text-primary-600 hover:underline">
+            Back to cover letters
+          </Link>
+        </div>
+      </>
     );
   }
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-900">
-      <header className="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+      <SiteHeader variant="app" navVariant="dashboard" />
+      <header className="sticky top-16 z-20 border-b border-slate-200/80 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl shadow-[0_4px_20px_-4px_rgba(13,101,217,0.08)]">
         <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
           <Link href="/cover-letters" className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">
             ← Cover Letters

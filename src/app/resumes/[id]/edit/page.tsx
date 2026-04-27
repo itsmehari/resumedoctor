@@ -18,6 +18,7 @@ import { JobPastePanel } from "@/components/resume-builder/job-paste-panel";
 import { LiveFeedbackPanel } from "@/components/resume-builder/live-feedback-panel";
 import { IndiaTipsPanel } from "@/components/resume-builder/india-tips-panel";
 import { StepWizard } from "@/components/resume-builder/step-wizard";
+import { SiteHeader } from "@/components/site-header";
 import type { ResumeSection } from "@/types/resume";
 
 export default function EditResumePage() {
@@ -57,23 +58,29 @@ export default function EditResumePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-slate-500">Loading resume...</p>
-      </div>
+      <>
+        <SiteHeader variant="app" navVariant="dashboard" />
+        <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
+          <p className="text-slate-500">Loading resume...</p>
+        </div>
+      </>
     );
   }
 
   if (!resume) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <p className="text-slate-600">Resume not found</p>
-        <Link
-          href="/dashboard"
-          className="text-primary-600 hover:underline"
-        >
-          Back to dashboard
-        </Link>
-      </div>
+      <>
+        <SiteHeader variant="app" navVariant="dashboard" />
+        <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center gap-4">
+          <p className="text-slate-600">Resume not found</p>
+          <Link
+            href="/dashboard"
+            className="text-primary-600 hover:underline"
+          >
+            Back to dashboard
+          </Link>
+        </div>
+      </>
     );
   }
 
@@ -97,6 +104,7 @@ export default function EditResumePage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-900 relative">
+      <SiteHeader variant="app" navVariant="dashboard" />
       {expired && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 max-w-md mx-4 text-center shadow-xl">
@@ -124,7 +132,7 @@ export default function EditResumePage() {
         </div>
       )}
 
-      <header className="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/50 overflow-x-auto">
+      <header className="sticky top-16 z-20 border-b border-slate-200/80 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl shadow-[0_4px_20px_-4px_rgba(13,101,217,0.08)] overflow-x-auto">
         <div className="max-w-[1600px] mx-auto px-4 min-h-14 py-2 flex items-center justify-between gap-3 flex-nowrap">
           <div className="flex items-center gap-2 sm:gap-4 shrink-0">
             <Link
