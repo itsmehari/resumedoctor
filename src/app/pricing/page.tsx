@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo, type ReactNode } from "react";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
-import { Check, Sparkles } from "lucide-react";
+import { Check, Sparkles, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { trackEvent } from "@/lib/analytics";
 import {
@@ -52,13 +52,35 @@ type CompareCellValue = boolean | string;
 function CompareCell({ value }: { value: CompareCellValue }) {
   if (typeof value === "boolean") {
     return value ? (
-      <Check className="mx-auto h-4 w-4 text-emerald-600 dark:text-emerald-400" aria-hidden />
+      <span
+        className="mx-auto inline-flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500/[0.12] ring-1 ring-emerald-500/25 dark:bg-emerald-400/10 dark:ring-emerald-400/20"
+        title="Included"
+        aria-label="Included"
+      >
+        <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" strokeWidth={2.5} aria-hidden />
+      </span>
     ) : (
-      <span className="text-slate-400 dark:text-slate-500">—</span>
+      <span
+        className="mx-auto inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-200/70 ring-1 ring-slate-300/60 dark:bg-slate-700/50 dark:ring-slate-600/50"
+        title="Not included"
+        aria-label="Not included"
+      >
+        <X className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" strokeWidth={2.5} aria-hidden />
+      </span>
     );
   }
+  const words = value.trim().split(/\s+/).length;
+  const compact =
+    value.length <= 22 && !value.includes("(") && words <= 3 && !value.includes("—");
   return (
-    <span className="mx-auto block max-w-[11rem] text-xs leading-snug text-slate-700 dark:text-slate-300 sm:text-sm">
+    <span
+      className={cn(
+        "mx-auto block max-w-[13rem] text-center text-xs leading-snug sm:text-sm",
+        compact
+          ? "rounded-lg border border-slate-200/90 bg-white/90 px-2.5 py-1.5 font-semibold text-slate-800 shadow-sm dark:border-slate-600 dark:bg-slate-800/90 dark:text-slate-100"
+          : "font-medium text-slate-700 dark:text-slate-200"
+      )}
+    >
       {value}
     </span>
   );
@@ -83,22 +105,22 @@ function SectionRule({ label, pillClassName }: { label: string; pillClassName: s
 }
 
 const compareThFeature =
-  "min-w-[9rem] bg-white p-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:bg-slate-950 dark:text-slate-400";
+  "min-w-[10rem] bg-gradient-to-b from-slate-50 to-white p-4 text-left text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:from-slate-950 dark:to-slate-900 dark:text-slate-400";
 const compareThFree =
-  "border-l border-slate-200 bg-slate-100 p-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-700 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-200";
+  "border-l border-slate-200/90 bg-slate-100/95 p-4 text-center text-xs font-bold uppercase tracking-wide text-slate-800 dark:border-slate-700 dark:bg-slate-800/90 dark:text-slate-100";
 const compareThPass =
-  "border-l border-amber-300 bg-amber-100 p-3 text-center text-xs font-semibold uppercase tracking-wide text-amber-900 dark:border-amber-700/50 dark:bg-amber-950/50 dark:text-amber-100";
+  "border-l border-amber-300/90 bg-gradient-to-b from-amber-100 to-amber-50/90 p-4 text-center text-xs font-bold uppercase tracking-wide text-amber-950 dark:border-amber-700/50 dark:from-amber-950/50 dark:to-amber-950/30 dark:text-amber-50";
 const compareThPro =
-  "border-l border-primary-300 bg-primary-100 p-3 text-center text-xs font-semibold uppercase tracking-wide text-primary-900 dark:border-primary-800/50 dark:bg-primary-950/40 dark:text-primary-100";
+  "relative border-l border-primary-300/90 bg-gradient-to-b from-primary-100 to-primary-50/90 p-4 pb-5 text-center text-xs font-bold uppercase tracking-wide text-primary-950 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.4)] dark:border-primary-700/40 dark:from-primary-950/55 dark:to-primary-950/25 dark:text-primary-50 dark:shadow-none";
 
 const compareTdFeature =
-  "border-r border-slate-100 bg-white p-3 text-left font-medium text-slate-800 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200";
+  "border-r border-slate-100 bg-white/80 p-3.5 text-left align-top dark:border-slate-800/80 dark:bg-slate-950/50";
 const compareTdFree =
-  "border-l border-slate-200 bg-slate-50/95 p-3 text-center align-middle dark:border-slate-700 dark:bg-slate-800/45";
+  "border-l border-slate-200/80 bg-slate-50/90 p-3.5 text-center align-middle dark:border-slate-700 dark:bg-slate-800/40";
 const compareTdPass =
-  "border-l border-amber-200 bg-amber-50/90 p-3 text-center align-middle dark:border-amber-800/40 dark:bg-amber-950/25";
+  "border-l border-amber-200/80 bg-amber-50/85 p-3.5 text-center align-middle dark:border-amber-800/35 dark:bg-amber-950/22";
 const compareTdPro =
-  "border-l border-primary-200 bg-primary-50/80 p-3 text-center align-middle dark:border-primary-900/35 dark:bg-primary-950/20";
+  "border-l border-primary-200/80 bg-primary-50/75 p-3.5 text-center align-middle dark:border-primary-800/35 dark:bg-primary-950/18";
 
 function PlansAtGlance({
   isIndia,
@@ -210,51 +232,73 @@ function PlansAtGlance({
 /** India: third column is the ₹49 pass — same Pro capabilities, fixed 14-day window. */
 const COMPARE_PLAN_ROWS: {
   feature: string;
+  featureNote?: string;
   free: CompareCellValue;
   trial: CompareCellValue;
   pro: CompareCellValue;
 }[] = [
   {
     feature: "How long it lasts",
-    free: "Forever (within Free limits)",
-    trial: "14 calendar days only",
-    pro: "For the term you buy (1 month or 1 year)",
+    featureNote: "After checkout, access lines up with the term you picked.",
+    free: "Forever on Free limits",
+    trial: "14 calendar days from activation",
+    pro: "1 month or 1 year from activation",
   },
   {
     feature: "PDF export",
+    featureNote: "Download a print-ready file.",
     free: false,
     trial: true,
     pro: true,
   },
   {
     feature: "Word (DOCX) export",
+    featureNote: "Edit offline in Microsoft Word or Google Docs.",
     free: false,
     trial: true,
     pro: true,
   },
   {
-    feature: "ATS score checker",
-    free: "1 included check / resume",
-    trial: "Higher limits (same as Pro)",
-    pro: "Unlimited",
+    feature: "TXT export",
+    featureNote: "Plain text for forms or parsers.",
+    free: true,
+    trial: true,
+    pro: true,
   },
   {
-    feature: "AI bullet suggestions / day",
-    free: "5",
-    trial: "50 (during the pass)",
-    pro: "50",
+    feature: "Print & HTML preview",
+    featureNote: "Browser preview and printing.",
+    free: true,
+    trial: true,
+    pro: true,
   },
   {
     feature: "Templates",
-    free: "10 base",
+    featureNote: "Layouts and styles included in the builder.",
+    free: "10 base layouts",
     trial: "All 30",
     pro: "All 30",
   },
   {
-    feature: "Watermark-free PDF & Word",
-    free: false,
-    trial: true,
-    pro: true,
+    feature: "ATS score checker",
+    featureNote: "How well your resume matches a job description.",
+    free: "1 check per saved resume",
+    trial: "Unlimited during the pass",
+    pro: "Unlimited",
+  },
+  {
+    feature: "AI bullet suggestions",
+    featureNote: "Per calendar day; count resets at midnight (UTC).",
+    free: "5 per day",
+    trial: "50 per day during the pass",
+    pro: "50 per day",
+  },
+  {
+    feature: "Watermark on PDF & Word",
+    featureNote: "Only applies when that export type is available.",
+    free: "Not applicable (no PDF/DOCX on Free)",
+    trial: "None — full-quality files",
+    pro: "None — full-quality files",
   },
 ];
 
@@ -713,95 +757,121 @@ export default function PricingPage() {
               label="Feature comparison"
               pillClassName="border-slate-400 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200"
             />
-            <section className="mt-2 mx-auto max-w-4xl overflow-x-auto" aria-label="Compare plans">
-              <h3 className="text-center text-lg font-semibold text-slate-900 dark:text-slate-100">Compare plans</h3>
-              <p className="mx-auto mt-2 max-w-2xl text-center text-sm text-slate-600 dark:text-slate-400">
-                {isIndia ? (
-                  <>
-                    The <strong className="font-medium text-slate-800 dark:text-slate-200">14-day pass</strong> unlocks
-                    the same Pro capabilities as monthly or annual — the only difference is{" "}
-                    <strong className="font-medium text-slate-800 dark:text-slate-200">how long</strong> that access
-                    lasts and which checkout you pick on SuperProfile.
-                  </>
-                ) : (
-                  <>
-                    <strong className="font-medium text-slate-800 dark:text-slate-200">Free</strong> covers building and
-                    light usage; <strong className="font-medium text-slate-800 dark:text-slate-200">Pro</strong> unlocks
-                    exports and full templates for the term you purchase on SuperProfile.
-                  </>
-                )}
-              </p>
-              <div
-                className="mx-auto mt-4 flex max-w-2xl flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-slate-600 dark:text-slate-400"
-                aria-hidden
-              >
-                <span className="inline-flex items-center gap-2">
-                  <span className="h-3 w-5 shrink-0 rounded border border-slate-300 bg-slate-100 dark:border-slate-600 dark:bg-slate-800" />
-                  Free column
-                </span>
-                {isIndia ? (
+            <section
+              id="compare-plans"
+              className="mt-2 mx-auto max-w-5xl scroll-mt-24 overflow-x-auto px-0 sm:px-1"
+              aria-label="Compare plans"
+            >
+              <div className="rounded-3xl border border-slate-200/90 bg-gradient-to-br from-white via-slate-50/60 to-primary-50/30 p-5 shadow-[0_20px_50px_-12px_rgba(15,23,42,0.12)] ring-1 ring-slate-900/[0.04] dark:border-slate-700/90 dark:from-slate-950 dark:via-slate-900/90 dark:to-primary-950/20 dark:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.45)] dark:ring-white/[0.06] sm:p-8">
+                <h3 className="text-center text-xl font-bold tracking-tight text-slate-900 dark:text-slate-50 sm:text-2xl">
+                  Compare plans
+                </h3>
+                <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                  {isIndia ? (
+                    <>
+                      The free <Link href="/try" className="font-medium text-primary-600 underline-offset-2 hover:underline dark:text-primary-400">Try</Link> page
+                      (OTP) is for exploring the editor — it is{" "}
+                      <strong className="font-medium text-slate-800 dark:text-slate-200">not</strong> a billing tier in
+                      this table. The <strong className="font-medium text-slate-800 dark:text-slate-200">14-day pass</strong>{" "}
+                      matches Pro features for two weeks; monthly and annual Pro differ only in{" "}
+                      <strong className="font-medium text-slate-800 dark:text-slate-200">how long</strong> access lasts.
+                    </>
+                  ) : (
+                    <>
+                      The free <Link href="/try" className="font-medium text-primary-600 underline-offset-2 hover:underline dark:text-primary-400">Try</Link> page
+                      is a short OTP preview — not shown as a column.{" "}
+                      <strong className="font-medium text-slate-800 dark:text-slate-200">Free</strong> is your always-on
+                      tier; <strong className="font-medium text-slate-800 dark:text-slate-200">Pro</strong> is the paid
+                      upgrade on SuperProfile.
+                    </>
+                  )}
+                </p>
+                <div
+                  className="mx-auto mt-5 flex max-w-2xl flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-slate-600 dark:text-slate-400"
+                  aria-hidden
+                >
                   <span className="inline-flex items-center gap-2">
-                    <span className="h-3 w-5 shrink-0 rounded border border-amber-400 bg-amber-100 dark:border-amber-600 dark:bg-amber-950/60" />
-                    14-day pass
+                    <span className="h-3 w-5 shrink-0 rounded border border-slate-300 bg-slate-100 dark:border-slate-600 dark:bg-slate-800" />
+                    Free
                   </span>
-                ) : null}
-                <span className="inline-flex items-center gap-2">
-                  <span className="h-3 w-5 shrink-0 rounded border border-primary-400 bg-primary-100 dark:border-primary-700 dark:bg-primary-950/50" />
-                  Pro
-                </span>
+                  {isIndia ? (
+                    <span className="inline-flex items-center gap-2">
+                      <span className="h-3 w-5 shrink-0 rounded border border-amber-400 bg-amber-100 dark:border-amber-600 dark:bg-amber-950/60" />
+                      14-day pass
+                    </span>
+                  ) : null}
+                  <span className="inline-flex items-center gap-2">
+                    <span className="h-3 w-5 shrink-0 rounded border border-primary-400 bg-primary-100 dark:border-primary-700 dark:bg-primary-950/50" />
+                    Pro
+                  </span>
+                </div>
+                <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200/80 shadow-inner dark:border-slate-700/80">
+                  <table className="w-full min-w-[320px] border-collapse text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-200 dark:border-slate-700">
+                        <th scope="col" className={cn(compareThFeature, "rounded-tl-2xl")}>
+                          What you get
+                        </th>
+                        <th scope="col" className={compareThFree}>
+                          <span className="block">Free</span>
+                          <span className="mt-1.5 block text-[10px] font-semibold normal-case leading-snug text-slate-600 dark:text-slate-300">
+                            Forever · core building
+                          </span>
+                        </th>
+                        {isIndia && (
+                          <th scope="col" className={compareThPass}>
+                            <span className="block">14-day pass</span>
+                            <span className="mt-1.5 block text-[10px] font-semibold normal-case leading-snug text-amber-950/90 dark:text-amber-100/95">
+                              ₹49 · every Pro feature, 14 days
+                            </span>
+                          </th>
+                        )}
+                        <th scope="col" className={cn(compareThPro, "rounded-tr-2xl")}>
+                          <span className="mb-1.5 inline-flex rounded-full bg-primary-600 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-white shadow-sm dark:bg-primary-500">
+                            Best value
+                          </span>
+                          <span className="block">Pro</span>
+                          <span className="mt-1.5 block text-[10px] font-semibold normal-case leading-snug text-primary-950/95 dark:text-primary-100/95">
+                            Monthly or annual on SuperProfile
+                          </span>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {COMPARE_PLAN_ROWS.map((row) => (
+                        <tr
+                          key={row.feature}
+                          className="border-b border-slate-100 transition-colors last:border-b-0 hover:bg-slate-50/90 dark:border-slate-800/90 dark:hover:bg-slate-800/35"
+                        >
+                          <th scope="row" className={compareTdFeature}>
+                            <span className="block font-semibold text-slate-900 dark:text-slate-100">{row.feature}</span>
+                            {row.featureNote ? (
+                              <span className="mt-1 block text-[11px] font-normal leading-snug text-slate-500 dark:text-slate-400">
+                                {row.featureNote}
+                              </span>
+                            ) : null}
+                          </th>
+                          <td className={compareTdFree}>
+                            <CompareCell value={row.free} />
+                          </td>
+                          {isIndia && (
+                            <td className={compareTdPass}>
+                              <CompareCell value={row.trial} />
+                            </td>
+                          )}
+                          <td className={compareTdPro}>
+                            <CompareCell value={row.pro} />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <p className="mt-5 text-center text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+                  Paid upgrades use SuperProfile (same email as ResumeDoctor). Checkout is one-time per purchase — we do
+                  not store your card for automatic renewals.
+                </p>
               </div>
-              <table className="mt-6 w-full min-w-[320px] border-collapse overflow-hidden rounded-xl border border-slate-200 bg-white text-sm dark:border-slate-700 dark:bg-slate-900">
-                <thead>
-                  <tr className="border-b border-slate-200 dark:border-slate-700">
-                    <th scope="col" className={cn(compareThFeature, "rounded-tl-xl")}>
-                      Feature
-                    </th>
-                    <th scope="col" className={compareThFree}>
-                      <span className="block">Free</span>
-                      <span className="mt-1 block text-[10px] font-normal normal-case leading-tight text-slate-600 dark:text-slate-400">
-                        Forever · core building
-                      </span>
-                    </th>
-                    {isIndia && (
-                      <th scope="col" className={compareThPass}>
-                        <span className="block">14-day pass</span>
-                        <span className="mt-1 block text-[10px] font-normal normal-case leading-tight text-amber-900/90 dark:text-amber-200/95">
-                          ₹49 · full Pro features, 14 days
-                        </span>
-                      </th>
-                    )}
-                    <th scope="col" className={cn(compareThPro, "rounded-tr-xl")}>
-                      <span className="block">Pro</span>
-                      <span className="mt-1 block text-[10px] font-normal normal-case leading-tight text-primary-900/90 dark:text-primary-200/95">
-                        Monthly or annual checkout
-                      </span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {COMPARE_PLAN_ROWS.map((row) => (
-                    <tr key={row.feature} className="border-b border-slate-100 last:border-b-0 dark:border-slate-800">
-                      <th scope="row" className={compareTdFeature}>
-                        {row.feature}
-                      </th>
-                      <td className={compareTdFree}>
-                        <CompareCell value={row.free} />
-                      </td>
-                      {isIndia && (
-                        <td className={compareTdPass}>
-                          <CompareCell value={row.trial} />
-                        </td>
-                      )}
-                      <td className={compareTdPro}>
-                        <CompareCell value={row.pro} />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <p className="mt-4 text-center text-xs text-slate-500 dark:text-slate-400">
-                Paid options use SuperProfile · One-time checkout · ResumeDoctor does not auto-renew stored cards
-              </p>
             </section>
           </>
         )}
