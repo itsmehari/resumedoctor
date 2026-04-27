@@ -22,7 +22,7 @@ export default function ExamplesIndexPage() {
       <ExamplesItemListJsonLd
         examples={examples.map((e) => ({ slug: e.slug, title: e.title, description: e.description }))}
       />
-      <SiteHeader variant="app" maxWidth="3xl" />
+      <SiteHeader variant="home" />
 
       <main className="flex-1 max-w-3xl mx-auto w-full px-4 py-12">
         <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">

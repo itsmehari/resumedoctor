@@ -144,7 +144,7 @@ function TemplatesPageContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-900/50">
-      <SiteHeader variant="app" />
+      <SiteHeader variant="home" />
 
       <main className="flex-1 px-4 py-12">
         <div className="max-w-6xl mx-auto">
@@ -300,7 +300,7 @@ export default function TemplatesPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-900/50">
-        <SiteHeader variant="app" />
+        <SiteHeader variant="home" />
         <main className="flex-1 flex items-center justify-center px-4">
           <p className="text-slate-500">Loading...</p>
         </main>

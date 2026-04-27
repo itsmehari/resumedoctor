@@ -122,7 +122,7 @@ export default function PricingPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <SiteHeader variant="app" />
+      <SiteHeader variant="home" />
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:py-14">
         <div className="text-center">
