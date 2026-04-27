@@ -37,7 +37,7 @@ export default function VerifyTrialPage() {
               </p>
               <ProExportFeatureList accent="orange" />
               <Link
-                href="/pricing#india-trial"
+                href="/pricing#trial"
                 className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-orange-500 px-4 py-3.5 text-sm font-semibold text-white shadow-md transition hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-500"
               >
                 Go to pricing

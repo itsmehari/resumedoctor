@@ -13,7 +13,8 @@ export function isSuperprofileSellerSetupUrl(url: string): boolean {
   }
 }
 
-const FALLBACK_TRIAL_14_URL = "https://superprofile.bio/vp/69e5cabddd64680013de4395";
+/** Published SuperProfile checkout for 14-day Pro trial (₹49); env override: NEXT_PUBLIC_SUPERPROFILE_URL_TRIAL_14 */
+export const FALLBACK_TRIAL_14_URL = "https://superprofile.bio/vp/69e5cabddd64680013de4395";
 const FALLBACK_PRO_MONTHLY_URL = "https://superprofile.bio/vp/69db33e8da78960013e814b3";
 const FALLBACK_PRO_ANNUAL_URL = "https://superprofile.bio/vp/69dca13af2e2e30013365462";
 const FALLBACK_RESUME_PACK_URL = "https://superprofile.bio/vp/69e5caf05275a70013fc8928";
@@ -70,7 +71,7 @@ export function SuperprofileTrialCta({ showEmailHint = true }: { showEmailHint?:
     <div className="mt-0 space-y-2">
       <OutLink
         href={url}
-        label="Start 14-day trial"
+        label="Pay ₹49 — 14-day Pro trial"
         variant="trialPrimary"
         eventLabel="trial_14"
       />

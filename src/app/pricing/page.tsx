@@ -7,6 +7,7 @@ import { SiteHeader } from "@/components/site-header";
 import { Check, Sparkles } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import {
+  FALLBACK_TRIAL_14_URL,
   SuperprofileProAnnualCta,
   SuperprofileProMonthlyCta,
   SuperprofileResumePackCta,
@@ -132,8 +133,27 @@ export default function PricingPage() {
           <p className="mx-auto mt-3 max-w-2xl text-slate-600 dark:text-slate-400">
             {region?.currency === "USD"
               ? "Choose Free, Trial (where available), or Pro. Pay securely through SuperProfile with the same email as your ResumeDoctor account."
-              : "Choose Free, 14-day Trial, or Pro. Pay securely through SuperProfile with the same email as your ResumeDoctor account."}
+              : region?.currency === "INR"
+                ? "Choose Free, ₹49 one-time 14-day Pro trial, or Pro (monthly / annual). All paid options checkout on SuperProfile — use the same email as your ResumeDoctor account."
+                : "Choose Free, Trial (where available), or Pro. Pay securely through SuperProfile with the same email as your ResumeDoctor account."}
           </p>
+          {isIndia && (
+            <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-700 dark:text-slate-300">
+              <span className="font-semibold text-orange-600 dark:text-orange-400">14-day Pro trial: ₹49</span>{" "}
+              one-time on SuperProfile (
+              <a
+                href={
+                  process.env.NEXT_PUBLIC_SUPERPROFILE_URL_TRIAL_14 || FALLBACK_TRIAL_14_URL
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary-600 underline decoration-primary-400/60 underline-offset-2 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+              >
+                open checkout
+              </a>
+              ). Pro monthly <span className="font-medium">₹199</span> and annual <span className="font-medium">₹1,499</span> — no auto-renew.
+            </p>
+          )}
           {region && (
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
               Prices in {region.currency}
@@ -196,7 +216,7 @@ export default function PricingPage() {
 
             {/* —— India: 14-day trial —— */}
             {isIndia && (
-              <section className="mt-12" id="india-trial" aria-labelledby="trial-heading">
+              <section className="mt-12" id="trial" aria-labelledby="trial-heading">
                 <TrialSectionBackdrop>
                   <div className="grid items-start gap-10 lg:grid-cols-2">
                     <div>
@@ -380,7 +400,9 @@ export default function PricingPage() {
                   <tr className="border-b border-slate-200 dark:border-slate-700">
                     <th className="p-3 text-left font-medium text-slate-700 dark:text-slate-300">Feature</th>
                     <th className="p-3 font-medium text-slate-700 dark:text-slate-300">Free</th>
-                    {isIndia && <th className="p-3 font-medium text-amber-700 dark:text-amber-300">14-day trial</th>}
+                    {isIndia && (
+                      <th className="p-3 font-medium text-amber-700 dark:text-amber-300">14-day trial (₹49)</th>
+                    )}
                     <th className="p-3 font-medium text-primary-600 dark:text-primary-400">Pro</th>
                   </tr>
                 </thead>
