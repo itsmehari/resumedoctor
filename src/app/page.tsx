@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { SiteHeader } from "@/components/site-header";
 import { HomeJsonLd, FaqJsonLd, HowToJsonLd, FAQ_ITEMS } from "@/components/seo/json-ld";
 import { PricingTrustStatsBar } from "@/components/pricing/payment-value-sections";
@@ -626,84 +627,16 @@ const TESTIMONIALS = [
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function HeroVisual() {
-  const sampleItems = [
-    { w: "w-2/3", h: "h-3", bg: "bg-white/90" },
-    { w: "w-1/2", h: "h-2", bg: "bg-white/55" },
-    { w: "w-full", h: "h-2", bg: "bg-white/30" },
-    { w: "w-4/5", h: "h-2", bg: "bg-white/25" },
-    { w: "w-3/5", h: "h-2", bg: "bg-white/20" },
-  ];
-
   return (
-    <div className="relative">
-      {/* Floating resume card 1 — back */}
-      <div className="absolute -top-6 -right-6 w-48 h-60 bg-white/10 rounded-2xl border border-white/20 backdrop-blur-sm rotate-6 shadow-2xl" />
-
-      {/* Main resume card */}
-      <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden border border-white/20 z-10">
-        {/* Resume header strip */}
-        <div className="h-16 bg-gradient-to-r from-primary-500 to-primary-700 px-6 flex flex-col justify-center">
-          <div className="h-3 w-32 bg-white/90 rounded mb-1.5" />
-          <div className="h-2 w-20 bg-white/55 rounded" />
-        </div>
-
-        {/* Two-column body */}
-        <div className="flex">
-          {/* Sidebar */}
-          <div className="w-1/3 bg-slate-50 p-4 space-y-3">
-            {[
-              { label: "CONTACT", items: 3 },
-              { label: "SKILLS", items: 4 },
-              { label: "LANGUAGES", items: 2 },
-            ].map((sec) => (
-              <div key={sec.label}>
-                <div className="h-1.5 w-12 bg-primary-500 rounded mb-2" />
-                <div className="space-y-1.5">
-                  {Array.from({ length: sec.items }).map((_, j) => (
-                    <div key={j} className="h-1.5 rounded bg-slate-200" style={{ width: `${65 + (j * 7) % 30}%` }} />
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Main */}
-          <div className="flex-1 p-4 space-y-4">
-            {["EXPERIENCE", "EDUCATION", "PROJECTS"].map((sec) => (
-              <div key={sec}>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="h-1.5 w-10 rounded" style={{ backgroundColor: "#2563eb88" }} />
-                  <div className="h-px flex-1 bg-slate-200" />
-                </div>
-                <div className="space-y-1.5">
-                  <div className="h-2 w-3/4 rounded bg-slate-700 opacity-80" />
-                  <div className="h-1.5 w-full rounded bg-slate-200" />
-                  <div className="h-1.5 w-5/6 rounded bg-slate-200" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* ATS score badge */}
-        <div className="absolute top-3 right-3 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg">
-          ATS 94%
-        </div>
-      </div>
-
-      {/* Floating badge — AI suggestion */}
-      <div className="absolute -bottom-4 -left-6 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 flex items-center gap-2.5 z-20">
-        <div className="w-7 h-7 rounded-lg bg-violet-100 dark:bg-violet-900/40 flex items-center justify-center flex-shrink-0">
-          <Icon path={PATHS.sparkle} size={14} className="text-violet-600" />
-        </div>
-        <div>
-          <p className="text-[10px] font-bold text-slate-900 dark:text-slate-100">AI Suggestion</p>
-          <p className="text-[9px] text-slate-500 dark:text-slate-400">Bullet added ✓</p>
-        </div>
-      </div>
-
-      {/* Background glow */}
-      <div className="absolute inset-0 bg-white/5 blur-3xl -z-10 scale-110" />
+    <div className="relative rounded-3xl border border-white/20 bg-white/10 p-2 shadow-2xl backdrop-blur-sm">
+      <Image
+        src="/Resumedoctor-heroimage.png"
+        alt="ResumeDoctor optimized resume hero visual"
+        width={1400}
+        height={900}
+        priority
+        className="h-auto w-full rounded-2xl object-cover"
+      />
     </div>
   );
 }
