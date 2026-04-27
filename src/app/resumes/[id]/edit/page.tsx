@@ -104,7 +104,7 @@ export default function EditResumePage() {
               Time&apos;s up!
             </h2>
             <p className="mt-4 text-slate-600 dark:text-slate-400">
-              Your 5-minute trial has ended. Sign up to save your resume and export to PDF.
+              Your 5-minute trial has ended. Sign up to save your resume and unlock PDF/Word export.
             </p>
             <div className="mt-6 flex gap-4 justify-center">
               <Link
@@ -185,7 +185,7 @@ export default function EditResumePage() {
                           type="button"
                           onClick={() => {
                             if (locked) {
-                              setTemplateHint("This design needs Pro (all 30 templates). See Pricing to upgrade.");
+                              setTemplateHint("This template is in Pro. Upgrade to unlock all 30 templates and export-ready resumes.");
                               return;
                             }
                             setTemplateHint(null);
@@ -412,7 +412,7 @@ export default function EditResumePage() {
                   aria-hidden
                 >
                   <span className="text-2xl font-semibold text-slate-300 dark:text-slate-600 rotate-[-15deg] select-none">
-                    Upgrade for PDF
+                    Upgrade to export
                   </span>
                 </div>
               )}

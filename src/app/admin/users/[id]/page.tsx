@@ -191,7 +191,7 @@ export default function AdminUserDetailPage() {
               >
                 <option value="free">Free</option>
                 <option value="trial">Trial</option>
-                <option value="pro_trial_14">Pro Trial (14-day ₹1)</option>
+                <option value="pro_trial_14">Pro Trial (14-day, SuperProfile)</option>
                 <option value="pro_monthly">Pro Monthly</option>
                 <option value="pro_annual">Pro Annual</option>
               </select>

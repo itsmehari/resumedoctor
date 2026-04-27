@@ -11,6 +11,7 @@ import { ResumePreview } from "@/components/resume-builder/resume-preview";
 import { DEMO_RESUME_CONTENT, type ResumeSection } from "@/types/resume";
 import { trackEvent } from "@/lib/analytics";
 import { useSubscription } from "@/hooks/use-subscription";
+import { PricingTrustStatsBar } from "@/components/pricing/payment-value-sections";
 
 function TemplateThumbnail({
   templateId,
@@ -28,12 +29,15 @@ function TemplateThumbnail({
   return (
     <div className="w-full h-full overflow-hidden relative">
       {useImg ? (
-        <img
-          src={thumbnailUrl}
-          alt=""
-          className="max-w-full max-h-full object-contain"
-          onError={() => setImgFailed(true)}
-        />
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element -- API thumbnail URL */}
+          <img
+            src={thumbnailUrl}
+            alt=""
+            className="max-w-full max-h-full object-contain"
+            onError={() => setImgFailed(true)}
+          />
+        </>
       ) : (
         <div
           className="origin-top-left"
@@ -150,6 +154,10 @@ function TemplatesPageContent() {
           <p className="mt-3 text-slate-600 dark:text-slate-400 text-center max-w-2xl mx-auto">
             ATS-friendly designs for the Indian job market. Choose a template and start building.
           </p>
+
+          <div className="mt-6 max-w-3xl mx-auto">
+            <PricingTrustStatsBar variant="compact" />
+          </div>
 
           {!loading && (
             <div className="mt-8 flex justify-center">

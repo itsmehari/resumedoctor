@@ -25,7 +25,7 @@ export function HomeJsonLd() {
     name: siteName,
     url: siteUrl,
     logo: `${siteUrl}/favicon.png`,
-    description: "India-first resume and CV builder. ATS-friendly templates, PDF export, trusted by job seekers.",
+    description: "India-first resume and CV builder. ATS-friendly templates; PDF and Word with Pro.",
     sameAs: [], // Add LinkedIn, Twitter, etc. when available
   };
 
@@ -36,20 +36,13 @@ export function HomeJsonLd() {
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
     description:
-      "Create ATS-friendly resumes and CVs in minutes. India-first resume builder with premium templates and export to PDF.",
+      "Create ATS-friendly resumes and CVs in minutes. India-first resume builder with premium templates. Export to TXT on the free plan; PDF and Word with Pro.",
     offers: {
       "@type": "Offer",
       price: "0",
       priceCurrency: "INR",
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.8",
-      bestRating: "5",
-      worstRating: "1",
-      reviewCount: "127",
-    },
-    featureList: "Export to Naukri, LinkedIn, Indeed, TimesJobs, Shine",
+    featureList: "ATS-friendly templates; TXT export on free plan; PDF and Word on Pro; India job portals",
     url: siteUrl,
   };
 
@@ -80,12 +73,12 @@ const FAQ_ITEMS = [
   {
     question: "Is there a free plan?",
     answer:
-      "Yes. ResumeDoctor offers a free forever plan with unlimited resumes, TXT export, print/HTML preview, and all section types. You can try the builder free for 5 minutes with just your email—no signup required.",
+      "Yes. ResumeDoctor offers a free forever plan with unlimited resumes, TXT export, print/HTML preview, 10 base templates, and all section types. You can also start a short browser trial with email verification—no credit card.",
   },
   {
     question: "How do I export my resume to PDF?",
     answer:
-      "Upgrade to the Pro plan (₹199/month) to unlock PDF and Word export. Free users can export as TXT and use print preview. Pro also removes watermarks.",
+      "Upgrade to Pro with a one-time purchase on SuperProfile (for example, the monthly tier is ₹199). That unlocks PDF and Word export and removes watermarks. Free users can export as TXT and use print preview.",
   },
   {
     question: "Are the templates ATS-friendly?",
@@ -95,7 +88,7 @@ const FAQ_ITEMS = [
   {
     question: "How long does it take to create a resume?",
     answer:
-      "Most users finish a professional resume in 5–15 minutes. You can try free for 5 minutes with just your email to see how it works.",
+      "Most users finish a professional resume in 5–15 minutes. Start a quick trial from the home page to explore the builder before you sign up.",
   },
 ];
 

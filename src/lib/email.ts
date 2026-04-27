@@ -112,7 +112,7 @@ export async function sendTestEmail(to: string) {
   return error ? { ok: false, error } : { ok: true, data };
 }
 
-/** Pro ₹1 trial – reminder before subscriptionExpiresAt (cron + Resend) */
+/** Pro trial (e.g. ₹49 on SuperProfile) – reminder before subscriptionExpiresAt (cron + Resend) */
 export async function sendProTrialExpiryReminder(
   email: string,
   opts: { daysLeft: number; renewUrl: string }

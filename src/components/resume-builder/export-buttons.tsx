@@ -188,14 +188,14 @@ export function ExportButtons({
               <>
                 <div className="px-3 py-2 text-sm text-slate-500 dark:text-slate-400">
                   <Lock className="inline h-4 w-4 mr-2" />
-                  Sign up to export your resume
+                  Sign up to download a job-ready PDF/Word resume
                 </div>
                 <Link
                   href="/signup"
                   onClick={() => { trackEvent("upgrade_click", { source: "export_trial" }); setOpen(false); }}
                   className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-primary-600 dark:text-primary-400 hover:bg-slate-100 dark:hover:bg-slate-700"
                 >
-                  Create account to save & export →
+                  Create account and export now →
                 </Link>
               </>
             ) : canExport ? (
@@ -259,11 +259,11 @@ export function ExportButtons({
                 </button>
                 <Link href="/pricing" onClick={() => { trackEvent("upgrade_click", { source: "export_pdf" }); setOpen(false); }} className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-primary-600">
                   <Lock className="h-4 w-4" />
-                  Download PDF — Upgrade to Pro
+                  Download recruiter-ready PDF — Upgrade
                 </Link>
                 <Link href="/pricing" onClick={() => { trackEvent("upgrade_click", { source: "export_word" }); setOpen(false); }} className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-primary-600">
                   <Lock className="h-4 w-4" />
-                  Download Word — Upgrade to Pro
+                  Download editable Word resume — Upgrade
                 </Link>
               </>
             )}

@@ -2,10 +2,11 @@
 
 ## Customer payments: SuperProfile only
 
-All **customer-facing** purchases (Pro monthly/annual, ₹1 fourteen-day trial, resume pack) are taken through **SuperProfile** checkout links on `/pricing` (`NEXT_PUBLIC_SUPERPROFILE_URL_*`).
+All **customer-facing** purchases (Pro monthly/annual, fourteen-day trial, resume pack) are taken through **SuperProfile** checkout links on `/pricing` (`NEXT_PUBLIC_SUPERPROFILE_URL_*`). **Use the published customer payment link**, not a `/create-payment-page/…` URL — see `docs/SUPERPROFILE.md`.
 
 - **Webhook:** `POST /api/webhooks/superprofile` – validates the shared secret, idempotency, and calls `fulfillSuperprofilePurchase` in `src/lib/superprofile-fulfillment.ts` to set `User.subscription`, `subscriptionExpiresAt` (for `pro_trial_14`), `billingProvider: "superprofile"`, and resume pack credits.
 - **Email match:** Users must use the **same email** on SuperProfile and ResumeDoctor so fulfillment can attach the purchase to the correct account.
+- **Trial price:** Shown on the site as **₹49** (one-time); the charged amount is whatever you set on the SuperProfile product.
 
 ## Self-serve UPI / trial form (closed)
 

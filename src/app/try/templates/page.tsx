@@ -34,12 +34,15 @@ function TemplateThumbnail({
   return (
     <div className="w-full h-full flex items-center justify-center min-h-0">
       {useImg ? (
-        <img
-          src={thumbnailUrl}
-          alt=""
-          className="max-w-full max-h-full object-contain"
-          onError={() => setImgFailed(true)}
-        />
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element -- API thumbnail URL */}
+          <img
+            src={thumbnailUrl}
+            alt=""
+            className="max-w-full max-h-full object-contain"
+            onError={() => setImgFailed(true)}
+          />
+        </>
       ) : (
         <div className="w-full max-w-[140px] scale-75 origin-center">
           <ResumePreview

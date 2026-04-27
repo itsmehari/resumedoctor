@@ -38,7 +38,7 @@ export default function AboutPage() {
               What We Build
             </h2>
             <p>
-              We build resume and CV templates designed for the Indian job market—Naukri, LinkedIn, Indeed, TimesJobs, Shine, and more. Our templates use clean layouts and standard structures so Applicant Tracking Systems (ATS) can read your content correctly. Export to PDF and Word when you&apos;re ready to apply.
+              We build resume and CV templates designed for the Indian job market—Naukri, LinkedIn, Indeed, TimesJobs, Shine, and more. Our templates use clean layouts and standard structures so Applicant Tracking Systems (ATS) can read your content correctly. Export to TXT on the free plan, or upgrade to Pro for PDF and Word when you&apos;re ready to apply.
             </p>
           </section>
 
@@ -47,7 +47,7 @@ export default function AboutPage() {
               Try Before You Sign Up
             </h2>
             <p>
-              You can try ResumeDoctor free for 5 minutes with just your email—no signup, no credit card. Create a resume, pick a template, and see if it works for you. If you like it, sign up to save and export.
+              You can start a short browser trial: enter your email for a verification code (no credit card). Build and preview a resume; sign up to save your work and keep editing.
             </p>
           </section>
 

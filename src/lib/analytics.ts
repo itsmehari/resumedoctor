@@ -91,3 +91,13 @@ export function trackLinkedInConversion(): void {
     (window as unknown as { lintrk: (a: unknown, b: unknown) => void }).lintrk("track", { conversion_id: 0 });
   }
 }
+
+/** Canonical funnel event names for business KPI governance */
+export const FUNNEL_EVENTS = {
+  try_started: "trial_start",
+  resume_created: "resume_created",
+  export_click_pdf_upgrade: "upgrade_click",
+  superprofile_checkout_click: "superprofile_checkout_click",
+  superprofile_checkout_cancelled: "superprofile_checkout_cancelled",
+  payment_success: "payment_success",
+} as const;

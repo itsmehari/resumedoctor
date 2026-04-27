@@ -209,17 +209,15 @@ flowchart TD
         PRICING["/pricing\nFree vs Pro plan cards"]
         PRIC_REGION["API: /pricing/region\nAuto-detect INR / USD"]
         PROMO["API: /pricing/validate-promo\nApply coupon"]
-        TRIAL_ACT["API: /pricing/trial-activation\nRequest trial access"]
-        PRIC_VERIFY["/pricing/verify-trial\nAdmin approval pending"]
-        PAY["Razorpay / payment gateway"]
+        PAY["SuperProfile checkout links"]
+        SUPER_WB["API: /webhooks/superprofile\nPurchase fulfillment"]
         PRO_ACT["Pro plan activated\nUnlimited templates + DOCX"]
 
         PRICING --> PRIC_REGION
         PRICING --> PROMO
-        PRICING --> TRIAL_ACT
-        TRIAL_ACT --> PRIC_VERIFY
         PRICING --> PAY
-        PAY --> PRO_ACT
+        PAY --> SUPER_WB
+        SUPER_WB --> PRO_ACT
         PRO_ACT --> DASH
     end
 
@@ -309,7 +307,7 @@ flowchart TD
     classDef ai          fill:#ede9fe,stroke:#7c3aed,color:#2e1065
 
     class A,SIGN_UP,LOGIN,VERIFY,TFA,FORGOT,RESET,TRY_HOME,TRY_TEMPL,DASH,TEMPL_PAGE,NEW_RES,BUILDER,SETTINGS,PRICING,JOBS,CL_HUB,CL_NEW,CL_EDIT,ADMIN,ADMIN_LOGIN,ADMIN_USERS,ADMIN_EXPORT,ADMIN_TRIAL page
-    class RESUMES_API,ATS_CHECK,OTP_SEND,OTP_VERIFY,AI_BULLETS,AI_IMPROVE,AI_SUMMARY,EXPORT_PDF,EXPORT_DOCX,EXPORT_TXT,EXP_LOG,CL_DOCX,AI_CUSTOMIZE,JOB_APPLY,JOB_HIST,SET_PASS,SET_EMAIL,SET_2FA,SET_AVATAR,SET_EXPORT,SET_DEL,SET_INV,PRIC_REGION,PROMO,TRIAL_ACT,ADMIN_IMP api
+    class RESUMES_API,ATS_CHECK,OTP_SEND,OTP_VERIFY,AI_BULLETS,AI_IMPROVE,AI_SUMMARY,EXPORT_PDF,EXPORT_DOCX,EXPORT_TXT,EXP_LOG,CL_DOCX,AI_CUSTOMIZE,JOB_APPLY,JOB_HIST,SET_PASS,SET_EMAIL,SET_2FA,SET_AVATAR,SET_EXPORT,SET_DEL,SET_INV,PRIC_REGION,PROMO,SUPER_WB,ADMIN_IMP api
     class B,TFA_CHECK,DA,UPGRADE_CTA,ATS_RESULT,EXP_CHOICE,DOCX_CHECK decision
     class PORTALS,PAY,OPENAI external
     class DB,DB_ADMIN db

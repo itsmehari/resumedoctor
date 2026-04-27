@@ -15,6 +15,7 @@ import {
   RefreshCw,
   Copy,
 } from "lucide-react";
+import { PricingTrustStatsBar } from "@/components/pricing/payment-value-sections";
 
 const SAMPLE_QUESTIONS = [
   "Tell me about yourself.",
@@ -184,6 +185,7 @@ export default function InterviewPrepPage() {
         setError(data.error || "Daily limit reached. Upgrade to Pro for more.");
         return;
       }
+      setRateLimit(null);
       if (!res.ok) {
         setError(data.error || "Failed to generate answer");
         return;
@@ -222,6 +224,8 @@ export default function InterviewPrepPage() {
       subtitle="End-to-end interactive interview prep: planning, practice, AI-assisted answers, and self-review in one place."
     >
       <div className="space-y-6">
+        <PricingTrustStatsBar variant="inline" />
+
         <div className="rounded-xl border border-primary-200/60 dark:border-primary-800/40 bg-primary-50/50 dark:bg-primary-900/20 p-5">
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -309,14 +313,29 @@ export default function InterviewPrepPage() {
         )}
 
         {error && (
-          <div className="rounded-xl border border-red-200 dark:border-red-800 bg-red-50/50 dark:bg-red-900/20 px-4 py-3 text-sm text-red-800 dark:text-red-200 flex items-center gap-2">
-            <AlertCircle className="h-4 w-4 shrink-0" />
-            {error}
-            {rateLimit && (
-              <span className="text-red-600 dark:text-red-300">
-                ({rateLimit.used}/{rateLimit.limit} used today)
-              </span>
-            )}
+          <div className="rounded-xl border border-red-200 dark:border-red-800 bg-red-50/50 dark:bg-red-900/20 px-4 py-3 text-sm text-red-800 dark:text-red-200">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+              <div className="flex-1 space-y-2">
+                <p>
+                  {error}
+                  {rateLimit && (
+                    <span className="text-red-700 dark:text-red-300">
+                      {" "}
+                      ({rateLimit.used}/{rateLimit.limit} used today)
+                    </span>
+                  )}
+                </p>
+                {rateLimit && (
+                  <Link
+                    href="/pricing"
+                    className="inline-block font-medium text-primary-700 underline hover:text-primary-800 dark:text-primary-300 dark:hover:text-primary-200"
+                  >
+                    View Pro plans for higher limits →
+                  </Link>
+                )}
+              </div>
+            </div>
           </div>
         )}
 

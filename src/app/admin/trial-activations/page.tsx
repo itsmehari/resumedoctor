@@ -61,7 +61,7 @@ export default function AdminTrialActivationsPage() {
         Trial Activation Requests
       </h1>
       <p className="mt-1 text-slate-600 dark:text-slate-400">
-        Approve 14-day Pro trial requests (users paid ₹1 via UPI)
+        Approve 14-day Pro trial requests (legacy UPI — new sales use SuperProfile)
       </p>
 
       {loading ? (

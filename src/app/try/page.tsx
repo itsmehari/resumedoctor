@@ -4,6 +4,7 @@ import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
+import { PricingTrustStatsBar } from "@/components/pricing/payment-value-sections";
 import { trackEvent, trackMetaEvent, trackMetaCustom, trackLinkedInConversion } from "@/lib/analytics";
 
 function TryPageContent() {
@@ -87,7 +88,7 @@ function TryPageContent() {
           </h1>
           <p className="mt-2 text-slate-600 dark:text-slate-400 text-center">
             {step === "email"
-              ? "Enter your email to get a verification code"
+              ? "Enter your email to start a 5-minute trial session"
               : "Enter the 6-digit code we sent to your email"}
           </p>
 
@@ -128,6 +129,9 @@ function TryPageContent() {
                 >
                   {loading ? "Sending..." : "Send verification code"}
                 </button>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Trial includes resume editing and template preview. Sign up to save and export.
+                </p>
               </form>
             ) : (
               <form onSubmit={handleVerifyOtp} className="space-y-4">
@@ -172,8 +176,12 @@ function TryPageContent() {
             )}
           </div>
 
-          <p className="mt-8 text-center text-xs text-slate-500 dark:text-slate-400">
-            5 minutes free. No signup. No credit card.
+          <div className="mt-8 w-full max-w-lg mx-auto">
+            <PricingTrustStatsBar variant="compact" />
+          </div>
+
+          <p className="mt-6 text-center text-xs text-slate-500 dark:text-slate-400">
+            5-minute trial session after verification. No credit card. Sign up to save and export your resume.
           </p>
         </div>
       </main>

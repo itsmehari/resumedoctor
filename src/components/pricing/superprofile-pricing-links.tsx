@@ -3,82 +3,175 @@
 import { ExternalLink } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 
+/** SuperProfile “create payment page” URLs are for sellers; buyers need the published / share link. */
+export function isSuperprofileSellerSetupUrl(url: string): boolean {
+  try {
+    const u = new URL(url);
+    return u.pathname.includes("create-payment-page");
+  } catch {
+    return false;
+  }
+}
+
+function SuperprofileUrlMisconfigWarning({ href }: { href: string }) {
+  if (!isSuperprofileSellerSetupUrl(href)) return null;
+  return (
+    <p className="mt-2 rounded-lg border border-amber-400/80 bg-amber-50 px-3 py-2 text-xs text-amber-950 dark:border-amber-600 dark:bg-amber-950/40 dark:text-amber-100">
+      This link points to SuperProfile&apos;s payment page <span className="font-medium">editor</span>, not the customer
+      checkout. In SuperProfile, open your product and copy the <span className="font-medium">published / share / view</span>{" "}
+      link (it should not contain <code className="rounded bg-amber-100/80 px-1 dark:bg-amber-900/50">create-payment-page</code>
+      ). Update <code className="rounded bg-amber-100/80 px-1 dark:bg-amber-900/50">NEXT_PUBLIC_SUPERPROFILE_URL_*</code> in
+      Vercel and redeploy. See <code className="rounded bg-amber-100/80 px-1 dark:bg-amber-900/50">docs/SUPERPROFILE.md</code>.
+    </p>
+  );
+}
+
 function OutLink(props: {
   href: string;
   label: string;
-  variant?: "primary" | "secondary" | "amber";
+  variant?: "primary" | "secondary" | "amber" | "trialPrimary";
   eventLabel: string;
 }) {
   const base =
     props.variant === "primary"
-      ? "bg-primary-600 text-white hover:bg-primary-700 border-transparent"
-      : props.variant === "amber"
-        ? "border-amber-600 text-amber-800 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20"
-        : "border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800";
+      ? "bg-primary-600 text-white hover:bg-primary-700 border-transparent shadow-md shadow-primary-900/10"
+      : props.variant === "trialPrimary"
+        ? "bg-orange-500 text-white hover:bg-orange-600 border-transparent shadow-md shadow-orange-900/15 dark:bg-orange-600 dark:hover:bg-orange-500"
+        : props.variant === "amber"
+          ? "border-amber-600 text-amber-800 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20"
+          : "border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800";
   return (
     <a
       href={props.href}
       target="_blank"
       rel="noopener noreferrer"
-      onClick={() => trackEvent("superprofile_checkout_click", { label: props.eventLabel })}
-      className={`inline-flex items-center justify-center gap-1.5 rounded-lg border-2 px-4 py-3 font-medium w-full text-center ${base}`}
+      onClick={(e) => {
+        const proceed = window.confirm(
+          "Before checkout, confirm you will use the same email as your ResumeDoctor account. Continue to SuperProfile?"
+        );
+        if (!proceed) {
+          e.preventDefault();
+          trackEvent("superprofile_checkout_cancelled", { label: props.eventLabel });
+          return;
+        }
+        trackEvent("superprofile_checkout_click", { label: props.eventLabel, precheck_confirmed: true });
+      }}
+      className={`inline-flex items-center justify-center gap-1.5 rounded-xl border-2 px-4 py-3.5 text-sm font-semibold w-full text-center transition-colors ${base}`}
     >
       {props.label}
-      <ExternalLink className="h-3.5 w-3.5 opacity-80 shrink-0" aria-hidden />
+      <ExternalLink className="h-3.5 w-3.5 opacity-90 shrink-0" aria-hidden />
     </a>
   );
 }
 
-const hint = (
+const defaultHint = (
   <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 text-center">
     Use the same email as your ResumeDoctor account.
   </p>
 );
 
-/** 14-day ₹1 trial — SuperProfile checkout (India). */
-export function SuperprofileTrialCta() {
+/** 14-day paid trial — SuperProfile checkout (India); price set on SuperProfile (e.g. ₹49). */
+export function SuperprofileTrialCta({ showEmailHint = true }: { showEmailHint?: boolean }) {
   const url = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_TRIAL_14;
   if (!url) return null;
   return (
-    <div className="mt-4 space-y-2">
+    <div className="mt-0 space-y-2">
       <OutLink
         href={url}
-        label="Pay on SuperProfile — ₹1 trial"
-        variant="amber"
+        label="Start 14-day trial"
+        variant="trialPrimary"
         eventLabel="trial_14"
       />
-      {hint}
+      <SuperprofileUrlMisconfigWarning href={url} />
+      {showEmailHint ? defaultHint : null}
     </div>
   );
 }
 
-/** Pro monthly / annual on SuperProfile */
-export function SuperprofileProCtas() {
+function ProCtaBlock({
+  href,
+  label,
+  eventLabel,
+  showEmailHint,
+}: {
+  href: string;
+  label: string;
+  eventLabel: string;
+  showEmailHint: boolean;
+}) {
+  return (
+    <div className="space-y-2">
+      <p className="text-center text-xs font-medium text-primary-600 dark:text-primary-400">SuperProfile</p>
+      <OutLink href={href} label={label} variant="primary" eventLabel={eventLabel} />
+      <SuperprofileUrlMisconfigWarning href={href} />
+      {showEmailHint ? defaultHint : null}
+    </div>
+  );
+}
+
+/** Pro monthly only — for dedicated plan cards. */
+export function SuperprofileProMonthlyCta({ showEmailHint = true }: { showEmailHint?: boolean }) {
+  const url = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_MONTHLY;
+  if (!url) return null;
+  return (
+    <ProCtaBlock
+      href={url}
+      label="Choose Pro monthly plan"
+      eventLabel="pro_monthly"
+      showEmailHint={showEmailHint}
+    />
+  );
+}
+
+/** Pro annual only — for dedicated plan cards. */
+export function SuperprofileProAnnualCta({ showEmailHint = true }: { showEmailHint?: boolean }) {
+  const url = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_ANNUAL;
+  if (!url) return null;
+  return (
+    <ProCtaBlock
+      href={url}
+      label="Get Pro annual"
+      eventLabel="pro_annual"
+      showEmailHint={showEmailHint}
+    />
+  );
+}
+
+/** Pro monthly + annual (stacked) — settings / compact layouts. */
+export function SuperprofileProCtas({ showEmailHint = true }: { showEmailHint?: boolean }) {
   const monthly = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_MONTHLY;
   const annual = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_ANNUAL;
   if (!monthly && !annual) return null;
   return (
-    <div className="mt-4 space-y-2">
-      <p className="text-xs text-center text-slate-500 dark:text-slate-400">SuperProfile</p>
+    <div className="mt-4 space-y-3">
+      <p className="text-center text-xs font-medium text-primary-600 dark:text-primary-400">SuperProfile</p>
       {monthly && (
-        <OutLink href={monthly} label="Pro monthly" variant="primary" eventLabel="pro_monthly" />
+        <div className="space-y-2">
+          <OutLink href={monthly} label="Pro monthly" variant="primary" eventLabel="pro_monthly" />
+          <SuperprofileUrlMisconfigWarning href={monthly} />
+        </div>
       )}
+      {monthly && annual && <p className="text-center text-xs text-slate-500 dark:text-slate-400">or</p>}
       {annual && (
-        <OutLink href={annual} label="Pro annual" variant="primary" eventLabel="pro_annual" />
+        <div className="space-y-2">
+          <OutLink href={annual} label="Pro annual" variant="primary" eventLabel="pro_annual" />
+          <SuperprofileUrlMisconfigWarning href={annual} />
+        </div>
       )}
-      {hint}
+      {showEmailHint ? defaultHint : null}
     </div>
   );
 }
 
 /** One-time Resume Pack — SuperProfile + optional email fallback. */
-export function SuperprofileResumePackCta() {
+export function SuperprofileResumePackCta({ showEmailHint = true }: { showEmailHint?: boolean }) {
   const url = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_RESUME_PACK;
   if (!url) return null;
   return (
-    <div className="flex flex-col gap-2 w-full sm:w-auto">
-      <OutLink href={url} label="Pay on SuperProfile" variant="secondary" eventLabel="resume_pack" />
-      {hint}
+    <div className="flex w-full flex-col gap-2 sm:w-auto">
+      <OutLink href={url} label="Buy resume pack" variant="secondary" eventLabel="resume_pack" />
+      <SuperprofileUrlMisconfigWarning href={url} />
+      {showEmailHint ? defaultHint : null}
     </div>
   );
 }

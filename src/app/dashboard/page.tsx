@@ -14,6 +14,7 @@ import { useTrialTimer } from "@/hooks/use-trial-timer";
 import { getTemplateDisplayName } from "@/lib/subscription-labels";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { OnboardingChecklist } from "@/components/dashboard/onboarding-checklist";
+import { PricingTrustStatsBar } from "@/components/pricing/payment-value-sections";
 
 interface ResumeItem {
   id: string;
@@ -108,7 +109,7 @@ function DashboardContent() {
           href="/pricing"
           className="rounded-xl border-2 border-primary-500 px-4 py-2.5 text-sm font-semibold text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-all shadow-sm min-h-[44px] inline-flex items-center touch-manipulation"
         >
-          Upgrade to Pro
+          Unlock exports
         </Link>
       )}
       <Link
@@ -146,6 +147,11 @@ function DashboardContent() {
         </div>
       ) : (
         <>
+          {!isImpersonating && (
+            <div className="mb-6">
+              <PricingTrustStatsBar variant="inline" />
+            </div>
+          )}
           {isImpersonating && (
             <div className="mb-6 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 px-4 py-3 flex items-center justify-between gap-3 shadow-sm">
               <span className="text-amber-800 dark:text-amber-200 text-sm font-medium">
@@ -173,13 +179,13 @@ function DashboardContent() {
           {isTrial && !expired && secondsLeft > 0 && (
             <div className="mb-6 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 px-4 py-3 flex flex-wrap items-center justify-between gap-3 shadow-sm">
               <span className="text-amber-800 dark:text-amber-200 text-sm font-medium">
-                {Math.floor(secondsLeft / 60)}:{String(secondsLeft % 60).padStart(2, "0")} left in your trial · Sign up to save your work
+                {Math.floor(secondsLeft / 60)}:{String(secondsLeft % 60).padStart(2, "0")} left in your 5-minute trial · Sign up to save and export
               </span>
               <Link
                 href="/signup"
                 className="rounded-lg bg-amber-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-700"
               >
-                Sign up to save
+                Sign up to save and export
               </Link>
             </div>
           )}

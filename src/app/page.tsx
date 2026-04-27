@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { HomeJsonLd, FaqJsonLd, HowToJsonLd, FAQ_ITEMS } from "@/components/seo/json-ld";
+import { PricingTrustStatsBar } from "@/components/pricing/payment-value-sections";
 import { siteUrl } from "@/lib/seo";
 import type { Metadata } from "next";
 
@@ -8,7 +9,7 @@ export const metadata: Metadata = {
   alternates: { canonical: siteUrl },
   title: "ResumeDoctor – Build ATS-Ready Resumes in Minutes | India's #1 Resume Builder",
   description:
-    "Create a professional resume in under 5 minutes. 30+ ATS-friendly templates, AI-powered bullet suggestions, PDF & DOCX export. Trusted by 50,000+ job seekers across India.",
+    "Create a professional resume in under 5 minutes. 30+ ATS-friendly templates, AI suggestions. Export TXT free; PDF and Word with Pro. Trusted by job seekers across India.",
 };
 
 // ─── Inline SVG icons (server-safe, no deps) ─────────────────────────────────
@@ -66,7 +67,7 @@ export default function HomePage() {
             <div>
               <div className="inline-flex items-center gap-2 mb-5 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-xs font-semibold text-white/90 tracking-wide">
                 <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                Trusted by 50,000+ job seekers in India
+                Built for the Indian job market
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-[3.4rem] font-extrabold text-white leading-[1.08] tracking-tight">
@@ -82,9 +83,9 @@ export default function HomePage() {
               <ul className="mt-6 space-y-2">
                 {[
                   "30+ professionally designed templates",
-                  "AI-generated bullet points for every industry",
+                  "AI suggestions for your experience bullets",
                   "ATS score checker before you apply",
-                  "PDF & DOCX download — free to start",
+                  "Start free (TXT) · PDF & Word on Pro",
                 ].map((item) => (
                   <li key={item} className="flex items-center gap-2.5 text-sm text-white/85">
                     <span className="w-4 h-4 rounded-full bg-green-400/20 flex items-center justify-center flex-shrink-0">
@@ -107,17 +108,9 @@ export default function HomePage() {
                 </Link>
               </div>
 
-              {/* Star rating */}
-              <div className="mt-8 flex items-center gap-3">
-                <div className="flex gap-0.5" aria-label="4.8 out of 5 stars">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <svg key={i} className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                </div>
-                <span className="text-sm font-medium text-white/80">4.8/5 · 50,000+ resumes created</span>
-              </div>
+              <p className="mt-8 text-sm text-white/70">
+                Pro: one-time purchase on SuperProfile · Same email as your account for instant unlock
+              </p>
             </div>
 
             {/* Right: hero visual */}
@@ -132,10 +125,10 @@ export default function HomePage() {
       <section className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
         <div className="max-w-5xl mx-auto px-4 py-8 grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
           {[
-            { num: "50,000+", label: "Resumes built" },
-            { num: "30",      label: "Unique templates" },
-            { num: "4.8/5",   label: "Average rating" },
-            { num: "< 5 min", label: "Average build time" },
+            { num: "30+", label: "Templates" },
+            { num: "ATS", label: "Friendly layouts" },
+            { num: "Free", label: "Start at ₹0" },
+            { num: "< 5 min", label: "First draft" },
           ].map((s) => (
             <div key={s.label}>
               <p className="text-3xl font-extrabold text-primary-600 dark:text-primary-400 leading-none">{s.num}</p>
@@ -380,7 +373,9 @@ export default function HomePage() {
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100">
               Simple, transparent pricing
             </h2>
-            <p className="mt-4 text-slate-500 dark:text-slate-400">Start free. Upgrade only when you need more. No hidden fees.</p>
+            <p className="mt-4 text-slate-500 dark:text-slate-400">
+              Start free. Pro is a one-time purchase on SuperProfile (monthly, annual, or 14-day trial). No hidden fees.
+            </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
@@ -388,21 +383,25 @@ export default function HomePage() {
               plan="Free"
               price="₹0"
               period="forever"
-              features={["1 resume", "10 base templates", "PDF download", "ATS score checker", "AI bullets (5/day)"]}
+              features={["Unlimited resumes", "10 base templates", "TXT & print preview", "1 ATS check / resume", "5 AI bullet runs / day"]}
               cta="Get started free"
               ctaHref="/try"
               variant="outline"
             />
             <PricingCard
               plan="Pro"
-              price="₹299"
-              period="/month"
+              price="₹199"
+              period=" / mo tier"
               badge="Most popular"
-              features={["Unlimited resumes", "All 30 templates", "PDF + DOCX download", "Unlimited AI bullets", "Priority support", "LinkedIn PDF import"]}
-              cta="Start Pro — ₹299/mo"
+              features={["Unlimited resumes", "30+ templates", "PDF + DOCX export", "No watermarks", "50 AI runs / day", "Unlimited ATS checks"]}
+              cta="View Pro plans"
               ctaHref="/pricing"
               variant="filled"
             />
+          </div>
+
+          <div className="mt-8 max-w-2xl mx-auto">
+            <PricingTrustStatsBar variant="compact" />
           </div>
 
           <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-6">
@@ -474,7 +473,7 @@ export default function HomePage() {
             Your dream job is<br />one resume away.
           </h2>
           <p className="mt-5 text-lg text-white/80 max-w-lg mx-auto">
-            Join 50,000+ professionals who built their best resume on ResumeDoctor. Free to start, always.
+            Build your best resume on ResumeDoctor. Free to start—upgrade when you need PDF, Word, and every template.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/try"
@@ -486,7 +485,7 @@ export default function HomePage() {
               View templates
             </Link>
           </div>
-          <p className="mt-5 text-sm text-white/55">No credit card required · Ready in 5 minutes</p>
+          <p className="mt-5 text-sm text-white/55">No credit card · Email verification for the quick try</p>
         </div>
       </section>
     </div>

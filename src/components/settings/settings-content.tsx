@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { Download, Trash2, Unlink, FileText, CreditCard } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Check, Download, Trash2, Unlink, FileText, CreditCard, ShieldCheck } from "lucide-react";
 import { useSubscription } from "@/hooks/use-subscription";
 import { getSubscriptionLabel } from "@/lib/subscription-labels";
 import { UserDashboardLayout } from "@/components/user-dashboard-layout";
@@ -22,6 +22,7 @@ interface ConnectedAccount {
 export function SettingsContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { subscription, isPro, resumePackCredits, subscriptionExpiresAt } = useSubscription();
   const [name, setName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -56,6 +57,7 @@ export function SettingsContent() {
   const [twoFactorDisableLoading, setTwoFactorDisableLoading] = useState(false);
   const [invoices, setInvoices] = useState<Array<{ id: string; amount: number; currency: string; plan: string; status: string; pdfUrl?: string; createdAt: string }>>([]);
   const [cancelSubscriptionOpen, setCancelSubscriptionOpen] = useState(false);
+  const paymentActivated = searchParams.get("upgraded") === "1" || searchParams.get("payment") === "success";
 
   useEffect(() => {
     if (session?.user?.email) {
@@ -317,6 +319,16 @@ export function SettingsContent() {
       title="Account settings"
       subtitle="Manage your profile, security, and subscription."
     >
+        {paymentActivated && (
+          <section className="mb-6 rounded-xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 p-4 shadow-sm">
+            <h2 className="font-semibold text-green-800 dark:text-green-200">Payment received. Pro is active.</h2>
+            <p className="mt-1 text-sm text-green-700 dark:text-green-300">
+              You can now export PDF/Word and use full templates. If anything looks wrong, refresh once or use
+              Billing support below.
+            </p>
+          </section>
+        )}
+
         <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
           <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">Profile</h2>
           <form onSubmit={handleProfileSubmit} className="space-y-4">
@@ -338,7 +350,10 @@ export function SettingsContent() {
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Profile picture</label>
               <div className="flex items-center gap-4">
                 {imageUrl && (
-                  <img src={imageUrl} alt="Avatar" className="w-16 h-16 rounded-full object-cover border border-slate-200 dark:border-slate-600" />
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element -- user URL or blob */}
+                    <img src={imageUrl} alt="Avatar" className="w-16 h-16 rounded-full object-cover border border-slate-200 dark:border-slate-600" />
+                  </>
                 )}
                 <div>
                   <label className="inline-flex cursor-pointer items-center rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50">
@@ -410,54 +425,103 @@ export function SettingsContent() {
           )}
         </section>
 
-        <section className="mt-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
-          <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
-            <CreditCard className="h-5 w-5 text-slate-500" />
-            Billing & subscription
-          </h2>
-          <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-            Current plan: <span className="font-medium text-slate-900 dark:text-slate-100">{getSubscriptionLabel(subscription, subscriptionExpiresAt)}</span>
-            {resumePackCredits > 0 && (
-              <span className="ml-2 text-primary-600 dark:text-primary-400 font-medium">
-                · {resumePackCredits} export credit{resumePackCredits !== 1 ? "s" : ""}
+        <section className="mt-6 overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
+          <div className="border-b border-slate-100 bg-gradient-to-r from-primary-50/90 to-white px-6 py-4 dark:border-slate-800 dark:from-primary-950/30 dark:to-slate-900">
+            <h2 className="flex items-center gap-2 font-semibold text-slate-900 dark:text-slate-100">
+              <CreditCard className="h-5 w-5 text-primary-600" />
+              Billing & subscription
+            </h2>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+              Current plan:{" "}
+              <span className="font-medium text-slate-900 dark:text-slate-100">
+                {getSubscriptionLabel(subscription, subscriptionExpiresAt)}
               </span>
-            )}
-          </p>
-          {!isPro ? (
-            <div className="space-y-3">
-              <Link
-                href="/pricing"
-                onClick={() => trackEvent("upgrade_click", { source: "settings" })}
-                className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-primary-700"
-              >
-                Upgrade to Pro
-              </Link>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Get PDF & Word export, unlimited ATS checks, more AI, and all 30 templates. Pay on the pricing page through SuperProfile; one-time purchase, no auto-renewal. Refunds on request.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <div className="flex flex-wrap gap-3">
-                <Link
-                  href="/pricing"
-                  className="inline-flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
-                >
-                  View plans & pricing
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => setCancelSubscriptionOpen(true)}
-                  className="inline-flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
-                >
-                  Refund or feedback
-                </button>
+              {resumePackCredits > 0 && (
+                <span className="ml-2 font-medium text-primary-600 dark:text-primary-400">
+                  · {resumePackCredits} export credit{resumePackCredits !== 1 ? "s" : ""}
+                </span>
+              )}
+            </p>
+          </div>
+          <div className="p-6">
+            {!isPro ? (
+              <div className="space-y-4">
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  Unlock PDF & Word export, more AI, and every template. Pay once on SuperProfile (same email as here)—no
+                  surprise renewals.
+                </p>
+                <ul className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+                  {["High-quality PDF and DOCX export", "30+ premium templates, no watermarks", "Higher ATS and AI limits"].map((line) => (
+                    <li key={line} className="flex items-start gap-2">
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" aria-hidden />
+                      {line}
+                    </li>
+                  ))}
+                </ul>
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+                  <Link
+                    href="/pricing"
+                    onClick={() => trackEvent("upgrade_click", { source: "settings" })}
+                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-primary-900/10 hover:bg-primary-700"
+                  >
+                    View plans & upgrade
+                  </Link>
+                  <p className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                    <ShieldCheck className="h-3.5 w-3.5 text-primary-500" aria-hidden />
+                    Use the same email on SuperProfile and ResumeDoctor.
+                  </p>
+                </div>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                You have lifetime access from your purchase (via SuperProfile). For billing help or a refund, use Refund or feedback below, or see pricing.
-              </p>
-            </div>
-          )}
+            ) : (
+              <div className="space-y-4">
+                <div className="flex flex-wrap gap-3">
+                  <Link
+                    href="/pricing"
+                    className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-800 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-800/80"
+                  >
+                    View plans & pricing
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => setCancelSubscriptionOpen(true)}
+                    className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-800 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-800/80"
+                  >
+                    Refund or feedback
+                  </button>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  You have access from your SuperProfile purchase. For billing help or a refund, use Refund or feedback or
+                  see the pricing page.
+                </p>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="mt-6 rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50/70 dark:bg-amber-900/20 p-6 shadow-sm">
+          <h2 className="font-semibold text-amber-900 dark:text-amber-200 mb-2">Payment help</h2>
+          <p className="text-sm text-amber-900/90 dark:text-amber-200/90">
+            Paid on SuperProfile but Pro is not active? This usually means checkout used a different email.
+          </p>
+          <ul className="mt-3 space-y-1 text-sm text-amber-900/90 dark:text-amber-200/90">
+            <li>1) Confirm your account email above.</li>
+            <li>2) Open pricing and pay with this same email.</li>
+            <li>3) If you already paid with another email, contact support with your receipt email.</li>
+          </ul>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Link
+              href="/pricing"
+              className="inline-flex items-center rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700"
+            >
+              Open pricing
+            </Link>
+            <a
+              href="mailto:support@resumedoctor.in?subject=Payment%20activation%20help"
+              className="inline-flex items-center rounded-lg border border-amber-400 px-4 py-2 text-sm font-medium text-amber-900 hover:bg-amber-100 dark:text-amber-200 dark:hover:bg-amber-900/30"
+            >
+              Contact support
+            </a>
+          </div>
         </section>
 
         <section className="mt-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
@@ -504,6 +568,7 @@ export function SettingsContent() {
               ) : twoFactorQrCode ? (
                 <form onSubmit={handle2FAVerify}>
                   <h3 className="font-medium text-slate-900 dark:text-slate-100 mb-2">Scan with your authenticator app</h3>
+                  {/* eslint-disable-next-line @next/next/no-img-element -- data URL from 2FA setup */}
                   <img src={twoFactorQrCode} alt="QR code" className="mb-4 rounded" />
                   <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">Enter the 6-digit code from your app:</p>
                   <input type="text" value={twoFactorVerifyCode} onChange={(e) => setTwoFactorVerifyCode(e.target.value.replace(/\D/g, "").slice(0, 8))} placeholder="000000" className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 mb-2" maxLength={8} />

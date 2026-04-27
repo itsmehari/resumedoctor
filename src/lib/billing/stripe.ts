@@ -5,7 +5,7 @@ export type CheckoutPlanId = "pro_monthly" | "pro_annual" | "pro_trial_14";
 const PLAN_AMOUNTS_INR: Record<CheckoutPlanId, number> = {
   pro_monthly: 199_00, // paise
   pro_annual: 1499_00,
-  pro_trial_14: 100, // ₹1
+  pro_trial_14: 49_00, // ₹49 (paise; legacy — checkout disabled, SuperProfile sets real price)
 };
 
 const PLAN_AMOUNTS_USD: Record<CheckoutPlanId, number> = {
