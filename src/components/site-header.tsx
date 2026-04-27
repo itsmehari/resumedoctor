@@ -68,6 +68,7 @@ export function SiteHeader({
   const isAdmin = (session?.user as { role?: string })?.role === "admin";
 
   const inverted = variant === "home";
+  const isPublicHeader = navVariant === "public";
   const maxWidthClass = {
     xl: "max-w-xl",
     "2xl": "max-w-2xl",
@@ -76,26 +77,30 @@ export function SiteHeader({
     "6xl": "max-w-6xl",
   }[maxWidth];
 
-  // Home variant: gradient primary header
-  if (variant === "home") {
+  // Unified marketing/public header across home and public pages.
+  if (isPublicHeader) {
     return (
-      <header className="sticky top-0 z-30 border-b border-white/10 bg-primary-600 backdrop-blur-sm">
+      <header className="sticky top-0 z-30 border-b border-white/10 bg-primary-600/95 backdrop-blur-sm">
         <div
           className={`${maxWidthClass} mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3 min-h-16 py-3 sm:py-0`}
         >
           <Logo inverted />
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-white/80">
+          <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-white/80">
             {publicNavLinks.map(({ href, label }) => (
               <Link
                 key={href}
                 href={href}
-                className="hover:text-white transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-white after:transition-all after:scale-x-0 hover:after:scale-x-100 after:origin-left"
+                className={`transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-white after:transition-all after:origin-left ${
+                  pathname === href || pathname.startsWith(href + "/")
+                    ? "text-white after:scale-x-100"
+                    : "hover:text-white after:scale-x-0 hover:after:scale-x-100"
+                }`}
               >
                 {label}
               </Link>
             ))}
           </nav>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <MobileNavMenu inverted />
             <AuthNav inverted />
           </div>
@@ -104,7 +109,7 @@ export function SiteHeader({
     );
   }
 
-  // App variant: glass/light header
+  // App/dashboard header
   const navLinks = navVariant === "dashboard" ? dashboardNavLinks : publicNavLinks;
   const showDashboardNav = navVariant === "dashboard" && !isTrial;
 

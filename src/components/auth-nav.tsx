@@ -27,10 +27,9 @@ export function AuthNav({ inverted }: { inverted?: boolean }) {
 
   if (session?.user) {
     return (
-      <nav className="flex flex-wrap items-center justify-end gap-2 sm:gap-4">
-        <Link href="/pricing" className={linkCls}>Pricing</Link>
-        <Link href="/dashboard" className={linkCls}>Dashboard</Link>
-        <Link href="/dashboard?openImport=1" className={linkCls}>Import</Link>
+      <nav className="flex items-center justify-end gap-2 sm:gap-3 shrink-0">
+        <Link href="/dashboard" className={`${linkCls} hidden xl:inline-flex`}>Dashboard</Link>
+        <Link href="/dashboard?openImport=1" className={`${linkCls} hidden xl:inline-flex`}>Import</Link>
         <UserMenu inverted={inverted} compact={inverted} />
         <Link href="/resumes/new" className={ctaCls}>Create Resume</Link>
       </nav>
@@ -38,8 +37,7 @@ export function AuthNav({ inverted }: { inverted?: boolean }) {
   }
 
   return (
-    <nav className="flex flex-wrap items-center justify-end gap-2 sm:gap-4">
-      <Link href="/pricing" className={linkCls}>Pricing</Link>
+    <nav className="flex items-center justify-end gap-2 sm:gap-3 shrink-0">
       <Link href="/login" className={linkCls}>Sign In</Link>
       <Link href="/signup" className={outlineCls}>Sign up</Link>
       <Link href="/resumes/new" className={ctaCls}>Create Resume</Link>

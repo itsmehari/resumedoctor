@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import heroArtwork from "../../Resumedoctor-heroimage.png";
 import { SiteHeader } from "@/components/site-header";
 import { HomeJsonLd, FaqJsonLd, HowToJsonLd, FAQ_ITEMS } from "@/components/seo/json-ld";
 import { PricingTrustStatsBar } from "@/components/pricing/payment-value-sections";
@@ -149,7 +150,7 @@ export default function HomePage() {
           </p>
           <div className="flex flex-wrap justify-center items-center gap-8 sm:gap-12">
             {["Naukri.com", "LinkedIn", "Indeed India", "Internshala", "TimesJobs", "Shine", "Foundit"].map((name) => (
-              <span key={name} className="text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
+              <span key={name} className="rounded-full border border-slate-200 bg-white px-3 py-1 text-sm font-semibold text-slate-500 shadow-sm hover:text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
                 {name}
               </span>
             ))}
@@ -377,7 +378,7 @@ export default function HomePage() {
               Simple, transparent pricing
             </h2>
             <p className="mt-4 text-slate-500 dark:text-slate-400">
-              Start free. Pro is a one-time purchase on SuperProfile (monthly, annual, or 14-day trial). No hidden fees.
+              Start free. Unlock Pro via one-time SuperProfile payments (monthly, annual, or 14-day trial). No auto-renew surprises.
             </p>
           </div>
 
@@ -628,13 +629,14 @@ const TESTIMONIALS = [
 
 function HeroVisual() {
   return (
-    <div className="relative rounded-3xl border border-white/20 bg-white/10 p-2 shadow-2xl backdrop-blur-sm">
+    <div className="relative rounded-3xl border border-white/20 bg-white/10 p-2 shadow-2xl backdrop-blur-sm transition-transform duration-300 hover:scale-[1.01]">
       <Image
-        src="/Resumedoctor-heroimage.png"
-        alt="ResumeDoctor optimized resume hero visual"
+        src={heroArtwork}
+        alt="ResumeDoctor before-and-after optimized resume visual"
         width={1400}
         height={900}
         priority
+        sizes="(max-width: 1024px) 100vw, 48vw"
         className="h-auto w-full rounded-2xl object-cover"
       />
     </div>
@@ -645,7 +647,7 @@ function FeatureCard({ icon, color, title, description, badge, guideHref }: {
   icon: string; color: string; title: string; description: string; badge: string | null; guideHref?: string | null;
 }) {
   return (
-    <div className="relative rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 hover:shadow-md transition-all group hover:border-primary-300 dark:hover:border-primary-700">
+    <div className="group relative min-h-[260px] rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md hover:border-primary-300 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-primary-700">
       {badge && (
         <span className="absolute top-4 right-4 text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400">
           {badge}
@@ -765,7 +767,7 @@ function CareerCard({ emoji, title, color, accent, sections, cta, href, guideHre
   sections: string[]; cta: string; href: string; guideHref?: string;
 }) {
   return (
-    <div className={`rounded-2xl border-2 ${color} bg-white dark:bg-slate-900 p-6 flex flex-col h-full hover:shadow-md transition-all`}>
+    <div className={`rounded-2xl border-2 ${color} bg-white dark:bg-slate-900 p-6 flex flex-col h-full shadow-sm hover:shadow-md transition-all`}>
       <div className="text-3xl mb-3">{emoji}</div>
       <h3 className={`font-bold text-base ${accent} mb-3`}>{title}</h3>
       <ul className="space-y-1.5 flex-1 mb-5">
@@ -796,7 +798,7 @@ function TestimonialCard({ name, role, avatar, color, rating, text }: {
   name: string; role: string; avatar: string; color: string; rating: number; text: string;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 flex flex-col gap-4 hover:shadow-md transition-all">
+    <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-all">
       <div className="flex gap-0.5">
         {Array.from({ length: rating }).map((_, i) => (
           <svg key={i} className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
@@ -826,7 +828,7 @@ function PricingCard({ plan, price, period, features, cta, ctaHref, variant, bad
     <div className={`relative rounded-2xl p-7 flex flex-col border-2 ${
       variant === "filled"
         ? "border-primary-600 bg-primary-600 text-white shadow-xl shadow-primary-900/20"
-        : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900"
+        : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm"
     }`}>
       {badge && (
         <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-accent-dark text-xs font-bold px-4 py-1 rounded-full shadow">
