@@ -3,6 +3,7 @@
 import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { SiteHeader } from "@/components/site-header";
 
 function ResetPasswordForm() {
   const [password, setPassword] = useState("");
@@ -153,26 +154,29 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <Link href="/" className="text-2xl font-bold text-primary-600">
-            ResumeDoctor
-          </Link>
-          <h1 className="mt-6 text-2xl font-bold text-slate-900 dark:text-slate-100">
-            Set new password
-          </h1>
+    <>
+      <SiteHeader variant="app" />
+      <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4">
+        <div className="w-full max-w-md space-y-8">
+          <div className="text-center">
+            <Link href="/" className="text-2xl font-bold text-primary-600">
+              ResumeDoctor
+            </Link>
+            <h1 className="mt-6 text-2xl font-bold text-slate-900 dark:text-slate-100">
+              Set new password
+            </h1>
+          </div>
+          <Suspense
+            fallback={
+              <div className="rounded-xl border border-slate-200 p-8 text-center text-slate-500">
+                Loading...
+              </div>
+            }
+          >
+            <ResetPasswordForm />
+          </Suspense>
         </div>
-        <Suspense
-          fallback={
-            <div className="rounded-xl border border-slate-200 p-8 text-center text-slate-500">
-              Loading...
-            </div>
-          }
-        >
-          <ResetPasswordForm />
-        </Suspense>
       </div>
-    </div>
+    </>
   );
 }

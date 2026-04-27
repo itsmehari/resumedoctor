@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { SiteHeader } from "@/components/site-header";
 
 export default function NewResumePage() {
   const router = useRouter();
@@ -35,18 +36,24 @@ export default function NewResumePage() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <p className="text-red-600">{error}</p>
-        <Link href="/dashboard" className="text-primary-600 hover:underline">
-          Back to dashboard
-        </Link>
-      </div>
+      <>
+        <SiteHeader variant="app" navVariant="dashboard" />
+        <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center gap-4">
+          <p className="text-red-600">{error}</p>
+          <Link href="/dashboard" className="text-primary-600 hover:underline">
+            Back to dashboard
+          </Link>
+        </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center">
-      <p className="text-slate-600">Creating your resume...</p>
-    </div>
+    <>
+      <SiteHeader variant="app" navVariant="dashboard" />
+      <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center">
+        <p className="text-slate-600">Creating your resume...</p>
+      </div>
+    </>
   );
 }

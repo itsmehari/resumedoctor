@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { trackEvent, trackMetaEvent, trackMetaCustom, trackLinkedInConversion } from "@/lib/analytics";
+import { SiteHeader } from "@/components/site-header";
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -57,37 +58,42 @@ export default function SignupPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-4">
-        <div className="w-full max-w-md text-center space-y-4">
-          <div className="rounded-full bg-green-100 dark:bg-green-900/30 w-16 h-16 mx-auto flex items-center justify-center">
-            <svg
-              className="w-8 h-8 text-green-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
+      <>
+        <SiteHeader variant="app" />
+        <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4">
+          <div className="w-full max-w-md text-center space-y-4">
+            <div className="rounded-full bg-green-100 dark:bg-green-900/30 w-16 h-16 mx-auto flex items-center justify-center">
+              <svg
+                className="w-8 h-8 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+              Account created!
+            </h1>
+            <p className="text-slate-600 dark:text-slate-400">
+              Redirecting to sign in...
+            </p>
           </div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            Account created!
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400">
-            Redirecting to sign in...
-          </p>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4">
-      <div className="w-full max-w-md space-y-8">
+    <>
+      <SiteHeader variant="app" />
+      <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4">
+        <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <Link href="/" className="text-2xl font-bold text-primary-600">
             Zesty
@@ -187,7 +193,8 @@ export default function SignupPage() {
             ← Back to home
           </Link>
         </p>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

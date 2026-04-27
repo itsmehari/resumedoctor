@@ -4,6 +4,7 @@ import { useState, Suspense } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
+import { SiteHeader } from "@/components/site-header";
 
 function TwoFactorForm() {
   const searchParams = useSearchParams();
@@ -42,7 +43,7 @@ function TwoFactorForm() {
 
   if (!token) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4">
+      <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-4">
         <p className="text-red-600 dark:text-red-400 mb-4">Invalid or expired session. Please sign in again.</p>
         <Link href="/login" className="text-primary-600 hover:underline">Back to login</Link>
       </div>
@@ -50,7 +51,7 @@ function TwoFactorForm() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4">
+    <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <Link href="/" className="text-2xl font-bold text-primary-600">ResumeDoctor</Link>
@@ -96,8 +97,11 @@ function TwoFactorForm() {
 
 export default function TwoFactorPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><p className="text-slate-500">Loading...</p></div>}>
-      <TwoFactorForm />
-    </Suspense>
+    <>
+      <SiteHeader variant="app" />
+      <Suspense fallback={<div className="min-h-[calc(100vh-4rem)] flex items-center justify-center"><p className="text-slate-500">Loading...</p></div>}>
+        <TwoFactorForm />
+      </Suspense>
+    </>
   );
 }

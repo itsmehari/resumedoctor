@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { SiteHeader } from "@/components/site-header";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -34,8 +35,10 @@ export default function ForgotPasswordPage() {
 
   if (sent) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-4">
-        <div className="w-full max-w-md text-center space-y-6">
+      <>
+        <SiteHeader variant="app" />
+        <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4">
+          <div className="w-full max-w-md text-center space-y-6">
           <div className="rounded-full bg-primary-100 dark:bg-primary-900/30 w-16 h-16 mx-auto flex items-center justify-center">
             <svg
               className="w-8 h-8 text-primary-600"
@@ -64,14 +67,17 @@ export default function ForgotPasswordPage() {
           >
             ← Back to sign in
           </Link>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4">
-      <div className="w-full max-w-md space-y-8">
+    <>
+      <SiteHeader variant="app" />
+      <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4">
+        <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <Link href="/" className="text-2xl font-bold text-primary-600">
             ResumeDoctor
@@ -126,7 +132,8 @@ export default function ForgotPasswordPage() {
             ← Back to sign in
           </Link>
         </p>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

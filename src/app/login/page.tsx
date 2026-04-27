@@ -4,6 +4,7 @@ import { useState, Suspense } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
+import { SiteHeader } from "@/components/site-header";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -42,7 +43,7 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4">
+    <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <Link href="/" className="text-2xl font-bold text-primary-600">
@@ -188,14 +189,17 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center">
-          <p className="text-slate-500">Loading...</p>
-        </div>
-      }
-    >
-      <LoginForm />
-    </Suspense>
+    <>
+      <SiteHeader variant="app" />
+      <Suspense
+        fallback={
+          <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
+            <p className="text-slate-500">Loading...</p>
+          </div>
+        }
+      >
+        <LoginForm />
+      </Suspense>
+    </>
   );
 }

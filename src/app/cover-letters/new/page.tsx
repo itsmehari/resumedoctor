@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { trackEvent } from "@/lib/analytics";
+import { SiteHeader } from "@/components/site-header";
 
 function NewCoverLetterContent() {
   const router = useRouter();
@@ -36,7 +37,7 @@ function NewCoverLetterContent() {
   }, [router, resumeId]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center">
+    <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center">
       <p className="text-slate-500">{loading ? "Creating..." : "Failed to create"}</p>
       {!loading && (
         <Link href="/cover-letters" className="mt-4 text-primary-600 hover:underline">
@@ -49,12 +50,15 @@ function NewCoverLetterContent() {
 
 export default function NewCoverLetterPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-slate-500">Loading...</p>
-      </div>
-    }>
-      <NewCoverLetterContent />
-    </Suspense>
+    <>
+      <SiteHeader variant="app" navVariant="dashboard" />
+      <Suspense fallback={
+        <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
+          <p className="text-slate-500">Loading...</p>
+        </div>
+      }>
+        <NewCoverLetterContent />
+      </Suspense>
+    </>
   );
 }

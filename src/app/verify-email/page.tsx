@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { SiteHeader } from "@/components/site-header";
 
 function VerifyContent() {
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
@@ -88,15 +89,18 @@ function VerifyContent() {
 
 export default function VerifyEmailPage() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4">
-      <div className="w-full max-w-md space-y-8">
-        <Link href="/" className="text-2xl font-bold text-primary-600 block text-center">
-          ResumeDoctor
-        </Link>
-        <Suspense fallback={<p className="text-center text-slate-500">Loading...</p>}>
-          <VerifyContent />
-        </Suspense>
+    <>
+      <SiteHeader variant="app" />
+      <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4">
+        <div className="w-full max-w-md space-y-8">
+          <Link href="/" className="text-2xl font-bold text-primary-600 block text-center">
+            ResumeDoctor
+          </Link>
+          <Suspense fallback={<p className="text-center text-slate-500">Loading...</p>}>
+            <VerifyContent />
+          </Suspense>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

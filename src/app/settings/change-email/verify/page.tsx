@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { SiteHeader } from "@/components/site-header";
 
 function ChangeEmailVerifyContent() {
   const searchParams = useSearchParams();
@@ -41,7 +42,7 @@ function ChangeEmailVerifyContent() {
   }, [token]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4">
+    <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-4">
       {status === "loading" && <p className="text-slate-600">Verifying...</p>}
       {status === "success" && (
         <div className="text-center max-w-md">
@@ -63,8 +64,11 @@ function ChangeEmailVerifyContent() {
 
 export default function ChangeEmailVerifyPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><p className="text-slate-500">Loading...</p></div>}>
-      <ChangeEmailVerifyContent />
-    </Suspense>
+    <>
+      <SiteHeader variant="app" navVariant="dashboard" />
+      <Suspense fallback={<div className="min-h-[calc(100vh-4rem)] flex items-center justify-center"><p className="text-slate-500">Loading...</p></div>}>
+        <ChangeEmailVerifyContent />
+      </Suspense>
+    </>
   );
 }
