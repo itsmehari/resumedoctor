@@ -8,6 +8,7 @@ import { Check, Sparkles } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import {
   FALLBACK_TRIAL_14_URL,
+  resolveSuperprofileCheckoutHref,
   SuperprofileProAnnualCta,
   SuperprofileProMonthlyCta,
   SuperprofileResumePackCta,
@@ -142,9 +143,10 @@ export default function PricingPage() {
               <span className="font-semibold text-orange-600 dark:text-orange-400">14-day Pro trial: ₹49</span>{" "}
               one-time on SuperProfile (
               <a
-                href={
-                  process.env.NEXT_PUBLIC_SUPERPROFILE_URL_TRIAL_14 || FALLBACK_TRIAL_14_URL
-                }
+                href={resolveSuperprofileCheckoutHref(
+                  process.env.NEXT_PUBLIC_SUPERPROFILE_URL_TRIAL_14,
+                  FALLBACK_TRIAL_14_URL
+                )}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary-600 underline decoration-primary-400/60 underline-offset-2 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"

@@ -3,7 +3,33 @@
 import { ExternalLink } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 
-/** SuperProfile “create payment page” URLs are for sellers; buyers need the published / share link. */
+/**
+ * SuperProfile checkout audit (customer-facing “View / Share” links, host superprofile.bio, path /vp/<24-hex-id>).
+ * Do not use /create-payment-page/… in production env — that is the seller editor. `resolveSuperprofileCheckoutHref`
+ * rewrites editor URLs to /vp/<id> when the id is present; otherwise falls back to the published URL below.
+ *
+ * | productKey    | env |
+ * |---------------|-----|
+ * | pro_trial_14  | NEXT_PUBLIC_SUPERPROFILE_URL_TRIAL_14 |
+ * | pro_monthly   | NEXT_PUBLIC_SUPERPROFILE_URL_PRO_MONTHLY |
+ * | pro_annual    | NEXT_PUBLIC_SUPERPROFILE_URL_PRO_ANNUAL |
+ * | resume_pack   | NEXT_PUBLIC_SUPERPROFILE_URL_RESUME_PACK |
+ */
+const VP_HOST = "superprofile.bio";
+
+export const SUPERPROFILE_PUBLISHED_CHECKOUT = {
+  pro_trial_14: `https://${VP_HOST}/vp/69e5cabddd64680013de4395`,
+  pro_monthly: `https://${VP_HOST}/vp/69db33e8da78960013e814b3`,
+  pro_annual: `https://${VP_HOST}/vp/69dca13af2e2e30013365462`,
+  resume_pack: `https://${VP_HOST}/vp/69e5caf05275a70013fc8928`,
+} as const;
+
+export const FALLBACK_TRIAL_14_URL = SUPERPROFILE_PUBLISHED_CHECKOUT.pro_trial_14;
+export const FALLBACK_PRO_MONTHLY_URL = SUPERPROFILE_PUBLISHED_CHECKOUT.pro_monthly;
+export const FALLBACK_PRO_ANNUAL_URL = SUPERPROFILE_PUBLISHED_CHECKOUT.pro_annual;
+export const FALLBACK_RESUME_PACK_URL = SUPERPROFILE_PUBLISHED_CHECKOUT.resume_pack;
+
+/** SuperProfile “create payment page” URLs are for sellers; buyers need the published /vp/ link. */
 export function isSuperprofileSellerSetupUrl(url: string): boolean {
   try {
     const u = new URL(url);
@@ -13,11 +39,50 @@ export function isSuperprofileSellerSetupUrl(url: string): boolean {
   }
 }
 
-/** Published SuperProfile checkout for 14-day Pro trial (₹49); env override: NEXT_PUBLIC_SUPERPROFILE_URL_TRIAL_14 */
-export const FALLBACK_TRIAL_14_URL = "https://superprofile.bio/vp/69e5cabddd64680013de4395";
-const FALLBACK_PRO_MONTHLY_URL = "https://superprofile.bio/vp/69db33e8da78960013e814b3";
-const FALLBACK_PRO_ANNUAL_URL = "https://superprofile.bio/vp/69dca13af2e2e30013365462";
-const FALLBACK_RESUME_PACK_URL = "https://superprofile.bio/vp/69e5caf05275a70013fc8928";
+function canonicalVpUrl(pageId: string): string {
+  const id = pageId.replace(/[^a-f0-9]/gi, "").toLowerCase();
+  if (!/^[a-f0-9]{24}$/.test(id)) return "";
+  return `https://${VP_HOST}/vp/${id}`;
+}
+
+function pageIdFromVpPath(pathname: string): string | null {
+  if (!pathname.startsWith("/vp/")) return null;
+  const raw = pathname.slice("/vp/".length).split("/")[0]?.split("?")[0] ?? "";
+  return /^[a-f0-9]{24}$/i.test(raw) ? raw.toLowerCase() : null;
+}
+
+/**
+ * Returns a safe customer checkout href: trims env, rewrites `…/create-payment-page/<24hex>…` to `/vp/<id>`,
+ * accepts published `/vp/` URLs, and falls back if the value is missing or not a valid SuperProfile checkout shape.
+ */
+export function resolveSuperprofileCheckoutHref(raw: string | undefined, fallback: string): string {
+  const t = raw?.trim();
+  if (!t) return fallback;
+  try {
+    const u = new URL(t);
+    const normalizedHost = u.hostname.replace(/^www\./i, "").toLowerCase();
+
+    if (u.pathname.includes("create-payment-page")) {
+      const m = u.pathname.match(/\/create-payment-page\/([a-f0-9]{24})/i);
+      if (m?.[1]) {
+        const href = canonicalVpUrl(m[1]);
+        return href || fallback;
+      }
+      return fallback;
+    }
+
+    const vpId = pageIdFromVpPath(u.pathname);
+    if (vpId) {
+      if (normalizedHost === VP_HOST) return canonicalVpUrl(vpId) || fallback;
+      return u.toString();
+    }
+
+    if (normalizedHost === VP_HOST) return fallback;
+    return fallback;
+  } catch {
+    return fallback;
+  }
+}
 
 function OutLink(props: {
   href: string;
@@ -65,7 +130,10 @@ const defaultHint = (
 
 /** 14-day paid trial — SuperProfile checkout (India); price set on SuperProfile (e.g. ₹49). */
 export function SuperprofileTrialCta({ showEmailHint = true }: { showEmailHint?: boolean }) {
-  const url = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_TRIAL_14 || FALLBACK_TRIAL_14_URL;
+  const url = resolveSuperprofileCheckoutHref(
+    process.env.NEXT_PUBLIC_SUPERPROFILE_URL_TRIAL_14,
+    FALLBACK_TRIAL_14_URL
+  );
   if (!url) return null;
   return (
     <div className="mt-0 space-y-2">
@@ -102,7 +170,10 @@ function ProCtaBlock({
 
 /** Pro monthly only — for dedicated plan cards. */
 export function SuperprofileProMonthlyCta({ showEmailHint = true }: { showEmailHint?: boolean }) {
-  const url = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_MONTHLY || FALLBACK_PRO_MONTHLY_URL;
+  const url = resolveSuperprofileCheckoutHref(
+    process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_MONTHLY,
+    FALLBACK_PRO_MONTHLY_URL
+  );
   if (!url) return null;
   return (
     <ProCtaBlock
@@ -116,7 +187,10 @@ export function SuperprofileProMonthlyCta({ showEmailHint = true }: { showEmailH
 
 /** Pro annual only — for dedicated plan cards. */
 export function SuperprofileProAnnualCta({ showEmailHint = true }: { showEmailHint?: boolean }) {
-  const url = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_ANNUAL || FALLBACK_PRO_ANNUAL_URL;
+  const url = resolveSuperprofileCheckoutHref(
+    process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_ANNUAL,
+    FALLBACK_PRO_ANNUAL_URL
+  );
   if (!url) return null;
   return (
     <ProCtaBlock
@@ -130,8 +204,14 @@ export function SuperprofileProAnnualCta({ showEmailHint = true }: { showEmailHi
 
 /** Pro monthly + annual (stacked) — settings / compact layouts. */
 export function SuperprofileProCtas({ showEmailHint = true }: { showEmailHint?: boolean }) {
-  const monthly = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_MONTHLY || FALLBACK_PRO_MONTHLY_URL;
-  const annual = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_ANNUAL || FALLBACK_PRO_ANNUAL_URL;
+  const monthly = resolveSuperprofileCheckoutHref(
+    process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_MONTHLY,
+    FALLBACK_PRO_MONTHLY_URL
+  );
+  const annual = resolveSuperprofileCheckoutHref(
+    process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_ANNUAL,
+    FALLBACK_PRO_ANNUAL_URL
+  );
   if (!monthly && !annual) return null;
   return (
     <div className="mt-4 space-y-3">
@@ -154,7 +234,10 @@ export function SuperprofileProCtas({ showEmailHint = true }: { showEmailHint?: 
 
 /** One-time Resume Pack — SuperProfile + optional email fallback. */
 export function SuperprofileResumePackCta({ showEmailHint = true }: { showEmailHint?: boolean }) {
-  const url = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_RESUME_PACK || FALLBACK_RESUME_PACK_URL;
+  const url = resolveSuperprofileCheckoutHref(
+    process.env.NEXT_PUBLIC_SUPERPROFILE_URL_RESUME_PACK,
+    FALLBACK_RESUME_PACK_URL
+  );
   if (!url) return null;
   return (
     <div className="flex w-full flex-col gap-2 sm:w-auto">
