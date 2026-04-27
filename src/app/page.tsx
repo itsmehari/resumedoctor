@@ -382,7 +382,16 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+          <div className="mx-auto mb-6 flex justify-center">
+            <Link
+              href="/pricing#trial"
+              className="inline-flex items-center gap-2 rounded-full border border-amber-300 bg-amber-50 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-amber-800 transition-colors hover:bg-amber-100 dark:border-amber-700/60 dark:bg-amber-900/30 dark:text-amber-200 dark:hover:bg-amber-900/40"
+            >
+              14-day Pro trial available at ₹49 one-time
+            </Link>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3 max-w-4xl mx-auto">
             <PricingCard
               plan="Free"
               price="₹0"
@@ -393,14 +402,23 @@ export default function HomePage() {
               variant="outline"
             />
             <PricingCard
-              plan="Pro"
+              plan="Pro monthly"
               price="₹199"
-              period=" / mo tier"
+              period="/ month"
               badge="Most popular"
               features={["Unlimited resumes", "30+ templates", "PDF + DOCX export", "No watermarks", "50 AI runs / day", "Unlimited ATS checks"]}
               cta="View Pro plans"
               ctaHref="/pricing"
               variant="filled"
+            />
+            <PricingCard
+              plan="Pro annual"
+              price="₹1,499"
+              period="/ year"
+              features={["All Pro features", "Best total value", "PDF + DOCX export", "No watermarks", "50 AI runs / day", "Unlimited ATS checks"]}
+              cta="Compare all plans"
+              ctaHref="/pricing"
+              variant="outline"
             />
           </div>
 
