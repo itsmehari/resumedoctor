@@ -21,8 +21,10 @@ export default function VerifyTrialPage() {
                 14-day trial activation
               </h1>
               <p className="mt-3 text-slate-600 dark:text-slate-400">
-                We no longer activate trials from this page. Get the <span className="font-medium text-slate-800 dark:text-slate-200">₹49</span>{" "}
-                14-day trial on our pricing page through{" "}
+                We no longer activate trials from this page. For the India{" "}
+                <span className="font-medium text-slate-800 dark:text-slate-200">₹49</span> 14-day{" "}
+                <span className="font-medium text-slate-800 dark:text-slate-200">full Pro</span> pass, use our pricing page
+                and checkout on{" "}
                 <span className="font-medium text-slate-800 dark:text-slate-200">SuperProfile</span>. Use the same email
                 as your ResumeDoctor account so Pro unlocks automatically after payment.
               </p>

@@ -139,7 +139,7 @@ export function SuperprofileTrialCta({ showEmailHint = true }: { showEmailHint?:
     <div className="mt-0 space-y-2">
       <OutLink
         href={url}
-        label="Pay ₹49 — 14-day Pro trial"
+        label="Pay ₹49 — 14-day full Pro"
         variant="trialPrimary"
         eventLabel="trial_14"
       />

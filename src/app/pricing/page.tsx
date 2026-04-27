@@ -1,7 +1,7 @@
 // WBS 10.5, 10.9 – Pricing page with geotargeted INR/USD
 "use client";
 
-import { useState, useEffect, type ReactNode } from "react";
+import { useState, useEffect, useMemo, type ReactNode } from "react";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { Check, Sparkles } from "lucide-react";
@@ -22,6 +22,7 @@ import {
   ProFullFeatureList,
   TrialSectionBackdrop,
 } from "@/components/pricing/payment-value-sections";
+import { PricingFaqAccordion, type PricingFaqItem } from "@/components/pricing/pricing-faq-accordion";
 
 interface Plan {
   id: string;
@@ -122,6 +123,79 @@ export default function PricingPage() {
         ? "Billed once per year"
         : undefined;
 
+  const faqItems = useMemo((): PricingFaqItem[] => {
+    const base: PricingFaqItem[] = [
+      {
+        id: "try-vs-pro",
+        question: "What is the difference between the free Try page and paying for Pro?",
+        answer: (
+          <>
+            <strong className="text-slate-800 dark:text-slate-100">Try (free)</strong> — Use{" "}
+            <Link href="/try" className="text-primary-600 underline hover:text-primary-700 dark:text-primary-400">
+              /try
+            </Link>{" "}
+            with a quick OTP: you get a short, time-limited session to explore templates and editing. No card, no
+            checkout.
+            <br />
+            <br />
+            <strong className="text-slate-800 dark:text-slate-100">Pro (paid)</strong> — When you need PDF &amp; Word
+            export, every template, and higher limits, pay once on{" "}
+            <span className="font-medium text-slate-800 dark:text-slate-200">SuperProfile</span> using the{" "}
+            <strong className="text-slate-800 dark:text-slate-100">same email</strong> as your ResumeDoctor account.
+            Fulfillment runs automatically after payment.
+          </>
+        ),
+      },
+      {
+        id: "how-pay",
+        question: "How do I pay for Pro or add-ons?",
+        answer:
+          region?.currency === "INR" ? (
+            <>
+              Use the SuperProfile buttons on this page (monthly, annual, optional 14-day pass, or resume pack). Sign
+              in here with the <strong className="text-slate-800 dark:text-slate-100">same email</strong> you enter at
+              checkout so your access activates without support tickets.
+            </>
+          ) : (
+            <>
+              Use the SuperProfile checkout buttons for your region. Always use the same email on SuperProfile and
+              ResumeDoctor.
+            </>
+          ),
+      },
+      {
+        id: "free-includes",
+        question: "What is included on the Free plan?",
+        answer:
+          "Unlimited resumes, TXT export, print and HTML preview, ten base templates, all section types, limited ATS checks, and a small daily AI allowance — enough to build a solid resume before you upgrade.",
+      },
+      {
+        id: "subscription",
+        question: "Will my plan auto-renew? How do refunds work?",
+        answer:
+          "Checkout happens on SuperProfile; ResumeDoctor does not keep your card on file for automatic renewals. Pick monthly or annual access at checkout depending on what you buy. For refunds or billing help, use Settings → Billing or email us — we typically reply within one to two business days.",
+      },
+    ];
+
+    if (region?.currency === "INR") {
+      base.splice(2, 0, {
+        id: "inr-49",
+        question: "What is the ₹49 India option?",
+        answer: (
+          <>
+            It is an optional <strong className="text-slate-800 dark:text-slate-100">paid</strong> add-on: after
+            checkout on SuperProfile, your account gets <strong className="text-slate-800 dark:text-slate-100">full Pro</strong>{" "}
+            features for <strong className="text-slate-800 dark:text-slate-100">14 calendar days</strong>. It is separate
+            from the free Try page — useful when you already know you want every export and template for a short burst
+            of applications. No automatic renewal.
+          </>
+        ),
+      });
+    }
+
+    return base;
+  }, [region?.currency]);
+
   return (
     <div className="min-h-screen flex flex-col">
       <SiteHeader variant="home" />
@@ -133,15 +207,17 @@ export default function PricingPage() {
           </h1>
           <p className="mx-auto mt-3 max-w-2xl text-slate-600 dark:text-slate-400">
             {region?.currency === "USD"
-              ? "Choose Free, Trial (where available), or Pro. Pay securely through SuperProfile with the same email as your ResumeDoctor account."
+              ? "ResumeDoctor is free to start. Explore with our Try flow, then unlock Pro on SuperProfile when you need exports and full templates — use the same email at checkout as on your account."
               : region?.currency === "INR"
-                ? "Choose Free, ₹49 one-time 14-day Pro trial, or Pro (monthly / annual). All paid options checkout on SuperProfile — use the same email as your ResumeDoctor account."
-                : "Choose Free, Trial (where available), or Pro. Pay securely through SuperProfile with the same email as your ResumeDoctor account."}
+                ? "ResumeDoctor stays free for core building. Explore risk-free with the OTP Try page (no card). When you want PDF & Word, every template, and higher limits, upgrade on SuperProfile — same email as this account."
+                : "ResumeDoctor is free to start. Explore with our Try flow, then unlock Pro on SuperProfile when you need exports and full templates — use the same email at checkout as on your account."}
           </p>
           {isIndia && (
-            <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-700 dark:text-slate-300">
-              <span className="font-semibold text-orange-600 dark:text-orange-400">14-day Pro trial: ₹49</span>{" "}
-              one-time on SuperProfile (
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+              <span className="font-semibold text-slate-900 dark:text-slate-100">India checkout:</span> Pro monthly{" "}
+              <span className="font-medium">₹199</span>, annual <span className="font-medium">₹1,499</span>, optional{" "}
+              <span className="font-semibold text-orange-600 dark:text-orange-400">14-day full Pro pass ₹49</span>{" "}
+              (one-time on{" "}
               <a
                 href={resolveSuperprofileCheckoutHref(
                   process.env.NEXT_PUBLIC_SUPERPROFILE_URL_TRIAL_14,
@@ -151,9 +227,9 @@ export default function PricingPage() {
                 rel="noopener noreferrer"
                 className="text-primary-600 underline decoration-primary-400/60 underline-offset-2 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
               >
-                open checkout
+                SuperProfile
               </a>
-              ). Pro monthly <span className="font-medium">₹199</span> and annual <span className="font-medium">₹1,499</span> — no auto-renew.
+              ), plus a resume export pack. All are one-time purchases — no auto-renew from us.
             </p>
           )}
           {region && (
@@ -233,7 +309,12 @@ export default function PricingPage() {
                         <span className="text-orange-600 dark:text-orange-400">14 days</span>
                       </h2>
                       <p className="mt-2 text-slate-600 dark:text-slate-400">
-                        Experience all Pro features for 14 days. One-time payment on SuperProfile with no surprise renewals.
+                        This checkout is different from the free{" "}
+                        <Link href="/try" className="font-medium text-primary-600 underline-offset-2 hover:underline dark:text-primary-400">
+                          Try
+                        </Link>{" "}
+                        page: you pay once on SuperProfile and get every Pro feature—including exports—for 14 calendar
+                        days on the email you pay with. No automatic renewal.
                       </p>
                       <div className="mt-6">
                         <ProExportFeatureList accent="orange" />
@@ -242,7 +323,7 @@ export default function PricingPage() {
                     <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xl dark:border-slate-600 dark:bg-slate-900">
                       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                         <span className="rounded-full bg-orange-500 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
-                          14-day Pro trial
+                          14-day full Pro
                         </span>
                         <span className="rounded-full border border-emerald-500/50 bg-emerald-50 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300">
                           ₹49 one-time
@@ -403,7 +484,7 @@ export default function PricingPage() {
                     <th className="p-3 text-left font-medium text-slate-700 dark:text-slate-300">Feature</th>
                     <th className="p-3 font-medium text-slate-700 dark:text-slate-300">Free</th>
                     {isIndia && (
-                      <th className="p-3 font-medium text-amber-700 dark:text-amber-300">14-day trial (₹49)</th>
+                      <th className="p-3 font-medium text-amber-700 dark:text-amber-300">14-day Pro pass (₹49)</th>
                     )}
                     <th className="p-3 font-medium text-primary-600 dark:text-primary-400">Pro</th>
                   </tr>
@@ -442,47 +523,27 @@ export default function PricingPage() {
         )}
 
         <section
-          className="mt-16 border-t border-slate-200 pt-12 dark:border-slate-700"
+          className="relative mt-20 border-t border-slate-200/80 pt-16 dark:border-slate-800"
           aria-labelledby="pricing-faq-heading"
         >
-          <h2
-            id="pricing-faq-heading"
-            className="mb-8 text-center text-xl font-bold text-slate-900 dark:text-slate-100"
-          >
-            Pricing FAQ
-          </h2>
-          <dl className="mx-auto max-w-2xl space-y-6">
-            <div>
-              <dt className="font-semibold text-slate-900 dark:text-slate-100">How do I pay for Pro?</dt>
-              <dd className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-                {region?.currency === "INR"
-                  ? "Use the SuperProfile buttons on this page. Sign in to ResumeDoctor with the same email you use on SuperProfile so your account can activate when payment completes."
-                  : "Use the SuperProfile checkout for your region. Use the same email on SuperProfile and ResumeDoctor."}
-              </dd>
-            </div>
-            {region?.currency === "INR" && (
-              <div>
-                <dt className="font-semibold text-slate-900 dark:text-slate-100">How does the 14-day trial work?</dt>
-                <dd className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-                  Use the SuperProfile trial link (₹49 one-time), then Pro unlocks for 14 days on the email you used. No
-                  automatic renewal.
-                </dd>
-              </div>
-            )}
-            <div>
-              <dt className="font-semibold text-slate-900 dark:text-slate-100">What&apos;s included in the free plan?</dt>
-              <dd className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-                Unlimited resumes, TXT export, print/HTML preview, 10 base templates, and all section types.
-              </dd>
-            </div>
-            <div>
-              <dt className="font-semibold text-slate-900 dark:text-slate-100">Is Pro a subscription? Can I get a refund?</dt>
-              <dd className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-                Pro is a one-time payment for ongoing access to Pro features (no auto-renewal). For refunds or billing
-                help, use Settings → Billing or email us. We respond within 1–2 business days.
-              </dd>
-            </div>
-          </dl>
+          <div className="pointer-events-none absolute left-1/2 top-0 h-px w-32 -translate-x-1/2 bg-gradient-to-r from-transparent via-primary-500/50 to-transparent" />
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary-600 dark:text-primary-400">
+              Answers
+            </p>
+            <h2
+              id="pricing-faq-heading"
+              className="mt-2 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50 sm:text-3xl"
+            >
+              Pricing questions, cleared up
+            </h2>
+            <p className="mx-auto mt-3 max-w-lg text-sm text-slate-600 dark:text-slate-400">
+              How Try differs from checkout, what happens after you pay, and what stays free.
+            </p>
+          </div>
+          <div className="mx-auto mt-10 max-w-3xl">
+            <PricingFaqAccordion items={faqItems} />
+          </div>
         </section>
       </main>
     </div>

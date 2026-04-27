@@ -113,7 +113,7 @@ export default function HomePage() {
               </div>
 
               <p className="mt-8 text-sm text-white/70">
-                Pro: one-time purchase on SuperProfile · Same email as your account for instant unlock
+                Upgrade on SuperProfile when you need exports &amp; every template — use the same email as your ResumeDoctor account
               </p>
             </div>
 
@@ -378,16 +378,22 @@ export default function HomePage() {
               Simple, transparent pricing
             </h2>
             <p className="mt-4 text-slate-500 dark:text-slate-400">
-              Start free. Unlock Pro via one-time SuperProfile payments (monthly, annual, or 14-day trial). No auto-renew surprises.
+              Start free, taste the builder on <span className="font-medium text-slate-700 dark:text-slate-300">Try</span> (OTP, no card), then unlock Pro on SuperProfile when you need PDFs and every template. India: optional ₹49 two-week full-Pro pass plus monthly and annual plans — checkouts do not auto-renew on us.
             </p>
           </div>
 
-          <div className="mx-auto mb-6 flex justify-center">
+          <div className="mx-auto mb-6 flex flex-wrap justify-center gap-3">
+            <Link
+              href="/try"
+              className="inline-flex items-center gap-2 rounded-full border border-slate-300/80 bg-white/90 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-800 shadow-sm transition-colors hover:bg-white dark:border-slate-600 dark:bg-slate-800/80 dark:text-slate-100 dark:hover:bg-slate-800"
+            >
+              Try free with OTP
+            </Link>
             <Link
               href="/pricing#trial"
-              className="inline-flex items-center gap-2 rounded-full border border-amber-300 bg-amber-50 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-amber-800 transition-colors hover:bg-amber-100 dark:border-amber-700/60 dark:bg-amber-900/30 dark:text-amber-200 dark:hover:bg-amber-900/40"
+              className="inline-flex items-center gap-2 rounded-full border border-amber-300 bg-amber-50 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-amber-900 transition-colors hover:bg-amber-100 dark:border-amber-700/60 dark:bg-amber-900/30 dark:text-amber-100 dark:hover:bg-amber-900/40"
             >
-              14-day Pro trial available at ₹49 one-time
+              India: ₹49 · 14-day full Pro pass
             </Link>
           </div>
 

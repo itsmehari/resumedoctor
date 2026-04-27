@@ -76,7 +76,7 @@ export default function ExampleDetailPage({ params }: Props) {
   const relatedPosts = getRelatedPostsForExample(params.slug);
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-slate-950">
+    <div className="min-h-screen flex flex-col bg-[#faf9f7] dark:bg-slate-950">
       <BreadcrumbJsonLd
         items={[
           { name: "Home", url: siteUrl },
@@ -90,9 +90,9 @@ export default function ExampleDetailPage({ params }: Props) {
         slug={ex.slug}
         steps={ex.tips}
       />
-      <SiteHeader variant="app" maxWidth="4xl" />
+      <SiteHeader variant="home" maxWidth="6xl" />
 
-      <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-12">
+      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-12 sm:px-6">
 
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-6">
