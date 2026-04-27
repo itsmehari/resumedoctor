@@ -647,7 +647,7 @@ const TESTIMONIALS = [
 
 function HeroVisual() {
   return (
-    <div className="relative rounded-3xl border border-white/20 bg-white/10 p-2 shadow-2xl backdrop-blur-sm transition-transform duration-300 hover:scale-[1.01]">
+    <div className="relative transition-transform duration-300 hover:scale-[1.01]">
       <Image
         src={heroArtwork}
         alt="ResumeDoctor before-and-after optimized resume visual"
@@ -655,7 +655,7 @@ function HeroVisual() {
         height={900}
         priority
         sizes="(max-width: 1024px) 100vw, 48vw"
-        className="h-auto w-full rounded-2xl object-cover"
+        className="h-auto w-full object-contain mix-blend-screen"
       />
     </div>
   );
