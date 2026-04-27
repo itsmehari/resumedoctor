@@ -46,7 +46,7 @@ const PATHS = {
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
       <HomeJsonLd />
       <FaqJsonLd />
       <HowToJsonLd />
@@ -54,7 +54,7 @@ export default function HomePage() {
       <SiteHeader variant="home" />
 
       {/* ── HERO ────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary-600 via-primary-700 to-[#1a2a6c]">
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary-700 via-primary-600 to-indigo-900">
         {/* Background decorations */}
         <div className="absolute top-0 right-0 w-[600px] h-[600px] opacity-10 blur-3xl rounded-full"
           style={{ background: "radial-gradient(circle, #fbbf24 0%, transparent 70%)" }} aria-hidden />
@@ -70,9 +70,11 @@ export default function HomePage() {
                 Built for the Indian job market
               </div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-[3.4rem] font-extrabold text-white leading-[1.08] tracking-tight">
+              <h1 className="text-4xl sm:text-5xl lg:text-[3.4rem] font-extrabold text-white leading-[1.05] tracking-tight">
                 Build a Resume<br />
-                <span className="text-accent">Recruiters Love</span>
+                <span className="bg-gradient-to-r from-amber-200 via-accent to-amber-300 bg-clip-text text-transparent">
+                  Recruiters Love
+                </span>
               </h1>
               <p className="mt-5 text-lg text-white/85 max-w-lg leading-relaxed">
                 ATS-optimised templates, AI-powered bullet suggestions, and a 5-minute build time.
@@ -99,7 +101,7 @@ export default function HomePage() {
               {/* CTAs */}
               <div className="mt-10 flex flex-col sm:flex-row gap-4">
                 <Link href="/try"
-                  className="rounded-xl bg-accent hover:bg-accent-hover px-8 py-4 text-base font-bold text-accent-dark text-center transition-all shadow-lg shadow-black/25 hover:scale-[1.02] active:scale-[0.98]">
+                  className="rounded-xl bg-accent hover:bg-accent-hover px-8 py-4 text-base font-bold text-accent-dark text-center transition-all shadow-xl shadow-black/30 hover:scale-[1.02] active:scale-[0.98]">
                   Build My Resume — Free
                 </Link>
                 <Link href="/templates"
@@ -122,7 +124,7 @@ export default function HomePage() {
       </section>
 
       {/* ── STATS BAR ────────────────────────────────────────────────────── */}
-      <section className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+      <section className="bg-white/90 backdrop-blur border-b border-slate-200 dark:bg-slate-900/80 dark:border-slate-800">
         <div className="max-w-5xl mx-auto px-4 py-8 grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
           {[
             { num: "30+", label: "Templates" },
@@ -139,7 +141,7 @@ export default function HomePage() {
       </section>
 
       {/* ── PORTAL BAR ───────────────────────────────────────────────────── */}
-      <section className="py-10 bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-800">
+      <section className="py-10 bg-gradient-to-r from-slate-100 via-white to-slate-100 dark:from-slate-900 dark:via-slate-900/80 dark:to-slate-900 border-b border-slate-200 dark:border-slate-800">
         <div className="max-w-5xl mx-auto px-4 text-center">
           <p className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-6">
             Our users apply to
@@ -191,7 +193,7 @@ export default function HomePage() {
                 description: "One-click PDF or DOCX export. ATS score checked. Ready to send instantly.",
               },
             ].map((item) => (
-              <div key={item.step} className="relative flex flex-col items-center text-center p-6">
+              <div key={item.step} className="relative flex flex-col items-center rounded-2xl border border-slate-200/70 bg-slate-50/80 p-6 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
                 <div className={`w-16 h-16 rounded-2xl ${item.color} flex items-center justify-center mb-5 shadow-lg`}>
                   <Icon path={item.icon} size={28} className="text-white" />
                 </div>
@@ -213,7 +215,7 @@ export default function HomePage() {
       </section>
 
       {/* ── FEATURES GRID ─────────────────────────────────────────────────── */}
-      <section className="py-24 bg-slate-50 dark:bg-slate-900/50">
+      <section className="py-24 bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900/60 dark:to-slate-900/30">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <p className="text-xs font-bold uppercase tracking-widest text-primary-500 mb-3">Features</p>
@@ -234,7 +236,7 @@ export default function HomePage() {
       </section>
 
       {/* ── AI SPOTLIGHT ─────────────────────────────────────────────────── */}
-      <section className="py-24 bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] overflow-hidden relative">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#0f0c29] via-[#2a255a] to-[#1a1d3a] py-24">
         <div className="absolute inset-0 opacity-20"
           style={{ backgroundImage: "radial-gradient(circle at 25% 50%, #7c3aed 0%, transparent 50%), radial-gradient(circle at 75% 50%, #3b82f6 0%, transparent 50%)" }}
           aria-hidden />
@@ -330,7 +332,7 @@ export default function HomePage() {
       </section>
 
       {/* ── CAREER STAGES ────────────────────────────────────────────────── */}
-      <section className="py-24 bg-slate-50 dark:bg-slate-900/50">
+      <section className="py-24 bg-gradient-to-b from-slate-100 to-slate-50 dark:from-slate-900/60 dark:to-slate-900/30">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <p className="text-xs font-bold uppercase tracking-widest text-primary-500 mb-3">For everyone</p>
@@ -366,7 +368,7 @@ export default function HomePage() {
       </section>
 
       {/* ── PRICING TEASER ───────────────────────────────────────────────── */}
-      <section className="py-24 bg-slate-50 dark:bg-slate-900/50">
+      <section className="py-24 bg-gradient-to-b from-slate-100 to-slate-50 dark:from-slate-900/60 dark:to-slate-900/30">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <p className="text-xs font-bold uppercase tracking-widest text-primary-500 mb-3">Pricing</p>
@@ -434,7 +436,7 @@ export default function HomePage() {
       </section>
 
       {/* ── FAQ ──────────────────────────────────────────────────────────── */}
-      <section className="py-24 bg-slate-50 dark:bg-slate-900/50" aria-labelledby="faq-heading">
+      <section className="py-24 bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900/50 dark:to-slate-900/30" aria-labelledby="faq-heading">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <p className="text-xs font-bold uppercase tracking-widest text-primary-500 mb-3">FAQ</p>
@@ -465,7 +467,7 @@ export default function HomePage() {
       </section>
 
       {/* ── FINAL CTA ────────────────────────────────────────────────────── */}
-      <section className="relative py-28 bg-gradient-to-br from-primary-600 via-primary-700 to-[#1a2a6c] overflow-hidden">
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary-700 via-primary-600 to-indigo-900 py-28">
         <div className="absolute inset-0 opacity-15"
           style={{ backgroundImage: "radial-gradient(circle at 70% 50%, #fbbf24 0%, transparent 60%)" }} aria-hidden />
         <div className="relative max-w-3xl mx-auto px-4 text-center">

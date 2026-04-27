@@ -235,16 +235,8 @@ export default function PricingPage() {
                         Full Pro access for 14 days. Use the same email as ResumeDoctor so access unlocks automatically.
                       </p>
                       <div className="mt-5">
-                        {process.env.NEXT_PUBLIC_SUPERPROFILE_URL_TRIAL_14 ? (
-                          <>
-                            <SuperprofileTrialCta showEmailHint={false} />
-                            <EmailMatchNote className="!mt-3 !justify-start !text-left" />
-                          </>
-                        ) : (
-                          <p className="text-center text-sm text-amber-800 dark:text-amber-200">
-                            Trial checkout link is not configured yet. Check back soon or contact support.
-                          </p>
-                        )}
+                        <SuperprofileTrialCta showEmailHint={false} />
+                        <EmailMatchNote className="!mt-3 !justify-start !text-left" />
                       </div>
                     </div>
                   </div>
@@ -295,11 +287,7 @@ export default function PricingPage() {
                           </div>
                         }
                       >
-                        {process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_MONTHLY ? (
-                          <SuperprofileProMonthlyCta showEmailHint={false} />
-                        ) : (
-                          <p className="text-center text-xs text-slate-500">Configure Pro monthly in SuperProfile env.</p>
-                        )}
+                        <SuperprofileProMonthlyCta showEmailHint={false} />
                       </PlanCardPro>
 
                       <PlanCardPro
@@ -320,11 +308,7 @@ export default function PricingPage() {
                           </div>
                         }
                       >
-                        {process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_ANNUAL ? (
-                          <SuperprofileProAnnualCta showEmailHint={false} />
-                        ) : (
-                          <p className="text-center text-xs text-slate-500">Configure Pro annual in SuperProfile env.</p>
-                        )}
+                        <SuperprofileProAnnualCta showEmailHint={false} />
                       </PlanCardPro>
                     </div>
                   </div>
@@ -341,22 +325,7 @@ export default function PricingPage() {
                   Use the buttons above for your region. If links are missing, contact support—we’ll share the correct
                   checkout.
                 </p>
-                {!(
-                  process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_MONTHLY ||
-                  process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_ANNUAL
-                ) && (
-                  <p className="mt-2 text-sm text-amber-800 dark:text-amber-200">SuperProfile Pro links are not configured yet.</p>
-                )}
               </section>
-            )}
-
-            {!(
-              process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_MONTHLY ||
-              process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_ANNUAL
-            ) && isIndia && (
-              <p className="mt-4 text-center text-sm text-amber-800 dark:text-amber-200">
-                SuperProfile Pro links are not configured yet. Contact support to purchase.
-              </p>
             )}
 
             {/* Free + account */}
@@ -393,13 +362,9 @@ export default function PricingPage() {
                   </Link>
                   <div className="flex-1 text-center sm:text-left">
                     <p className="text-xs text-slate-500">Resume pack · {isIndia ? "₹99" : "$2.99"} one-time</p>
-                    {process.env.NEXT_PUBLIC_SUPERPROFILE_URL_RESUME_PACK ? (
-                      <div className="mt-2">
-                        <SuperprofileResumePackCta />
-                      </div>
-                    ) : (
-                      <p className="mt-1 text-xs text-slate-500">Resume pack link not configured.</p>
-                    )}
+                    <div className="mt-2">
+                      <SuperprofileResumePackCta />
+                    </div>
                   </div>
                 </div>
               </div>

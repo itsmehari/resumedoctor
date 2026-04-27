@@ -13,18 +13,10 @@ export function isSuperprofileSellerSetupUrl(url: string): boolean {
   }
 }
 
-function SuperprofileUrlMisconfigWarning({ href }: { href: string }) {
-  if (!isSuperprofileSellerSetupUrl(href)) return null;
-  return (
-    <p className="mt-2 rounded-lg border border-amber-400/80 bg-amber-50 px-3 py-2 text-xs text-amber-950 dark:border-amber-600 dark:bg-amber-950/40 dark:text-amber-100">
-      This link points to SuperProfile&apos;s payment page <span className="font-medium">editor</span>, not the customer
-      checkout. In SuperProfile, open your product and copy the <span className="font-medium">published / share / view</span>{" "}
-      link (it should not contain <code className="rounded bg-amber-100/80 px-1 dark:bg-amber-900/50">create-payment-page</code>
-      ). Update <code className="rounded bg-amber-100/80 px-1 dark:bg-amber-900/50">NEXT_PUBLIC_SUPERPROFILE_URL_*</code> in
-      Vercel and redeploy. See <code className="rounded bg-amber-100/80 px-1 dark:bg-amber-900/50">docs/SUPERPROFILE.md</code>.
-    </p>
-  );
-}
+const FALLBACK_TRIAL_14_URL = "https://superprofile.bio/vp/69db33e8da78960013e814b3";
+const FALLBACK_PRO_MONTHLY_URL = "https://superprofile.bio/vp/69db33e8da78960013e814b3";
+const FALLBACK_PRO_ANNUAL_URL = "https://superprofile.bio/vp/69dca13af2e2e30013365462";
+const FALLBACK_RESUME_PACK_URL = "https://superprofile.bio/vp/69e5caf05275a70013fc8928";
 
 function OutLink(props: {
   href: string;
@@ -72,7 +64,7 @@ const defaultHint = (
 
 /** 14-day paid trial — SuperProfile checkout (India); price set on SuperProfile (e.g. ₹49). */
 export function SuperprofileTrialCta({ showEmailHint = true }: { showEmailHint?: boolean }) {
-  const url = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_TRIAL_14;
+  const url = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_TRIAL_14 || FALLBACK_TRIAL_14_URL;
   if (!url) return null;
   return (
     <div className="mt-0 space-y-2">
@@ -82,7 +74,6 @@ export function SuperprofileTrialCta({ showEmailHint = true }: { showEmailHint?:
         variant="trialPrimary"
         eventLabel="trial_14"
       />
-      <SuperprofileUrlMisconfigWarning href={url} />
       {showEmailHint ? defaultHint : null}
     </div>
   );
@@ -103,7 +94,6 @@ function ProCtaBlock({
     <div className="space-y-2">
       <p className="text-center text-xs font-medium text-primary-600 dark:text-primary-400">SuperProfile</p>
       <OutLink href={href} label={label} variant="primary" eventLabel={eventLabel} />
-      <SuperprofileUrlMisconfigWarning href={href} />
       {showEmailHint ? defaultHint : null}
     </div>
   );
@@ -111,7 +101,7 @@ function ProCtaBlock({
 
 /** Pro monthly only — for dedicated plan cards. */
 export function SuperprofileProMonthlyCta({ showEmailHint = true }: { showEmailHint?: boolean }) {
-  const url = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_MONTHLY;
+  const url = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_MONTHLY || FALLBACK_PRO_MONTHLY_URL;
   if (!url) return null;
   return (
     <ProCtaBlock
@@ -125,7 +115,7 @@ export function SuperprofileProMonthlyCta({ showEmailHint = true }: { showEmailH
 
 /** Pro annual only — for dedicated plan cards. */
 export function SuperprofileProAnnualCta({ showEmailHint = true }: { showEmailHint?: boolean }) {
-  const url = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_ANNUAL;
+  const url = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_ANNUAL || FALLBACK_PRO_ANNUAL_URL;
   if (!url) return null;
   return (
     <ProCtaBlock
@@ -139,8 +129,8 @@ export function SuperprofileProAnnualCta({ showEmailHint = true }: { showEmailHi
 
 /** Pro monthly + annual (stacked) — settings / compact layouts. */
 export function SuperprofileProCtas({ showEmailHint = true }: { showEmailHint?: boolean }) {
-  const monthly = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_MONTHLY;
-  const annual = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_ANNUAL;
+  const monthly = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_MONTHLY || FALLBACK_PRO_MONTHLY_URL;
+  const annual = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_ANNUAL || FALLBACK_PRO_ANNUAL_URL;
   if (!monthly && !annual) return null;
   return (
     <div className="mt-4 space-y-3">
@@ -148,14 +138,12 @@ export function SuperprofileProCtas({ showEmailHint = true }: { showEmailHint?: 
       {monthly && (
         <div className="space-y-2">
           <OutLink href={monthly} label="Pro monthly" variant="primary" eventLabel="pro_monthly" />
-          <SuperprofileUrlMisconfigWarning href={monthly} />
         </div>
       )}
       {monthly && annual && <p className="text-center text-xs text-slate-500 dark:text-slate-400">or</p>}
       {annual && (
         <div className="space-y-2">
           <OutLink href={annual} label="Pro annual" variant="primary" eventLabel="pro_annual" />
-          <SuperprofileUrlMisconfigWarning href={annual} />
         </div>
       )}
       {showEmailHint ? defaultHint : null}
@@ -165,12 +153,11 @@ export function SuperprofileProCtas({ showEmailHint = true }: { showEmailHint?: 
 
 /** One-time Resume Pack — SuperProfile + optional email fallback. */
 export function SuperprofileResumePackCta({ showEmailHint = true }: { showEmailHint?: boolean }) {
-  const url = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_RESUME_PACK;
+  const url = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_RESUME_PACK || FALLBACK_RESUME_PACK_URL;
   if (!url) return null;
   return (
     <div className="flex w-full flex-col gap-2 sm:w-auto">
       <OutLink href={url} label="Buy resume pack" variant="secondary" eventLabel="resume_pack" />
-      <SuperprofileUrlMisconfigWarning href={url} />
       {showEmailHint ? defaultHint : null}
     </div>
   );
