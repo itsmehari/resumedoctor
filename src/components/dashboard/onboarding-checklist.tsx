@@ -31,7 +31,7 @@ function buildSteps(firstResumeId?: string | null): { key: StepKey; label: strin
   {
     key: "export_done",
     label: "Export your resume",
-    hint: "Download TXT (Free) or PDF/DOCX on Pro.",
+    hint: "Download TXT in Try mode, or PDF/DOCX on Pro.",
     href: "/pricing",
   },
 ];

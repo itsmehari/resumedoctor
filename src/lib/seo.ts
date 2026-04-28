@@ -15,4 +15,4 @@ export const siteName = "ResumeDoctor";
 
 export const defaultTitle = "ResumeDoctor – Professional Resume & CV Builder | India";
 export const defaultDescription =
-  "Create ATS-friendly resumes and CVs in minutes. India-first resume builder with premium templates. Export to PDF & Word. Free to start – trusted by job seekers across Naukri, LinkedIn, Indeed.";
+  "Create ATS-friendly resumes and CVs in minutes. India-first resume builder with premium templates. Try quickly with OTP, then export to PDF & Word on Pro — trusted by job seekers across Naukri, LinkedIn, Indeed.";

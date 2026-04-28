@@ -36,8 +36,8 @@ export async function GET() {
       name: siteName,
       category: "Resume Builder",
       plans: [
-        { name: "Try", price: 0, features: ["OTP session", "Template preview"] },
-        { name: "Pro", price: 199, features: ["PDF export", "Word export"] },
+        { name: "Try", price: 0, features: ["OTP session", "Builder preview"] },
+        { name: "Pro", price: 199, features: ["PDF export", "Word export", "All templates"] },
       ],
     },
     content: {

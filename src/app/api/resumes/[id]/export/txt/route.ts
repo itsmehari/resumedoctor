@@ -1,4 +1,4 @@
-// WBS 5.1, 11.5 – TXT export (free tier, feature tracked)
+// WBS 5.1, 11.5 – TXT export (basic tier, feature tracked)
 import { NextResponse } from "next/server";
 import { getResumeForExport, logExport } from "@/lib/export-api-helpers";
 import { resumeToPlainText } from "@/lib/export-utils";

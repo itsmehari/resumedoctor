@@ -96,7 +96,7 @@ export default function AdminUsersPage() {
           className="px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100"
         >
           <option value="">All plans</option>
-          <option value="free">Free</option>
+          <option value="basic">Basic</option>
           <option value="trial">Trial</option>
           <option value="pro_monthly">Pro Monthly</option>
           <option value="pro_trial_14">Pro Trial (14-day)</option>
@@ -165,7 +165,7 @@ export default function AdminUsersPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="capitalize">{(u.subscription ?? "free").replace(/_/g, " ")}</span>
+                      <span className="capitalize">{((u.subscription === "free" ? "basic" : u.subscription) ?? "basic").replace(/_/g, " ")}</span>
                     </td>
                     <td className="px-4 py-3">
                       <span

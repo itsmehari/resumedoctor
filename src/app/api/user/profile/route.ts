@@ -60,9 +60,11 @@ export async function GET() {
     user.subscription === "pro_trial_14" &&
     user.subscriptionExpiresAt &&
     new Date(user.subscriptionExpiresAt) > new Date();
+  const normalizedSubscription = user.subscription === "free" ? "basic" : user.subscription;
 
   return NextResponse.json({
     ...user,
+    subscription: normalizedSubscription,
     isTrial: user.subscription === "trial",
     isPro: ["pro_monthly", "pro_annual"].includes(user.subscription) || isProTrial14Active,
     isImpersonating: auth.isImpersonating ?? false,

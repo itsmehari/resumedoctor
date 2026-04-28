@@ -36,13 +36,13 @@ export function HomeJsonLd() {
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
     description:
-      "Create ATS-friendly resumes and CVs in minutes. India-first resume builder with premium templates. Use Try for quick preview; unlock PDF and Word with Pro.",
+      "Create ATS-friendly resumes and CVs in minutes. India-first resume builder with premium templates. Use OTP Try to explore, then unlock PDF and Word with Pro.",
     offers: {
       "@type": "Offer",
       price: "0",
       priceCurrency: "INR",
     },
-    featureList: "ATS-friendly templates; OTP try flow; PDF and Word on Pro; India job portals",
+    featureList: "ATS-friendly templates; OTP Try preview; PDF and Word on Pro; India job portals",
     url: siteUrl,
   };
 
@@ -71,9 +71,9 @@ const FAQ_ITEMS = [
       "ResumeDoctor is an India-first online resume and CV builder that helps you create ATS-friendly resumes in minutes. You get professional templates, expert content suggestions, and export to PDF and Word.",
   },
   {
-    question: "How can I try ResumeDoctor?",
+    question: "How can I try ResumeDoctor before paying?",
     answer:
-      "Use the OTP Try flow for a short browser session with no credit card. When you need full exports and templates, choose a Pro plan on SuperProfile.",
+      "Use the OTP Try flow for a short, no-card preview of the builder. When you need full exports and all templates, upgrade to Pro on SuperProfile with the same account email.",
   },
   {
     question: "How do I export my resume to PDF?",

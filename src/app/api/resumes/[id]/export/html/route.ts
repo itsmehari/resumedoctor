@@ -1,4 +1,4 @@
-// WBS 5.2 – HTML export for print preview (free tier)
+// WBS 5.2 – HTML export for print preview (basic tier)
 import { NextRequest, NextResponse } from "next/server";
 import { getResumeForExport, logExport } from "@/lib/export-api-helpers";
 import { resumeToHtml } from "@/lib/export-utils";

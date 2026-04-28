@@ -3,13 +3,15 @@ export function getSubscriptionLabel(
   subscription: string,
   subscriptionExpiresAt?: string | null
 ): string {
-  if (subscription === "pro_trial_14" && subscriptionExpiresAt) {
+  const normalized = subscription === "free" ? "basic" : subscription;
+
+  if (normalized === "pro_trial_14" && subscriptionExpiresAt) {
     if (new Date(subscriptionExpiresAt) <= new Date()) {
-      return "Free";
+      return "Basic";
     }
     return "Pro (14-day trial)";
   }
-  switch (subscription) {
+  switch (normalized) {
     case "pro_monthly":
       return "Pro (one-time — monthly plan)";
     case "pro_annual":
@@ -18,9 +20,9 @@ export function getSubscriptionLabel(
       return "Pro (14-day trial)";
     case "trial":
       return "Trial";
-    case "free":
+    case "basic":
     default:
-      return "Free";
+      return "Basic";
   }
 }
 

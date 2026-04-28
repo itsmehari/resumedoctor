@@ -19,7 +19,7 @@ export async function GET() {
     templateUsage,
     exportByFormat,
     proCount,
-    freeCount,
+    basicCount,
     totalUsers,
     featureUsageByFeature,
     aiUsageByAction,
@@ -31,7 +31,7 @@ export async function GET() {
     prisma.resume.groupBy({ by: ["templateId"], _count: { id: true } }),
     prisma.exportLog.groupBy({ by: ["format"], _count: { id: true } }),
     prisma.user.count({ where: { subscription: { in: ["pro_monthly", "pro_annual"] } } }),
-    prisma.user.count({ where: { subscription: "free" } }),
+    prisma.user.count({ where: { subscription: { in: ["basic", "free"] } } }),
     prisma.user.count(),
     prisma.featureUsageLog.groupBy({
       by: ["feature"],
@@ -129,7 +129,7 @@ export async function GET() {
   return NextResponse.json({
     subscriptionMetrics: {
       proCount,
-      freeCount,
+      basicCount,
       totalUsers,
       conversionRate: Math.round(conversionRate * 10) / 10,
       planBreakdown,

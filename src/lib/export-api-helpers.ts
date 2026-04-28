@@ -93,7 +93,7 @@ export async function logExport(
   }
 }
 
-/** WBS 10.7 – Consume one Resume Pack credit for PDF/DOCX (free users only) */
+/** WBS 10.7 – Consume one Resume Pack credit for PDF/DOCX (basic users only) */
 export async function consumePackCreditIfNeeded(userId: string): Promise<boolean> {
   const user = await prisma.user.findUnique({
     where: { id: userId },

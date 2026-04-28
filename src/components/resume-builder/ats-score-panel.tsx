@@ -62,7 +62,7 @@ export function AtsScorePanel({ resumeId, sections, isPro }: Props) {
           ATS Checker
         </h3>
         <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 mb-3">
-          Get one free ATS score and top 3 suggestions per resume. Upgrade to Pro for full suggestions and re-checks.
+          Get one ATS score and top 3 suggestions per resume on Basic. Upgrade to Pro for full suggestions and re-checks.
         </p>
         <button
           type="button"
@@ -70,7 +70,7 @@ export function AtsScorePanel({ resumeId, sections, isPro }: Props) {
           disabled={loading}
           className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 disabled:opacity-50"
         >
-          {loading ? "Checking…" : "Check ATS score (1 free)"}
+          {loading ? "Checking…" : "Check ATS score (1 on Basic)"}
         </button>
       </div>
     );
@@ -83,7 +83,7 @@ export function AtsScorePanel({ resumeId, sections, isPro }: Props) {
           ATS Checker
         </h3>
         <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-          You&apos;ve used your free check for this resume. Upgrade to Pro to see all suggestions and re-check anytime.
+          You&apos;ve used your Basic check for this resume. Upgrade to Pro to see all suggestions and re-check anytime.
         </p>
         <a
           href="/pricing"

@@ -19,7 +19,7 @@ model User {
   image         String?
   passwordHash  String?   // for credentials provider
   role          String    @default("user") // user | admin
-  subscription  String    @default("free") // free | trial | pro_monthly | pro_annual | pro_trial_14
+  subscription  String    @default("basic") // basic | trial | pro_monthly | pro_annual | pro_trial_14
   subscriptionId String?
   subscriptionExpiresAt DateTime? // for pro_trial_14 (14-day ₹1 trial)
   createdAt     DateTime  @default(now())
@@ -325,7 +325,7 @@ model CoverLetterTemplate {
   @@index([userId])
 }
 
-// WBS 6.7 – AI usage log for rate limiting (Free: 5/day, Pro: 50/day)
+// WBS 6.7 – AI usage log for rate limiting (Basic: 5/day, Pro: 50/day)
 model AiUsageLog {
   id        String   @id @default(cuid())
   userId    String

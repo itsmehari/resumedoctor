@@ -13,7 +13,7 @@ export function useSubscription(): {
   isImpersonating: boolean;
   resumePackCredits: number;
 } {
-  const [subscription, setSubscription] = useState("free");
+  const [subscription, setSubscription] = useState("basic");
   const [isPro, setIsPro] = useState(false);
   const [isTrial, setIsTrial] = useState(false);
   const [displayName, setDisplayName] = useState<string | null>(null);
@@ -24,9 +24,10 @@ export function useSubscription(): {
 
   useEffect(() => {
     fetch("/api/user/profile", { credentials: "include" })
-      .then((res) => (res.ok ? res.json() : { subscription: "free", isTrial: false, isPro: false }))
+      .then((res) => (res.ok ? res.json() : { subscription: "basic", isTrial: false, isPro: false }))
       .then((data) => {
-        setSubscription(data.subscription ?? "free");
+        const normalized = data.subscription === "free" ? "basic" : (data.subscription ?? "basic");
+        setSubscription(normalized);
         setIsPro(data.isPro === true);
         setIsTrial(data.isTrial === true);
         setDisplayName(data.name || data.email || null);
@@ -35,7 +36,7 @@ export function useSubscription(): {
         setResumePackCredits(data.resumePackCredits ?? 0);
       })
       .catch(() => {
-        setSubscription("free");
+        setSubscription("basic");
         setIsPro(false);
         setIsTrial(false);
         setDisplayName(null);

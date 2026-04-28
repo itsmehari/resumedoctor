@@ -47,7 +47,7 @@ export async function POST(req: Request) {
           data: {
             passwordHash,
             name: name || existing.name || null,
-            subscription: "free",
+            subscription: "basic",
           },
         });
         await recordProductEvent({

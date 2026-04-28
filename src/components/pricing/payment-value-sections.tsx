@@ -47,12 +47,12 @@ export function ProExportFeatureList({ accent }: { accent: "blue" | "orange" }) 
   );
 }
 
-/** Extended list for Pro section (includes “Everything in Free”). */
+/** Extended list for Pro section. */
 export function ProFullFeatureList() {
   const items: { title: string; desc: string }[] = [
     {
-      title: "Everything in Free",
-      desc: "All the essential tools to build a professional resume.",
+      title: "Full resume toolkit",
+      desc: "Everything you need to build and export a professional resume.",
     },
     {
       title: "PDF export",

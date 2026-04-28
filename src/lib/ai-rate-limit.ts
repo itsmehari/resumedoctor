@@ -1,9 +1,9 @@
-// WBS 6.7 – AI rate limiting (Free: 5/day, Pro: 50/day)
+// WBS 6.7 – AI rate limiting (Basic: 5/day, Pro: 50/day)
 import { prisma } from "@/lib/prisma";
 
 const PRO_SUBSCRIPTIONS = ["pro_monthly", "pro_annual"];
 const PRO_TRIAL_14 = "pro_trial_14";
-const LIMIT_FREE = 5;
+const LIMIT_BASIC = 5;
 const LIMIT_PRO = 50;
 
 export type AiAction =
@@ -54,12 +54,12 @@ export async function checkAiRateLimit(
     select: { subscription: true, subscriptionExpiresAt: true },
   });
   if (!user) {
-    return { allowed: false, limit: LIMIT_FREE, used: LIMIT_FREE };
+    return { allowed: false, limit: LIMIT_BASIC, used: LIMIT_BASIC };
   }
 
   const limit = isProUser(user.subscription, user.subscriptionExpiresAt)
     ? LIMIT_PRO
-    : LIMIT_FREE;
+    : LIMIT_BASIC;
   const since = startOfTodayUTC();
 
   const count = await prisma.aiUsageLog.count({

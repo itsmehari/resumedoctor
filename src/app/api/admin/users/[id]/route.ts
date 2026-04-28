@@ -47,7 +47,7 @@ export async function GET(
 
 const updateSchema = z.object({
   role: z.enum(["user", "admin"]).optional(),
-  subscription: z.enum(["free", "trial", "pro_monthly", "pro_annual", "pro_trial_14"]).optional(),
+  subscription: z.enum(["basic", "free", "trial", "pro_monthly", "pro_annual", "pro_trial_14"]).optional(),
   name: z.string().min(1).max(100).optional().nullable(),
   resumePackCredits: z.number().int().min(0).max(100).optional(), // WBS 10.7
 });
@@ -76,7 +76,10 @@ export async function PATCH(
     }
 
     const data: Record<string, unknown> = { ...parsed.data };
-    const sub = parsed.data.subscription;
+    const sub = parsed.data.subscription === "free" ? "basic" : parsed.data.subscription;
+    if (parsed.data.subscription !== undefined) {
+      data.subscription = sub;
+    }
     if (sub === "pro_trial_14") {
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + 14);

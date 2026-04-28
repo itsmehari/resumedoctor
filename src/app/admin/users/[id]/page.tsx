@@ -54,7 +54,7 @@ export default function AdminUserDetailPage() {
         setUser(u);
         if (u) {
           setEditRole(u.role);
-          setEditSubscription(u.subscription);
+          setEditSubscription(u.subscription === "free" ? "basic" : u.subscription);
           setEditName(u.name ?? "");
           setEditPackCredits(u.resumePackCredits ?? 0);
         }
@@ -189,7 +189,7 @@ export default function AdminUserDetailPage() {
                 onChange={(e) => setEditSubscription(e.target.value)}
                 className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100"
               >
-                <option value="free">Free</option>
+                <option value="basic">Basic</option>
                 <option value="trial">Trial</option>
                 <option value="pro_trial_14">Pro Trial (14-day, SuperProfile)</option>
                 <option value="pro_monthly">Pro Monthly</option>
@@ -198,7 +198,7 @@ export default function AdminUserDetailPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Resume Pack credits (PDF/DOCX for free users)
+                Resume Pack credits (PDF/DOCX for basic users)
               </label>
               <input
                 type="number"

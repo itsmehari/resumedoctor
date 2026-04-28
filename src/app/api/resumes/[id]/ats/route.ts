@@ -1,4 +1,4 @@
-// WBS 7.4, 7.7, 7.8, 11.5 – ATS score API (Pro full; free: one teaser per resume)
+// WBS 7.4, 7.7, 7.8, 11.5 – ATS score API (Pro full; basic: one teaser per resume)
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { parseResumeContent } from "@/lib/resume-utils";
@@ -8,7 +8,7 @@ import { recordFeatureUsage } from "@/lib/feature-usage";
 
 const PRO_SUBSCRIPTIONS = ["pro_monthly", "pro_annual"];
 const PRO_TRIAL_14 = "pro_trial_14";
-const FREE_TEASER_SUGGESTIONS = 3;
+const BASIC_TEASER_SUGGESTIONS = 3;
 
 export async function GET(
   _req: Request,
@@ -46,7 +46,7 @@ export async function GET(
   const sections = content.sections ?? [];
   const version = resume.version;
 
-  // Free tier: one teaser per resume (score + first 3 suggestions)
+  // Basic tier: one teaser per resume (score + first 3 suggestions)
   if (!isPro) {
     const existingTeaserRows = await prisma.$queryRaw<{ count: bigint }[]>`
       SELECT 1 as count FROM "FeatureUsageLog"
@@ -57,7 +57,7 @@ export async function GET(
     if (existingTeaserRows.length > 0) {
       return NextResponse.json(
         {
-          error: "You've used your free ATS check for this resume. Upgrade to Pro for unlimited checks.",
+          error: "You've used your basic ATS check for this resume. Upgrade to Pro for unlimited checks.",
           code: "TEASER_USED",
         },
         { status: 403 }
@@ -98,7 +98,7 @@ export async function GET(
     const suggestions = Array.isArray(result.suggestions) ? result.suggestions : [];
     return NextResponse.json({
       score: result.score,
-      suggestions: suggestions.slice(0, FREE_TEASER_SUGGESTIONS),
+      suggestions: suggestions.slice(0, BASIC_TEASER_SUGGESTIONS),
       checks: result.checks ?? [],
       teaser: true,
       cached: !!cached,

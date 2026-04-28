@@ -142,7 +142,7 @@ export default function AdminPage() {
                 key={plan}
                 className="flex justify-between text-sm text-slate-600 dark:text-slate-400"
               >
-                <span className="capitalize">{(plan ?? "free").replace(/_/g, " ")}</span>
+                <span className="capitalize">{((plan === "free" ? "basic" : plan) ?? "basic").replace(/_/g, " ")}</span>
                 <span className="font-medium text-slate-900 dark:text-slate-100">
                   {count}
                 </span>
@@ -225,7 +225,7 @@ export default function AdminPage() {
                     {u.name || u.email}
                   </span>
                   <span className="text-xs text-slate-500 capitalize ml-2">
-                    {(u.subscription ?? "free").replace(/_/g, " ")}
+                    {((u.subscription === "free" ? "basic" : u.subscription) ?? "basic").replace(/_/g, " ")}
                   </span>
                 </Link>
               ))}

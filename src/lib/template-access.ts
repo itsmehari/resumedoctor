@@ -1,4 +1,4 @@
-// Free vs Pro template allowlists (10 base designs for Free; all 30 for Pro)
+// Basic vs Pro template allowlists (10 base designs for Basic; all 30 for Pro)
 import { prisma } from "@/lib/prisma";
 import {
   TEMPLATES,
@@ -18,8 +18,8 @@ export const LEGACY_TRIAL_TEMPLATE_IDS = [
 ] as const;
 
 const trialOrdered = TEMPLATES.filter((t) => t.trialAvailable);
-/** First 10 trial-marked templates in registry order — matches pricing “10 base” for Free */
-export const FREE_PLAN_TEMPLATE_IDS = trialOrdered.slice(0, 10).map((t) => t.id);
+/** First 10 trial-marked templates in registry order — matches pricing “10 base” for Basic */
+export const BASIC_PLAN_TEMPLATE_IDS = trialOrdered.slice(0, 10).map((t) => t.id);
 
 function hasProEntitlement(subscription: string, subscriptionExpiresAt: Date | null): boolean {
   if (subscription === "pro_monthly" || subscription === "pro_annual") return true;
@@ -49,7 +49,7 @@ export function getAllowedTemplateIds(
   if (hasProEntitlement(subscription, subscriptionExpiresAt)) {
     return uniqueIds([...AVAILABLE_TEMPLATE_IDS, ...legacy]);
   }
-  return uniqueIds([...FREE_PLAN_TEMPLATE_IDS, ...legacy]);
+  return uniqueIds([...BASIC_PLAN_TEMPLATE_IDS, ...legacy]);
 }
 
 export function isTemplateIdAllowedForContext(
@@ -110,11 +110,11 @@ export async function getTemplateAccessContext(): Promise<{
   };
 }
 
-/** Static flag for gallery UI — templates not in the Free 10 require Pro to create/switch. */
+/** Static flag for gallery UI — templates not in the Basic 10 require Pro to create/switch. */
 export function isTemplateProOnly(templateId: string): boolean {
   const resolved = resolveTemplateId(templateId);
   if (LEGACY_TRIAL_TEMPLATE_IDS.includes(resolved as (typeof LEGACY_TRIAL_TEMPLATE_IDS)[number])) {
     return false;
   }
-  return !FREE_PLAN_TEMPLATE_IDS.includes(resolved);
+  return !BASIC_PLAN_TEMPLATE_IDS.includes(resolved);
 }

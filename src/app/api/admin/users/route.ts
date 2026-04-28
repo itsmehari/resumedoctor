@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
 
   const where: {
     OR?: Array<{ email?: { contains: string; mode: "insensitive" }; name?: { contains: string; mode: "insensitive" } }>;
-    subscription?: string;
+    subscription?: string | { in: string[] };
     role?: string;
   } = {};
 
@@ -37,7 +37,9 @@ export async function GET(req: NextRequest) {
       { name: { contains: search, mode: "insensitive" } },
     ];
   }
-  if (subscription) where.subscription = subscription;
+  if (subscription) {
+    where.subscription = subscription === "basic" ? { in: ["basic", "free"] } : subscription;
+  }
   if (roleFilter) where.role = roleFilter;
 
   const [users, total] = await Promise.all([

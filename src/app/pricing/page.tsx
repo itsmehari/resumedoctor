@@ -395,7 +395,7 @@ export default function PricingPage() {
             It is an optional <strong className="text-slate-800 dark:text-slate-100">paid</strong> add-on: after
             checkout on SuperProfile, your account gets <strong className="text-slate-800 dark:text-slate-100">full Pro</strong>{" "}
             features for <strong className="text-slate-800 dark:text-slate-100">14 calendar days</strong>. It is separate
-            from the Try page — useful when you already know you want every export and template for a short burst
+            from the OTP Try page — useful when you already know you want every export and template for a short burst
             of applications. No automatic renewal.
           </>
         ),
@@ -418,7 +418,7 @@ export default function PricingPage() {
             {region?.currency === "USD"
               ? "Explore quickly with the OTP Try flow, then unlock Pro on SuperProfile when you need exports and full templates — use the same email at checkout as on your account."
               : region?.currency === "INR"
-                ? "Explore with the OTP Try page (no card). When you want PDF & Word, every template, and higher limits, upgrade on SuperProfile — same email as this account."
+                ? "Explore risk-free with the OTP Try page (no card). When you want PDF & Word, every template, and higher limits, upgrade on SuperProfile — same email as this account."
                 : "Explore quickly with the OTP Try flow, then unlock Pro on SuperProfile when you need exports and full templates — use the same email at checkout as on your account."}
           </p>
           {isIndia && (

@@ -7,7 +7,7 @@ CREATE TABLE "User" (
     "image" TEXT,
     "passwordHash" TEXT,
     "role" TEXT NOT NULL DEFAULT 'user',
-    "subscription" TEXT NOT NULL DEFAULT 'free',
+    "subscription" TEXT NOT NULL DEFAULT 'basic',
     "subscriptionId" TEXT,
     "subscriptionExpiresAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

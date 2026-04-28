@@ -1,4 +1,4 @@
-// Vercel Cron – set subscription to free when pro_trial_14 has expired (keeps DB aligned with gating)
+// Vercel Cron – set subscription to basic when pro_trial_14 has expired (keeps DB aligned with gating)
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
@@ -25,7 +25,7 @@ export async function GET(req: Request) {
       subscriptionExpiresAt: { lt: now },
     },
     data: {
-      subscription: "free",
+      subscription: "basic",
       subscriptionExpiresAt: null,
     },
   });
