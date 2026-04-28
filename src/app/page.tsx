@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   alternates: { canonical: siteUrl },
   title: "ResumeDoctor – Build ATS-Ready Resumes in Minutes | India's #1 Resume Builder",
   description:
-    "Create a professional resume in under 5 minutes. 30+ ATS-friendly templates, AI suggestions. Export TXT free; PDF and Word with Pro. Trusted by job seekers across India.",
+    "Create a professional resume in under 5 minutes. 30+ ATS-friendly templates, AI suggestions, OTP try flow, and Pro exports. Trusted by job seekers across India.",
 };
 
 // ─── Inline SVG icons (server-safe, no deps) ─────────────────────────────────
@@ -89,7 +89,7 @@ export default function HomePage() {
                   "30+ professionally designed templates",
                   "AI suggestions for your experience bullets",
                   "ATS score checker before you apply",
-                  "Start free (TXT) · PDF & Word on Pro",
+                  "Try quickly with OTP · PDF & Word on Pro",
                 ].map((item) => (
                   <li key={item} className="flex items-center gap-2.5 text-sm text-white/85">
                     <span className="w-4 h-4 rounded-full bg-green-400/20 flex items-center justify-center flex-shrink-0">
@@ -104,7 +104,7 @@ export default function HomePage() {
               <div className="mt-10 flex flex-col sm:flex-row gap-4">
                 <Link href="/try"
                   className="rounded-xl bg-accent hover:bg-accent-hover px-8 py-4 text-base font-bold text-accent-dark text-center transition-all shadow-xl shadow-black/30 hover:scale-[1.02] active:scale-[0.98]">
-                  Build My Resume — Free
+                  Build My Resume — Try
                 </Link>
                 <Link href="/templates"
                   className="rounded-xl border-2 border-white/40 bg-white/10 hover:bg-white/20 px-8 py-4 text-base font-semibold text-white text-center transition-all">
@@ -131,7 +131,7 @@ export default function HomePage() {
           {[
             { num: "30+", label: "Templates" },
             { num: "ATS", label: "Friendly layouts" },
-            { num: "Free", label: "Start at ₹0" },
+            { num: "Try", label: "OTP preview flow" },
             { num: "< 5 min", label: "First draft" },
           ].map((s) => (
             <div key={s.label}>
@@ -209,7 +209,7 @@ export default function HomePage() {
           <div className="text-center mt-12">
             <Link href="/try"
               className="inline-flex items-center gap-2 rounded-xl bg-primary-600 hover:bg-primary-700 px-8 py-4 text-base font-bold text-white transition-all shadow-lg shadow-primary-900/25 hover:scale-[1.02]">
-              Start building free
+              Start building with Try
               <Icon path={PATHS.arrow} size={18} className="text-white" />
             </Link>
           </div>
@@ -272,7 +272,7 @@ export default function HomePage() {
 
           <Link href="/try"
             className="inline-flex items-center gap-2 rounded-xl bg-violet-500 hover:bg-violet-400 px-8 py-4 text-base font-bold text-white transition-all shadow-lg shadow-violet-900/40 hover:scale-[1.02]">
-            Try AI features free
+            Try AI features
             <Icon path={PATHS.arrow} size={18} className="text-white" />
           </Link>
         </div>
@@ -378,7 +378,7 @@ export default function HomePage() {
               Simple, transparent pricing
             </h2>
             <p className="mt-4 text-slate-500 dark:text-slate-400">
-              Start free, taste the builder on <span className="font-medium text-slate-700 dark:text-slate-300">Try</span> (OTP, no card), then unlock Pro on SuperProfile when you need PDFs and every template. India: optional ₹49 two-week full-Pro pass plus monthly and annual plans — checkouts do not auto-renew on us.
+              Start with <span className="font-medium text-slate-700 dark:text-slate-300">Try</span> (OTP, no card), then unlock Pro on SuperProfile when you need PDFs and every template. India: optional ₹49 two-week full-Pro pass plus monthly and annual plans — checkouts do not auto-renew on us.
             </p>
           </div>
 
@@ -387,7 +387,7 @@ export default function HomePage() {
               href="/try"
               className="inline-flex items-center gap-2 rounded-full border border-slate-300/80 bg-white/90 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-800 shadow-sm transition-colors hover:bg-white dark:border-slate-600 dark:bg-slate-800/80 dark:text-slate-100 dark:hover:bg-slate-800"
             >
-              Try free with OTP
+              Try with OTP
             </Link>
             <Link
               href="/pricing#trial"
@@ -397,16 +397,7 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3 max-w-4xl mx-auto">
-            <PricingCard
-              plan="Free"
-              price="₹0"
-              period="forever"
-              features={["Unlimited resumes", "10 base templates", "TXT & print preview", "1 ATS check / resume", "5 AI bullet runs / day"]}
-              cta="Get started free"
-              ctaHref="/try"
-              variant="outline"
-            />
+          <div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
             <PricingCard
               plan="Pro monthly"
               price="₹199"
@@ -501,12 +492,12 @@ export default function HomePage() {
             Your dream job is<br />one resume away.
           </h2>
           <p className="mt-5 text-lg text-white/80 max-w-lg mx-auto">
-            Build your best resume on ResumeDoctor. Free to start—upgrade when you need PDF, Word, and every template.
+            Build your best resume on ResumeDoctor. Start with Try, then upgrade when you need PDF, Word, and every template.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/try"
               className="rounded-xl bg-accent hover:bg-accent-hover px-10 py-4 text-lg font-bold text-accent-dark text-center transition-all shadow-xl shadow-black/25 hover:scale-[1.02]">
-              Build my resume — free
+              Build my resume — try
             </Link>
             <Link href="/templates"
               className="rounded-xl border-2 border-white/40 bg-white/10 hover:bg-white/20 px-8 py-4 text-base font-semibold text-white text-center transition-all">

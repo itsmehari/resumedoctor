@@ -40,13 +40,6 @@ interface Region {
   plans: Plan[];
 }
 
-const FEATURES_FREE = [
-  "Unlimited resumes",
-  "TXT export",
-  "Print / HTML preview",
-  "All section types",
-];
-
 type CompareCellValue = boolean | string;
 
 function CompareCell({ value }: { value: CompareCellValue }) {
@@ -106,8 +99,6 @@ function SectionRule({ label, pillClassName }: { label: string; pillClassName: s
 
 const compareThFeature =
   "min-w-[10rem] bg-gradient-to-b from-slate-50 to-white p-4 text-left text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:from-slate-950 dark:to-slate-900 dark:text-slate-400";
-const compareThFree =
-  "border-l border-slate-200/90 bg-slate-100/95 p-4 text-center text-xs font-bold uppercase tracking-wide text-slate-800 dark:border-slate-700 dark:bg-slate-800/90 dark:text-slate-100";
 const compareThPass =
   "border-l border-amber-300/90 bg-gradient-to-b from-amber-100 to-amber-50/90 p-4 text-center text-xs font-bold uppercase tracking-wide text-amber-950 dark:border-amber-700/50 dark:from-amber-950/50 dark:to-amber-950/30 dark:text-amber-50";
 const compareThPro =
@@ -115,8 +106,6 @@ const compareThPro =
 
 const compareTdFeature =
   "border-r border-slate-100 bg-white/80 p-3.5 text-left align-top dark:border-slate-800/80 dark:bg-slate-950/50";
-const compareTdFree =
-  "border-l border-slate-200/80 bg-slate-50/90 p-3.5 text-center align-middle dark:border-slate-700 dark:bg-slate-800/40";
 const compareTdPass =
   "border-l border-amber-200/80 bg-amber-50/85 p-3.5 text-center align-middle dark:border-amber-800/35 dark:bg-amber-950/22";
 const compareTdPro =
@@ -124,11 +113,9 @@ const compareTdPro =
 
 function PlansAtGlance({
   isIndia,
-  freePrice,
   proMonthlyDisplay,
 }: {
   isIndia: boolean;
-  freePrice: string;
   proMonthlyDisplay: string;
 }) {
   return (
@@ -141,32 +128,15 @@ function PlansAtGlance({
       </h2>
       <p className="mx-auto mt-2 max-w-2xl text-center text-sm text-slate-600 dark:text-slate-400">
         {isIndia
-          ? "Free and Try stay separate from checkout. The optional ₹49 pass is a short full-Pro window; monthly and annual Pro are longer terms."
-          : "Free for building, Try to explore, then Pro on SuperProfile when you need exports and every template."}
+          ? "Use Try for a quick OTP preview, then choose the optional ₹49 pass or Pro plans on SuperProfile."
+          : "Use Try to explore quickly, then choose Pro on SuperProfile when you need full exports and templates."}
       </p>
       <div
         className={cn(
           "mx-auto mt-6 grid max-w-5xl gap-4",
-          isIndia ? "sm:grid-cols-2 xl:grid-cols-4" : "sm:grid-cols-3"
+          isIndia ? "sm:grid-cols-2 xl:grid-cols-3" : "sm:grid-cols-2"
         )}
       >
-        <article className="flex flex-col rounded-2xl border-2 border-slate-300 bg-slate-50/90 p-5 shadow-sm dark:border-slate-600 dark:bg-slate-900/60">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">
-            Tier · Free
-          </span>
-          <h3 className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-50">Free</h3>
-          <p className="mt-1 text-2xl font-extrabold tabular-nums text-slate-800 dark:text-slate-100">{freePrice}</p>
-          <p className="mt-2 flex-1 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
-            Unlimited resumes, TXT export, print/HTML preview, base templates — no SuperProfile checkout.
-          </p>
-          <Link
-            href="#free-starter"
-            className="mt-4 text-xs font-semibold text-primary-600 underline-offset-2 hover:underline dark:text-primary-400"
-          >
-            See Free details →
-          </Link>
-        </article>
-
         <article className="flex flex-col rounded-2xl border-2 border-violet-300 bg-violet-50/80 p-5 shadow-sm dark:border-violet-700 dark:bg-violet-950/35">
           <span className="text-[10px] font-bold uppercase tracking-widest text-violet-700 dark:text-violet-300">
             Explore · Try
@@ -233,70 +203,60 @@ function PlansAtGlance({
 const COMPARE_PLAN_ROWS: {
   feature: string;
   featureNote?: string;
-  free: CompareCellValue;
   trial: CompareCellValue;
   pro: CompareCellValue;
 }[] = [
   {
     feature: "How long it lasts",
     featureNote: "After checkout, access lines up with the term you picked.",
-    free: "Forever on Free limits",
     trial: "14 calendar days from activation",
     pro: "1 month or 1 year from activation",
   },
   {
     feature: "PDF export",
     featureNote: "Download a print-ready file.",
-    free: false,
     trial: true,
     pro: true,
   },
   {
     feature: "Word (DOCX) export",
     featureNote: "Edit offline in Microsoft Word or Google Docs.",
-    free: false,
     trial: true,
     pro: true,
   },
   {
     feature: "TXT export",
     featureNote: "Plain text for forms or parsers.",
-    free: true,
     trial: true,
     pro: true,
   },
   {
     feature: "Print & HTML preview",
     featureNote: "Browser preview and printing.",
-    free: true,
     trial: true,
     pro: true,
   },
   {
     feature: "Templates",
     featureNote: "Layouts and styles included in the builder.",
-    free: "10 base layouts",
     trial: "All 30",
     pro: "All 30",
   },
   {
     feature: "ATS score checker",
     featureNote: "How well your resume matches a job description.",
-    free: "1 check per saved resume",
     trial: "Unlimited during the pass",
     pro: "Unlimited",
   },
   {
     feature: "AI bullet suggestions",
     featureNote: "Per calendar day; count resets at midnight (UTC).",
-    free: "5 per day",
     trial: "50 per day during the pass",
     pro: "50 per day",
   },
   {
     feature: "Watermark on PDF & Word",
     featureNote: "Only applies when that export type is available.",
-    free: "Not applicable (no PDF/DOCX on Free)",
     trial: "None — full-quality files",
     pro: "None — full-quality files",
   },
@@ -334,7 +294,7 @@ function PlanCardPro({
       {footnote ? <div className="mt-3">{footnote}</div> : null}
       <div className="mt-4 border-t border-slate-200 pt-4 dark:border-slate-700">
         <ul className="mb-4 space-y-2 text-sm text-slate-700 dark:text-slate-300">
-          {["Everything in Free", "PDF & Word export", "No watermarks", "30+ templates"].map((f) => (
+          {["PDF & Word export", "No watermarks", "30+ templates", "Higher ATS & AI limits"].map((f) => (
             <li key={f} className="flex items-center gap-2">
               <Check className="h-4 w-4 shrink-0 text-emerald-600" aria-hidden />
               {f}
@@ -368,7 +328,6 @@ export default function PricingPage() {
   }, []);
 
   const isIndia = region?.currency === "INR";
-  const freePlan = region?.plans?.find((p) => p.id === "free");
   const proMonthly = region?.plans?.find((p) => p.id === "pro_monthly");
   const proAnnual = region?.plans?.find((p) => p.id === "pro_annual");
 
@@ -383,10 +342,10 @@ export default function PricingPage() {
     const base: PricingFaqItem[] = [
       {
         id: "try-vs-pro",
-        question: "What is the difference between the free Try page and paying for Pro?",
+        question: "What is the difference between the Try page and paying for Pro?",
         answer: (
           <>
-            <strong className="text-slate-800 dark:text-slate-100">Try (free)</strong> — Use{" "}
+            <strong className="text-slate-800 dark:text-slate-100">Try</strong> — Use{" "}
             <Link href="/try" className="text-primary-600 underline hover:text-primary-700 dark:text-primary-400">
               /try
             </Link>{" "}
@@ -420,12 +379,6 @@ export default function PricingPage() {
           ),
       },
       {
-        id: "free-includes",
-        question: "What is included on the Free plan?",
-        answer:
-          "Unlimited resumes, TXT export, print and HTML preview, ten base templates, all section types, limited ATS checks, and a small daily AI allowance — enough to build a solid resume before you upgrade.",
-      },
-      {
         id: "subscription",
         question: "Will my plan auto-renew? How do refunds work?",
         answer:
@@ -442,7 +395,7 @@ export default function PricingPage() {
             It is an optional <strong className="text-slate-800 dark:text-slate-100">paid</strong> add-on: after
             checkout on SuperProfile, your account gets <strong className="text-slate-800 dark:text-slate-100">full Pro</strong>{" "}
             features for <strong className="text-slate-800 dark:text-slate-100">14 calendar days</strong>. It is separate
-            from the free Try page — useful when you already know you want every export and template for a short burst
+            from the Try page — useful when you already know you want every export and template for a short burst
             of applications. No automatic renewal.
           </>
         ),
@@ -463,10 +416,10 @@ export default function PricingPage() {
           </h1>
           <p className="mx-auto mt-3 max-w-2xl text-slate-600 dark:text-slate-400">
             {region?.currency === "USD"
-              ? "ResumeDoctor is free to start. Explore with our Try flow, then unlock Pro on SuperProfile when you need exports and full templates — use the same email at checkout as on your account."
+              ? "Explore quickly with the OTP Try flow, then unlock Pro on SuperProfile when you need exports and full templates — use the same email at checkout as on your account."
               : region?.currency === "INR"
-                ? "ResumeDoctor stays free for core building. Explore risk-free with the OTP Try page (no card). When you want PDF & Word, every template, and higher limits, upgrade on SuperProfile — same email as this account."
-                : "ResumeDoctor is free to start. Explore with our Try flow, then unlock Pro on SuperProfile when you need exports and full templates — use the same email at checkout as on your account."}
+                ? "Explore with the OTP Try page (no card). When you want PDF & Word, every template, and higher limits, upgrade on SuperProfile — same email as this account."
+                : "Explore quickly with the OTP Try flow, then unlock Pro on SuperProfile when you need exports and full templates — use the same email at checkout as on your account."}
           </p>
           {isIndia && (
             <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-slate-700 dark:text-slate-300">
@@ -550,7 +503,6 @@ export default function PricingPage() {
 
             <PlansAtGlance
               isIndia={!!isIndia}
-              freePrice={freePlan?.price ?? (isIndia ? "₹0" : "$0")}
               proMonthlyDisplay={proMonthly?.price ?? (isIndia ? "₹199" : "$4.99")}
             />
 
@@ -578,7 +530,7 @@ export default function PricingPage() {
                         <span className="text-orange-600 dark:text-orange-400">14 days</span>
                       </h2>
                       <p className="mt-2 text-slate-600 dark:text-slate-400">
-                        This checkout is different from the free{" "}
+                        This checkout is different from the{" "}
                         <Link href="/try" className="font-medium text-primary-600 underline-offset-2 hover:underline dark:text-primary-400">
                           Try
                         </Link>{" "}
@@ -632,7 +584,7 @@ export default function PricingPage() {
                     Everything you need to get hired
                   </h2>
                   <p className="mx-auto mt-2 max-w-xl text-center text-slate-600 dark:text-slate-400">
-                    Create, export, and apply with confidence. Free for basics, Pro for full export and templates. Pay on
+                    Create, export, and apply with confidence. Choose the Pro plan that fits your timeline and pay on
                     SuperProfile with the same ResumeDoctor email.
                   </p>
 
@@ -706,47 +658,27 @@ export default function PricingPage() {
             )}
 
             <SectionRule
-              label="Free tier & account"
+              label="Account & add-ons"
               pillClassName="border-slate-300 bg-slate-100 text-slate-800 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
             />
 
-            {/* Free + account */}
-            <div id="free-starter" className="mt-12 grid gap-6 md:grid-cols-2">
-              <div className="rounded-2xl border border-slate-200 p-6 dark:border-slate-700">
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Free</h3>
-                <div className="mt-2 flex items-baseline gap-1">
-                  <span className="text-3xl font-bold text-slate-900 dark:text-slate-100">
-                    {freePlan?.price ?? (isIndia ? "₹0" : "$0")}
-                  </span>
-                  <span className="text-slate-500 dark:text-slate-400">forever</span>
-                </div>
-                <ul className="mt-4 space-y-2">
-                  {FEATURES_FREE.map((f) => (
-                    <li key={f} className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                      <Check className="h-4 w-4 flex-shrink-0 text-emerald-600" aria-hidden />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-6 dark:border-slate-700 dark:bg-slate-800/30">
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Account & resume pack</h3>
-                <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-                  Manage billing in Settings, or add a one-time pack of exports.
-                </p>
-                <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <Link
-                    href="/settings"
-                    onClick={() => trackEvent("upgrade_click", { source: "pricing" })}
-                    className="inline-flex items-center justify-center rounded-xl bg-slate-800 px-4 py-2.5 text-sm font-medium text-white hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white"
-                  >
-                    Account & billing
-                  </Link>
-                  <div className="flex-1 text-center sm:text-left">
-                    <p className="text-xs text-slate-500">Resume pack · {isIndia ? "₹99" : "$2.99"} one-time</p>
-                    <div className="mt-2">
-                      <SuperprofileResumePackCta />
-                    </div>
+            <div className="mt-12 rounded-2xl border border-slate-200 bg-slate-50/50 p-6 dark:border-slate-700 dark:bg-slate-800/30">
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Account & resume pack</h3>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+                Manage billing in Settings, or add a one-time pack of exports.
+              </p>
+              <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+                <Link
+                  href="/settings"
+                  onClick={() => trackEvent("upgrade_click", { source: "pricing" })}
+                  className="inline-flex items-center justify-center rounded-xl bg-slate-800 px-4 py-2.5 text-sm font-medium text-white hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white"
+                >
+                  Account & billing
+                </Link>
+                <div className="flex-1 text-center sm:text-left">
+                  <p className="text-xs text-slate-500">Resume pack · {isIndia ? "₹99" : "$2.99"} one-time</p>
+                  <div className="mt-2">
+                    <SuperprofileResumePackCta />
                   </div>
                 </div>
               </div>
@@ -769,7 +701,7 @@ export default function PricingPage() {
                 <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-relaxed text-slate-600 dark:text-slate-400">
                   {isIndia ? (
                     <>
-                      The free <Link href="/try" className="font-medium text-primary-600 underline-offset-2 hover:underline dark:text-primary-400">Try</Link> page
+                      The <Link href="/try" className="font-medium text-primary-600 underline-offset-2 hover:underline dark:text-primary-400">Try</Link> page
                       (OTP) is for exploring the editor — it is{" "}
                       <strong className="font-medium text-slate-800 dark:text-slate-200">not</strong> a billing tier in
                       this table. The <strong className="font-medium text-slate-800 dark:text-slate-200">14-day pass</strong>{" "}
@@ -778,11 +710,10 @@ export default function PricingPage() {
                     </>
                   ) : (
                     <>
-                      The free <Link href="/try" className="font-medium text-primary-600 underline-offset-2 hover:underline dark:text-primary-400">Try</Link> page
-                      is a short OTP preview — not shown as a column.{" "}
-                      <strong className="font-medium text-slate-800 dark:text-slate-200">Free</strong> is your always-on
-                      tier; <strong className="font-medium text-slate-800 dark:text-slate-200">Pro</strong> is the paid
-                      upgrade on SuperProfile.
+                      The <Link href="/try" className="font-medium text-primary-600 underline-offset-2 hover:underline dark:text-primary-400">Try</Link>{" "}
+                      page is a short OTP preview — not a billing tier.{" "}
+                      <strong className="font-medium text-slate-800 dark:text-slate-200">Pro</strong> plans are paid via
+                      SuperProfile.
                     </>
                   )}
                 </p>
@@ -790,10 +721,6 @@ export default function PricingPage() {
                   className="mx-auto mt-5 flex max-w-2xl flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-slate-600 dark:text-slate-400"
                   aria-hidden
                 >
-                  <span className="inline-flex items-center gap-2">
-                    <span className="h-3 w-5 shrink-0 rounded border border-slate-300 bg-slate-100 dark:border-slate-600 dark:bg-slate-800" />
-                    Free
-                  </span>
                   {isIndia ? (
                     <span className="inline-flex items-center gap-2">
                       <span className="h-3 w-5 shrink-0 rounded border border-amber-400 bg-amber-100 dark:border-amber-600 dark:bg-amber-950/60" />
@@ -811,12 +738,6 @@ export default function PricingPage() {
                       <tr className="border-b border-slate-200 dark:border-slate-700">
                         <th scope="col" className={cn(compareThFeature, "rounded-tl-2xl")}>
                           What you get
-                        </th>
-                        <th scope="col" className={compareThFree}>
-                          <span className="block">Free</span>
-                          <span className="mt-1.5 block text-[10px] font-semibold normal-case leading-snug text-slate-600 dark:text-slate-300">
-                            Forever · core building
-                          </span>
                         </th>
                         {isIndia && (
                           <th scope="col" className={compareThPass}>
@@ -851,9 +772,6 @@ export default function PricingPage() {
                               </span>
                             ) : null}
                           </th>
-                          <td className={compareTdFree}>
-                            <CompareCell value={row.free} />
-                          </td>
                           {isIndia && (
                             <td className={compareTdPass}>
                               <CompareCell value={row.trial} />
@@ -892,7 +810,7 @@ export default function PricingPage() {
               Pricing questions, cleared up
             </h2>
             <p className="mx-auto mt-3 max-w-lg text-sm text-slate-600 dark:text-slate-400">
-              How Try differs from checkout, what happens after you pay, and what stays free.
+              How Try differs from checkout and what happens after you pay.
             </p>
           </div>
           <div className="mx-auto mt-10 max-w-3xl">

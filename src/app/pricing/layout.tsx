@@ -3,14 +3,14 @@ import { siteUrl, siteName } from "@/lib/seo";
 import { PricingJsonLd } from "@/components/seo/pricing-json-ld";
 
 export const metadata: Metadata = {
-  title: "Pricing – Free & Pro Plans",
+  title: "Pricing – Try, Pass & Pro Plans",
   description:
-    "Compare Free and Pro. Start free and try with OTP; upgrade on SuperProfile when you need exports — same email at checkout.",
+    "Compare Try, optional 14-day pass, and Pro. Upgrade on SuperProfile when you need exports — use the same email at checkout.",
   alternates: { canonical: `${siteUrl}/pricing` },
   openGraph: {
-    title: "Pricing – ResumeDoctor | Free & Pro Plans",
+    title: "Pricing – ResumeDoctor | Try, Pass & Pro",
     description:
-      "Compare Free and Pro. Try with OTP; upgrade on SuperProfile for PDF, Word, and every template — same email at checkout.",
+      "Compare Try, optional 14-day pass, and Pro. Upgrade on SuperProfile for PDF, Word, and every template.",
     url: `${siteUrl}/pricing`,
   },
 };

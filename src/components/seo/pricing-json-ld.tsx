@@ -2,7 +2,7 @@ import { siteUrl } from "@/lib/seo";
 
 const PRICING_FAQ = [
   { q: "How do I pay for Pro?", a: "Pay through SuperProfile on the pricing page. Use the same email as your ResumeDoctor account for automatic activation." },
-  { q: "What's included in the free plan?", a: "Unlimited resumes, TXT export, print/HTML preview, 10 base resume templates, and all section types." },
+  { q: "What are the plan options?", a: "Use Try for quick OTP preview, choose the optional 14-day full-Pro pass in India, or purchase Pro monthly/annual on SuperProfile." },
   { q: "Is Pro a subscription? Can I get a refund?", a: "Pro is a one-time purchase per tier (no automatic renewals). Contact support for refund requests; we treat them case by case." },
 ];
 
@@ -10,18 +10,8 @@ export function PricingJsonLd() {
   const products = [
     {
       "@type": "Product",
-      name: "ResumeDoctor Free",
-      description: "Unlimited resumes, TXT export, print/HTML preview, 10 base templates, all section types.",
-      offers: {
-        "@type": "Offer",
-        price: "0",
-        priceCurrency: "INR",
-      },
-    },
-    {
-      "@type": "Product",
       name: "ResumeDoctor Pro (example: monthly tier)",
-      description: "Everything in Free plus PDF and Word export, no watermarks, all 30 templates. Sold as a one-time purchase on SuperProfile; prices vary by tier.",
+      description: "PDF and Word export, no watermarks, all templates, and higher limits. Sold as a one-time purchase on SuperProfile; prices vary by tier.",
       offers: {
         "@type": "Offer",
         price: "199",

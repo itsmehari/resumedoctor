@@ -192,11 +192,11 @@ export default function ExampleDetailPage({ params }: Props) {
               </div>
               <h3 className="text-white font-bold text-base mb-1">Build your {ex.role} resume</h3>
               <p className="text-white/75 text-xs mb-4 leading-relaxed">
-                Start free with our ATS-ready templates. Takes under 5 minutes.
+                Start with Try using our ATS-ready templates. Takes under 5 minutes.
               </p>
               <Link href="/try"
                 className="block w-full rounded-xl bg-white hover:bg-slate-50 text-primary-700 font-bold text-sm py-2.5 transition-colors shadow">
-                Start for free →
+                Start with Try →
               </Link>
               <p className="text-white/50 text-xs mt-2">No sign up required to preview</p>
             </div>

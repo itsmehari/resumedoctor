@@ -40,7 +40,7 @@ export default function TermsPage() {
             </h2>
             <p>
               ResumeDoctor provides an online resume and CV builder. We offer
-              free and paid tiers. Features, pricing, and availability may change
+              try access and paid tiers. Features, pricing, and availability may change
               with notice.
             </p>
           </section>

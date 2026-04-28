@@ -38,7 +38,7 @@ export default function AboutPage() {
               What We Build
             </h2>
             <p>
-              We build resume and CV templates designed for the Indian job market—Naukri, LinkedIn, Indeed, TimesJobs, Shine, and more. Our templates use clean layouts and standard structures so Applicant Tracking Systems (ATS) can read your content correctly. Export to TXT on the free plan, or upgrade to Pro for PDF and Word when you&apos;re ready to apply.
+              We build resume and CV templates designed for the Indian job market—Naukri, LinkedIn, Indeed, TimesJobs, Shine, and more. Our templates use clean layouts and standard structures so Applicant Tracking Systems (ATS) can read your content correctly. Use Try to preview quickly, then choose Pro for PDF and Word when you&apos;re ready to apply.
             </p>
           </section>
 
@@ -66,7 +66,7 @@ export default function AboutPage() {
             href="/try"
             className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700"
           >
-            Try Free
+            Start Try
           </Link>
           <Link
             href="/"

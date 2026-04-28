@@ -28,7 +28,7 @@ export async function GET() {
       features: [
         "ATS-friendly resume templates",
         "PDF and Word export",
-        "5-minute free trial",
+        "5-minute OTP try session",
         "Works with Naukri, LinkedIn, Indeed",
       ],
     },
@@ -36,7 +36,7 @@ export async function GET() {
       name: siteName,
       category: "Resume Builder",
       plans: [
-        { name: "Free", price: 0, features: ["Unlimited resumes", "TXT export"] },
+        { name: "Try", price: 0, features: ["OTP session", "Template preview"] },
         { name: "Pro", price: 199, features: ["PDF export", "Word export"] },
       ],
     },
@@ -45,7 +45,7 @@ export async function GET() {
     },
     faq: [
       { q: "What is ResumeDoctor?", a: "India-first online resume builder with ATS-friendly templates." },
-      { q: "Is there a free plan?", a: "Yes. Free forever with unlimited resumes. Try 5 min free with just email." },
+      { q: "How can I try ResumeDoctor?", a: "Use the OTP try flow for a quick session, then purchase Pro on SuperProfile when you need full exports." },
     ],
   };
 

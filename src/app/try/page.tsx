@@ -84,7 +84,7 @@ function TryPageContent() {
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100 text-center">
-            Try ResumeDoctor Free
+            Try ResumeDoctor
           </h1>
           <p className="mt-2 text-slate-600 dark:text-slate-400 text-center">
             {step === "email"

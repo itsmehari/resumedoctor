@@ -36,13 +36,13 @@ export function HomeJsonLd() {
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
     description:
-      "Create ATS-friendly resumes and CVs in minutes. India-first resume builder with premium templates. Export to TXT on the free plan; PDF and Word with Pro.",
+      "Create ATS-friendly resumes and CVs in minutes. India-first resume builder with premium templates. Use Try for quick preview; unlock PDF and Word with Pro.",
     offers: {
       "@type": "Offer",
       price: "0",
       priceCurrency: "INR",
     },
-    featureList: "ATS-friendly templates; TXT export on free plan; PDF and Word on Pro; India job portals",
+    featureList: "ATS-friendly templates; OTP try flow; PDF and Word on Pro; India job portals",
     url: siteUrl,
   };
 
@@ -71,14 +71,14 @@ const FAQ_ITEMS = [
       "ResumeDoctor is an India-first online resume and CV builder that helps you create ATS-friendly resumes in minutes. You get professional templates, expert content suggestions, and export to PDF and Word.",
   },
   {
-    question: "Is there a free plan?",
+    question: "How can I try ResumeDoctor?",
     answer:
-      "Yes. ResumeDoctor offers a free forever plan with unlimited resumes, TXT export, print/HTML preview, 10 base templates, and all section types. You can also start a short browser trial with email verification—no credit card.",
+      "Use the OTP Try flow for a short browser session with no credit card. When you need full exports and templates, choose a Pro plan on SuperProfile.",
   },
   {
     question: "How do I export my resume to PDF?",
     answer:
-      "Upgrade to Pro with a one-time purchase on SuperProfile (for example, the monthly tier is ₹199). That unlocks PDF and Word export and removes watermarks. Free users can export as TXT and use print preview.",
+      "Upgrade to Pro with a one-time purchase on SuperProfile (for example, the monthly tier is ₹199). That unlocks PDF and Word export and removes watermarks.",
   },
   {
     question: "Are the templates ATS-friendly?",
@@ -255,7 +255,7 @@ export function ExamplesItemListJsonLd({
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: "Resume Examples by Role – India",
-    description: "Free resume examples for Software Engineer, Fresher, Data Analyst, Marketing, BPO, and more.",
+    description: "Resume examples for Software Engineer, Fresher, Data Analyst, Marketing, BPO, and more.",
     numberOfItems: examples.length,
     itemListElement: examples.map((ex, i) => ({
       "@type": "ListItem",

@@ -256,7 +256,7 @@ export default async function BlogPostPage({ params }: Props) {
                   prefetch
                   className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400"
                 >
-                  Start free
+                  Start with Try
                   <ArrowUpRight className="h-4 w-4 opacity-90" aria-hidden />
                 </Link>
               </div>

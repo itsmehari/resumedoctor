@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: { default: defaultTitle, template: `%s | ${siteName}` },
   description: defaultDescription,
-  keywords: ["resume builder", "CV maker", "ATS resume", "India", "job search", "resume templates", "free resume builder"],
+  keywords: ["resume builder", "CV maker", "ATS resume", "India", "job search", "resume templates", "resume try flow"],
   authors: [{ name: siteName, url: siteUrl }],
   creator: siteName,
   openGraph: {

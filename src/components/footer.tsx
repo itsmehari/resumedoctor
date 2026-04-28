@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const footerLinks = {
   product: [
-    { href: "/try", label: "Try Free" },
+    { href: "/try", label: "Try" },
     { href: "/templates", label: "Templates" },
     { href: "/cover-letters", label: "Cover Letters" },
     { href: "/pricing", label: "Pricing" },
@@ -157,13 +157,13 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t border-slate-700/50">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-sm text-slate-400 text-center sm:text-left">
-              Ready to create your professional resume? <span className="text-white font-medium">Start free — no credit card required.</span>
+              Ready to create your professional resume? <span className="text-white font-medium">Start with Try — no credit card required.</span>
             </p>
             <Link
               href="/try"
               className="shrink-0 rounded-lg bg-accent hover:bg-accent-hover px-6 py-2.5 text-sm font-semibold text-accent-dark transition-colors"
             >
-              Try Free Now
+              Start Try Now
             </Link>
           </div>
         </div>

@@ -5,13 +5,11 @@ const IN_CURRENCY = "INR";
 const DEFAULT_CURRENCY = "USD";
 
 const PLANS_INR = [
-  { id: "free", name: "Free", price: "₹0", period: "forever", priceValue: 0 },
   { id: "pro_monthly", name: "Pro Monthly", price: "₹199", period: "/month", priceValue: 199 },
   { id: "pro_annual", name: "Pro Annual", price: "₹1,499", period: "/year", priceValue: 1499, savings: "Save 37%" },
 ];
 
 const PLANS_USD = [
-  { id: "free", name: "Free", price: "$0", period: "forever", priceValue: 0 },
   { id: "pro_monthly", name: "Pro Monthly", price: "$4.99", period: "/month", priceValue: 4.99 },
   { id: "pro_annual", name: "Pro Annual", price: "$39", period: "/year", priceValue: 39, savings: "Save 35%" },
 ];

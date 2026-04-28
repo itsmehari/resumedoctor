@@ -10,7 +10,7 @@ import { ArrowUpRight, Layers } from "lucide-react";
 export const metadata: Metadata = {
   title: "Resume Examples by Role – India",
   description:
-    "Free resume examples for Software Engineer, Fresher, Data Analyst, Marketing, BPO, and more. Structure and tips for Indian job applications.",
+    "Resume examples for Software Engineer, Fresher, Data Analyst, Marketing, BPO, and more. Structure and tips for Indian job applications.",
   alternates: { canonical: `${siteUrl}/examples` },
 };
 
