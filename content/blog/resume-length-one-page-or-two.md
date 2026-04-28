@@ -1,13 +1,17 @@
 ---
 slug: resume-length-one-page-or-two
 title: "Resume Length: One Page or Two? Rules for 2026"
-description: "When to use a one-page resume vs two pages. Guidelines for freshers, mid-career, and senior professionals in India."
+description: "A clear decision framework for one-page vs two-page resumes by experience level, role type, and hiring context."
 date: "2026-03-01"
+updated: "2026-04-28"
 author: ResumeDoctor
-authorBio: "Practical resume guidance for India-focused job seekers."
-readTime: 5
-tags: ["formatting", "career"]
+authorBio: "Practical resume guidance for India-focused and global-English job seekers."
+readTime: 9
+tags: ["formatting", "career", "resume-strategy"]
 coverImage: "/blog/covers/default.svg"
+faq:
+  - q: "Is one page always better?"
+    a: "No. One page is ideal for many early-career profiles, but two pages are acceptable when the second page adds clear relevant impact."
 ---
 
 One of the most common questions we get: *How long should my resume be?* The short answer: **it depends on your experience.**
@@ -40,3 +44,18 @@ One of the most common questions we get: *How long should my resume be?* The sho
 - **Repetition** across sections
 
 Use [ResumeDoctor templates](/templates) to keep your resume to one or two clean, ATS-friendly pages. [Create your resume →](/try)
+
+## Global-English hiring context
+
+Across India, US, UK, and many global-English markets, the same rule is becoming standard: relevance density matters more than page count.
+
+If every section earns attention and supports role fit, two pages are acceptable. If page two is repetitive, trim it.
+
+## Decision checklist
+
+- [ ] Is your strongest evidence visible in page one?
+- [ ] Does page two contain net-new relevant impact?
+- [ ] Are dates and bullets easy to scan?
+- [ ] Is format ATS-safe and text-selectable?
+
+If you are unsure, create both versions in [ResumeDoctor](/try), compare clarity, and apply with the version that makes your case fastest.

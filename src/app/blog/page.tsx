@@ -10,7 +10,7 @@ import { ArrowUpRight, Sparkles } from "lucide-react";
 export const metadata: Metadata = {
   title: "Resume & Career Tips",
   description:
-    "Expert guides on resumes, CVs, and job search. ATS tips, fresher formats, and templates for the Indian job market.",
+    "Expert resume and job-search playbooks to help you get shortlisted faster. Practical guides, templates, and examples for India and global-English careers.",
   alternates: { canonical: `${siteUrl}/blog` },
 };
 
@@ -38,7 +38,7 @@ export default function BlogIndexPage() {
           <div className="relative mx-auto max-w-6xl px-4 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-20 lg:px-8">
             <div className="inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-white/70 px-3 py-1 text-xs font-medium text-slate-600 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-300">
               <Sparkles className="h-3.5 w-3.5 text-amber-500" aria-hidden />
-              Guides for Indian job seekers
+              Actionable playbooks for job seekers
             </div>
             <h1 className="mt-6 max-w-3xl text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50 sm:text-5xl sm:leading-[1.08]">
               Resume &amp; career{" "}
@@ -47,8 +47,8 @@ export default function BlogIndexPage() {
               </span>
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-relaxed text-slate-600 dark:text-slate-400">
-              Practical, skimmable articles on ATS layouts, fresher formats, interviews, and how to ship a resume hiring
-              managers actually read.
+              High-clarity guides on ATS, resume writing, profile optimization, and application strategy — designed to
+              help you turn job searches into interviews.
             </p>
           </div>
         </section>

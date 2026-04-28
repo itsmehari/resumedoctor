@@ -1,13 +1,17 @@
 ---
 slug: resume-tips-chennai-job-seekers
 title: "Resume Tips for Chennai Job Seekers"
-description: "Local resume and job-search tips for Chennai. IT, manufacturing, and services roles on Naukri, LinkedIn, and company portals."
+description: "Chennai-focused resume and job-search playbook with role-specific guidance, ATS tips, and practical application strategy."
 date: "2026-03-01"
+updated: "2026-04-28"
 author: ResumeDoctor
-authorBio: "Practical resume guidance for India-focused job seekers."
-readTime: 4
-tags: ["india", "career"]
+authorBio: "Practical resume guidance for India-focused and global-English job seekers."
+readTime: 8
+tags: ["india", "career", "local-job-search"]
 coverImage: "/blog/covers/default.svg"
+faq:
+  - q: "Should I mention Chennai location on my resume?"
+    a: "Yes. City-level location helps recruiters filter candidates faster. Full address is not needed."
 ---
 
 Chennai’s job market spans IT, manufacturing, healthcare, and services. Your resume should be clear, ATS-friendly, and tailored to the roles you target.
@@ -34,3 +38,23 @@ Chennai’s job market spans IT, manufacturing, healthcare, and services. Your r
 ## Next Steps
 
 Build an ATS-friendly resume in minutes with [ResumeDoctor](/). [Try free →](/try)
+
+## Chennai to global pathway (optional)
+
+Many Chennai professionals eventually target remote/global teams. To prepare:
+
+- Use globally understandable role titles
+- Add outcome metrics in your bullets
+- Highlight collaboration tools (Jira, Slack, GitHub, Notion)
+- Keep LinkedIn profile aligned with resume claims
+
+You can be locally strong and globally discoverable at the same time.
+
+## Quick Chennai application checklist
+
+- [ ] Resume headline includes role + key stack/domain
+- [ ] Top bullet reflects role impact in your target industry
+- [ ] Naukri and LinkedIn titles match resume
+- [ ] Notice period and location settings are updated
+
+For final polish, pair this with our [resume checklist](/blog/resume-checklist-before-you-apply) before each application.

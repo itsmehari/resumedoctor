@@ -1,20 +1,24 @@
 ---
 slug: handling-career-gaps-on-resume
 title: "How to Handle Career Gaps on Your Resume (India Edition)"
-description: "Career gaps are common in India. Here's how to address them honestly and confidently without killing your job search."
+description: "Career gap on your resume? Use this framework to explain gaps honestly, reduce recruiter risk, and stay interview-ready."
 date: "2026-02-10"
+updated: "2026-04-28"
 author: "ResumeDoctor"
-authorBio: "Practical resume guidance for India-focused job seekers."
-readTime: 5
-tags: ["career", "experience"]
+authorBio: "Practical resume guidance for India-focused and global-English job seekers."
+readTime: 8
+tags: ["career", "experience", "career-gaps"]
 coverImage: "/blog/covers/default.svg"
+faq:
+  - q: "Should I hide a long career gap?"
+    a: "No. A brief, honest framing is safer than trying to hide it with inaccurate dates."
 ---
 
-Whether it was a health issue, family responsibility, further education, or being between jobs during COVID, career gaps are very common — and they're rarely the dealbreaker candidates fear them to be.
+Career gaps are common. Recruiters care less about the gap itself and more about how clearly and confidently you explain it.
 
-Here's how to handle them with confidence.
+Your goal is to reduce uncertainty: show what happened, what you did, and why you are ready now.
 
-## Should You Explain a Gap on Your Resume?
+## Should you explain a gap on your resume?
 
 **Short gaps (under 3 months):** You don't need to explain these. Hiring timelines naturally create short gaps.
 
@@ -22,7 +26,7 @@ Here's how to handle them with confidence.
 
 **Gaps over 1 year:** Consider a brief parenthetical note in your experience section, or address it in your summary.
 
-## How to Show a Gap Productively
+## How to show a gap productively
 
 Even if you weren't in formal employment, you likely did something during the gap. Here's how to frame different scenarios:
 
@@ -35,7 +39,7 @@ Even if you weren't in formal employment, you likely did something during the ga
 | Health | No need to detail — "Personal leave" is sufficient |
 | Job search | You can simply leave the gap unlabelled |
 
-## Formatting Tips
+## Formatting tips
 
 Use **month + year** for all dates to show you're being precise, not hiding something:
 
@@ -52,9 +56,9 @@ Freshworks     2022 – 2023
 CRED           2024 – Present
 ```
 
-Year-only dates are accepted and less scrutinised, though they're less precise.
+Year-only dates are accepted when needed, but month-year is stronger when you have constructive activity during the gap.
 
-## What to Say in the Interview
+## What to say in the interview
 
 Interviewers will ask about gaps. Prepare a 2-sentence response:
 
@@ -62,12 +66,24 @@ Interviewers will ask about gaps. Prepare a 2-sentence response:
 
 Keep it brief, honest, and pivot to what you bring.
 
-## What NOT to Do
+## What not to do
 
 - Don't lie or falsify dates — background checks catch this
 - Don't be defensive or over-explain
 - Don't leave a 2-year gap completely unexplained if you can address it simply
 
----
+## Re-entry action plan (first 2 weeks)
 
-Your gap doesn't define your career. Your skills and achievements do. Use [ResumeDoctor](/try) to build a resume that leads with your best work.
+If you are returning after a long gap, do this:
+
+1. Refresh resume with role-relevant skills
+2. Add one current project/certification
+3. Rework LinkedIn headline and About
+4. Apply to role clusters, not random openings
+5. Prepare a confident 20-second gap explanation
+
+## Final takeaway
+
+A gap does not disqualify you. Poor framing does.
+
+Lead with capability, present the gap briefly, and move conversation to outcomes. Use [ResumeDoctor](/try) to structure your resume around your strongest evidence, then pair it with [tailored applications](/blog/how-to-tailor-resume-for-job-description).

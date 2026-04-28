@@ -249,14 +249,14 @@ export default async function BlogPostPage({ params }: Props) {
                 )}
               >
                 <p className="text-sm font-medium leading-snug text-primary-950 dark:text-primary-100">
-                  Ready to apply these ideas? Start free — most people finish a first draft in under five minutes.
+                  Ready to turn this into interviews? Build your role-aligned resume in minutes and tailor it for your next application.
                 </p>
                 <Link
                   href="/try"
                   prefetch
                   className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400"
                 >
-                  Try free
+                  Start free
                   <ArrowUpRight className="h-4 w-4 opacity-90" aria-hidden />
                 </Link>
               </div>
@@ -283,14 +283,14 @@ export default async function BlogPostPage({ params }: Props) {
                 />
                 <h2 className="relative text-xl font-bold text-white sm:text-2xl">Put this guide to work</h2>
                 <p className="relative mx-auto mt-2 max-w-md text-sm text-slate-300">
-                  ATS-friendly templates, AI assist, and exports when you upgrade — free to start.
+                  Use ATS-safe templates, stronger copy, and faster tailoring workflows to apply with confidence.
                 </p>
                 <Link
                   href="/try"
                   prefetch
                   className="relative mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3 text-sm font-bold text-slate-900 shadow-lg transition hover:bg-slate-100"
                 >
-                  Build my resume
+                  Build my resume now
                   <ArrowUpRight className="h-4 w-4" aria-hidden />
                 </Link>
               </div>
@@ -301,7 +301,7 @@ export default async function BlogPostPage({ params }: Props) {
 
               {keepReading.length > 0 && (
                 <section className="print:hidden mt-14 border-t border-slate-200 pt-12 dark:border-slate-800">
-                  <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Keep reading</h2>
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Next best reads</h2>
                   <ul className="mt-4 space-y-3">
                     {keepReading.map((p) => (
                       <li key={p.slug}>
@@ -323,7 +323,7 @@ export default async function BlogPostPage({ params }: Props) {
 
               {relatedExamples.length > 0 && (
                 <section className="print:hidden mt-10 border-t border-slate-200 pt-10 dark:border-slate-800">
-                  <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Resume examples</h2>
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Role-specific resume examples</h2>
                   <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
                     Role-specific outlines you can copy structure from.
                   </p>
