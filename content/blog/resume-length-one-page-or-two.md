@@ -4,10 +4,11 @@ title: "Resume Length: One Page or Two? Rules for 2026"
 description: "When to use a one-page resume vs two pages. Guidelines for freshers, mid-career, and senior professionals in India."
 date: "2026-03-01"
 author: ResumeDoctor
+authorBio: "Practical resume guidance for India-focused job seekers."
 readTime: 5
+tags: ["formatting", "career"]
+coverImage: "/blog/covers/default.svg"
 ---
-
-# Resume Length: One Page or Two?
 
 One of the most common questions we get: *How long should my resume be?* The short answer: **it depends on your experience.**
 

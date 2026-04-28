@@ -1,0 +1,24 @@
+RESUMEDOCTOR — RESUME CHECKLIST (PRINTABLE)
+============================================
+
+Before you apply
+- [ ] Contact: phone, email, city (if relevant)
+- [ ] LinkedIn / Naukri URLs correct and public
+- [ ] File name: YourName-Role.pdf (or portal requirement)
+
+Content
+- [ ] One strong headline (target role) in first screen
+- [ ] 2–4 impact bullets per recent role (numbers, %, scale)
+- [ ] Skills match job description (no keyword stuffing)
+- [ ] Gaps / career break explained in one line if needed
+
+Format (ATS)
+- [ ] Standard headings: Experience, Education, Skills
+- [ ] Single column, no text boxes
+- [ ] Text-based PDF (not scanned)
+
+Final pass
+- [ ] Spell check + one trusted review
+- [ ] Saved PDF under 1–2 MB for uploads
+
+resumedoctor.in

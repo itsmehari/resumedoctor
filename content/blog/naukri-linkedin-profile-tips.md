@@ -1,9 +1,13 @@
 ---
+slug: naukri-linkedin-profile-tips
 title: "Naukri and LinkedIn Profile Tips for Indian Job Seekers in 2026"
 description: "Optimise your Naukri and LinkedIn profiles to get found by recruiters faster. Practical tips for Indian job seekers."
 date: "2026-01-28"
 author: "ResumeDoctor"
+authorBio: "Practical resume guidance for India-focused job seekers."
 readTime: 7
+tags: ["linkedin", "portals", "india"]
+coverImage: "/blog/covers/default.svg"
 ---
 
 Your resume gets you the interview — but your online profile gets you found in the first place. Indian recruiters use both Naukri and LinkedIn extensively. Here's how to maximise both.

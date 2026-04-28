@@ -1,9 +1,13 @@
 ---
+slug: skills-section-guide
 title: "Resume Skills Section: What to Include (and What to Leave Out)"
 description: "A practical guide to building a skills section that impresses recruiters and passes ATS filters for Indian job seekers."
 date: "2026-02-15"
 author: "ResumeDoctor"
+authorBio: "Practical resume guidance for India-focused job seekers."
 readTime: 4
+tags: ["skills", "ats"]
+coverImage: "/blog/covers/default.svg"
 ---
 
 The skills section is your ATS power-up. Done right, it makes your resume surface in recruiter searches and quickly signals you're a fit. Done wrong, it's ignored noise.

@@ -4,10 +4,11 @@ title: "Cover Letter Examples for India: What to Include"
 description: "How to write a cover letter for Indian job applications. Structure, tone, and examples for Naukri, LinkedIn, and company portals."
 date: "2026-03-01"
 author: ResumeDoctor
+authorBio: "Practical resume guidance for India-focused job seekers."
 readTime: 6
+tags: ["cover-letter", "india"]
+coverImage: "/blog/covers/default.svg"
 ---
-
-# Cover Letter Examples for India
 
 A strong cover letter supports your resume by connecting your experience to the specific role. Here’s how to structure it for Indian job applications.
 

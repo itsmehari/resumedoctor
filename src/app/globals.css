@@ -83,3 +83,27 @@ a,
 .animate-fade-in {
   animation: fade-in 0.6s ease-out forwards;
 }
+
+/* Blog reader mode — applied with `body.blog-reader` via `BlogReaderMode` */
+body.blog-reader .site-header-shell {
+  display: none;
+}
+
+body.blog-reader .blog-hide-in-reader {
+  display: none !important;
+}
+
+@media print {
+  .site-header-shell,
+  .blog-hide-in-reader,
+  .blog-floating-chrome,
+  .blog-reading-progress {
+    display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blog-reading-progress-inner {
+    transition: none !important;
+  }
+}

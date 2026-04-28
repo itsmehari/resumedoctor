@@ -156,14 +156,20 @@ export function ArticleJsonLd({
   slug,
   date,
   author,
+  dateModified,
+  imageUrl,
 }: {
   title: string;
   description: string;
   slug: string;
   date: string;
   author: string;
+  /** ISO date when article was updated */
+  dateModified?: string;
+  /** Absolute URL for OG/main image */
+  imageUrl?: string;
 }) {
-  const article = {
+  const article: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: title,
@@ -181,11 +187,36 @@ export function ArticleJsonLd({
       logo: { "@type": "ImageObject", url: `${siteUrl}/favicon.png` },
     },
   };
+  if (dateModified) article.dateModified = dateModified;
+  if (imageUrl) article.image = [imageUrl];
 
   return (
     <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(article) }}
+    />
+  );
+}
+
+/** FAQPage JSON-LD for in-article FAQs (blog). */
+export function BlogFaqJsonLd({ items }: { items: { q: string; a: string }[] }) {
+  if (!items.length) return null;
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: items.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.a,
+      },
+    })),
+  };
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
     />
   );
 }

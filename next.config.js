@@ -57,6 +57,8 @@ const nextConfig = {
               "form-action 'self'",
               // Base URI: self only
               "base-uri 'self'",
+              // Embedded video (blog guides)
+              "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://www.loom.com",
             ].join("; "),
           },
         ],

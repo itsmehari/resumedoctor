@@ -4,10 +4,11 @@ title: "Resume Checklist Before You Apply – Last-Minute Checks"
 description: "A quick checklist: typos, keywords, length, contact details, and formatting so your resume doesn't get rejected before it's read."
 date: "2026-03-10"
 author: ResumeDoctor
+authorBio: "Practical resume guidance for India-focused job seekers."
 readTime: 5
+tags: ["career", "apply"]
+coverImage: "/blog/covers/default.svg"
 ---
-
-# Resume Checklist Before You Apply
 
 Use this list in the last 5 minutes before you hit "Submit" on Naukri, LinkedIn, or a company portal. A single typo or missing keyword can cost you an interview.
 

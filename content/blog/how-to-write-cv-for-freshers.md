@@ -4,10 +4,11 @@ title: "How to Write a CV for Freshers in 2026"
 description: "Step-by-step guide for students and fresh graduates on structure, sections, and examples that get you noticed."
 date: "2026-02-28"
 author: ResumeDoctor
+authorBio: "Practical resume guidance for India-focused job seekers."
 readTime: 6
+tags: ["fresher", "formats"]
+coverImage: "/blog/covers/default.svg"
 ---
-
-# How to Write a CV for Freshers in 2026
 
 As a fresher, you may have limited work experience. That's okay. A strong CV highlights your education, projects, internships, and skills in a way that shows potential.
 

@@ -1,9 +1,14 @@
 ---
+slug: resume-formats-india-guide
 title: "Resume Formats in India: Chronological vs Functional vs Combination"
 description: "Which resume format is best for Indian job seekers? Compare chronological, functional, and combination formats with examples."
 date: "2026-02-05"
+updated: "2026-04-10"
 author: "ResumeDoctor"
-readTime: 6
+authorBio: "Practical resume guidance for India-focused job seekers."
+readTime: 16
+tags: ["formats", "india", "career"]
+coverImage: "/blog/covers/default.svg"
 ---
 
 Most Indian job seekers use the chronological format without thinking about it. But depending on your career stage, a different format could work significantly better. Here's a breakdown.
@@ -99,5 +104,29 @@ For maximum compatibility on Indian job portals:
 3. Use clean, ATS-safe formatting (no tables, no graphics)
 
 ---
+
+## Deeper dive: campus hiring vs lateral moves
+
+Campus programs (TCS, Infosys WILP, product company SDE tracks) often expect a **one-page** chronological flow with **Education** and **Projects** above internship experience. Lateral hiring for 4+ years usually wants **impact-first** bullets and may tolerate two pages if every line adds signal. When in doubt, open three JDs you like and mirror their tone: if all say “ownership” and “stakeholders,” reflect that vocabulary in your summary—not as a tag cloud, but in the two roles that matter most.
+
+## City, language, and remote norms
+
+Bangalore and Hyderabad listings may emphasize product scale; Mumbai and Delhi NCR roles may blend client + ops language. If you are open to **remote** or **hybrid**, say it once in the summary or header line—recruiters use these tokens in search. For Hindi/English bilingual support roles, mention language in **Skills** with proficiency if the JD asks for it.
+
+## Formats to avoid on Indian portals
+
+Skip heavy **graphics**, **skill bar charts**, and **multi-column** PDFs for the version you upload. They may look good in a design tool and still **parse badly** on Naukri. Keep a “show” PDF for human networking if you must, but maintain a **plain** master file for applications.
+
+## How ResumeDoctor maps to these choices
+
+Our builder nudges you toward **chronological** and **combination** structures with section types that map to what ATS expect. You can reorder for campus vs experienced tracks, export to **PDF** or **Word**, and iterate fast when you switch target roles—try [ResumeDoctor free](/try) and compare exports side by side with your old file.
+
+## Checklist before you click “Apply”
+
+- [ ] Format matches your stage (campus vs experienced)
+- [ ] Most recent role is visible without scrolling on a laptop preview
+- [ ] Skills line mirrors the JD’s top five nouns where truthful
+- [ ] File is text-selectable PDF
+- [ ] You saved a version name with the company or role cluster in your own files—not in the file name you upload, keep that professional
 
 [ResumeDoctor's resume builder](/try) generates ATS-optimised chronological and combination formats automatically — with Indian recruiters in mind.

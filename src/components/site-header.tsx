@@ -80,7 +80,7 @@ export function SiteHeader({
   // Unified marketing/public header across home and public pages.
   if (isPublicHeader) {
     return (
-      <header className="sticky top-0 z-30 border-b border-white/10 bg-primary-600/95 backdrop-blur-sm">
+      <header className="site-header-shell sticky top-0 z-30 border-b border-white/10 bg-primary-600/95 backdrop-blur-sm">
         <div
           className={`${maxWidthClass} mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3 min-h-16 py-3 sm:py-0`}
         >
@@ -114,7 +114,7 @@ export function SiteHeader({
   const showDashboardNav = navVariant === "dashboard" && !isTrial;
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200/80 dark:border-slate-800 bg-white/98 dark:bg-slate-950/98 backdrop-blur-xl shadow-[0_4px_20px_-4px_rgba(13,101,217,0.08)] dark:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.4)]">
+    <header className="site-header-shell sticky top-0 z-30 border-b border-slate-200/80 dark:border-slate-800 bg-white/98 dark:bg-slate-950/98 backdrop-blur-xl shadow-[0_4px_20px_-4px_rgba(13,101,217,0.08)] dark:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.4)]">
       {/* Gradient accent line */}
       <div
         className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary-500/50 to-transparent"

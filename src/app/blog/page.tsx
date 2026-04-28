@@ -1,11 +1,11 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { siteUrl } from "@/lib/seo";
-import { getAllPosts } from "@/lib/blog";
+import { getAllPostSummaries, getAllTagLabels, getFeaturedPost } from "@/lib/blog";
 import { getAllExamples } from "@/lib/examples";
-import { format } from "date-fns";
 import { SiteHeader } from "@/components/site-header";
-import { ArrowUpRight, BookOpen, Sparkles } from "lucide-react";
+import { BlogIndexClient } from "@/components/blog/blog-index-client";
+import { ArrowUpRight, Sparkles } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Resume & Career Tips",
@@ -15,7 +15,9 @@ export const metadata: Metadata = {
 };
 
 export default function BlogIndexPage() {
-  const posts = getAllPosts();
+  const featured = getFeaturedPost();
+  const summaries = getAllPostSummaries();
+  const allTags = getAllTagLabels();
   const examples = getAllExamples().slice(0, 4);
 
   return (
@@ -51,7 +53,7 @@ export default function BlogIndexPage() {
           </div>
         </section>
 
-        {/* Post grid */}
+        {/* Post grid + filters */}
         <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8" aria-label="Blog articles">
           <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
             <div>
@@ -60,6 +62,7 @@ export default function BlogIndexPage() {
             </div>
             <Link
               href="/try"
+              prefetch
               className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
             >
               Build your resume
@@ -67,35 +70,7 @@ export default function BlogIndexPage() {
             </Link>
           </div>
 
-          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {posts.map((post, i) => (
-              <li key={post.slug} className={i === 0 ? "sm:col-span-2 lg:col-span-2" : ""}>
-                <Link
-                  href={`/blog/${post.slug}`}
-                  className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-primary-300/60 hover:shadow-xl hover:shadow-primary-900/[0.04] dark:border-slate-800 dark:bg-slate-900/50 dark:hover:border-primary-700/40 sm:p-8"
-                >
-                  <span className="inline-flex w-fit items-center gap-1.5 rounded-lg bg-slate-100 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                    <BookOpen className="h-3.5 w-3.5" aria-hidden />
-                    Guide
-                  </span>
-                  <h3 className="mt-4 text-xl font-bold tracking-tight text-slate-900 group-hover:text-primary-700 dark:text-slate-50 dark:group-hover:text-primary-300 sm:text-2xl">
-                    {post.title}
-                  </h3>
-                  <p className="mt-3 line-clamp-3 flex-1 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-                    {post.description}
-                  </p>
-                  <div className="mt-6 flex items-center justify-between gap-3 border-t border-slate-100 pt-5 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-500">
-                    <span>
-                      {post.date ? format(new Date(post.date), "MMM d, yyyy") : ""} · {post.readTime} min read
-                    </span>
-                    <span className="font-semibold text-primary-600 transition group-hover:translate-x-0.5 dark:text-primary-400">
-                      Read →
-                    </span>
-                  </div>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <BlogIndexClient allTags={allTags} posts={summaries} featured={featured} />
         </section>
 
         {/* Examples cross-link */}

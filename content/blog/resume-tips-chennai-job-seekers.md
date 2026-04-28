@@ -4,10 +4,11 @@ title: "Resume Tips for Chennai Job Seekers"
 description: "Local resume and job-search tips for Chennai. IT, manufacturing, and services roles on Naukri, LinkedIn, and company portals."
 date: "2026-03-01"
 author: ResumeDoctor
+authorBio: "Practical resume guidance for India-focused job seekers."
 readTime: 4
+tags: ["india", "career"]
+coverImage: "/blog/covers/default.svg"
 ---
-
-# Resume Tips for Chennai Job Seekers
 
 Chennai’s job market spans IT, manufacturing, healthcare, and services. Your resume should be clear, ATS-friendly, and tailored to the roles you target.
 

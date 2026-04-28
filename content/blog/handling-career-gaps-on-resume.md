@@ -1,9 +1,13 @@
 ---
+slug: handling-career-gaps-on-resume
 title: "How to Handle Career Gaps on Your Resume (India Edition)"
 description: "Career gaps are common in India. Here's how to address them honestly and confidently without killing your job search."
 date: "2026-02-10"
 author: "ResumeDoctor"
+authorBio: "Practical resume guidance for India-focused job seekers."
 readTime: 5
+tags: ["career", "experience"]
+coverImage: "/blog/covers/default.svg"
 ---
 
 Whether it was a health issue, family responsibility, further education, or being between jobs during COVID, career gaps are very common — and they're rarely the dealbreaker candidates fear them to be.

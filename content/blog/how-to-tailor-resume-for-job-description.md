@@ -3,11 +3,13 @@ slug: how-to-tailor-resume-for-job-description
 title: "How to Tailor Your Resume to a Job Description"
 description: "Match the JD with your summary, keywords, and bullet points so ATS and recruiters see you as a fit. Step-by-step with examples."
 date: "2026-03-12"
+updated: "2026-04-12"
 author: ResumeDoctor
-readTime: 7
+authorBio: "Practical resume guidance for India-focused job seekers."
+readTime: 16
+tags: ["applications", "ats", "career"]
+coverImage: "/blog/covers/default.svg"
 ---
-
-# How to Tailor Your Resume to a Job Description
 
 A one-size-fits-all resume rarely wins. Tailoring your resume to each job description (JD) improves your ATS score and helps recruiters see you as a match. Here’s how to do it in practice.
 
@@ -66,6 +68,29 @@ In ResumeDoctor you can:
 3. Use **"Apply all"** to add suggested bullets and keywords in one go, then edit to match your real experience.
 
 You keep control; the tool speeds up the matching. [Try it free](/try) with your next application.
+
+## Advanced: cluster tailoring for similar roles
+
+Instead of editing per company, keep **three master variants**: one for your current track (e.g. backend), one for an adjacent track (e.g. platform/SRE), and one for management if you lead people. When a JD appears, duplicate the closest variant and spend 10 minutes aligning nouns and reordering bullets—faster than rewriting from scratch each time.
+
+## JD extraction template (copy into notes)
+
+```text
+Role title as posted:
+Must-have tools:
+Must-have years / domain:
+Outcomes (verbs from JD):
+Words to avoid repeating more than twice:
+Proof you own (project / metric):
+```
+
+## India-specific: consulting vs product vs services
+
+Services companies may reward **client delivery** and **utilization** language; product companies may reward **roadmap**, **experimentation**, and **metrics**. Use the JD’s own semantics. If you crossed domains (e.g. services → product), bridge with one summary line: “Delivered X for enterprise clients; now seeking product analytics ownership.”
+
+## When tailoring conflicts with truth
+
+Never fabricate tools or tenure. If you **lack** a must-have, address it elsewhere: coursework, GitHub, certification in progress, or a candid note in the cover letter. Recruiters prefer transparent gaps over keyword stuffing that collapses in interview.
 
 ## Summary
 

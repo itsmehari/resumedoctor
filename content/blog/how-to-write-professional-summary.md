@@ -1,9 +1,13 @@
 ---
+slug: how-to-write-professional-summary
 title: "How to Write a Professional Summary That Gets Noticed"
 description: "Learn how to craft a compelling professional summary in under 80 words that passes ATS and impresses recruiters instantly."
 date: "2026-02-20"
 author: "ResumeDoctor"
+authorBio: "Practical resume guidance for India-focused job seekers."
 readTime: 5
+tags: ["writing", "career"]
+coverImage: "/blog/covers/default.svg"
 ---
 
 The professional summary sits at the top of your resume – it's the first thing recruiters read and often the last if it isn't compelling. Here's how to get it right.
