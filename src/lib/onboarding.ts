@@ -9,6 +9,13 @@ export type OnboardingStepKey =
 
 export type OnboardingChecklistState = Record<OnboardingStepKey, boolean>;
 
+const ONBOARDING_STEP_KEYS: OnboardingStepKey[] = [
+  "template_chosen",
+  "section_filled",
+  "ats_run",
+  "export_done",
+];
+
 const DEFAULT_STATE: OnboardingChecklistState = {
   template_chosen: false,
   section_filled: false,
@@ -26,6 +33,26 @@ function mergeChecklist(
     section_filled: Boolean(manual.section_filled) || detected.section_filled,
     ats_run: Boolean(manual.ats_run) || detected.ats_run,
     export_done: Boolean(manual.export_done) || detected.export_done,
+  };
+}
+
+/** Parse stored JSON: step overrides plus optional UI flag (not a checklist step). */
+export function parseOnboardingChecklistJson(raw: unknown): {
+  manualSteps: Partial<OnboardingChecklistState> | null;
+  hideGettingStarted: boolean;
+} {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+    return { manualSteps: null, hideGettingStarted: false };
+  }
+  const o = raw as Record<string, unknown>;
+  const hideGettingStarted = o.hideGettingStarted === true;
+  const manualSteps: Partial<OnboardingChecklistState> = {};
+  for (const k of ONBOARDING_STEP_KEYS) {
+    if (o[k] === true) manualSteps[k] = true;
+  }
+  return {
+    manualSteps: Object.keys(manualSteps).length ? manualSteps : null,
+    hideGettingStarted,
   };
 }
 
@@ -71,18 +98,20 @@ export async function detectOnboardingState(userId: string): Promise<OnboardingC
 export async function getMergedOnboardingForUser(userId: string): Promise<{
   steps: OnboardingChecklistState;
   completedAt: Date | null;
+  checklistHidden: boolean;
 }> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: { onboardingChecklist: true, onboardingCompletedAt: true },
   });
 
-  const manual = (user?.onboardingChecklist ?? null) as Partial<OnboardingChecklistState> | null;
+  const { manualSteps, hideGettingStarted } = parseOnboardingChecklistJson(user?.onboardingChecklist);
   const detected = await detectOnboardingState(userId);
-  const steps = mergeChecklist(detected, manual);
+  const steps = mergeChecklist(detected, manualSteps);
 
   return {
     steps,
     completedAt: user?.onboardingCompletedAt ?? null,
+    checklistHidden: hideGettingStarted,
   };
 }

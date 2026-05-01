@@ -527,6 +527,12 @@ export function SettingsContent() {
         <section className="mt-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
           <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Connected accounts</h2>
           <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">Sign in options linked to your account.</p>
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 rounded-lg bg-slate-50 dark:bg-slate-800/50 px-3 py-2 border border-slate-100 dark:border-slate-700">
+            <strong className="font-medium text-slate-800 dark:text-slate-200">Google or LinkedIn sign-in</strong> usually
+            confirms your email with the provider, so you may skip the separate email verification step used for
+            password-only accounts. If you add a password later, use the same email—you may still need to verify for
+            sensitive actions.
+          </p>
           {accounts.length === 0 ? (
             <p className="text-sm text-slate-500">No OAuth accounts linked</p>
           ) : (

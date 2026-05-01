@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { getMergedOnboardingForUser, type OnboardingStepKey } from "@/lib/onboarding";
 import { recordProductEvent } from "@/lib/product-events";
 import { AnalyticsEvents } from "@/lib/analytics-event-names";
+import { sessionUserEmail } from "@/lib/session-user";
 
 export const dynamic = "force-dynamic";
 
@@ -20,21 +21,23 @@ function allDone(steps: Record<OnboardingStepKey, boolean>): boolean {
 
 export async function GET() {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
+  const sessionEmail = sessionUserEmail(session);
+  if (!sessionEmail) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const user = await prisma.user.findUnique({
-    where: { email: session.user.email.toLowerCase() },
+    where: { email: sessionEmail },
     select: { id: true, onboardingCompletedAt: true },
   });
   if (!user) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  const { steps, completedAt } = await getMergedOnboardingForUser(user.id);
+  const merged = await getMergedOnboardingForUser(user.id);
+  const { steps, completedAt, checklistHidden } = merged;
 
-  if (allDone(steps) && !completedAt) {
+  if (!checklistHidden && allDone(steps) && !completedAt) {
     const started = await prisma.user.findUnique({
       where: { id: user.id },
       select: { createdAt: true },
@@ -61,5 +64,6 @@ export async function GET() {
   return NextResponse.json({
     steps: fresh.steps,
     completedAt: fresh.completedAt ? fresh.completedAt.toISOString() : null,
+    checklistHidden: fresh.checklistHidden,
   });
 }

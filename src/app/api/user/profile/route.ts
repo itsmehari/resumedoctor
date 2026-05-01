@@ -9,6 +9,7 @@ import { getEffectiveAuth } from "@/lib/effective-auth";
 import { getMergedOnboardingForUser, type OnboardingStepKey } from "@/lib/onboarding";
 import { recordProductEvent } from "@/lib/product-events";
 import { AnalyticsEvents } from "@/lib/analytics-event-names";
+import { sessionUserEmail } from "@/lib/session-user";
 
 const updateSchema = z.object({
   name: z.string().min(1).max(100).optional(),
@@ -25,6 +26,7 @@ const updateSchema = z.object({
       section_filled: z.boolean().optional(),
       ats_run: z.boolean().optional(),
       export_done: z.boolean().optional(),
+      hideGettingStarted: z.boolean().optional(),
     })
     .optional(),
 });
@@ -74,7 +76,8 @@ export async function GET() {
 
 export async function PATCH(req: Request) {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
+  const sessionEmail = sessionUserEmail(session);
+  if (!sessionEmail) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -89,7 +92,7 @@ export async function PATCH(req: Request) {
     }
 
     const existingUser = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: sessionEmail },
       select: { id: true, onboardingChecklist: true },
     });
     if (!existingUser) {
@@ -104,13 +107,13 @@ export async function PATCH(req: Request) {
     if (parsed.data.notificationPrefs !== undefined) data.notificationPrefs = parsed.data.notificationPrefs ?? undefined;
 
     if (parsed.data.onboardingChecklist) {
-      const prev = (existingUser.onboardingChecklist ?? {}) as Record<string, boolean>;
+      const prev = (existingUser.onboardingChecklist ?? {}) as Record<string, unknown>;
       const mergedManual = { ...prev, ...parsed.data.onboardingChecklist };
       data.onboardingChecklist = mergedManual;
     }
 
     const user = await prisma.user.update({
-      where: { email: session.user.email },
+      where: { email: sessionEmail },
       data,
       select: {
         id: true,

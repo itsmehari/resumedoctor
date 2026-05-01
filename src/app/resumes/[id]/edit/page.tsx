@@ -33,6 +33,8 @@ export default function EditResumePage() {
   const [templateHint, setTemplateHint] = useState<string | null>(null);
   const [templateOpen, setTemplateOpen] = useState(false);
   const [customizeOpen, setCustomizeOpen] = useState(false);
+  const [trialPreviewOnly, setTrialPreviewOnly] = useState(false);
+  const [coachingOpen, setCoachingOpen] = useState(false);
 
   const meta = resume?.content?.meta ?? {};
   const handleCustomize = (updates: { primaryColor?: string; fontFamily?: "sans" | "serif" | "mono"; fontSize?: "small" | "normal" | "large"; spacing?: "compact" | "normal" | "spacious"; dateFormat?: "DD/MM/YYYY" | "MM/YYYY"; documentType?: "Resume" | "CV" }) => {
@@ -102,33 +104,72 @@ export default function EditResumePage() {
     return `${m}:${sec.toString().padStart(2, "0")}`;
   };
 
+  const editorLocked = Boolean(expired && trialPreviewOnly);
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-900 relative">
+      <a
+        href="#resume-editor-main"
+        className="sr-only focus:fixed focus:left-4 focus:top-20 focus:z-[60] focus:m-0 focus:inline-block focus:h-auto focus:w-auto focus:min-h-0 focus:min-w-0 focus:overflow-visible focus:whitespace-normal focus:rounded-lg focus:px-4 focus:py-2.5 focus:bg-white focus:text-slate-900 focus:shadow-lg focus:ring-2 focus:ring-primary-500 dark:focus:bg-slate-900 dark:focus:text-slate-100"
+      >
+        Skip to resume editor
+      </a>
       <SiteHeader variant="app" navVariant="dashboard" />
-      {expired && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 max-w-md mx-4 text-center shadow-xl">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-              Time&apos;s up!
-            </h2>
-            <p className="mt-4 text-slate-600 dark:text-slate-400">
-              Your 5-minute trial has ended. Sign up to save your resume and unlock PDF/Word export.
+      {expired && !trialPreviewOnly && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 dark:bg-black/55 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 max-w-md w-full text-center shadow-xl border border-slate-200/80 dark:border-slate-700">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Your try session ended</h2>
+            <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">
+              Sign up to save everything you built and unlock PDF & Word. Or start a fresh try—or peek at your layout in
+              read-only mode.
             </p>
-            <div className="mt-6 flex gap-4 justify-center">
+            <div className="mt-6 flex flex-col gap-2">
               <Link
                 href="/signup"
-                className="rounded-xl bg-accent hover:bg-accent-hover px-6 py-3 font-semibold text-accent-dark"
+                className="rounded-xl bg-accent hover:bg-accent-hover px-6 py-3 font-semibold text-accent-dark text-center"
               >
                 Sign up to save
               </Link>
               <Link
                 href="/try?expired=1"
-                className="rounded-xl border border-slate-300 dark:border-slate-600 px-6 py-3 font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                className="rounded-xl border border-slate-300 dark:border-slate-600 px-6 py-3 font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-center"
               >
-                Start new trial
+                Start a new try
               </Link>
+              <button
+                type="button"
+                onClick={() => setTrialPreviewOnly(true)}
+                className="rounded-xl border border-dashed border-slate-300 dark:border-slate-600 px-6 py-3 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/80"
+              >
+                Preview layout only (read-only)
+              </button>
             </div>
           </div>
+        </div>
+      )}
+      {expired && trialPreviewOnly && (
+        <div
+          className="fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-4 py-3 flex flex-wrap items-center justify-center gap-3 shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.08)]"
+          role="region"
+          aria-label="Trial ended"
+        >
+          <span className="text-sm text-slate-700 dark:text-slate-300">
+            Try ended — <strong className="font-semibold text-slate-900 dark:text-slate-100">editing is off</strong>.
+            Preview stays visible.
+          </span>
+          <Link
+            href="/signup"
+            className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700"
+          >
+            Sign up to save
+          </Link>
+          <button
+            type="button"
+            onClick={() => setTrialPreviewOnly(false)}
+            className="text-sm font-medium text-primary-600 dark:text-primary-400 hover:underline"
+          >
+            All options
+          </button>
         </div>
       )}
 
@@ -157,14 +198,17 @@ export default function EditResumePage() {
               type="text"
               value={resume.title}
               onChange={(e) => updateTitle(e.target.value)}
-              className="bg-transparent font-semibold text-slate-900 dark:text-slate-100 border-none focus:outline-none focus:ring-0 px-2 py-1 rounded"
+              disabled={editorLocked}
+              readOnly={editorLocked}
+              className="bg-transparent font-semibold text-slate-900 dark:text-slate-100 border-none focus:outline-none focus:ring-0 px-2 py-1 rounded disabled:opacity-60"
             />
             {templates.length > 0 && (
               <div className="relative flex flex-col gap-1">
                 <button
                   type="button"
+                  disabled={editorLocked}
                   onClick={() => { setTemplateHint(null); setTemplateOpen(!templateOpen); }}
-                  className="flex items-center gap-1 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                  className="flex items-center gap-1 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
                 >
                   <span>{currentTemplateName}</span>
                   <span className="text-slate-400">▼</span>
@@ -221,8 +265,9 @@ export default function EditResumePage() {
             <div className="relative">
               <button
                 type="button"
+                disabled={editorLocked}
                 onClick={() => setCustomizeOpen(!customizeOpen)}
-                className="flex items-center gap-1 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                className="flex items-center gap-1 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
                 title="Customize template: color, font, spacing"
               >
                 Customize template
@@ -377,9 +422,25 @@ export default function EditResumePage() {
         </div>
       </header>
 
-      <main className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-        <div className="flex-1 overflow-y-auto p-4 lg:p-6">
-          <div className="max-w-2xl mx-auto space-y-6">
+      <main
+        id="resume-editor-main"
+        tabIndex={-1}
+        className="flex-1 flex flex-col lg:flex-row overflow-hidden outline-none"
+      >
+        <div className="flex-1 overflow-y-auto p-4 lg:p-6 relative">
+          {editorLocked && (
+            <div
+              className="absolute inset-0 z-10 bg-white/80 dark:bg-slate-950/75 backdrop-blur-[2px] flex flex-col items-center pt-8 px-6 text-center pointer-events-auto"
+              aria-live="polite"
+            >
+              <p className="text-sm font-medium text-slate-800 dark:text-slate-100 max-w-sm">
+                Read-only preview. Use the bar below to sign up and edit again.
+              </p>
+            </div>
+          )}
+          <div
+            className={`max-w-2xl mx-auto space-y-6 ${editorLocked ? "pointer-events-none select-none opacity-95" : ""}`}
+          >
             <JobPastePanel
               resumeId={id}
               sections={sections}
@@ -401,6 +462,9 @@ export default function EditResumePage() {
                 <p className="mt-1 text-sm text-primary-800 dark:text-primary-200">
                   Add sections below to build your resume. Start with <strong>Contact</strong>, then <strong>Summary</strong>, and <strong>Experience</strong>. Use &quot;+ Add section&quot; to add more.
                 </p>
+                <p className="mt-2 text-xs text-primary-700/85 dark:text-primary-300/85 lg:hidden">
+                  Tip: On small screens, open <strong>Coaching &amp; ATS tools</strong> on the right when you want feedback or the ATS checker.
+                </p>
               </div>
             )}
             <SectionList sections={sections} onChange={handleSectionsChange} resumeId={id} />
@@ -409,10 +473,23 @@ export default function EditResumePage() {
         </div>
 
         <div className="lg:w-[500px] xl:w-[550px] flex-shrink-0 border-l border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800/30 overflow-y-auto p-4">
-          <div className="sticky top-4 relative space-y-6">
-            <LiveFeedbackPanel sections={sections} />
-            <AtsScorePanel resumeId={id} sections={sections} isPro={isPro} />
-            <IndiaTipsPanel />
+          <div className="sticky top-4 relative space-y-4">
+            <div className="lg:hidden">
+              <button
+                type="button"
+                onClick={() => setCoachingOpen((o) => !o)}
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 text-left flex items-center justify-between gap-2"
+                aria-expanded={coachingOpen}
+              >
+                <span>Coaching &amp; ATS tools</span>
+                <span className="text-slate-400 text-xs">{coachingOpen ? "Hide" : "Show"}</span>
+              </button>
+            </div>
+            <div className={`space-y-6 ${coachingOpen ? "block" : "hidden lg:block"}`}>
+              <LiveFeedbackPanel sections={sections} />
+              <AtsScorePanel resumeId={id} sections={sections} isPro={isPro} />
+              <IndiaTipsPanel />
+            </div>
             <div>
             <p className="text-xs text-slate-500 mb-2">Preview</p>
             <div ref={previewRef} className="relative">

@@ -4,39 +4,39 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { CheckCircle2, Circle, Loader2 } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
+import { AnalyticsEvents } from "@/lib/analytics-event-names";
 
 type StepKey = "template_chosen" | "section_filled" | "ats_run" | "export_done";
 
 function buildSteps(firstResumeId?: string | null): { key: StepKey; label: string; hint: string; href: string }[] {
   const atsHref = firstResumeId ? `/resumes/${firstResumeId}/edit?panel=ats` : "/dashboard";
   return [
-  {
-    key: "template_chosen",
-    label: "Create a resume",
-    hint: "Pick a layout you would be happy to send—first impression matters.",
-    href: "/resumes/new",
-  },
-  {
-    key: "section_filled",
-    label: "Fill key sections",
-    hint: "Add experience, summary, or education so hiring managers see a clear arc.",
-    href: firstResumeId ? `/resumes/${firstResumeId}/edit` : "/dashboard",
-  },
-  {
-    key: "ats_run",
-    label: "Run the ATS checker",
-    hint: "Paste a job description and see gaps before you press apply.",
-    href: atsHref,
-  },
-  {
-    key: "export_done",
-    label: "Export your resume",
-    hint: "TXT anytime; PDF and Word when you are on Pro—ready for portals and email.",
-    href: "/pricing",
-  },
-];
+    {
+      key: "template_chosen",
+      label: "Create a resume",
+      hint: "Pick a layout you would be happy to send—first impression matters.",
+      href: "/resumes/new",
+    },
+    {
+      key: "section_filled",
+      label: "Fill key sections",
+      hint: "Add experience, summary, or education so hiring managers see a clear arc.",
+      href: firstResumeId ? `/resumes/${firstResumeId}/edit` : "/dashboard",
+    },
+    {
+      key: "ats_run",
+      label: "Run the ATS checker",
+      hint: "Paste a job description and see gaps before you press apply.",
+      href: atsHref,
+    },
+    {
+      key: "export_done",
+      label: "Export your resume",
+      hint: "TXT and print on Basic; PDF and Word with Pro or a resume pack.",
+      href: "/pricing",
+    },
+  ];
 }
-
 
 interface OnboardingChecklistProps {
   firstResumeId?: string | null;
@@ -47,7 +47,8 @@ export function OnboardingChecklist({ firstResumeId }: OnboardingChecklistProps)
   const [loadError, setLoadError] = useState<string | null>(null);
   const [steps, setSteps] = useState<Record<StepKey, boolean> | null>(null);
   const [completedAt, setCompletedAt] = useState<string | null>(null);
-  const [marking, setMarking] = useState<StepKey | null>(null);
+  const [checklistHidden, setChecklistHidden] = useState(false);
+  const [dismissing, setDismissing] = useState(false);
 
   const refresh = useCallback(() => {
     setLoading(true);
@@ -57,6 +58,7 @@ export function OnboardingChecklist({ firstResumeId }: OnboardingChecklistProps)
         if (!r.ok) {
           setSteps(null);
           setCompletedAt(null);
+          setChecklistHidden(false);
           setLoadError("Could not load your checklist. Please try again.");
           return;
         }
@@ -64,15 +66,18 @@ export function OnboardingChecklist({ firstResumeId }: OnboardingChecklistProps)
         if (!d?.steps || typeof d.steps !== "object") {
           setSteps(null);
           setCompletedAt(null);
+          setChecklistHidden(false);
           setLoadError("Could not load your checklist. Please try again.");
           return;
         }
         setSteps(d.steps as Record<StepKey, boolean>);
         setCompletedAt(d.completedAt ?? null);
+        setChecklistHidden(d.checklistHidden === true);
       })
       .catch(() => {
         setSteps(null);
         setCompletedAt(null);
+        setChecklistHidden(false);
         setLoadError("Could not load your checklist. Check your connection and try again.");
       })
       .finally(() => setLoading(false));
@@ -82,22 +87,21 @@ export function OnboardingChecklist({ firstResumeId }: OnboardingChecklistProps)
     refresh();
   }, [refresh, firstResumeId]);
 
-  async function markManual(key: StepKey) {
-    setMarking(key);
+  async function dismissChecklist() {
+    setDismissing(true);
     try {
-      const patch: Record<string, boolean> = { [key]: true };
       const res = await fetch("/api/user/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ onboardingChecklist: patch }),
+        body: JSON.stringify({ onboardingChecklist: { hideGettingStarted: true } }),
       });
       if (res.ok) {
-        trackEvent("onboarding_step_completed", { step_name: key });
-        refresh();
+        trackEvent(AnalyticsEvents.onboarding_checklist_dismissed);
+        setChecklistHidden(true);
       }
     } finally {
-      setMarking(null);
+      setDismissing(false);
     }
   }
 
@@ -128,7 +132,7 @@ export function OnboardingChecklist({ firstResumeId }: OnboardingChecklistProps)
     );
   }
 
-  if (completedAt) {
+  if (checklistHidden || completedAt) {
     return null;
   }
 
@@ -146,6 +150,9 @@ export function OnboardingChecklist({ firstResumeId }: OnboardingChecklistProps)
           {doneCount}/{stepMeta.length} complete
         </span>
       </div>
+      <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+        Steps complete automatically when you use the product. Use <strong className="font-medium text-slate-600 dark:text-slate-300">Go</strong> to jump in—no need to mark anything manually.
+      </p>
       <ul className="space-y-3">
         {stepMeta.map((s) => {
           const done = steps[s.key];
@@ -167,28 +174,31 @@ export function OnboardingChecklist({ firstResumeId }: OnboardingChecklistProps)
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 {!done && (
-                  <>
-                    <Link
-                      href={s.href}
-                      className="rounded-lg bg-primary-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-primary-700"
-                    >
-                      Go
-                    </Link>
-                    <button
-                      type="button"
-                      disabled={!!marking}
-                      onClick={() => markManual(s.key)}
-                      className="rounded-lg border border-slate-200 dark:border-slate-600 px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
-                    >
-                      {marking === s.key ? "…" : "Mark done"}
-                    </button>
-                  </>
+                  <Link
+                    href={s.href}
+                    className="rounded-lg bg-primary-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-primary-700"
+                  >
+                    Go
+                  </Link>
                 )}
               </div>
             </li>
           );
         })}
       </ul>
+      <div className="mt-4 pt-3 border-t border-slate-200/80 dark:border-slate-700/80">
+        <button
+          type="button"
+          disabled={dismissing}
+          onClick={() => void dismissChecklist()}
+          className="text-xs font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 disabled:opacity-50"
+        >
+          {dismissing ? "Hiding…" : "Dismiss checklist"}
+        </button>
+        <p className="mt-1 text-[10px] text-slate-400 dark:text-slate-500">
+          Hides this card only. Your progress is still tracked in the background.
+        </p>
+      </div>
     </div>
   );
 }
