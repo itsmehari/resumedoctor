@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { siteUrl } from "@/lib/seo";
 import { getAllPostSummaries, getAllTagLabels, getFeaturedPost } from "@/lib/blog";
-import { getAllExamples } from "@/lib/examples";
+import { getExamplesSortedByTier } from "@/lib/examples";
 import { SiteHeader } from "@/components/site-header";
 import { BlogIndexClient } from "@/components/blog/blog-index-client";
 import { ArrowUpRight, Sparkles } from "lucide-react";
@@ -18,7 +18,7 @@ export default function BlogIndexPage() {
   const featured = getFeaturedPost();
   const summaries = getAllPostSummaries();
   const allTags = getAllTagLabels();
-  const examples = getAllExamples().slice(0, 4);
+  const examples = getExamplesSortedByTier().slice(0, 4);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#faf9f7] dark:bg-slate-950">

@@ -4,79 +4,361 @@
     "title": "Software Engineer Resume Example",
     "role": "Software Engineer",
     "industry": "IT / Tech",
-    "description": "Structure and tips for software developer resumes. Skills, projects, and experience that get shortlisted on Naukri and LinkedIn.",
-    "tips": ["Lead with a 2–3 line summary focused on tech stack and years of experience.", "List technologies and frameworks. Add 2–3 bullet points per role with impact (e.g. improved performance, reduced bugs).", "Include personal or open-source projects if you're a fresher."]
+    "description": "Sample lines, section order, and ATS keywords for developer resumes in India — product, services, and startups.",
+    "priorityTier": "A",
+    "suggestedSections": ["Summary", "Skills", "Experience", "Projects", "Education", "Certifications"],
+    "sampleSummary": "Software Engineer with 3+ years building backend services in Java and Spring Boot. Shipped APIs serving 2M+ daily requests; focused on reliability, observability, and clean delivery in agile squads.",
+    "sampleBullets": [
+      "Owned payment reconciliation service; cut p99 latency by 28% via query tuning and caching (Spring Boot, Redis, PostgreSQL).",
+      "Led migration of legacy monolith module to REST microservice; zero Sev-1 incidents in first 90 days post-cutover.",
+      "Mentored 2 junior engineers on code review, testing, and production readiness practices."
+    ],
+    "indiaContext": "Campus and off-campus hiring in India often combines DSA rounds with system design (for experienced roles) and deep project discussion. Your resume should back every stack claim with employers, timeframes, and measurable outcomes so recruiters can match you to the right panel.",
+    "tips": [
+      "Open with a tight summary: years of experience, primary stack, and one proof point (scale, reliability, or product impact).",
+      "For each role, use 3–5 bullets: what you built, technologies, and a metric or clear outcome — avoid task-only lines like \"worked on modules\".",
+      "List skills truthfully. Keyword-stuffing tools you only used once hurts trust and interviews.",
+      "Fresher or <1 YOE: put 2 strong projects (problem, stack, your part, result) and link GitHub if quality is good.",
+      "Senior roles: mention ownership (on-call, design, mentoring) only if real; add system design keywords when they match actual work."
+    ],
+    "mistakesToAvoid": [
+      "Ten-page CVs or tiny fonts to fit everything — recruiters scan in seconds; two pages max for most Indian tech roles.",
+      "Buzzwords without proof (\"AI/ML enthusiast\") when experience is unrelated.",
+      "Employer names lost inside complex tables or graphics that confuse ATS parsers.",
+      "Hobby sections that eat space without supporting the engineering story."
+    ],
+    "atsIntro": "Indian tech JDs mix English titles (Software Engineer, SDE, Backend Developer). Align your headline with the posting family without inventing titles you never held.",
+    "atsKeywords": ["Software Engineer", "SDE", "Backend Developer", "Full Stack Developer", "Java", "Spring Boot", "REST API", "Microservices", "AWS", "PostgreSQL", "System design"],
+    "atsChecklist": [
+      "Mirror the job title line once in summary or headline if it matches your real role.",
+      "Spell frameworks and tools in full at least once (e.g. \"JavaScript\" not only \"JS\").",
+      "Quantify latency, uptime, adoption, or defect reduction where you can verify.",
+      "Use a single-column, text-first PDF — no text boxes or multi-column tricks."
+    ]
   },
   {
     "slug": "fresher-resume-example",
     "title": "Fresher Resume Example",
     "role": "Fresher / Entry-level",
     "industry": "All",
-    "description": "How to build a strong resume with no full-time experience. Education, internships, and projects.",
-    "tips": ["Put Education first, then Internships or Projects, then Skills.", "Use a short objective or summary (2 lines) stating your goal and key strength.", "Add coursework, certifications, and extracurriculars if relevant."]
+    "description": "Education-first layout, honest projects, and keywords for campus drives and entry-level roles on Naukri and LinkedIn.",
+    "priorityTier": "A",
+    "suggestedSections": ["Objective", "Education", "Skills", "Projects", "Internships", "Certifications"],
+    "sampleSummary": "B.Tech Computer Science graduate (2025) seeking a software engineering trainee role. Strong fundamentals in data structures, OOP, and web development; built two full-stack academic projects with measurable outcomes.",
+    "sampleBullets": [
+      "Expense-split app (React, Node.js, MongoDB): 4-person team; owned auth and REST APIs; demo shortlisted in college hackathon.",
+      "Data structures lab mentor: helped 30+ peers with problem-solving patterns; improved average assignment scores.",
+      "Summer internship — ABC Infotech: automated weekly Excel reports with Python; saved ~4 hours/week for the team."
+    ],
+    "indiaContext": "Mass recruiting and campus drives reward one crisp page: clear degree, CGPA or percentage if strong, projects with your real contribution, and skills that match the companies you target. Avoid long \"career objective\" essays.",
+    "tips": [
+      "Order: Education → Projects/Internships → Skills → Certifications. Put the strongest proof early.",
+      "Use a 2-line objective or summary: role you want + 1 strength (stack, internship, or rank).",
+      "Projects: problem → stack → your role → outcome. One bullet each is enough if dense.",
+      "Skills: comma-separated or grouped (Languages / Web / DB) — easy for ATS and humans.",
+      "Mention coursework or certifications only when they support the roles you apply for."
+    ],
+    "mistakesToAvoid": [
+      "Half-page objectives filled with clichés (\"hard-working, quick learner\" alone).",
+      "Padding experience — fake internships or inflated titles backfire in BGV.",
+      "Cluttered templates that break when uploaded to Taleo or company portals.",
+      "Listing every school competition unless it strengthens the narrative."
+    ],
+    "atsIntro": "Entry-level postings use titles like Graduate Engineer Trainee, GET, Analyst Trainee, or \"Fresher — Software\". Reuse the exact family from the JD when truthful.",
+    "atsKeywords": ["Fresher", "Graduate Engineer Trainee", "GET", "Entry Level", "B.Tech", "Internship", "Academic project", "Python", "Java", "SQL"],
+    "atsChecklist": [
+      "Spell \"internship\" and degree names consistently.",
+      "Include tools you actually used in projects, not a generic skill cloud.",
+      "Keep file name professional: Firstname_Lastname_Resume.pdf.",
+      "One page for most freshers unless you have two strong internships plus multiple projects."
+    ]
   },
   {
     "slug": "data-analyst-resume",
     "title": "Data Analyst Resume Example",
     "role": "Data Analyst",
     "industry": "Analytics",
-    "description": "Resume structure for data analysts. SQL, tools, and metrics that recruiters look for.",
-    "tips": ["Highlight tools: SQL, Excel, Python/R, Tableau, Power BI.", "Quantify impact: e.g. 'Built dashboards used by 50+ stakeholders', 'Reduced report time by 30%'.", "Include relevant certifications (e.g. Google Data Analytics)."]
-  },
-  {
-    "slug": "marketing-manager-resume",
-    "title": "Marketing Manager Resume Example",
-    "role": "Marketing Manager",
-    "industry": "Marketing",
-    "description": "How to present marketing experience, campaigns, and ROI on your resume.",
-    "tips": ["Lead with a summary that mentions channels (digital, brand, growth) and years of experience.", "Use metrics: reach, conversion, revenue impact, team size.", "List campaigns or initiatives with clear outcomes."]
-  },
-  {
-    "slug": "bpo-customer-service-resume",
-    "title": "BPO / Customer Service Resume Example",
-    "role": "Customer Support",
-    "industry": "BPO / Services",
-    "description": "Resume format for call centre, BPO, and customer service roles in India.",
-    "tips": ["Include typing speed, languages known, and shift flexibility if applicable.", "Highlight resolution rates, CSAT, or tenure in previous roles.", "Keep sections clear: Experience, Education, Skills."]
-  },
-  {
-    "slug": "accountant-resume-example",
-    "title": "Accountant Resume Example",
-    "role": "Accountant",
-    "industry": "Finance",
-    "description": "Structure for accountant and finance resumes. Qualifications, software, and experience.",
-    "tips": ["Mention qualifications: CA, CMA, or relevant degrees and certifications.", "List software: Tally, SAP, Excel, or ERP experience.", "Use bullet points for responsibilities and achievements (e.g. audits, reconciliations)."]
-  },
-  {
-    "slug": "teacher-educator-resume",
-    "title": "Teacher / Educator Resume Example",
-    "role": "Teacher / Educator",
-    "industry": "Education",
-    "description": "How to write a resume for teaching and education roles.",
-    "tips": ["Lead with qualifications (B.Ed, M.Ed, subject expertise) and years of experience.", "Include grades/subjects taught, curriculum experience, and any awards.", "Add workshops, training, or extracurricular involvement."]
-  },
-  {
-    "slug": "sales-executive-resume",
-    "title": "Sales Executive Resume Example",
-    "role": "Sales Executive",
-    "industry": "Sales",
-    "description": "Resume tips for sales roles. Targets, achievements, and client handling.",
-    "tips": ["Open with a summary that states your domain (B2B, retail, etc.) and key wins.", "Quantify: targets met, growth %, new accounts, deal size.", "Mention CRM tools and sales methodologies if relevant."]
-  },
-  {
-    "slug": "hr-manager-resume",
-    "title": "HR Manager Resume Example",
-    "role": "HR Manager",
-    "industry": "All",
-    "description": "How to present HR experience, talent acquisition, and people operations on your resume.",
-    "tips": ["Lead with a summary covering years in HR, specializations (TA, L&D, operations), and scale (team size, headcount).", "Quantify: hiring volume, attrition reduction, engagement scores, policy rollouts.", "List HRIS, ATS, and tools (Workday, Zoho, Naukri, LinkedIn Recruiter)."]
+    "description": "Dashboard-focused sample bullets, tool stacks, and ATS terms for analysts in IT, banking, e-commerce, and GCCs.",
+    "priorityTier": "A",
+    "suggestedSections": ["Summary", "Skills", "Experience", "Projects", "Education", "Certifications"],
+    "sampleSummary": "Data Analyst with 4 years translating business questions into dashboards and recurring reports. Strong SQL, Excel, and Power BI; comfortable partnering with ops and finance stakeholders in fast-paced environments.",
+    "sampleBullets": [
+      "Built executive sales dashboard in Power BI; reduced ad-hoc Excel requests by ~40% within one quarter.",
+      "Owned monthly revenue reconciliation SQL pipeline; cut manual errors by standardizing joins and QA checks.",
+      "Partnered with marketing on funnel analysis; identified drop-off stage contributing to 12% improvement in lead quality."
+    ],
+    "tips": [
+      "Minimum credible story: SQL + spreadsheets + one viz tool (Power BI, Tableau, Looker). Add Python/R only if you use them.",
+      "Frame bullets as question → analysis → decision or impact (time saved, accuracy, adoption).",
+      "Certifications help early career; name them with issuer and year.",
+      "For freshers, highlight academic or Kaggle-style projects with clear metrics.",
+      "Avoid \"passionate about data\" without evidence — show datasets, stakeholders, or outcomes."
+    ],
+    "mistakesToAvoid": [
+      "Listing ten BI tools at beginner level — depth beats breadth.",
+      "Vanity charts with no business outcome (\"pretty dashboard\" with no user or decision).",
+      "Copy-pasting engineering deployment bullets that are not analytics work.",
+      "Ignoring Excel — many India roles still lean heavily on advanced Excel."
+    ],
+    "atsIntro": "Analyst JDs emphasize SQL, Excel, dashboards, KPIs, and stakeholder communication. Lead with those when accurate; add domain (fintech, e-comm) if you have it.",
+    "atsKeywords": ["Data Analyst", "SQL", "Power BI", "Tableau", "Excel", "KPI", "Dashboard", "Reporting", "ETL", "Stakeholder management"],
+    "atsChecklist": [
+      "Use \"SQL\" in skills and at least one bullet with a concrete use case.",
+      "Name the viz tool you used in production or internships, not only coursework.",
+      "Quantify report cycle time, error reduction, or dashboard adoption.",
+      "Keep marketing campaign jargon out unless you truly support marketing analytics."
+    ]
   },
   {
     "slug": "product-manager-resume",
     "title": "Product Manager Resume Example",
     "role": "Product Manager",
     "industry": "IT / Tech",
-    "description": "Resume structure for product managers. Roadmaps, metrics, and cross-functional impact.",
-    "tips": ["Open with a summary: years in PM, domain (B2B, B2C, SaaS), and key outcomes (revenue, adoption, NPS).", "Use bullet points with metrics: feature adoption %, retention impact, roadmap delivery.", "Include collaboration with engineering, design, and business; mention tools (Jira, Figma, analytics)."]
+    "description": "Outcome-first PM resume patterns for SaaS, fintech, and digital products — metrics, discovery, and stakeholder impact.",
+    "priorityTier": "A",
+    "suggestedSections": ["Summary", "Experience", "Projects", "Skills", "Education", "Certifications"],
+    "sampleSummary": "Product Manager (B2B SaaS) with 5 years owning roadmap and discovery for billing and integrations. Shipped features that improved net retention by 3 pts and cut onboarding time for mid-market customers.",
+    "sampleBullets": [
+      "Ran discovery with 15+ customer calls/quarter; prioritized backlog with RICE; shipped invoicing workflow used by 200+ accounts.",
+      "Partnered with engineering and design on API roadmap; balanced tech debt vs revenue features with exec-visible tradeoffs.",
+      "Defined success metrics and dashboards; presented monthly outcomes to leadership and CS leadership."
+    ],
+    "tips": [
+      "Summary: domain (B2B/B2C), years, and one metric (retention, revenue, adoption, NPS).",
+      "Bullets: problem insight → decision → launch → measurable outcome — not meeting lists.",
+      "Clarify PM vs project coordinator: ownership of problem, metrics, and tradeoffs.",
+      "Tools: Jira/Linear, analytics (Amplitude, Mixpanel, GA), research — only what you use.",
+      "If APM/fresher pivot, highlight structured projects, case comps, or MBA capstone with metrics."
+    ],
+    "mistakesToAvoid": [
+      "\"Responsible for PRDs\" with no impact or user evidence.",
+      "Claiming engineering delivery you did not own as PM wins.",
+      "Buzzword soup (\"synergy\", \"vision\") without specifics.",
+      "Pure implementation bullets copied from engineers — recruiters want product outcomes."
+    ],
+    "atsIntro": "India JDs mix Product Manager, Product Owner, and APM. Use the title that matches your accountability; PO often implies backlog depth with one squad.",
+    "atsKeywords": ["Product Manager", "Product Owner", "Roadmap", "Backlog", "Discovery", "PRD", "B2B SaaS", "OKR", "Stakeholder management", "Go-to-market"],
+    "atsChecklist": [
+      "Tie each major bullet to a user or business metric.",
+      "Name analytics or research methods you actually used.",
+      "Separate true PM scope from pure project tracking.",
+      "Avoid developer-only keywords dominating the page unless you are technical PM with that balance."
+    ]
+  },
+  {
+    "slug": "marketing-manager-resume",
+    "title": "Marketing Manager Resume Example",
+    "role": "Marketing Manager",
+    "industry": "Marketing",
+    "description": "Channel clarity, campaign metrics, and ATS language for digital, brand, and growth marketers in India.",
+    "priorityTier": "B",
+    "suggestedSections": ["Summary", "Experience", "Skills", "Campaigns", "Education", "Awards"],
+    "sampleSummary": "Marketing Manager with 6 years across performance and brand in consumer e-commerce. Scaled paid acquisition while improving blended ROAS; led seasonal campaigns with cross-functional creative and ops teams.",
+    "sampleBullets": [
+      "Managed ₹4Cr+ annual paid media (Meta + Google); improved ROAS by 18% YoY through creative testing and audience restructuring.",
+      "Launched monsoon campaign: 22% lift in category sessions; coordinated influencers, CRM, and on-site merchandising.",
+      "Built weekly performance reporting cadence for leadership; shortened decision cycles on budget shifts."
+    ],
+    "tips": [
+      "State channel ownership early: performance, brand, growth, CRM, or mix.",
+      "Every campaign bullet should include audience, channel, and outcome (reach, CAC, ROAS, conversion).",
+      "Agency experience: clarify client brands, budgets, and your role vs vendor execution.",
+      "Stack: Google Ads, Meta Ads Manager, SEO tools, analytics — match reality.",
+      "Senior roles: mention team size, budget scope, and P&L or growth accountability when true."
+    ],
+    "mistakesToAvoid": [
+      "Only vanity metrics (likes, impressions) with no revenue or funnel link.",
+      "Vague \"handled social media\" without scale or results.",
+      "Omitting budget or scale signals when applying for lead roles.",
+      "Using sales quota language that confuses marketing scope."
+    ],
+    "atsIntro": "Digital marketing JDs in India emphasize performance marketing, ROAS, funnels, and attribution. Brand roles may stress reach and creative excellence — tune keywords to the posting.",
+    "atsKeywords": ["Marketing Manager", "Performance marketing", "Digital marketing", "Google Ads", "Meta Ads", "SEO", "ROAS", "CAC", "Campaign management", "Brand"],
+    "atsChecklist": [
+      "Align headline with JD: growth vs brand vs performance.",
+      "Include one before/after or YoY metric per major campaign.",
+      "Name primary ad platforms and analytics tools you operated.",
+      "Do not reuse HR or sales metrics that are not marketing outcomes."
+    ]
+  },
+  {
+    "slug": "sales-executive-resume",
+    "title": "Sales Executive Resume Example",
+    "role": "Sales Executive",
+    "industry": "Sales",
+    "description": "Quota, pipeline, and CRM-focused resume lines for B2B, retail, insurance, and channel sales in India.",
+    "priorityTier": "B",
+    "suggestedSections": ["Summary", "Experience", "Skills", "Achievements", "Education"],
+    "sampleSummary": "Enterprise sales executive with 7 years in B2B IT services and SaaS. Comfortable with long-cycle deals, multi-threaded stakeholders, and forecast discipline in Salesforce.",
+    "sampleBullets": [
+      "Exceeded annual quota 3 consecutive years (112%–125%); avg deal size ₹45L+ in mid-market accounts.",
+      "Opened 14 new logos in FY24 in manufacturing vertical; partnered with presales on POC-to-close motion.",
+      "Maintained 4.2× pipeline coverage; improved forecast accuracy for region to leadership targets."
+    ],
+    "tips": [
+      "Summary: domain (B2B/B2C), motion (hunter/farmer), average deal or segment.",
+      "Bullets: quota %, revenue or ACV bands, new logos, cycle time — use ranges if confidentiality matters.",
+      "Name CRM (Salesforce, Zoho) and methodologies (MEDDIC, SPIN) only if you truly use them.",
+      "Inside sales vs field: make travel and territory clear.",
+      "Retail or telecom: emphasize footfall, conversions, attachments, or regional rank where allowed."
+    ],
+    "mistakesToAvoid": [
+      "Only activity metrics (calls, visits) with no business outcome.",
+      "Publishing confidential client revenue; use % or banded figures.",
+      "Mixing marketing optimization language that is not sales ownership.",
+      "Missing digital sales tools if role is hybrid (LinkedIn Sales Navigator, etc.)."
+    ],
+    "atsIntro": "Sales JDs vary: B2B enterprise, SMB, channel, retail. Mirror the motion and keywords (account management, new business, BD) that match your experience.",
+    "atsKeywords": ["Sales Executive", "B2B Sales", "Enterprise sales", "Account management", "CRM", "Salesforce", "Revenue", "Pipeline", "Quota", "Business development"],
+    "atsChecklist": [
+      "Include at least one quota or ranking outcome if policy allows.",
+      "Separate farming (renewal, expansion) from hunting if both apply.",
+      "Spell CRM correctly and tie it to forecasting or pipeline hygiene.",
+      "Avoid campaign ROAS language unless you truly carry a hybrid remit."
+    ]
+  },
+  {
+    "slug": "hr-manager-resume",
+    "title": "HR Manager Resume Example",
+    "role": "HR Manager",
+    "industry": "All",
+    "description": "TA, HR ops, and people metrics — sample lines and keywords for corporates and scaling Indian startups.",
+    "priorityTier": "B",
+    "suggestedSections": ["Summary", "Experience", "Skills", "Education", "Certifications"],
+    "sampleSummary": "HR Manager with 8 years across talent acquisition and HR operations in IT services. Scaled hiring for 400+ annual offers; improved offer-to-join ratio with candidate experience and process fixes.",
+    "sampleBullets": [
+      "Led TA team of 6; met aggressive hiring plan for digital skills during 40% YoY headcount growth.",
+      "Redesigned onboarding journey with IT and admin; cut Day-1 friction tickets by ~30%.",
+      "Partnered with leadership on engagement pulse; rolled out manager toolkit for 1:1s and feedback."
+    ],
+    "tips": [
+      "Clarify spine: TA, HRBP, comp & benefits, or generalist — recruiters match fast.",
+      "Quantify: offers/month, TAT, offer-to-join, attrition support, engagement scores.",
+      "Tools: HRIS (Workday, Darwinbox, Zoho People), ATS (Naukri RMS, LinkedIn Recruiter), payroll partners.",
+      "Compliance-aware language for India context (statutory, POSH training) without giving legal advice.",
+      "HRBP: business partnering bullets with BU leaders and workforce planning."
+    ],
+    "mistakesToAvoid": [
+      "Only \"handled recruitment\" with no scale, tools, or outcomes.",
+      "Senior CV missing awareness of payroll, policies, or ER basics when role requires.",
+      "Copying sales revenue bullets that are not people metrics.",
+      "Overstating legal expertise — keep compliance as awareness/training."
+    ],
+    "atsIntro": "Use titles and keywords aligned to the JD: Talent Acquisition, HR Business Partner, People Operations. Indian enterprises often scan for HRIS and payroll familiarity.",
+    "atsKeywords": ["HR Manager", "Talent acquisition", "Recruitment", "HRIS", "Onboarding", "Employee engagement", "ATS", "Payroll", "HR operations", "Stakeholder management"],
+    "atsChecklist": [
+      "Mention volume (hires/year) or team size when accurate.",
+      "Name HRIS/ATS you administered or used daily.",
+      "Include one metric on joiners, TAT, or engagement if available.",
+      "Keep POSH and labour references factual to your training or policy work — not legal claims."
+    ]
+  },
+  {
+    "slug": "bpo-customer-service-resume",
+    "title": "BPO / Customer Service Resume Example",
+    "role": "Customer Support",
+    "industry": "BPO / Services",
+    "description": "Voice and non-voice support resumes — languages, CSAT, SLAs, and clean ATS formatting for Indian BPO hiring.",
+    "priorityTier": "C",
+    "suggestedSections": ["Summary", "Experience", "Skills", "Education", "Languages"],
+    "sampleSummary": "Customer service professional with 4 years in voice and chat support for telecom clients. Strong CSAT track record, adherence to schedules, and clear escalation discipline.",
+    "sampleBullets": [
+      "Maintained CSAT of 4.6/5 across 1,200+ monthly interactions; met QA targets 11 months straight.",
+      "Handled billing and plan-change queries; reduced repeat contacts by confirming resolution steps.",
+      "Trained 8 new hires on CRM notes, de-escalation, and compliance scripts."
+    ],
+    "tips": [
+      "State process type: voice, chat, email, or blended; name domain if allowed (telecom, banking).",
+      "Metrics: CSAT, AHT, FCR, QA scores, attendance — pick what you truly have.",
+      "Languages: English + Hindi + regional languages are differentiators in India.",
+      "Mention shift flexibility or WFH stability if relevant.",
+      "Typing speed for chat roles when strong (e.g. 40+ WPM)."
+    ],
+    "mistakesToAvoid": [
+      "Heavy graphics or tables that break ATS on Naukri uploads.",
+      "Omitting languages when bilingual support is required.",
+      "Vague \"customer handling\" with no metrics or process detail.",
+      "Dumping IT keywords that do not match support roles."
+    ],
+    "atsIntro": "BPO JDs use voice process, chat support, inbound, outbound, and SLA language. Match that vocabulary to your actual process.",
+    "atsKeywords": ["Customer service", "Voice process", "Chat support", "BPO", "CSAT", "SLA", "CRM", "Inbound", "Multilingual", "Technical support"],
+    "atsChecklist": [
+      "List languages with proficiency (read/write/speak) if space allows.",
+      "Include CSAT, QA, or productivity metric if permitted.",
+      "Keep layout single-column and plain.",
+      "Remove unrelated technical stacks unless you moved to tech support with real tools."
+    ]
+  },
+  {
+    "slug": "accountant-resume-example",
+    "title": "Accountant Resume Example",
+    "role": "Accountant",
+    "industry": "Finance",
+    "description": "Qualification-forward layout for CA pipeline, commerce grads, and industry accountants — GST, Tally, and close process keywords.",
+    "priorityTier": "C",
+    "suggestedSections": ["Summary", "Experience", "Education", "Skills", "Certifications"],
+    "sampleSummary": "Semi-qualified CA (Group II cleared) with 2.5 years articleship in statutory audit and 1 year in industry accounts. Hands-on GST compliance, Tally ERP, and month-end close support.",
+    "sampleBullets": [
+      "Supported statutory audit engagements for 6 manufacturing clients; led walkthroughs on revenue and inventory cycles.",
+      "Prepared GST returns and reconciliations; resolved mismatches with clear documentation for partner review.",
+      "Assisted month-end close: accruals, prepaid schedules, and bank reconciliations for ₹80Cr+ revenue entity."
+    ],
+    "tips": [
+      "Lead with qualification stage: CA final/inter, CMA, M.Com, B.Com — and articleship where relevant.",
+      "Separate audit firm experience from industry roles; scope each clearly.",
+      "Software: Tally, SAP FI, Zoho Books, advanced Excel — truthful depth only.",
+      "Bullets: close tasks, audits, tax, reconciliations — with materiality or entity scale if allowed.",
+      "FP&A vs pure accounting: use vocabulary matching the JD."
+    ],
+    "mistakesToAvoid": [
+      "Generic \"finance professional\" with no credential or scope.",
+      "Missing articleship detail when applying for audit-heavy roles.",
+      "IFRS/Ind AS claims beyond your level.",
+      "Responsibility lists with no cycle, tool, or outcome."
+    ],
+    "atsIntro": "Finance roles scan for GST, Tally, audit, reconciliation, and ERP keywords. Match the JD family: audit, tax, GL, or management reporting.",
+    "atsKeywords": ["Accountant", "CA Articleship", "GST", "Tally", "Reconciliation", "Statutory audit", "Ind AS", "SAP FI", "Month-end close", "Financial reporting"],
+    "atsChecklist": [
+      "State qualification status honestly (cleared groups, attempts if policy allows).",
+      "Name ERP/accounting software you used in production.",
+      "Include compliance or close-cycle terms from your real work.",
+      "Avoid unrelated corporate KPIs from non-finance roles."
+    ]
+  },
+  {
+    "slug": "teacher-educator-resume",
+    "title": "Teacher / Educator Resume Example",
+    "role": "Teacher / Educator",
+    "industry": "Education",
+    "description": "Board-aware resume patterns for school teaching roles — subjects, grades, pedagogy, and institutional keywords.",
+    "priorityTier": "C",
+    "suggestedSections": ["Summary", "Experience", "Education", "Skills", "Certifications", "Activities"],
+    "sampleSummary": "Secondary Mathematics teacher (grades 8–10) with 5 years in CBSE schools. Focus on concept clarity, formative assessment, and parent communication; comfortable integrating digital practice tools.",
+    "sampleBullets": [
+      "Designed lesson sequences for algebra and geometry aligned to board pattern; improved class average scores year-on-year.",
+      "Led maths club and inter-school quiz prep; coordinated with parents on learning gaps and support plans.",
+      "Participated in NCERT workshop on competency-based assessment; piloted rubric-style grading in unit tests."
+    ],
+    "tips": [
+      "Open with subjects, grades, and boards taught (CBSE, ICSE, State).",
+      "Bullets: curriculum, assessment methods, parent engagement, co-curricular leadership.",
+      "Certifications: B.Ed, CTET/TET, subject diplomas — with year.",
+      "International schools: mention frameworks (IB PYP/MYP) only if experienced.",
+      "Keep tone formal; avoid long philosophy essays."
+    ],
+    "mistakesToAvoid": [
+      "Missing board or syllabus clarity.",
+      "Informal tone or emojis unsuitable for institutional hiring.",
+      "Promising specific student grade outcomes unethically.",
+      "Long generic mission statements without teaching proof."
+    ],
+    "atsIntro": "School JDs scan for board names, subjects, grades, B.Ed, and classroom keywords. Private schools may add digital literacy or co-curricular expectations.",
+    "atsKeywords": ["Teacher", "CBSE", "Secondary education", "Mathematics", "Classroom management", "Lesson planning", "Assessment", "B.Ed", "Student development", "Curriculum"],
+    "atsChecklist": [
+      "Name at least one board and the grade band you taught.",
+      "List primary subjects in skills or summary.",
+      "Include certifications required by the employer type.",
+      "Use school-appropriate language; avoid corporate sales metrics unless relevant (e.g. admissions in admin roles)."
+    ]
   }
 ]

@@ -1,25 +1,62 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { siteUrl } from "@/lib/seo";
-import { getAllExamples } from "@/lib/examples";
+import { getExamplesSortedByTier } from "@/lib/examples";
 import { getAllPosts } from "@/lib/blog";
 import { SiteHeader } from "@/components/site-header";
 import { ExamplesItemListJsonLd } from "@/components/seo/json-ld";
-import { ArrowUpRight, Layers } from "lucide-react";
+import { ArrowUpRight, Layers, Sparkles } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Resume Examples by Role – India",
   description:
-    "Resume examples for Software Engineer, Fresher, Data Analyst, Marketing, BPO, and more. Structure and tips for Indian job applications.",
+    "Resume examples for Software Engineer, Fresher, Data Analyst, Marketing, BPO, and more. Sample lines, sections, and ATS tips for Indian job applications.",
   alternates: { canonical: `${siteUrl}/examples` },
 };
 
+function ExampleCard({
+  ex,
+  badge,
+}: {
+  ex: { slug: string; title: string; description: string; industry: string };
+  badge?: string;
+}) {
+  return (
+    <li>
+      <Link
+        href={`/examples/${ex.slug}`}
+        className="group flex h-full flex-col rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300/50 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900/50 dark:hover:border-emerald-800/40 sm:p-7"
+      >
+        {badge ? (
+          <span className="mb-2 inline-flex w-fit items-center gap-1 rounded-full border border-amber-200/90 bg-amber-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-800 dark:border-amber-800/60 dark:bg-amber-950/40 dark:text-amber-200">
+            <Sparkles className="h-3 w-3" aria-hidden />
+            {badge}
+          </span>
+        ) : null}
+        <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
+          {ex.industry}
+        </span>
+        <h2 className="mt-2 text-xl font-bold text-slate-900 group-hover:text-emerald-800 dark:text-slate-50 dark:group-hover:text-emerald-300">
+          {ex.title}
+        </h2>
+        <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{ex.description}</p>
+        <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary-600 dark:text-primary-400">
+          Read full guide
+          <ArrowUpRight className="h-4 w-4 transition group-hover:translate-x-0.5" aria-hidden />
+        </span>
+      </Link>
+    </li>
+  );
+}
+
 export default function ExamplesIndexPage() {
-  const examples = getAllExamples();
+  const examples = getExamplesSortedByTier();
+  const featured = examples.filter((e) => e.priorityTier === "A");
+  const more = examples.filter((e) => e.priorityTier !== "A");
   const recentPosts = getAllPosts().slice(0, 4);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#faf9f7] dark:bg-slate-950">
+    <div className="flex min-h-screen flex-col bg-[#faf9f7] dark:bg-slate-950">
       <ExamplesItemListJsonLd
         examples={examples.map((e) => ({ slug: e.slug, title: e.title, description: e.description }))}
       />
@@ -38,7 +75,7 @@ export default function ExamplesIndexPage() {
           <div className="relative mx-auto max-w-6xl px-4 pb-14 pt-14 sm:px-6 sm:pb-16 sm:pt-16 lg:px-8">
             <div className="inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-white/80 px-3 py-1 text-xs font-medium text-slate-600 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-300">
               <Layers className="h-3.5 w-3.5 text-emerald-600" aria-hidden />
-              Outlines for Indian roles
+              Role-specific guides for India
             </div>
             <h1 className="mt-6 max-w-3xl text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50 sm:text-5xl">
               Resume examples{" "}
@@ -47,8 +84,8 @@ export default function ExamplesIndexPage() {
               </span>
             </h1>
             <p className="mt-5 max-w-2xl text-lg text-slate-600 dark:text-slate-400">
-              Use these as structural references — section order, tone, and what recruiters scan first — then build your
-              own version in the builder.
+              Sample lines, section order, ATS keywords, and mistakes to avoid — then open the builder to make your own
+              version.
             </p>
             <div className="mt-8">
               <Link
@@ -62,27 +99,32 @@ export default function ExamplesIndexPage() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8" aria-label="Resume examples list">
-          <ul className="grid gap-5 sm:grid-cols-2">
-            {examples.map((ex) => (
-              <li key={ex.slug}>
-                <Link
-                  href={`/examples/${ex.slug}`}
-                  className="group flex h-full flex-col rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300/50 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900/50 dark:hover:border-emerald-800/40 sm:p-7"
-                >
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
-                    {ex.industry}
-                  </span>
-                  <h2 className="mt-2 text-xl font-bold text-slate-900 group-hover:text-emerald-800 dark:text-slate-50 dark:group-hover:text-emerald-300">
-                    {ex.title}
-                  </h2>
-                  <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{ex.description}</p>
-                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary-600 dark:text-primary-400">
-                    Read outline
-                    <ArrowUpRight className="h-4 w-4 transition group-hover:translate-x-0.5" aria-hidden />
-                  </span>
-                </Link>
-              </li>
+        <section
+          className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8"
+          aria-label="Popular resume example guides"
+        >
+          <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Popular picks</h2>
+          <p className="mt-1 max-w-2xl text-sm text-slate-600 dark:text-slate-400">
+            Highest-demand roles — full sample lines, India context, and tailored ATS keywords.
+          </p>
+          <ul className="mt-8 grid gap-5 sm:grid-cols-2">
+            {featured.map((ex) => (
+              <ExampleCard key={ex.slug} ex={ex} badge="Popular pick" />
+            ))}
+          </ul>
+        </section>
+
+        <section
+          className="mx-auto max-w-6xl border-t border-slate-200/80 px-4 py-14 dark:border-slate-800 sm:px-6 lg:px-8"
+          aria-label="More resume examples"
+        >
+          <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">More roles</h2>
+          <p className="mt-1 max-w-2xl text-sm text-slate-600 dark:text-slate-400">
+            Marketing, sales, HR, BPO, finance, and teaching — same structure, role-specific content.
+          </p>
+          <ul className="mt-8 grid gap-5 sm:grid-cols-2">
+            {more.map((ex) => (
+              <ExampleCard key={ex.slug} ex={ex} />
             ))}
           </ul>
         </section>
@@ -91,7 +133,7 @@ export default function ExamplesIndexPage() {
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <h2 className="text-center text-2xl font-bold text-slate-900 dark:text-slate-100">From our blog</h2>
             <p className="mx-auto mt-2 max-w-xl text-center text-sm text-slate-600 dark:text-slate-400">
-              Deep dives on ATS, formats, and interviews — written to pair with these outlines.
+              Deep dives on ATS, formats, and interviews — written to pair with these guides.
             </p>
             <ul className="mt-10 grid gap-4 sm:grid-cols-2">
               {recentPosts.map((post) => (
