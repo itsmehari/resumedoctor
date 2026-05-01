@@ -22,7 +22,7 @@ interface Props {
 export function ExportButtons({
   resumeId,
   resumeTitle,
-  sections,
+  sections: _sections,
   previewRef,
   isPro,
   isTrial = false,
@@ -31,6 +31,7 @@ export function ExportButtons({
   const canExport = (isPro || resumePackCredits > 0) && !isTrial;
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState<string | null>(null);
+  const [pdfStatus, setPdfStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const downloadTxt = useCallback(async () => {
@@ -47,6 +48,7 @@ export function ExportButtons({
       a.download = `${slugify(resumeTitle)}-resume.txt`;
       a.click();
       URL.revokeObjectURL(url);
+      setOpen(false);
     } catch {
       setError("Failed to download TXT");
     } finally {
@@ -70,8 +72,15 @@ export function ExportButtons({
         win.print();
         win.close();
       };
-    } catch {
-      setError("Failed to open print preview");
+      setOpen(false);
+    } catch (e) {
+      if (e instanceof Error && e.message === "Popup blocked") {
+        setError(
+          "Your browser blocked the print window. Allow pop-ups for this site (lock icon in the address bar), then try Print again—or use Download TXT."
+        );
+      } else {
+        setError("Failed to open print preview");
+      }
     } finally {
       setLoading(null);
     }
@@ -80,10 +89,14 @@ export function ExportButtons({
   const downloadPdf = useCallback(async () => {
     if (!canExport) return;
     setLoading("pdf");
+    setPdfStatus(null);
     setError(null);
     try {
       const el = previewRef.current;
       if (!el) throw new Error("Preview not found");
+
+      setPdfStatus("Capturing preview…");
+      await new Promise<void>((r) => requestAnimationFrame(() => r()));
 
       const canvas = await html2canvas(el, {
         scale: 2,
@@ -91,6 +104,10 @@ export function ExportButtons({
         logging: false,
         backgroundColor: "#ffffff",
       });
+
+      setPdfStatus("Building PDF…");
+      await new Promise<void>((r) => requestAnimationFrame(() => r()));
+
       const pdf = new jsPDF({
         orientation: "portrait",
         unit: "mm",
@@ -98,11 +115,13 @@ export function ExportButtons({
       });
       const pageW = pdf.internal.pageSize.getWidth();
       const pageH = pdf.internal.pageSize.getHeight();
-      // A4 aspect: height/width = 297/210. One page height in canvas px = canvas.width * (297/210)
       const pageHeightPx = canvas.width * (pageH / pageW);
       const totalPages = Math.ceil(canvas.height / pageHeightPx);
 
       for (let p = 0; p < totalPages; p++) {
+        setPdfStatus(totalPages > 1 ? `Page ${p + 1} of ${totalPages}…` : "Finishing…");
+        await new Promise<void>((r) => requestAnimationFrame(() => r()));
+
         if (p > 0) pdf.addPage();
         const srcY = p * pageHeightPx;
         const srcH = Math.min(pageHeightPx, canvas.height - srcY);
@@ -121,6 +140,7 @@ export function ExportButtons({
         pdf.addImage(imgData, "PNG", 0, 0, pageW, sliceH);
       }
 
+      setPdfStatus("Saving…");
       await fetch(`/api/resumes/${resumeId}/export/log`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -128,10 +148,12 @@ export function ExportButtons({
       });
 
       pdf.save(`${slugify(resumeTitle)}-resume.pdf`);
+      setOpen(false);
     } catch {
       setError("Failed to generate PDF");
     } finally {
       setLoading(null);
+      setPdfStatus(null);
     }
   }, [resumeId, resumeTitle, canExport, previewRef]);
 
@@ -154,6 +176,7 @@ export function ExportButtons({
       URL.revokeObjectURL(url);
       trackEvent("resume_export", { format: "docx" });
       trackMetaCustom("ResumeExport", { format: "docx" });
+      setOpen(false);
     } catch {
       setError("Failed to download Word");
     } finally {
@@ -161,109 +184,190 @@ export function ExportButtons({
     }
   }, [resumeId, resumeTitle, canExport]);
 
+  const busy = loading !== null;
+
   return (
     <div className="relative">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700"
+        disabled={busy}
+        aria-expanded={open}
+        aria-haspopup="true"
+        className="flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-60"
       >
-        <FileDown className="h-4 w-4" />
-        Export
+        <FileDown className="h-4 w-4 shrink-0" aria-hidden />
+        {busy ? (
+          <span>
+            {loading === "pdf" && (pdfStatus || "Preparing PDF…")}
+            {loading === "txt" && "TXT…"}
+            {loading === "html" && "Print…"}
+            {loading === "docx" && "Word…"}
+          </span>
+        ) : (
+          "Export"
+        )}
       </button>
       {open && (
         <>
           <div
             className="fixed inset-0 z-40"
-            onClick={() => setOpen(false)}
+            onClick={() => !busy && setOpen(false)}
             aria-hidden
           />
-          <div className="absolute right-0 top-full z-50 mt-1 w-56 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg py-1">
+          <div
+            className="absolute right-0 top-full z-50 mt-1 w-64 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg py-1"
+            role="menu"
+            aria-label="Export options"
+          >
             {error && (
-              <p className="px-3 py-2 text-xs text-red-600 dark:text-red-400">
+              <p className="px-3 py-2 text-xs text-red-600 dark:text-red-400 border-b border-slate-100 dark:border-slate-700">
                 {error}
               </p>
             )}
             {isTrial ? (
               <>
-                <div className="px-3 py-2 text-sm text-slate-500 dark:text-slate-400">
-                  <Lock className="inline h-4 w-4 mr-2" />
-                  Sign up to download a job-ready PDF/Word resume
+                <div className="px-3 py-2 text-xs text-slate-600 dark:text-slate-400 border-b border-slate-100 dark:border-slate-700">
+                  <Lock className="inline h-3.5 w-3.5 mr-1 align-text-bottom" aria-hidden />
+                  Try mode is preview-only. Sign up to save your work; Pro or a resume pack unlocks PDF and Word for real
+                  applications.
                 </div>
                 <Link
                   href="/signup"
-                  onClick={() => { trackEvent("upgrade_click", { source: "export_trial" }); setOpen(false); }}
+                  onClick={() => {
+                    trackEvent("upgrade_click", { source: "export_trial" });
+                    setOpen(false);
+                  }}
                   className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-primary-600 dark:text-primary-400 hover:bg-slate-100 dark:hover:bg-slate-700"
+                  role="menuitem"
                 >
-                  Create account and export now →
+                  Create account and export →
+                </Link>
+                <Link
+                  href="/pricing"
+                  onClick={() => {
+                    trackEvent("upgrade_click", { source: "export_trial_pricing" });
+                    setOpen(false);
+                  }}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
+                  role="menuitem"
+                >
+                  View Pro & packs
                 </Link>
               </>
             ) : canExport ? (
               <>
+                {resumePackCredits > 0 && !isPro && (
+                  <p className="px-3 py-2 text-xs text-slate-600 dark:text-slate-400 border-b border-slate-100 dark:border-slate-700">
+                    Resume pack: <strong className="text-slate-800 dark:text-slate-200">{resumePackCredits}</strong>{" "}
+                    export{resumePackCredits !== 1 ? "s" : ""} left. PDF and Word use your pack (see pricing for details).
+                  </p>
+                )}
+                {isPro && (
+                  <p className="px-3 py-2 text-xs text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-700">
+                    Pro: PDF and Word are included with your plan.
+                  </p>
+                )}
                 <button
                   type="button"
-                  onClick={() => { downloadTxt(); setOpen(false); }}
-                  disabled={loading !== null}
+                  onClick={() => void downloadTxt()}
+                  disabled={busy}
                   className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
+                  role="menuitem"
                 >
-                  <FileText className="h-4 w-4" />
-                  {loading === "txt" ? "Downloading..." : "Download TXT"}
+                  <FileText className="h-4 w-4 shrink-0" aria-hidden />
+                  {loading === "txt" ? "Downloading…" : "Download TXT"}
                 </button>
                 <button
                   type="button"
-                  onClick={() => { printHtml(); setOpen(false); }}
-                  disabled={loading !== null}
+                  onClick={() => void printHtml()}
+                  disabled={busy}
                   className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
+                  role="menuitem"
                 >
-                  <Printer className="h-4 w-4" />
-                  {loading === "html" ? "Loading..." : "Print / HTML"}
+                  <Printer className="h-4 w-4 shrink-0" aria-hidden />
+                  {loading === "html" ? "Opening…" : "Print / HTML"}
+                </button>
+                <p className="px-3 pb-1 text-[10px] leading-snug text-slate-500 dark:text-slate-400">
+                  Print opens a new tab. If nothing appears, allow pop-ups for this site.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => void downloadPdf()}
+                  disabled={busy}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
+                  role="menuitem"
+                >
+                  <FileDown className="h-4 w-4 shrink-0" aria-hidden />
+                  {loading === "pdf" ? pdfStatus || "Preparing PDF…" : "Download PDF"}
                 </button>
                 <button
                   type="button"
-                  onClick={() => { downloadPdf(); setOpen(false); }}
-                  disabled={loading !== null}
+                  onClick={() => void downloadDocx()}
+                  disabled={busy}
                   className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
+                  role="menuitem"
                 >
-                  <FileDown className="h-4 w-4" />
-                  {loading === "pdf" ? "Generating..." : "Download PDF"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { downloadDocx(); setOpen(false); }}
-                  disabled={loading !== null}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
-                >
-                  <FileDown className="h-4 w-4" />
-                  {loading === "docx" ? "Downloading..." : "Download Word"}
+                  <FileDown className="h-4 w-4 shrink-0" aria-hidden />
+                  {loading === "docx" ? "Downloading…" : "Download Word"}
                 </button>
               </>
             ) : (
               <>
+                <div className="px-3 py-2 text-xs text-slate-600 dark:text-slate-400 border-b border-slate-100 dark:border-slate-700">
+                  TXT and print are free. Recruiter-ready <strong className="font-medium">PDF</strong> and{" "}
+                  <strong className="font-medium">Word</strong> need{" "}
+                  <Link href="/pricing" className="text-primary-600 dark:text-primary-400 underline font-medium">
+                    Pro or a resume pack
+                  </Link>
+                  .
+                </div>
                 <button
                   type="button"
-                  onClick={() => { downloadTxt(); setOpen(false); }}
-                  disabled={loading !== null}
+                  onClick={() => void downloadTxt()}
+                  disabled={busy}
                   className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
+                  role="menuitem"
                 >
-                  <FileText className="h-4 w-4" />
-                  {loading === "txt" ? "Downloading..." : "Download TXT"}
+                  <FileText className="h-4 w-4 shrink-0" aria-hidden />
+                  {loading === "txt" ? "Downloading…" : "Download TXT"}
                 </button>
                 <button
                   type="button"
-                  onClick={() => { printHtml(); setOpen(false); }}
-                  disabled={loading !== null}
+                  onClick={() => void printHtml()}
+                  disabled={busy}
                   className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
+                  role="menuitem"
                 >
-                  <Printer className="h-4 w-4" />
-                  {loading === "html" ? "Loading..." : "Print / HTML"}
+                  <Printer className="h-4 w-4 shrink-0" aria-hidden />
+                  {loading === "html" ? "Opening…" : "Print / HTML"}
                 </button>
-                <Link href="/pricing" onClick={() => { trackEvent("upgrade_click", { source: "export_pdf" }); setOpen(false); }} className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-primary-600">
-                  <Lock className="h-4 w-4" />
-                  Download recruiter-ready PDF — Upgrade
+                <p className="px-3 pb-1 text-[10px] leading-snug text-slate-500 dark:text-slate-400">
+                  Print opens a new tab. If nothing appears, allow pop-ups for this site.
+                </p>
+                <Link
+                  href="/pricing"
+                  onClick={() => {
+                    trackEvent("upgrade_click", { source: "export_pdf" });
+                    setOpen(false);
+                  }}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-primary-600"
+                  role="menuitem"
+                >
+                  <Lock className="h-4 w-4 shrink-0" aria-hidden />
+                  Download PDF — Pro or pack
                 </Link>
-                <Link href="/pricing" onClick={() => { trackEvent("upgrade_click", { source: "export_word" }); setOpen(false); }} className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-primary-600">
-                  <Lock className="h-4 w-4" />
-                  Download editable Word resume — Upgrade
+                <Link
+                  href="/pricing"
+                  onClick={() => {
+                    trackEvent("upgrade_click", { source: "export_word" });
+                    setOpen(false);
+                  }}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-primary-600"
+                  role="menuitem"
+                >
+                  <Lock className="h-4 w-4 shrink-0" aria-hidden />
+                  Download Word — Pro or pack
                 </Link>
               </>
             )}
