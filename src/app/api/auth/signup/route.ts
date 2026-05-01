@@ -97,7 +97,7 @@ export async function POST(req: Request) {
       },
     });
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const verifyLink = `${baseUrl}/verify-email?token=${verifyToken}`;
+    const verifyLink = `${baseUrl}/verify-email#token=${verifyToken}`;
 
     const emailResult = await sendVerificationEmail(normalizedEmail, verifyLink);
     if (!emailResult.ok) {
@@ -107,8 +107,8 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         message: emailResult.ok
-          ? "Account created. Check your email to verify before signing in."
-          : "Account created. Please sign in. (Verification email could not be sent.)",
+          ? "Account created. Check your email and open the verification link, then sign in with your password."
+          : "Account created, but we could not send the verification email. Use “Resend verification email” on the login page after entering your password, or contact support.",
       },
       { status: 201 }
     );
