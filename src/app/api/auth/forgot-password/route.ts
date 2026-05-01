@@ -4,6 +4,7 @@ import { z } from "zod";
 import { randomBytes } from "crypto";
 import { prisma } from "@/lib/prisma";
 import { sendPasswordResetEmail } from "@/lib/email";
+import { normalizeEmail } from "@/lib/email-normalize";
 
 const schema = z.object({
   email: z.string().email("Invalid email"),
@@ -20,7 +21,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const { email } = parsed.data;
+    const email = normalizeEmail(parsed.data.email);
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -39,11 +40,11 @@ export async function POST(req: Request) {
       where: { email },
     });
     await prisma.passwordResetToken.create({
-      data: { email, token, expires },
+      data: { email: user.email, token, expires },
     });
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const resetLink = `${baseUrl}/reset-password?token=${token}`;
+    const resetLink = `${baseUrl}/reset-password#token=${token}`;
 
     const emailResult = await sendPasswordResetEmail(user.email, resetLink);
     if (!emailResult.ok) {

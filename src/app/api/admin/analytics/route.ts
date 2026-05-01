@@ -12,6 +12,7 @@ export async function GET() {
 
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
   const now = new Date();
 
   const [
@@ -26,6 +27,18 @@ export async function GET() {
     totalAiUsage,
     totalAtsRuns,
     productEventFunnel,
+    totalCoverLetters,
+    totalJobApplications,
+    churnFeedbackLast30d,
+    superprofilePurchases,
+    invoicePaidAgg,
+    usersEmailVerified,
+    usersEmailUnverified,
+    pendingTrialActivations,
+    productEventNamesLast7d,
+    totalResumes,
+    proTrialCount,
+    onboardingCompletedLast30d,
   ] = await Promise.all([
     prisma.user.groupBy({ by: ["subscription"], _count: { id: true } }),
     prisma.resume.groupBy({ by: ["templateId"], _count: { id: true } }),
@@ -64,7 +77,39 @@ export async function GET() {
       },
       _count: true,
     }),
+    prisma.coverLetter.count(),
+    prisma.jobApplication.count(),
+    prisma.churnFeedback.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
+    prisma.superprofilePurchaseEvent.count(),
+    prisma.invoice.aggregate({
+      where: { status: "paid" },
+      _count: true,
+      _sum: { amount: true },
+    }),
+    prisma.user.count({ where: { emailVerified: { not: null } } }),
+    prisma.user.count({ where: { emailVerified: null } }),
+    prisma.trialActivationRequest.count({ where: { status: "pending" } }),
+    prisma.productEvent.groupBy({
+      by: ["name"],
+      where: { createdAt: { gte: sevenDaysAgo } },
+      _count: true,
+    }),
+    prisma.resume.count(),
+    prisma.user.count({ where: { subscription: "pro_trial_14" } }),
+    prisma.productEvent.count({
+      where: {
+        createdAt: { gte: thirtyDaysAgo },
+        name: "onboarding_completed",
+      },
+    }),
   ]);
+
+  const dauApproxRows = await prisma.productEvent.groupBy({
+    by: ["userId"],
+    where: { createdAt: { gte: oneDayAgo }, userId: { not: null } },
+    _count: true,
+  });
+  const dauApprox = dauApproxRows.length;
 
   const planBreakdown: Record<string, number> = {};
   for (const g of usersByPlan) {
@@ -126,6 +171,76 @@ export async function GET() {
     });
   }
 
+  const productEventVolumeLast7d: Record<string, number> = {};
+  for (const row of productEventNamesLast7d) {
+    productEventVolumeLast7d[row.name] = row._count;
+  }
+
+  const h24 = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  const h168 = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const in7 = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+  const [
+    signupsLast24h,
+    signupsLast7d,
+    signupsLast30d,
+    invoiceByStatusRows,
+    proTrialExpiring7d,
+    proTrialExpiredStillMarked,
+    churnByReasonRows,
+    otpSendOk24h,
+    otpSendFail24h,
+    otpVerifyOk24h,
+    otpVerifyFail24h,
+  ] = await Promise.all([
+    prisma.user.count({ where: { createdAt: { gte: h24 } } }),
+    prisma.user.count({ where: { createdAt: { gte: h168 } } }),
+    prisma.user.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
+    prisma.invoice.groupBy({ by: ["status"], _count: { id: true } }),
+    prisma.user.count({
+      where: {
+        subscription: "pro_trial_14",
+        subscriptionExpiresAt: { gte: now, lte: in7 },
+      },
+    }),
+    prisma.user.count({
+      where: {
+        subscription: "pro_trial_14",
+        subscriptionExpiresAt: { lt: now },
+      },
+    }),
+    prisma.churnFeedback.groupBy({
+      by: ["reason"],
+      where: { createdAt: { gte: thirtyDaysAgo } },
+      _count: true,
+    }),
+    prisma.otpAttempt.count({
+      where: { type: "send", success: true, createdAt: { gte: h24 } },
+    }),
+    prisma.otpAttempt.count({
+      where: { type: "send", success: false, createdAt: { gte: h24 } },
+    }),
+    prisma.otpAttempt.count({
+      where: { type: "verify", success: true, createdAt: { gte: h24 } },
+    }),
+    prisma.otpAttempt.count({
+      where: { type: "verify", success: false, createdAt: { gte: h24 } },
+    }),
+  ]);
+
+  const invoiceByStatus: Record<string, number> = {};
+  for (const row of invoiceByStatusRows) {
+    invoiceByStatus[row.status] = row._count.id;
+  }
+
+  const churnByReasonLast30d: Record<string, number> = {};
+  for (const row of churnByReasonRows) {
+    churnByReasonLast30d[row.reason] = row._count;
+  }
+
+  const otpSendTotal = otpSendOk24h + otpSendFail24h;
+  const otpVerifyTotal = otpVerifyOk24h + otpVerifyFail24h;
+
   return NextResponse.json({
     subscriptionMetrics: {
       proCount,
@@ -133,6 +248,7 @@ export async function GET() {
       totalUsers,
       conversionRate: Math.round(conversionRate * 10) / 10,
       planBreakdown,
+      proTrialCount,
     },
     templateUsage: templateStats,
     featureUsage: {
@@ -145,6 +261,35 @@ export async function GET() {
     productEvents: {
       funnelLast7Days,
       cohortSignupToPaid: cohortWeeks,
+      volumeByNameLast7Days: productEventVolumeLast7d,
+    },
+    masterAdminKpis: {
+      totalResumes,
+      totalCoverLetters,
+      totalJobApplications,
+      churnFeedbackLast30d,
+      superprofilePurchases,
+      invoicesPaidCount: invoicePaidAgg._count,
+      invoicesPaidAmountPaise: invoicePaidAgg._sum.amount ?? 0,
+      usersEmailVerified,
+      usersEmailUnverified,
+      pendingTrialActivations,
+      dauApprox,
+      onboardingCompletedLast30d,
+      signupsLast24h,
+      signupsLast7d,
+      signupsLast30d,
+      invoiceByStatus,
+      proTrialExpiring7d,
+      proTrialExpiredStillMarked,
+      churnByReasonLast30d,
+      otpLast24h: {
+        sendSuccessRate: otpSendTotal > 0 ? Math.round((otpSendOk24h / otpSendTotal) * 1000) / 10 : null,
+        verifySuccessRate:
+          otpVerifyTotal > 0 ? Math.round((otpVerifyOk24h / otpVerifyTotal) * 1000) / 10 : null,
+        sendAttempts: otpSendTotal,
+        verifyAttempts: otpVerifyTotal,
+      },
     },
   });
 }

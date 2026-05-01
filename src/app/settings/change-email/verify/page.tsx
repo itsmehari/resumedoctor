@@ -1,17 +1,16 @@
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
+import { getActionTokenFromUrl } from "@/lib/client-action-token";
 
 function ChangeEmailVerifyContent() {
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token");
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [message, setMessage] = useState("");
 
   useEffect(() => {
+    const token = getActionTokenFromUrl();
     if (!token) {
       setStatus("error");
       setMessage("Invalid or missing verification link.");
@@ -39,7 +38,7 @@ function ChangeEmailVerifyContent() {
         setStatus("error");
         setMessage("Something went wrong.");
       });
-  }, [token]);
+  }, []);
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-4">

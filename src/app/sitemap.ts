@@ -32,6 +32,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${siteUrl}/signup`, changeFrequency: "monthly" as const, priority: 0.5 },
     { url: `${siteUrl}/blog`, changeFrequency: "weekly" as const, priority: 0.8 },
     { url: `${siteUrl}/examples`, changeFrequency: "monthly" as const, priority: 0.7 },
+    { url: `${siteUrl}/lp/resume-builder-india`, changeFrequency: "monthly" as const, priority: 0.75 },
   ];
 
   return [

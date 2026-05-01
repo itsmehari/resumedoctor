@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
+import { getActionTokenFromUrl } from "@/lib/client-action-token";
 
 function ResetPasswordForm() {
   const [password, setPassword] = useState("");
@@ -11,8 +11,17 @@ function ResetPasswordForm() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const [token, setToken] = useState<string | null | undefined>(undefined);
+
+  useEffect(() => {
+    setToken(getActionTokenFromUrl());
+  }, []);
+
+  if (token === undefined) {
+    return (
+      <div className="w-full max-w-md space-y-6 text-center text-slate-500">Loading...</div>
+    );
+  }
 
   if (!token) {
     return (

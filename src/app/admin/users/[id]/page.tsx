@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { ArrowLeft, Save } from "lucide-react";
@@ -14,11 +14,32 @@ interface UserDetail {
   role: string;
   subscription: string;
   subscriptionId: string | null;
+  billingProvider?: string | null;
+  stripeCustomerId?: string | null;
+  subscriptionExpiresAt?: string | null;
+  onboardingCompletedAt?: string | null;
   resumePackCredits?: number;
   createdAt: string;
   emailVerified: string | null;
   accounts: Array<{ id: string; provider: string; type: string }>;
   sessions: Array<{ id: string; expires: string }>;
+  invoices: Array<{
+    id: string;
+    plan: string;
+    amount: number;
+    currency: string;
+    status: string;
+    externalRef: string | null;
+    pdfUrl: string | null;
+    createdAt: string;
+  }>;
+  superprofilePurchases: Array<{
+    id: string;
+    productKey: string;
+    email: string;
+    idempotencyKey: string;
+    createdAt: string;
+  }>;
   resumes: Array<{
     id: string;
     title: string;
@@ -34,9 +55,15 @@ interface UserDetail {
   }>;
 }
 
+type ActivityItem = {
+  at: string;
+  kind: string;
+  label: string;
+  detail?: Record<string, unknown>;
+};
+
 export default function AdminUserDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const id = params.id as string;
   const [user, setUser] = useState<UserDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -46,6 +73,8 @@ export default function AdminUserDetailPage() {
   const [editName, setEditName] = useState("");
   const [editPackCredits, setEditPackCredits] = useState(0);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [activity, setActivity] = useState<ActivityItem[] | null>(null);
+  const [revoking, setRevoking] = useState(false);
 
   useEffect(() => {
     fetch(`/api/admin/users/${id}`, { credentials: "include" })
@@ -60,6 +89,14 @@ export default function AdminUserDetailPage() {
         }
       })
       .finally(() => setLoading(false));
+  }, [id]);
+
+  useEffect(() => {
+    fetch(`/api/admin/users/${id}/activity`, { credentials: "include" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.items) setActivity(data.items as ActivityItem[]);
+      });
   }, [id]);
 
   const handleSave = async () => {
@@ -91,6 +128,44 @@ export default function AdminUserDetailPage() {
     }
   };
 
+  const reloadUser = () => {
+    fetch(`/api/admin/users/${id}`, { credentials: "include" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((u) => {
+        if (u) setUser(u);
+      });
+  };
+
+  const handleRevokeSessions = async () => {
+    if (user?.role === "admin") {
+      alert("Cannot revoke sessions for admin accounts from here.");
+      return;
+    }
+    if (
+      !window.confirm(
+        "Delete all server sessions for this user? They must sign in again on every device."
+      )
+    ) {
+      return;
+    }
+    setRevoking(true);
+    try {
+      const res = await fetch(`/api/admin/users/${id}/revoke-sessions`, {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        alert(`Sessions revoked (${data.deletedCount ?? 0} removed).`);
+        reloadUser();
+      } else {
+        alert(data.error ?? "Failed");
+      }
+    } finally {
+      setRevoking(false);
+    }
+  };
+
   if (loading || !user) {
     return (
       <div className="p-8">
@@ -119,7 +194,17 @@ export default function AdminUserDetailPage() {
             Joined {formatDistanceToNow(new Date(user.createdAt), { addSuffix: true })}
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          {user.role !== "admin" && (
+            <button
+              type="button"
+              onClick={handleRevokeSessions}
+              disabled={revoking}
+              className="flex items-center gap-2 rounded-lg border border-amber-300 dark:border-amber-800 px-4 py-2 text-sm font-medium text-amber-800 dark:text-amber-200 hover:bg-amber-50 dark:hover:bg-amber-900/20 disabled:opacity-50"
+            >
+              {revoking ? "Revoking…" : "Revoke all sessions"}
+            </button>
+          )}
           <button
             type="button"
             onClick={async () => {
@@ -236,6 +321,123 @@ export default function AdminUserDetailPage() {
 
       <div className="mt-8 space-y-8">
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+          <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">Billing</h2>
+          <dl className="grid sm:grid-cols-2 gap-3 text-sm">
+            <div>
+              <dt className="text-slate-500">Billing provider</dt>
+              <dd className="font-medium text-slate-900 dark:text-slate-100">
+                {user.billingProvider ?? "—"}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-slate-500">Stripe customer</dt>
+              <dd className="font-mono text-xs break-all text-slate-800 dark:text-slate-200">
+                {user.stripeCustomerId ?? "—"}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-slate-500">Subscription expires</dt>
+              <dd className="font-medium text-slate-900 dark:text-slate-100">
+                {user.subscriptionExpiresAt
+                  ? formatDistanceToNow(new Date(user.subscriptionExpiresAt), { addSuffix: true })
+                  : "—"}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-slate-500">Onboarding completed</dt>
+              <dd className="font-medium text-slate-900 dark:text-slate-100">
+                {user.onboardingCompletedAt
+                  ? formatDistanceToNow(new Date(user.onboardingCompletedAt), { addSuffix: true })
+                  : "—"}
+              </dd>
+            </div>
+          </dl>
+          <div className="mt-4">
+            <Link
+              href={`/admin/purchases?q=${encodeURIComponent(user.email)}`}
+              className="text-sm font-medium text-primary-600 hover:underline"
+            >
+              View in Purchases ledger →
+            </Link>
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+          <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">
+            Invoices ({user.invoices?.length ?? 0})
+          </h2>
+          {!(user.invoices ?? []).length ? (
+            <p className="text-sm text-slate-500">No invoices</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200 dark:border-slate-700 text-left text-slate-500">
+                    <th className="pb-2 pr-3">When</th>
+                    <th className="pb-2 pr-3">Plan</th>
+                    <th className="pb-2 pr-3">Amount</th>
+                    <th className="pb-2 pr-3">Status</th>
+                    <th className="pb-2">Ref</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(user.invoices ?? []).map((inv) => (
+                    <tr key={inv.id} className="border-b border-slate-100 dark:border-slate-800">
+                      <td className="py-2 pr-3 text-slate-600">
+                        {formatDistanceToNow(new Date(inv.createdAt), { addSuffix: true })}
+                      </td>
+                      <td className="py-2 pr-3 font-mono text-xs">{inv.plan}</td>
+                      <td className="py-2 pr-3">
+                        {(inv.amount / 100).toLocaleString()} {inv.currency}
+                      </td>
+                      <td className="py-2 pr-3">{inv.status}</td>
+                      <td className="py-2 font-mono text-xs truncate max-w-[120px]" title={inv.externalRef ?? ""}>
+                        {inv.externalRef ?? "—"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+          <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">
+            SuperProfile purchase events ({user.superprofilePurchases?.length ?? 0})
+          </h2>
+          {!(user.superprofilePurchases ?? []).length ? (
+            <p className="text-sm text-slate-500">No automation purchase rows</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200 dark:border-slate-700 text-left text-slate-500">
+                    <th className="pb-2 pr-3">When</th>
+                    <th className="pb-2 pr-3">Product</th>
+                    <th className="pb-2 pr-3">Email (payload)</th>
+                    <th className="pb-2">Idempotency</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(user.superprofilePurchases ?? []).map((ev) => (
+                    <tr key={ev.id} className="border-b border-slate-100 dark:border-slate-800">
+                      <td className="py-2 pr-3 text-slate-600">
+                        {formatDistanceToNow(new Date(ev.createdAt), { addSuffix: true })}
+                      </td>
+                      <td className="py-2 pr-3 font-mono text-xs">{ev.productKey}</td>
+                      <td className="py-2 pr-3 text-xs">{ev.email}</td>
+                      <td className="py-2 font-mono text-xs truncate max-w-[140px]" title={ev.idempotencyKey}>
+                        {ev.idempotencyKey}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-6">
           <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">
             Resumes ({user.resumes.length})
           </h2>
@@ -261,6 +463,32 @@ export default function AdminUserDetailPage() {
                 </Link>
               ))}
             </div>
+          )}
+        </div>
+
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+          <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">
+            Activity timeline
+          </h2>
+          {activity === null ? (
+            <p className="text-sm text-slate-500">Loading activity…</p>
+          ) : activity.length === 0 ? (
+            <p className="text-sm text-slate-500">No tracked activity yet</p>
+          ) : (
+            <ul className="space-y-2 max-h-72 overflow-y-auto text-sm">
+              {activity.slice(0, 40).map((row, i) => (
+                <li
+                  key={`${row.at}-${row.kind}-${row.label}-${i}`}
+                  className="flex flex-wrap gap-x-3 gap-y-1 border-b border-slate-100 dark:border-slate-800 pb-2"
+                >
+                  <span className="text-slate-500 shrink-0">
+                    {formatDistanceToNow(new Date(row.at), { addSuffix: true })}
+                  </span>
+                  <span className="font-mono text-xs text-slate-500">{row.kind}</span>
+                  <span className="text-slate-800 dark:text-slate-200 font-medium">{row.label}</span>
+                </li>
+              ))}
+            </ul>
           )}
         </div>
 

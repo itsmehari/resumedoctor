@@ -56,7 +56,23 @@ export default function AboutPage() {
               Contact
             </h2>
             <p>
-              Questions? Reach out via the support email on our website. We&apos;re here to help.
+              Questions about privacy or data rights:{" "}
+              <a href="mailto:privacy@resumedoctor.in" className="text-primary-600 hover:underline">
+                privacy@resumedoctor.in
+              </a>
+              . Billing after SuperProfile checkout: use Settings → Billing in your account or include your registered
+              email in any message so we can match your order.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mt-8">
+              Why not a generic document tool?
+            </h2>
+            <p>
+              ResumeDoctor focuses on one outcome: a resume hiring teams and parsers can read. Templates, ATS checks,
+              and exports are tuned for that—so you spend less time fighting margins and more time tailoring content to
+              each role.
             </p>
           </section>
         </div>

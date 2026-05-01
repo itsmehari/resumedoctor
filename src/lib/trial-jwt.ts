@@ -1,9 +1,6 @@
 // Free Trial – JWT for trial session (no NextAuth)
 import { SignJWT, jwtVerify } from "jose";
-
-const SECRET = new TextEncoder().encode(
-  process.env.TRIAL_SESSION_SECRET || process.env.NEXTAUTH_SECRET || "trial-secret-change-me"
-);
+import { getTrialJwtSecretBytes, requireTrialJwtSecretBytes } from "@/lib/trial-secret";
 
 const COOKIE_NAME = "trial_session";
 
@@ -28,12 +25,14 @@ export async function createTrialToken(
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(Math.floor(sessionExpiresAt.getTime() / 1000))
-    .sign(SECRET);
+    .sign(requireTrialJwtSecretBytes());
 }
 
 export async function verifyTrialToken(token: string): Promise<TrialPayload | null> {
+  const secret = getTrialJwtSecretBytes();
+  if (!secret) return null;
   try {
-    const { payload } = await jwtVerify(token, SECRET);
+    const { payload } = await jwtVerify(token, secret);
     if (
       !payload.userId ||
       !payload.email ||

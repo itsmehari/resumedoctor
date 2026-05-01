@@ -1,13 +1,14 @@
 // WBS 10.6 – Admin: approve trial activation request
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { requireAdmin } from "@/lib/admin-auth";
+import { requireSuperAdmin } from "@/lib/admin-auth";
+import { logAdminAction } from "@/lib/admin-audit";
 
 export async function POST(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const admin = await requireAdmin();
+  const admin = await requireSuperAdmin();
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { id } = await params;
@@ -42,6 +43,13 @@ export async function POST(
       data: { status: "approved", userId: user.id, reviewedBy: admin.email, reviewedAt: new Date() },
     }),
   ]);
+
+  await logAdminAction({
+    action: "admin_trial_activation_approve",
+    adminUserId: admin.id,
+    targetUserId: user.id,
+    meta: { requestId: id, email: req.email },
+  });
 
   return NextResponse.json({ success: true });
 }

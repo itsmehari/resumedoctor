@@ -4,6 +4,7 @@ import { z } from "zod";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { sessionUserEmail } from "@/lib/session-user";
 
 const schema = z.object({
   status: z.enum(["saved", "applied", "interviewing", "rejected", "offer"]),
@@ -16,12 +17,13 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
+  const sessionEmail = sessionUserEmail(session);
+  if (!sessionEmail) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+    where: { email: sessionEmail },
     select: { id: true },
   });
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -60,12 +62,13 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
+  const sessionEmail = sessionUserEmail(session);
+  if (!sessionEmail) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+    where: { email: sessionEmail },
     select: { id: true },
   });
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });

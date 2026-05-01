@@ -12,6 +12,7 @@ export function useSubscription(): {
   subscriptionExpiresAt: string | null;
   isImpersonating: boolean;
   resumePackCredits: number;
+  emailVerified: boolean | null;
 } {
   const [subscription, setSubscription] = useState("basic");
   const [isPro, setIsPro] = useState(false);
@@ -20,6 +21,7 @@ export function useSubscription(): {
   const [subscriptionExpiresAt, setSubscriptionExpiresAt] = useState<string | null>(null);
   const [isImpersonating, setIsImpersonating] = useState(false);
   const [resumePackCredits, setResumePackCredits] = useState(0);
+  const [emailVerified, setEmailVerified] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,6 +36,7 @@ export function useSubscription(): {
         setSubscriptionExpiresAt(data.subscriptionExpiresAt ?? null);
         setIsImpersonating(data.isImpersonating === true);
         setResumePackCredits(data.resumePackCredits ?? 0);
+        setEmailVerified(data.emailVerified != null);
       })
       .catch(() => {
         setSubscription("basic");
@@ -41,9 +44,20 @@ export function useSubscription(): {
         setIsTrial(false);
         setDisplayName(null);
         setIsImpersonating(false);
+        setEmailVerified(null);
       })
       .finally(() => setLoading(false));
   }, []);
 
-  return { subscription, isPro, isTrial, loading, displayName, subscriptionExpiresAt, isImpersonating, resumePackCredits };
+  return {
+    subscription,
+    isPro,
+    isTrial,
+    loading,
+    displayName,
+    subscriptionExpiresAt,
+    isImpersonating,
+    resumePackCredits,
+    emailVerified,
+  };
 }

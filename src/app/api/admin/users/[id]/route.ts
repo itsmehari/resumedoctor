@@ -2,7 +2,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { requireAdmin } from "@/lib/admin-auth";
+import { requireAdmin, requireSuperAdmin } from "@/lib/admin-auth";
+import { logAdminAction } from "@/lib/admin-audit";
 
 export async function GET(
   _req: NextRequest,
@@ -35,6 +36,31 @@ export async function GET(
         orderBy: { createdAt: "desc" },
         take: 50,
       },
+      invoices: {
+        select: {
+          id: true,
+          plan: true,
+          amount: true,
+          currency: true,
+          status: true,
+          externalRef: true,
+          pdfUrl: true,
+          createdAt: true,
+        },
+        orderBy: { createdAt: "desc" },
+        take: 50,
+      },
+      superprofilePurchases: {
+        select: {
+          id: true,
+          productKey: true,
+          email: true,
+          idempotencyKey: true,
+          createdAt: true,
+        },
+        orderBy: { createdAt: "desc" },
+        take: 50,
+      },
     },
   });
 
@@ -56,7 +82,7 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const admin = await requireAdmin();
+  const admin = await requireSuperAdmin();
   if (!admin) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
@@ -91,6 +117,13 @@ export async function PATCH(
     const updated = await prisma.user.update({
       where: { id },
       data,
+    });
+
+    await logAdminAction({
+      action: "admin_user_update",
+      adminUserId: admin.id,
+      targetUserId: id,
+      meta: { fields: Object.keys(parsed.data) },
     });
 
     return NextResponse.json(updated);

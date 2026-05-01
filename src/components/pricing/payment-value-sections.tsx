@@ -11,17 +11,17 @@ export function ProExportFeatureList({ accent }: { accent: "blue" | "orange" }) 
     {
       icon: <FileText className="h-4 w-4" aria-hidden />,
       title: "PDF export",
-      desc: "Download your resume in high-quality PDF format.",
+      desc: "Attach a sharp PDF to Naukri, LinkedIn, and email—recruiters see exactly what you intended.",
     },
     {
       icon: <FileType2 className="h-4 w-4" aria-hidden />,
       title: "Word (DOCX) export",
-      desc: "Fully editable Word files to customize your resume.",
+      desc: "Tweak wording after mentor feedback without rebuilding the whole layout from scratch.",
     },
     {
       icon: <ShieldCheck className="h-4 w-4" aria-hidden />,
       title: "No watermarks",
-      desc: "Download clean resumes without any watermarks.",
+      desc: "Send application-ready files without branding clutter on the page.",
     },
   ];
   return (
@@ -52,19 +52,19 @@ export function ProFullFeatureList() {
   const items: { title: string; desc: string }[] = [
     {
       title: "Full resume toolkit",
-      desc: "Everything you need to build and export a professional resume.",
+      desc: "One place to draft, tune for a job description, check ATS fit, and ship a file.",
     },
     {
       title: "PDF export",
-      desc: "Download your resume in high-quality PDF format.",
+      desc: "Print- and portal-ready PDFs for the apply button—not just a screen capture.",
     },
     {
       title: "Word (DOCX) export",
-      desc: "Fully editable Word files to customize your resume.",
+      desc: "Hand off an editable file to a friend, coach, or HR contact when they ask for Word.",
     },
     {
       title: "No watermarks",
-      desc: "Download clean resumes without any watermarks.",
+      desc: "Present a clean document in shortlists and interview rounds.",
     },
   ];
   return (

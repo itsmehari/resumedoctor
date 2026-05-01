@@ -7,6 +7,8 @@ import { prisma } from "@/lib/prisma";
 import { compare } from "bcryptjs";
 import { randomBytes } from "crypto";
 import { sendEmailChangeVerification } from "@/lib/email";
+import { sessionUserEmail } from "@/lib/session-user";
+import { requireVerifiedEmailOr403 } from "@/lib/email-verification-guard";
 
 const schema = z.object({
   newEmail: z.string().email("Invalid email address"),
@@ -15,12 +17,13 @@ const schema = z.object({
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
+  const sessionEmail = sessionUserEmail(session);
+  if (!sessionEmail) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+    where: { email: sessionEmail },
     select: { id: true, email: true, passwordHash: true },
   });
   if (!user || !user.passwordHash) {
@@ -29,6 +32,9 @@ export async function POST(req: Request) {
       { status: 400 }
     );
   }
+
+  const verifiedBlock = await requireVerifiedEmailOr403(sessionEmail);
+  if (verifiedBlock) return verifiedBlock;
 
   try {
     const body = await req.json();
@@ -71,7 +77,7 @@ export async function POST(req: Request) {
     });
 
     const baseUrl = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const verifyLink = `${baseUrl}/settings/change-email/verify?token=${token}`;
+    const verifyLink = `${baseUrl}/settings/change-email/verify#token=${token}`;
 
     const result = await sendEmailChangeVerification(newEmail, verifyLink, user.email);
     if (!result.ok) {

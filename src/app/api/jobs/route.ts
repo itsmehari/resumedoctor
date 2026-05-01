@@ -4,9 +4,11 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { extractResumeKeywords } from "@/lib/resume-utils";
+import { sessionUserEmail } from "@/lib/session-user";
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
+  const sessionEmail = sessionUserEmail(session);
 
   const { searchParams } = req.nextUrl;
   const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10));
@@ -39,9 +41,9 @@ export async function GET(req: NextRequest) {
 
   // Keyword matching: fetch user resume and compute match scores
   let resumeKeywords: string[] = [];
-  if (resumeId && session?.user?.email) {
+  if (resumeId && sessionEmail) {
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: sessionEmail },
       select: { id: true },
     });
     if (user) {
@@ -57,9 +59,9 @@ export async function GET(req: NextRequest) {
 
   // Attach match score and saved status
   let savedJobIds = new Set<string>();
-  if (session?.user?.email) {
+  if (sessionEmail) {
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: sessionEmail },
       select: { id: true },
     });
     if (user) {

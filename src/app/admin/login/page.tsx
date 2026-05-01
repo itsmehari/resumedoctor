@@ -25,6 +25,23 @@ function AdminLoginForm() {
         callbackUrl,
       });
       if (res?.error) {
+        if (res.error.startsWith("2FA_REQUIRED:")) {
+          const tfToken = res.error.split(":")[1];
+          try {
+            sessionStorage.setItem("2fa_pending_token", tfToken);
+          } catch {
+            /* ignore */
+          }
+          window.location.href = `/login/2fa?callbackUrl=${encodeURIComponent(callbackUrl)}`;
+          return;
+        }
+        if (res.error === "ADMIN_ENABLE_2FA") {
+          setError(
+            "Admin access requires two-factor authentication. Sign in at the regular user login, open Settings, enable 2FA, then return here."
+          );
+          setLoading(false);
+          return;
+        }
         setError("Invalid email or password");
         setLoading(false);
         return;
@@ -33,7 +50,9 @@ function AdminLoginForm() {
       const role = (session?.user as { role?: string })?.role;
       if (role !== "admin") {
         await signOut({ redirect: false });
-        setError("Access denied. This area is for administrators only.");
+        setError(
+          "Access denied: this account is not an admin in the database. On your machine run PROMOTE_ADMIN_EMAIL=your@email.com npm run promote-admin (use production DATABASE_URL in .env.local), or set User.role to admin in Prisma Studio. See docs/MASTER-ADMIN.md."
+        );
         setLoading(false);
         return;
       }

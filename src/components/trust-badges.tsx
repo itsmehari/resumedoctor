@@ -6,7 +6,7 @@ export function TrustBadges() {
   const badges = [
     { label: "Quick OTP Try", sub: "Email code, no card" },
     { label: "ATS-optimized", sub: "Works with Naukri, Indeed" },
-    { label: "PDF & Word export", sub: "Pro (one-time pay)" },
+    { label: "PDF & Word export", sub: "Pro via SuperProfile" },
   ];
 
   return (

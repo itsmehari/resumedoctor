@@ -122,6 +122,9 @@ export default function ExamplesIndexPage() {
           <Link href="/templates" className="font-medium text-primary-600 hover:underline dark:text-primary-400">
             Templates
           </Link>
+          <Link href="/pricing" className="font-medium text-primary-600 hover:underline dark:text-primary-400">
+            Pricing — export PDF & Word
+          </Link>
           <Link href="/blog" className="text-slate-600 hover:text-primary-600 dark:text-slate-400">
             Blog
           </Link>

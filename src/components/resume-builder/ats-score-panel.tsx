@@ -2,6 +2,7 @@
 
 // WBS 7.5, 7.6 – ATS score UI (progress bar, checklist, suggestions)
 import { useEffect, useState } from "react";
+import { trackEvent } from "@/lib/analytics";
 import { CheckCircle2, AlertCircle, AlertTriangle } from "lucide-react";
 import type { ResumeSection } from "@/types/resume";
 
@@ -43,6 +44,7 @@ export function AtsScorePanel({ resumeId, sections, isPro }: Props) {
         if (out.ok && out.data) {
           setResult(out.data);
           if (out.data.teaser) setTeaserUsed(true);
+          trackEvent("ats_check_completed", { teaser: !!out.data.teaser, resume_id: resumeId });
         } else if (!out.ok && "code" in out && out.code === "TEASER_USED") {
           setTeaserUsed(true);
         }

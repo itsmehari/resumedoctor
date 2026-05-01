@@ -8,6 +8,7 @@ import { chatCompletion, isAiConfigured } from "@/lib/ai-client";
 import { checkAiRateLimit, recordAiUsage } from "@/lib/ai-rate-limit";
 import { getCachedAiResponse, setCachedAiResponse } from "@/lib/ai-cache";
 import { recordFeatureUsage } from "@/lib/feature-usage";
+import { sessionUserEmail } from "@/lib/session-user";
 
 const schema = z.object({
   text: z.string().min(1, "Summary text required").max(2000),
@@ -18,7 +19,8 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
+  const sessionEmail = sessionUserEmail(session);
+  if (!sessionEmail) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -30,7 +32,7 @@ export async function POST(
   }
 
   const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+    where: { email: sessionEmail },
     select: { id: true },
   });
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });

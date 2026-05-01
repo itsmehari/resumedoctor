@@ -1,11 +1,12 @@
 // WBS 11.8 – Start impersonation (admin only)
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin-auth";
+import { requireSuperAdmin } from "@/lib/admin-auth";
+import { logAdminAction } from "@/lib/admin-audit";
 import { prisma } from "@/lib/prisma";
 import { createImpersonationToken, getImpersonationCookieName } from "@/lib/impersonation";
 
 export async function POST(req: NextRequest) {
-  const admin = await requireAdmin();
+  const admin = await requireSuperAdmin();
   if (!admin) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
@@ -31,13 +32,18 @@ export async function POST(req: NextRequest) {
   }
 
   const token = await createImpersonationToken(userId, admin.id);
+  await logAdminAction({
+    action: "admin_impersonate_start",
+    adminUserId: admin.id,
+    targetUserId: userId,
+  });
   const cookieName = getImpersonationCookieName();
   const res = NextResponse.json({ success: true, redirect: "/dashboard" });
   res.cookies.set(cookieName, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
-    maxAge: 60 * 60, // 1 hour
+    maxAge: 30 * 60, // 30 minutes
     path: "/",
   });
   return res;

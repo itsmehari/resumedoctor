@@ -6,6 +6,7 @@ import { parseResumeContent } from "@/lib/resume-utils";
 import { migrateResumeContent } from "@/lib/template-migration";
 import { getResumeAuth } from "@/lib/trial-auth";
 import { getTemplateAccessContext, resolveToAllowedTemplateId } from "@/lib/template-access";
+import { validateResumeContentContact } from "@/lib/resume-contact-validate";
 
 const MAX_VERSIONS = 10;
 
@@ -93,6 +94,11 @@ export async function PATCH(
     }
 
     if (parsed.data.content !== undefined) {
+      const contactCheck = validateResumeContentContact(parsed.data.content);
+      if (!contactCheck.ok) {
+        return NextResponse.json({ error: contactCheck.message }, { status: 400 });
+      }
+
       const newVersion = resume.version + 1;
 
       await prisma.resumeVersion.create({

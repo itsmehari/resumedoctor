@@ -102,10 +102,11 @@ export default function TryTemplatesPage() {
       <main className="flex-1 px-4 py-12">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100 text-center">
-            Choose Your Template
+            Choose a template for this Try session
           </h1>
-          <p className="mt-2 text-slate-600 dark:text-slate-400 text-center max-w-lg mx-auto">
-            All templates are single-page, ATS-friendly. Pick one to start building.
+          <p className="mt-2 text-slate-600 dark:text-slate-400 text-center max-w-lg mx-auto text-sm">
+            Single-page, ATS-friendly layouts. Pick one to draft and preview—sign up afterward to keep editing; Pro adds
+            PDF and Word when you are ready to apply.
           </p>
 
           {error && (

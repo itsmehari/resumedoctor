@@ -1,5 +1,7 @@
 import type { Prisma } from "@prisma/client";
+import { AnalyticsEvents } from "@/lib/analytics-event-names";
 import { prisma } from "@/lib/prisma";
+import { recordProductEvent } from "@/lib/product-events";
 
 export const SUPERPROFILE_PRODUCT_KEYS = [
   "pro_monthly",
@@ -91,6 +93,17 @@ export async function fulfillSuperprofilePurchase(input: {
         payloadSnapshot: input.payloadSnapshot ?? undefined,
       },
     });
+  });
+
+  await recordProductEvent({
+    userId: user.id,
+    name: AnalyticsEvents.payment_success,
+    props: {
+      plan_id: input.productKey,
+      billing_provider: "superprofile",
+      idempotency_key: input.idempotencyKey,
+      ...(input.productKey === "resume_pack" ? { resume_pack_credits: credits } : {}),
+    },
   });
 
   return { ok: true, userId: user.id };

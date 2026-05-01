@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { getTrialFromRequest } from "@/lib/trial-auth";
 import { verifyImpersonationToken, getImpersonationCookieName } from "@/lib/impersonation";
 import { prisma } from "@/lib/prisma";
+import { sessionUserEmail } from "@/lib/session-user";
 
 /** Get effective userId for API routes. Checks: 1) impersonation, 2) session, 3) trial. */
 export async function getEffectiveUserId(): Promise<string | null> {
@@ -16,9 +17,10 @@ export async function getEffectiveUserId(): Promise<string | null> {
   }
 
   const session = await getServerSession(authOptions);
-  if (session?.user?.email) {
+  const sessionEmail = sessionUserEmail(session);
+  if (sessionEmail) {
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: sessionEmail },
       select: { id: true },
     });
     if (user) return user.id;
@@ -56,9 +58,10 @@ export async function getEffectiveAuth(): Promise<{
   }
 
   const session = await getServerSession(authOptions);
-  if (session?.user?.email) {
+  const sessionEmail = sessionUserEmail(session);
+  if (sessionEmail) {
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: sessionEmail },
       select: { id: true, subscription: true },
     });
     if (user) {

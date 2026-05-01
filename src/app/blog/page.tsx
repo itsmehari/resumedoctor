@@ -50,6 +50,35 @@ export default function BlogIndexPage() {
               High-clarity guides on ATS, resume writing, profile optimization, and application strategy — designed to
               help you turn job searches into interviews.
             </p>
+
+            <div className="mt-10 rounded-2xl border border-slate-200/90 bg-white/80 p-5 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/70">
+              <p className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">
+                Start here
+              </p>
+              <ul className="mt-3 flex flex-col gap-2 text-sm sm:flex-row sm:flex-wrap sm:gap-x-6">
+                <li>
+                  <Link
+                    href="/blog/ats-friendly-resume-complete-guide"
+                    className="font-semibold text-primary-600 hover:underline dark:text-primary-400"
+                  >
+                    ATS-friendly resume (pillar)
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/blog/resume-formats-india-guide"
+                    className="font-semibold text-primary-600 hover:underline dark:text-primary-400"
+                  >
+                    Resume formats for India
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/pricing" className="font-semibold text-slate-700 hover:underline dark:text-slate-200">
+                    Pricing — PDF & Word
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </div>
         </section>
 

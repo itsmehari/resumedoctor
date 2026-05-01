@@ -5,15 +5,22 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { checkIpRateLimit, getClientIp, auditLog } from "@/lib/ip-rate-limit";
 import { AnalyticsEvents } from "@/lib/analytics-event-names";
+import { normalizeEmail } from "@/lib/email-normalize";
+import { sessionUserEmail } from "@/lib/session-user";
+import { requireVerifiedEmailOr403 } from "@/lib/email-verification-guard";
 
 // 3 attempts per IP per 24 hours – prevents repeated automated deletion attempts
 const IP_RATE_LIMIT = { windowMs: 24 * 60 * 60 * 1000, maxRequests: 3 };
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
+  const sessionEmail = sessionUserEmail(session);
+  if (!sessionEmail) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const verifiedBlock = await requireVerifiedEmailOr403(sessionEmail);
+  if (verifiedBlock) return verifiedBlock;
 
   const ip = getClientIp(req);
 
@@ -24,7 +31,7 @@ export async function POST(req: Request) {
       userId: undefined,
       ip,
       success: false,
-      meta: { reason: "rate_limited", email: session.user.email },
+      meta: { reason: "rate_limited", email: sessionEmail },
     });
     return NextResponse.json(
       { error: "Too many requests. Please try again tomorrow." },
@@ -51,11 +58,11 @@ export async function POST(req: Request) {
   }
 
   // Require the user to explicitly type their own email address
-  if (!confirmedEmail || confirmedEmail.toLowerCase() !== session.user.email.toLowerCase()) {
+  if (!confirmedEmail || normalizeEmail(confirmedEmail) !== sessionEmail) {
     await auditLog("delete_account", {
       ip,
       success: false,
-      meta: { reason: "email_mismatch", provided: confirmedEmail, session: session.user.email },
+      meta: { reason: "email_mismatch", provided: confirmedEmail, session: sessionEmail },
     });
     return NextResponse.json(
       { error: "Email confirmation does not match your account." },
@@ -64,7 +71,7 @@ export async function POST(req: Request) {
   }
 
   const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+    where: { email: sessionEmail },
     select: { id: true },
   });
 
@@ -78,7 +85,7 @@ export async function POST(req: Request) {
         await tx.churnFeedback.create({
           data: {
             userId: user.id,
-            userEmail: session.user.email,
+            userEmail: sessionEmail,
             reason: churnReason,
             detail: churnDetail,
             source: "delete_account",
@@ -99,7 +106,7 @@ export async function POST(req: Request) {
       userId: user.id,
       ip,
       success: true,
-      meta: { email: session.user.email },
+      meta: { email: sessionEmail },
     });
 
     return NextResponse.json({ success: true });
@@ -109,7 +116,7 @@ export async function POST(req: Request) {
       userId: user.id,
       ip,
       success: false,
-      meta: { reason: "db_error", email: session.user.email },
+      meta: { reason: "db_error", email: sessionEmail },
     });
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }

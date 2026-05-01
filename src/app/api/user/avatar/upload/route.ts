@@ -4,13 +4,15 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { sessionUserEmail } from "@/lib/session-user";
 
 const MAX_SIZE = 2 * 1024 * 1024; // 2MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
+  const sessionEmail = sessionUserEmail(session);
+  if (!sessionEmail) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -35,7 +37,7 @@ export async function POST(req: Request) {
     }
 
     const ext = file.name.split(".").pop() || "jpg";
-    const filename = `avatars/${session.user.email}-${Date.now()}.${ext}`;
+    const filename = `avatars/${sessionEmail}-${Date.now()}.${ext}`;
 
     const blob = await put(filename, file, {
       access: "public",
@@ -43,7 +45,7 @@ export async function POST(req: Request) {
     });
 
     const user = await prisma.user.update({
-      where: { email: session.user.email },
+      where: { email: sessionEmail },
       data: { image: blob.url },
       select: { image: true },
     });

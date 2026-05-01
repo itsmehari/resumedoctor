@@ -24,6 +24,7 @@ import {
   TrialSectionBackdrop,
 } from "@/components/pricing/payment-value-sections";
 import { PricingFaqAccordion, type PricingFaqItem } from "@/components/pricing/pricing-faq-accordion";
+import { TrustBadges } from "@/components/trust-badges";
 
 interface Plan {
   id: string;
@@ -262,6 +263,13 @@ const COMPARE_PLAN_ROWS: {
   },
 ];
 
+const PLAN_CARD_BULLETS = [
+  "Send Naukri and LinkedIn-ready PDFs and Word files",
+  "No watermarks on paid exports",
+  "All 30+ templates while your access is active",
+  "Higher daily limits for ATS checks and AI bullets",
+] as const;
+
 function PlanCardPro({
   badge,
   extraBadge,
@@ -294,7 +302,7 @@ function PlanCardPro({
       {footnote ? <div className="mt-3">{footnote}</div> : null}
       <div className="mt-4 border-t border-slate-200 pt-4 dark:border-slate-700">
         <ul className="mb-4 space-y-2 text-sm text-slate-700 dark:text-slate-300">
-          {["PDF & Word export", "No watermarks", "30+ templates", "Higher ATS & AI limits"].map((f) => (
+          {PLAN_CARD_BULLETS.map((f) => (
             <li key={f} className="flex items-center gap-2">
               <Check className="h-4 w-4 shrink-0 text-emerald-600" aria-hidden />
               {f}
@@ -326,6 +334,14 @@ export default function PricingPage() {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      trackEvent("pricing_view", { currency: region?.currency ?? "unknown" });
+    }
+    // Intentionally when region fetch completes only (avoid duplicate on re-renders).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
 
   const isIndia = region?.currency === "INR";
   const proMonthly = region?.plans?.find((p) => p.id === "pro_monthly");
@@ -412,15 +428,18 @@ export default function PricingPage() {
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:py-14">
         <div className="text-center">
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl">
-            Simple, transparent pricing
+            Choose how you want to apply
           </h1>
           <p className="mx-auto mt-3 max-w-2xl text-slate-600 dark:text-slate-400">
             {region?.currency === "USD"
-              ? "Explore quickly with the OTP Try flow, then unlock Pro on SuperProfile when you need exports and full templates — use the same email at checkout as on your account."
+              ? "Preview the builder with OTP Try (no card). When you are ready to send a PDF or Word file to employers, upgrade on SuperProfile—use the same email as this account so access turns on automatically."
               : region?.currency === "INR"
-                ? "Explore risk-free with the OTP Try page (no card). When you want PDF & Word, every template, and higher limits, upgrade on SuperProfile — same email as this account."
-                : "Explore quickly with the OTP Try flow, then unlock Pro on SuperProfile when you need exports and full templates — use the same email at checkout as on your account."}
+                ? "Preview with OTP Try (no card). When you need portal-ready PDF and Word, every template, and higher ATS and AI limits, pay once on SuperProfile with the same email as this account."
+                : "Preview the builder with OTP Try (no card). When you are ready to send a PDF or Word file to employers, upgrade on SuperProfile—use the same email as this account so access turns on automatically."}
           </p>
+          <div className="mx-auto mt-8 max-w-xl">
+            <TrustBadges />
+          </div>
           {isIndia && (
             <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-slate-700 dark:text-slate-300">
               <span className="font-semibold text-slate-900 dark:text-slate-100">India checkout:</span> Pro monthly{" "}
@@ -520,21 +539,22 @@ export default function PricingPage() {
                   <div className="grid items-start gap-10 lg:grid-cols-2">
                     <div>
                       <p className="text-xs font-bold uppercase tracking-widest text-orange-600 dark:text-orange-400">
-                        Try first
+                        India · paid pass
                       </p>
                       <h2
                         id="trial-heading"
                         className="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-100 sm:text-3xl"
                       >
-                        Try Pro risk-free for{" "}
-                        <span className="text-orange-600 dark:text-orange-400">14 days</span>
+                        14-day full Pro pass —{" "}
+                        <span className="text-orange-600 dark:text-orange-400">not the OTP Try page</span>
                       </h2>
                       <p className="mt-2 text-slate-600 dark:text-slate-400">
-                        This checkout is different from the{" "}
+                        This is a <strong className="font-medium text-slate-800 dark:text-slate-200">one-time paid</strong>{" "}
+                        checkout on SuperProfile (₹49). It is separate from the free{" "}
                         <Link href="/try" className="font-medium text-primary-600 underline-offset-2 hover:underline dark:text-primary-400">
-                          Try
+                          OTP Try
                         </Link>{" "}
-                        page: you pay once on SuperProfile and get every Pro feature—including exports—for 14 calendar
+                        preview. After payment you get every Pro feature—including PDF and Word exports—for 14 calendar
                         days on the email you pay with. No automatic renewal.
                       </p>
                       <div className="mt-6">
@@ -581,11 +601,11 @@ export default function PricingPage() {
                     id="pro-plans-heading"
                     className="text-center text-2xl font-bold text-slate-900 dark:text-slate-100 sm:text-3xl"
                   >
-                    Everything you need to get hired
+                    Pro — keep applying without file limits
                   </h2>
                   <p className="mx-auto mt-2 max-w-xl text-center text-slate-600 dark:text-slate-400">
-                    Create, export, and apply with confidence. Choose the Pro plan that fits your timeline and pay on
-                    SuperProfile with the same ResumeDoctor email.
+                    Month or year of full exports, every template, and higher ATS and AI limits. Pay on SuperProfile with
+                    the same email as ResumeDoctor so your account unlocks right away.
                   </p>
 
                   <div className="mt-10 grid gap-10 lg:grid-cols-2">

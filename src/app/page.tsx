@@ -9,7 +9,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   alternates: { canonical: siteUrl },
-  title: "ResumeDoctor – Build ATS-Ready Resumes in Minutes | India's #1 Resume Builder",
+  title: "ResumeDoctor – Build ATS-Ready Resumes in Minutes | India-First Resume Builder",
   description:
     "Create a professional resume in under 5 minutes. 30+ ATS-friendly templates, AI suggestions, OTP try flow, and Pro exports. Trusted by job seekers across India.",
 };
@@ -79,17 +79,17 @@ export default function HomePage() {
                 </span>
               </h1>
               <p className="mt-5 text-lg text-white/85 max-w-lg leading-relaxed">
-                ATS-optimised templates, AI-powered bullet suggestions, and a 5-minute build time.
-                Land your dream job — fresher to senior.
+                Go from blank page to a portal-ready resume fast—ATS-friendly layouts, AI help for bullets, and a
+                checker before you hit submit. Built for India, fresher to senior.
               </p>
 
               {/* Quick wins */}
               <ul className="mt-6 space-y-2">
                 {[
-                  "30+ professionally designed templates",
-                  "AI suggestions for your experience bullets",
-                  "ATS score checker before you apply",
-                  "Try quickly with OTP · PDF & Word on Pro",
+                  "Templates recruiters can scan in seconds",
+                  "AI turns rough notes into achievement bullets",
+                  "See ATS fit before you apply to a role",
+                  "Try with OTP · PDF & Word when you upgrade on Pro",
                 ].map((item) => (
                   <li key={item} className="flex items-center gap-2.5 text-sm text-white/85">
                     <span className="w-4 h-4 rounded-full bg-green-400/20 flex items-center justify-center flex-shrink-0">
@@ -107,8 +107,8 @@ export default function HomePage() {
                   Build My Resume — Try
                 </Link>
                 <Link href="/templates"
-                  className="rounded-xl border-2 border-white/40 bg-white/10 hover:bg-white/20 px-8 py-4 text-base font-semibold text-white text-center transition-all">
-                  Browse Templates
+                  className="rounded-xl border-2 border-white/30 bg-white/5 hover:bg-white/15 px-8 py-4 text-base font-semibold text-white/90 text-center transition-all sm:max-w-[11rem] sm:self-center">
+                  Templates
                 </Link>
               </div>
 
@@ -222,10 +222,11 @@ export default function HomePage() {
           <div className="text-center mb-16">
             <p className="text-xs font-bold uppercase tracking-widest text-primary-500 mb-3">Features</p>
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100">
-              Everything you need to stand out
+              Built to get you from draft to “Send”
             </h2>
             <p className="mt-4 text-slate-500 dark:text-slate-400 max-w-xl mx-auto text-base">
-              Built specifically for the Indian job market — from campus placements to senior roles.
+              Fewer formatting surprises on Naukri, LinkedIn, and campus drives—structure, wording help, and exports in
+              one workflow.
             </p>
           </div>
 

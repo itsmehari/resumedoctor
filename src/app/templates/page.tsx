@@ -152,7 +152,8 @@ function TemplatesPageContent() {
             Resume Templates
           </h1>
           <p className="mt-3 text-slate-600 dark:text-slate-400 text-center max-w-2xl mx-auto">
-            ATS-friendly designs for the Indian job market. Choose a template and start building.
+            Layouts built to survive ATS screens on Indian job portals—pick one, then fill in your story. Pro unlocks
+            every style plus PDF and Word when you need to submit.
           </p>
 
           <div className="mt-6 max-w-3xl mx-auto">
@@ -205,9 +206,9 @@ function TemplatesPageContent() {
                     <h3 className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
                       {t.name}
                       {t.isProOnly && !isPro && !subLoading && (
-                        <span className="inline-flex items-center gap-0.5 text-xs font-medium text-amber-700 dark:text-amber-300">
+                        <span className="inline-flex items-center gap-0.5 text-xs font-medium text-amber-700 dark:text-amber-300" title="Unlock with Pro for PDF, Word, and this template">
                           <Lock className="h-3.5 w-3.5" aria-hidden />
-                          Pro
+                          Pro · PDF/DOCX
                         </span>
                       )}
                     </h3>

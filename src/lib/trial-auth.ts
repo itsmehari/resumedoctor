@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { verifyTrialToken, getTrialCookieName } from "./trial-jwt";
 import { verifyImpersonationToken, getImpersonationCookieName } from "./impersonation";
 import { prisma } from "./prisma";
+import { sessionUserEmail } from "@/lib/session-user";
 
 export interface TrialUser {
   userId: string;
@@ -48,9 +49,10 @@ export async function getResumeAuth(): Promise<
   const { authOptions } = await import("@/lib/auth");
 
   const session = await getServerSession(authOptions);
-  if (session?.user?.email) {
+  const sessionEmail = sessionUserEmail(session);
+  if (sessionEmail) {
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: sessionEmail },
       select: { id: true, subscription: true },
     });
     if (user) {

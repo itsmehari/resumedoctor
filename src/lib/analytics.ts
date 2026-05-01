@@ -92,7 +92,7 @@ export function trackLinkedInConversion(): void {
   }
 }
 
-/** Canonical funnel event names for business KPI governance */
+/** Canonical funnel event names for business KPI governance (align with GA4 custom events). */
 export const FUNNEL_EVENTS = {
   try_started: "trial_start",
   resume_created: "resume_created",
@@ -100,4 +100,7 @@ export const FUNNEL_EVENTS = {
   superprofile_checkout_click: "superprofile_checkout_click",
   superprofile_checkout_cancelled: "superprofile_checkout_cancelled",
   payment_success: "payment_success",
+  ats_check_completed: "ats_check_completed",
+  pricing_view: "pricing_view",
+  sign_up: "sign_up",
 } as const;
