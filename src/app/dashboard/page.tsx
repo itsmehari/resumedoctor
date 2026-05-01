@@ -1,7 +1,7 @@
 // WBS 3.9, 3.10 – Resume list & empty state (Phase 1)
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -15,6 +15,7 @@ import { getTemplateDisplayName } from "@/lib/subscription-labels";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { OnboardingChecklist } from "@/components/dashboard/onboarding-checklist";
 import { PricingTrustStatsBar } from "@/components/pricing/payment-value-sections";
+import { useToast } from "@/contexts/toast-context";
 
 interface ResumeItem {
   id: string;
@@ -28,32 +29,56 @@ interface ResumeItem {
 
 function DashboardContent() {
   const { data: session, status } = useSession();
-  const { isPro, isTrial, displayName, isImpersonating } = useSubscription();
+  const { toast } = useToast();
+  const { isPro, isTrial, displayName, isImpersonating, emailVerified, loading: subLoading } = useSubscription();
   const { secondsLeft, expired } = useTrialTimer(isTrial);
   const searchParams = useSearchParams();
   const router = useRouter();
   const [resumes, setResumes] = useState<ResumeItem[]>([]);
+  const resumesRef = useRef<ResumeItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [listError, setListError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ResumeItem | null>(null);
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
   const [importOpen, setImportOpen] = useState(false);
+  const [resendVerifyBusy, setResendVerifyBusy] = useState(false);
+  const [resendVerifyMsg, setResendVerifyMsg] = useState<string | null>(null);
   const upgraded = searchParams.get("upgraded") === "1";
   const openImportParam = searchParams.get("openImport") === "1";
 
   const welcomeName = displayName || session?.user?.name || session?.user?.email;
 
-  const fetchResumes = () => {
+  useEffect(() => {
+    resumesRef.current = resumes;
+  }, [resumes]);
+
+  const fetchResumes = useCallback(() => {
+    const showFullPageLoader = resumesRef.current.length === 0;
+    if (showFullPageLoader) setLoading(true);
+    setListError(null);
     fetch("/api/resumes", { credentials: "include" })
-      .then((res) => (res.ok ? res.json() : []))
-      .then(setResumes)
-      .catch(() => setResumes([]))
+      .then(async (res) => {
+        if (!res.ok) {
+          setListError("Could not load your resumes. Check your connection and try again.");
+          return;
+        }
+        const data = await res.json().catch(() => null);
+        if (!Array.isArray(data)) {
+          setListError("Could not load your resumes. Try again in a moment.");
+          return;
+        }
+        setResumes(data);
+      })
+      .catch(() => {
+        setListError("Could not load your resumes. Check your connection and try again.");
+      })
       .finally(() => setLoading(false));
-  };
+  }, []);
 
   useEffect(() => {
     fetchResumes();
-  }, []);
+  }, [fetchResumes]);
 
   useEffect(() => {
     if (searchParams.get("upgraded") === "1") {
@@ -78,6 +103,8 @@ function DashboardContent() {
       if (res.ok) {
         fetchResumes();
         setMenuOpen(null);
+      } else {
+        toast("Could not duplicate resume. Try again.", { variant: "error" });
       }
     } finally {
       setActionLoading(null);
@@ -96,6 +123,8 @@ function DashboardContent() {
         setResumes((prev) => prev.filter((x) => x.id !== deleteTarget.id));
         setDeleteTarget(null);
         setMenuOpen(null);
+      } else {
+        toast("Could not delete resume. Try again.", { variant: "error" });
       }
     } finally {
       setActionLoading(null);
@@ -109,7 +138,7 @@ function DashboardContent() {
           href="/pricing"
           className="rounded-xl border-2 border-primary-500 px-4 py-2.5 text-sm font-semibold text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-all shadow-sm min-h-[44px] inline-flex items-center touch-manipulation"
         >
-          Unlock exports
+          Get PDF & Word for applications
         </Link>
       )}
       <Link
@@ -168,6 +197,67 @@ function DashboardContent() {
               </button>
             </div>
           )}
+          {status === "authenticated" &&
+            !isImpersonating &&
+            !subLoading &&
+            emailVerified === false && (
+              <div
+                className="mb-6 rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 px-4 py-3 shadow-sm"
+                role="status"
+              >
+                <p className="text-sm text-amber-900 dark:text-amber-100 font-medium">
+                  Verify your email to export your data, change your account email, or delete your account.
+                </p>
+                <p className="mt-1 text-xs text-amber-800/90 dark:text-amber-200/90">
+                  Open the link in your inbox, or request a new one below.
+                </p>
+                {resendVerifyMsg && (
+                  <p className="mt-2 text-xs text-slate-700 dark:text-slate-300">{resendVerifyMsg}</p>
+                )}
+                <button
+                  type="button"
+                  disabled={resendVerifyBusy}
+                  onClick={async () => {
+                    setResendVerifyMsg(null);
+                    setResendVerifyBusy(true);
+                    try {
+                      const r = await fetch("/api/auth/resend-verification", {
+                        method: "POST",
+                        credentials: "include",
+                      });
+                      const data = await r.json().catch(() => ({}));
+                      setResendVerifyMsg(
+                        r.ok
+                          ? (data.message as string) || "Sent. Check your inbox."
+                          : (data.error as string) || "Could not send email."
+                      );
+                    } catch {
+                      setResendVerifyMsg("Something went wrong.");
+                    } finally {
+                      setResendVerifyBusy(false);
+                    }
+                  }}
+                  className="mt-3 rounded-lg bg-amber-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-700 disabled:opacity-50"
+                >
+                  {resendVerifyBusy ? "Sending…" : "Resend verification email"}
+                </button>
+              </div>
+            )}
+          {listError && resumes.length > 0 && (
+            <div
+              className="mb-6 rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/80 dark:bg-red-950/30 px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm text-red-800 dark:text-red-200"
+              role="alert"
+            >
+              <span>{listError}</span>
+              <button
+                type="button"
+                onClick={() => fetchResumes()}
+                className="shrink-0 rounded-lg bg-red-700 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-800"
+              >
+                Retry
+              </button>
+            </div>
+          )}
           {status === "authenticated" && !isImpersonating && (
             <OnboardingChecklist firstResumeId={resumes[0]?.id ?? null} />
           )}
@@ -178,20 +268,25 @@ function DashboardContent() {
           )}
           {isTrial && !expired && secondsLeft > 0 && (
             <div className="mb-6 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 px-4 py-3 flex flex-wrap items-center justify-between gap-3 shadow-sm">
-              <span className="text-amber-800 dark:text-amber-200 text-sm font-medium">
-                {Math.floor(secondsLeft / 60)}:{String(secondsLeft % 60).padStart(2, "0")} left in your 5-minute trial · Sign up to save and export
-              </span>
+              <p className="text-amber-800 dark:text-amber-200 text-sm font-medium">
+                {Math.floor(secondsLeft / 60)}:{String(secondsLeft % 60).padStart(2, "0")} left in your Try session ·
+                Sign up to save; PDF and Word need Pro — see{" "}
+                <Link href="/pricing" className="underline font-semibold text-amber-900 dark:text-amber-100">
+                  pricing
+                </Link>
+                .
+              </p>
               <Link
                 href="/signup"
                 className="rounded-lg bg-amber-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-700"
               >
-                Sign up to save and export
+                Sign up to save
               </Link>
             </div>
           )}
 
           {/* Welcome section when user has resumes */}
-          {!loading && resumes.length > 0 && welcomeName && (
+          {!loading && !listError && resumes.length > 0 && welcomeName && (
             <div className="mb-6 rounded-xl bg-gradient-to-br from-primary-50 to-primary-100/50 dark:from-primary-900/20 dark:to-primary-800/10 border border-primary-200/60 dark:border-primary-800/40 p-6 shadow-sm">
               <p className="text-primary-800 dark:text-primary-200 font-medium">
                 Hi {welcomeName.split(/[\s@]/)[0]}! You have {resumes.length} resume{resumes.length !== 1 ? "s" : ""} in your library.
@@ -203,7 +298,7 @@ function DashboardContent() {
           )}
 
           {/* Next steps card when user has resumes */}
-          {!loading && resumes.length > 0 && (
+          {!loading && !listError && resumes.length > 0 && (
             <div className="mb-8 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
               <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Next steps</p>
               <div className="flex flex-wrap gap-2">
@@ -211,7 +306,7 @@ function DashboardContent() {
                   href={resumes[0] ? `/resumes/${resumes[0].id}/edit` : "/resumes/new"}
                   className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-600 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
-                  Improve ATS score
+                  Match a job description (ATS)
                 </Link>
                 <Link
                   href="/cover-letters/new"
@@ -232,6 +327,17 @@ function DashboardContent() {
           {loading ? (
             <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-12 text-center shadow-sm">
               <p className="text-slate-500">Loading resumes...</p>
+            </div>
+          ) : listError && resumes.length === 0 ? (
+            <div className="rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/80 dark:bg-red-950/30 p-12 text-center shadow-sm">
+              <p className="text-red-800 dark:text-red-200 font-medium">{listError}</p>
+              <button
+                type="button"
+                onClick={() => fetchResumes()}
+                className="mt-4 rounded-xl bg-red-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-red-800"
+              >
+                Retry
+              </button>
             </div>
           ) : resumes.length === 0 ? (
             <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-500/10 via-primary-400/5 to-slate-100 dark:from-primary-600/20 dark:via-primary-500/10 dark:to-slate-900 border border-primary-200/50 dark:border-primary-700/30 p-16 text-center shadow-xl">

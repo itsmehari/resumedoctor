@@ -13,25 +13,25 @@ function buildSteps(firstResumeId?: string | null): { key: StepKey; label: strin
   {
     key: "template_chosen",
     label: "Create a resume",
-    hint: "Pick a template and save your first resume.",
+    hint: "Pick a layout you would be happy to send—first impression matters.",
     href: "/resumes/new",
   },
   {
     key: "section_filled",
     label: "Fill key sections",
-    hint: "Add experience, summary, or education so your resume tells a story.",
+    hint: "Add experience, summary, or education so hiring managers see a clear arc.",
     href: firstResumeId ? `/resumes/${firstResumeId}/edit` : "/dashboard",
   },
   {
     key: "ats_run",
     label: "Run the ATS checker",
-    hint: "See how well your resume matches applicant tracking systems.",
+    hint: "Paste a job description and see gaps before you press apply.",
     href: atsHref,
   },
   {
     key: "export_done",
     label: "Export your resume",
-    hint: "Download TXT in Try mode, or PDF/DOCX on Pro.",
+    hint: "TXT anytime; PDF and Word when you are on Pro—ready for portals and email.",
     href: "/pricing",
   },
 ];
@@ -44,19 +44,37 @@ interface OnboardingChecklistProps {
 
 export function OnboardingChecklist({ firstResumeId }: OnboardingChecklistProps) {
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [steps, setSteps] = useState<Record<StepKey, boolean> | null>(null);
   const [completedAt, setCompletedAt] = useState<string | null>(null);
   const [marking, setMarking] = useState<StepKey | null>(null);
 
   const refresh = useCallback(() => {
     setLoading(true);
+    setLoadError(null);
     fetch("/api/user/onboarding-status", { credentials: "include" })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (d?.steps) setSteps(d.steps);
-        if (d?.completedAt) setCompletedAt(d.completedAt);
+      .then(async (r) => {
+        if (!r.ok) {
+          setSteps(null);
+          setCompletedAt(null);
+          setLoadError("Could not load your checklist. Please try again.");
+          return;
+        }
+        const d = await r.json().catch(() => null);
+        if (!d?.steps || typeof d.steps !== "object") {
+          setSteps(null);
+          setCompletedAt(null);
+          setLoadError("Could not load your checklist. Please try again.");
+          return;
+        }
+        setSteps(d.steps as Record<StepKey, boolean>);
+        setCompletedAt(d.completedAt ?? null);
       })
-      .catch(() => {})
+      .catch(() => {
+        setSteps(null);
+        setCompletedAt(null);
+        setLoadError("Could not load your checklist. Check your connection and try again.");
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -83,10 +101,28 @@ export function OnboardingChecklist({ firstResumeId }: OnboardingChecklistProps)
     }
   }
 
+  if (loadError && !loading) {
+    return (
+      <div
+        className="mb-8 rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/80 dark:bg-red-950/30 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm text-red-800 dark:text-red-200"
+        role="alert"
+      >
+        <span>{loadError}</span>
+        <button
+          type="button"
+          onClick={() => refresh()}
+          className="shrink-0 rounded-lg bg-red-700 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-800"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   if (loading || !steps) {
     return (
       <div className="mb-8 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 flex items-center gap-2 text-sm text-slate-500">
-        <Loader2 className="h-4 w-4 animate-spin" />
+        <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
         Loading checklist…
       </div>
     );

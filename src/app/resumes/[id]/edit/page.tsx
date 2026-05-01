@@ -25,7 +25,7 @@ export default function EditResumePage() {
   const params = useParams();
   const id = params.id as string;
   const previewRef = useRef<HTMLDivElement>(null);
-  const { resume, loading, saveStatus, updateContent, updateTitle, updateTemplateId } =
+  const { resume, loading, saveStatus, updateContent, updateTitle, updateTemplateId, retrySave } =
     useResume(id);
   const { isPro, isTrial, resumePackCredits } = useSubscription();
   const { secondsLeft, expired } = useTrialTimer(isTrial);
@@ -346,21 +346,32 @@ export default function EditResumePage() {
               isTrial={isTrial}
               resumePackCredits={resumePackCredits}
             />
-            <span
-              className={`text-sm ${
-                saveStatus === "saving"
-                  ? "text-amber-600"
-                  : saveStatus === "saved"
-                    ? "text-green-600"
-                    : saveStatus === "error"
-                      ? "text-red-600"
-                      : "text-slate-500"
-              }`}
-            >
-              {saveStatus === "saving" && "Saving..."}
-              {saveStatus === "saved" && "Saved"}
-              {saveStatus === "error" && "Error saving"}
-              {saveStatus === "idle" && "Auto-save on"}
+            <span className="flex items-center gap-2 flex-wrap justify-end">
+              <span
+                className={`text-sm ${
+                  saveStatus === "saving"
+                    ? "text-amber-600"
+                    : saveStatus === "saved"
+                      ? "text-green-600"
+                      : saveStatus === "error"
+                        ? "text-red-600"
+                        : "text-slate-500"
+                }`}
+              >
+                {saveStatus === "saving" && "Saving..."}
+                {saveStatus === "saved" && "Saved"}
+                {saveStatus === "error" && "Could not save — your edits are still on this page."}
+                {saveStatus === "idle" && "Auto-save on"}
+              </span>
+              {saveStatus === "error" && (
+                <button
+                  type="button"
+                  onClick={() => retrySave()}
+                  className="rounded-lg border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/40 px-2.5 py-1 text-xs font-semibold text-red-800 dark:text-red-200 hover:bg-red-100 dark:hover:bg-red-900/50"
+                >
+                  Retry save
+                </button>
+              )}
             </span>
           </div>
         </div>

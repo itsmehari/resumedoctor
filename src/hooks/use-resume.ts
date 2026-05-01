@@ -21,6 +21,7 @@ export function useResume(resumeId: string | null) {
   const [saving, setSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingContentRef = useRef<ResumeContent | null>(null);
 
   const fetchResume = useCallback(async () => {
     if (!resumeId) {
@@ -75,15 +76,28 @@ export function useResume(resumeId: string | null) {
     [resumeId]
   );
 
+  const flushPendingContent = useCallback(() => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+      saveTimeoutRef.current = null;
+    }
+    const pending = pendingContentRef.current;
+    if (pending) {
+      pendingContentRef.current = null;
+      void saveResume(pending, undefined, undefined);
+    }
+  }, [saveResume]);
+
   const updateContent = useCallback(
     (content: ResumeContent) => {
       if (!resume) return;
       setResume((prev) => (prev ? { ...prev, content } : null));
-
+      pendingContentRef.current = content;
       if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current);
       }
       saveTimeoutRef.current = setTimeout(() => {
+        pendingContentRef.current = null;
         saveResume(content, undefined, undefined);
         saveTimeoutRef.current = null;
       }, DEBOUNCE_MS);
@@ -93,19 +107,47 @@ export function useResume(resumeId: string | null) {
 
   const updateTitle = useCallback(
     (title: string) => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+        saveTimeoutRef.current = null;
+      }
+      const contentForSave = pendingContentRef.current ?? resume?.content ?? { sections: [] };
+      pendingContentRef.current = null;
       setResume((prev) => (prev ? { ...prev, title } : null));
-      saveResume(resume?.content ?? { sections: [] }, title, undefined);
+      void saveResume(contentForSave, title, undefined);
     },
     [resume?.content, saveResume]
   );
 
   const updateTemplateId = useCallback(
     (templateId: string) => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+        saveTimeoutRef.current = null;
+      }
+      const contentForSave = pendingContentRef.current ?? resume?.content ?? { sections: [] };
+      pendingContentRef.current = null;
       setResume((prev) => (prev ? { ...prev, templateId } : null));
-      saveResume(undefined, undefined, templateId);
+      void saveResume(contentForSave, undefined, templateId);
     },
-    [saveResume]
+    [resume?.content, saveResume]
   );
+
+  useEffect(() => {
+    const onVis = () => {
+      if (document.visibilityState === "hidden") flushPendingContent();
+    };
+    document.addEventListener("visibilitychange", onVis);
+    return () => {
+      document.removeEventListener("visibilitychange", onVis);
+      flushPendingContent();
+    };
+  }, [flushPendingContent]);
+
+  const retrySave = useCallback(() => {
+    if (!resume || !resumeId) return;
+    void saveResume(resume.content, resume.title, resume.templateId);
+  }, [resume, resumeId, saveResume]);
 
   return {
     resume,
@@ -116,5 +158,6 @@ export function useResume(resumeId: string | null) {
     updateTitle,
     updateTemplateId,
     refetch: fetchResume,
+    retrySave,
   };
 }
