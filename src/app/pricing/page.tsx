@@ -425,7 +425,7 @@ export default function PricingPage() {
     <div className="min-h-screen flex flex-col">
       <SiteHeader variant="home" />
 
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:py-14">
+      <main id="main-content" tabIndex={-1} className="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:py-14 outline-none">
         <div className="text-center">
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl">
             Choose how you want to apply

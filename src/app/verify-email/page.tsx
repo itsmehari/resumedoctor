@@ -122,7 +122,7 @@ export default function VerifyEmailPage() {
   return (
     <>
       <SiteHeader variant="app" />
-      <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4">
+      <main id="main-content" tabIndex={-1} className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4 outline-none">
         <div className="w-full max-w-md space-y-8">
           <Link href="/" className="text-2xl font-bold text-primary-600 block text-center">
             ResumeDoctor
@@ -131,7 +131,7 @@ export default function VerifyEmailPage() {
             <VerifyContent />
           </Suspense>
         </div>
-      </div>
+      </main>
     </>
   );
 }

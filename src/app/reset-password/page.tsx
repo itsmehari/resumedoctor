@@ -165,7 +165,7 @@ export default function ResetPasswordPage() {
   return (
     <>
       <SiteHeader variant="app" />
-      <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4">
+      <main id="main-content" tabIndex={-1} className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4 outline-none">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center">
             <Link href="/" className="text-2xl font-bold text-primary-600">
@@ -185,7 +185,7 @@ export default function ResetPasswordPage() {
             <ResetPasswordForm />
           </Suspense>
         </div>
-      </div>
+      </main>
     </>
   );
 }

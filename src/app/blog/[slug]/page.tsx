@@ -140,7 +140,7 @@ export default async function BlogPostPage({ params }: Props) {
       <BlogReadingProgress />
       <SiteHeader variant="home" />
 
-      <article className="blog-post-article flex-1">
+      <article id="main-content" tabIndex={-1} className="blog-post-article flex-1 outline-none">
         <header className="blog-masthead relative overflow-hidden border-b border-slate-200/80 dark:border-slate-800">
           <div
             className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-40%,rgba(59,130,246,0.12),transparent)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-30%,rgba(99,102,241,0.15),transparent)]"

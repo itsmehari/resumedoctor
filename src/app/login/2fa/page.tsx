@@ -76,27 +76,27 @@ function TwoFactorForm() {
 
   if (token === undefined) {
     return (
-      <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-4 text-slate-500">
+      <main id="main-content" tabIndex={-1} className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-4 text-slate-500 outline-none">
         Loading...
-      </div>
+      </main>
     );
   }
 
   if (!token) {
     return (
-      <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-4 max-w-md mx-auto text-center">
+      <main id="main-content" tabIndex={-1} className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-4 max-w-md mx-auto text-center outline-none">
         <p className="text-red-600 dark:text-red-400 mb-4 text-sm">
           {error || "Invalid or expired session. Please sign in again."}
         </p>
         <Link href="/login" className="text-primary-600 hover:underline font-medium">
           Back to login
         </Link>
-      </div>
+      </main>
     );
   }
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4">
+    <main id="main-content" tabIndex={-1} className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4 outline-none">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <Link href="/" className="text-2xl font-bold text-primary-600">ResumeDoctor</Link>
@@ -136,7 +136,7 @@ function TwoFactorForm() {
           <Link href="/login" className="text-primary-600 hover:underline">Back to login</Link>
         </p>
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -144,7 +144,7 @@ export default function TwoFactorPage() {
   return (
     <>
       <SiteHeader variant="app" />
-      <Suspense fallback={<div className="min-h-[calc(100vh-4rem)] flex items-center justify-center"><p className="text-slate-500">Loading...</p></div>}>
+      <Suspense fallback={<main id="main-content" tabIndex={-1} className="min-h-[calc(100vh-4rem)] flex items-center justify-center outline-none"><p className="text-slate-500">Loading...</p></main>}>
         <TwoFactorForm />
       </Suspense>
     </>

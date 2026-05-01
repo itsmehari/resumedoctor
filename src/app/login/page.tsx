@@ -78,7 +78,7 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4">
+    <main id="main-content" tabIndex={-1} className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4 outline-none">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <Link href="/" className="text-2xl font-bold text-primary-600">
@@ -264,7 +264,7 @@ function LoginForm() {
           </Link>
         </p>
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -274,9 +274,9 @@ export default function LoginPage() {
       <SiteHeader variant="app" />
       <Suspense
         fallback={
-          <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
+          <main id="main-content" tabIndex={-1} className="min-h-[calc(100vh-4rem)] flex items-center justify-center outline-none">
             <p className="text-slate-500">Loading...</p>
-          </div>
+          </main>
         }
       >
         <LoginForm />

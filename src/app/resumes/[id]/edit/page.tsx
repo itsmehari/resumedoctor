@@ -25,6 +25,7 @@ export default function EditResumePage() {
   const params = useParams();
   const id = params.id as string;
   const previewRef = useRef<HTMLDivElement>(null);
+  const editorPaneRef = useRef<HTMLDivElement>(null);
   const { resume, loading, saveStatus, updateContent, updateTitle, updateTemplateId, retrySave } =
     useResume(id);
   const { isPro, isTrial, resumePackCredits } = useSubscription();
@@ -35,6 +36,15 @@ export default function EditResumePage() {
   const [customizeOpen, setCustomizeOpen] = useState(false);
   const [trialPreviewOnly, setTrialPreviewOnly] = useState(false);
   const [coachingOpen, setCoachingOpen] = useState(false);
+
+  const editorLocked = Boolean(expired && trialPreviewOnly);
+
+  useEffect(() => {
+    const el = editorPaneRef.current;
+    if (!el) return;
+    if (editorLocked) el.setAttribute("inert", "");
+    else el.removeAttribute("inert");
+  }, [editorLocked]);
 
   const meta = resume?.content?.meta ?? {};
   const handleCustomize = (updates: { primaryColor?: string; fontFamily?: "sans" | "serif" | "mono"; fontSize?: "small" | "normal" | "large"; spacing?: "compact" | "normal" | "spacious"; dateFormat?: "DD/MM/YYYY" | "MM/YYYY"; documentType?: "Resume" | "CV" }) => {
@@ -103,8 +113,6 @@ export default function EditResumePage() {
     const sec = s % 60;
     return `${m}:${sec.toString().padStart(2, "0")}`;
   };
-
-  const editorLocked = Boolean(expired && trialPreviewOnly);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-900 relative">
@@ -427,7 +435,7 @@ export default function EditResumePage() {
         tabIndex={-1}
         className="flex-1 flex flex-col lg:flex-row overflow-hidden outline-none"
       >
-        <div className="flex-1 overflow-y-auto p-4 lg:p-6 relative">
+        <div ref={editorPaneRef} className="flex-1 overflow-y-auto p-4 lg:p-6 relative">
           {editorLocked && (
             <div
               className="absolute inset-0 z-10 bg-white/80 dark:bg-slate-950/75 backdrop-blur-[2px] flex flex-col items-center pt-8 px-6 text-center pointer-events-auto"
@@ -486,7 +494,7 @@ export default function EditResumePage() {
               </button>
             </div>
             <div className={`space-y-6 ${coachingOpen ? "block" : "hidden lg:block"}`}>
-              <LiveFeedbackPanel sections={sections} />
+              <LiveFeedbackPanel sections={sections} isPro={isPro} />
               <AtsScorePanel resumeId={id} sections={sections} isPro={isPro} />
               <IndiaTipsPanel />
             </div>

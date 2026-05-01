@@ -80,6 +80,13 @@ export function SiteHeader({
   // Unified marketing/public header across home and public pages.
   if (isPublicHeader) {
     return (
+      <>
+      <a
+        href="#main-content"
+        className="sr-only focus:fixed focus:left-4 focus:top-20 focus:z-[100] focus:m-0 focus:inline-block focus:h-auto focus:w-auto focus:min-h-0 focus:min-w-0 focus:overflow-visible focus:whitespace-normal focus:rounded-lg focus:px-4 focus:py-2.5 focus:bg-white focus:text-slate-900 focus:shadow-lg focus:ring-2 focus:ring-primary-500 dark:focus:bg-slate-900 dark:focus:text-slate-100"
+      >
+        Skip to main content
+      </a>
       <header className="site-header-shell sticky top-0 z-30 border-b border-white/10 bg-primary-600/95 backdrop-blur-sm">
         <div
           className={`${maxWidthClass} mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3 min-h-16 py-3 sm:py-0`}
@@ -106,6 +113,7 @@ export function SiteHeader({
           </div>
         </div>
       </header>
+      </>
     );
   }
 

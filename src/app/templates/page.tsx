@@ -146,7 +146,7 @@ function TemplatesPageContent() {
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-900/50">
       <SiteHeader variant="home" />
 
-      <main className="flex-1 px-4 py-12">
+      <main id="main-content" tabIndex={-1} className="flex-1 px-4 py-12 outline-none">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 text-center">
             Resume Templates
@@ -302,7 +302,7 @@ export default function TemplatesPage() {
     <Suspense fallback={
       <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-900/50">
         <SiteHeader variant="home" />
-        <main className="flex-1 flex items-center justify-center px-4">
+        <main id="main-content" tabIndex={-1} className="flex-1 flex items-center justify-center px-4 outline-none">
           <p className="text-slate-500">Loading...</p>
         </main>
       </div>

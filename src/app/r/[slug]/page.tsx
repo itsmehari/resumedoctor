@@ -67,7 +67,7 @@ export default function PublicResumePage() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-100 dark:bg-slate-900">
       <SiteHeader variant="app" maxWidth="4xl" />
-      <main className="flex-1 py-8 px-4 overflow-auto">
+      <main id="main-content" tabIndex={-1} className="flex-1 py-8 px-4 overflow-auto outline-none">
         <div className="max-w-[800px] mx-auto">
           <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden">
             <ResumePreview

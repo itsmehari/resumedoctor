@@ -55,6 +55,7 @@ export default function HomePage() {
 
       <SiteHeader variant="home" />
 
+      <main id="main-content" tabIndex={-1} className="flex-1 flex flex-col outline-none">
       {/* ── HERO ────────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary-700 via-primary-600 to-indigo-900">
         {/* Background decorations */}
@@ -508,6 +509,7 @@ export default function HomePage() {
           <p className="mt-5 text-sm text-white/55">No credit card · Email verification for the quick try</p>
         </div>
       </section>
+      </main>
     </div>
   );
 }

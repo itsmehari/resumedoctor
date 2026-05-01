@@ -2,15 +2,18 @@
 
 // Phase 1.4 – Live content feedback (real-time tips as you type)
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { Lightbulb, ChevronDown, ChevronUp } from "lucide-react";
 import { computeLiveFeedback } from "@/lib/ats-checker";
 import type { ResumeSection } from "@/types/resume";
 
 interface LiveFeedbackPanelProps {
   sections: ResumeSection[];
+  /** When false, show a one-line note tying coaching to plans (exports / Pro limits). */
+  isPro?: boolean;
 }
 
-export function LiveFeedbackPanel({ sections }: LiveFeedbackPanelProps) {
+export function LiveFeedbackPanel({ sections, isPro = true }: LiveFeedbackPanelProps) {
   const [expanded, setExpanded] = useState(true);
   const tips = useMemo(() => computeLiveFeedback(sections), [sections]);
 
@@ -21,6 +24,15 @@ export function LiveFeedbackPanel({ sections }: LiveFeedbackPanelProps) {
           <Lightbulb className="h-4 w-4" />
           Looking good! Your content has strong structure.
         </div>
+        {!isPro && (
+          <p className="mt-3 text-xs text-slate-600 dark:text-slate-400">
+            Full ATS checks and higher AI limits follow your subscription; exports may use Pro or a resume pack—see{" "}
+            <Link href="/pricing" className="font-medium text-primary-600 hover:underline dark:text-primary-400">
+              Pricing
+            </Link>
+            .
+          </p>
+        )}
       </div>
     );
   }
@@ -81,6 +93,15 @@ export function LiveFeedbackPanel({ sections }: LiveFeedbackPanelProps) {
             </li>
           ))}
         </ul>
+      )}
+      {!isPro && (
+        <p className="px-4 pb-3 pt-1 text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-700">
+          Full ATS checks and higher AI limits follow your subscription; PDF and Word may use Pro or a resume pack—see{" "}
+          <Link href="/pricing" className="font-medium text-primary-600 hover:underline dark:text-primary-400">
+            Pricing
+          </Link>
+          .
+        </p>
       )}
     </div>
   );

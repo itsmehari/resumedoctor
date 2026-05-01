@@ -107,7 +107,7 @@ function TryPageContent() {
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-primary-50 to-white dark:from-slate-900 dark:to-slate-950">
       <SiteHeader variant="app" maxWidth="2xl" />
 
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
+      <main id="main-content" tabIndex={-1} className="flex-1 flex flex-col items-center justify-center px-4 py-12 outline-none">
         <div className="w-full max-w-md">
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100 text-center">
             Try the builder — no card

@@ -99,7 +99,7 @@ export default function TryTemplatesPage() {
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-900/50">
       <SiteHeader variant="app" maxWidth="4xl" />
 
-      <main className="flex-1 px-4 py-12">
+      <main id="main-content" tabIndex={-1} className="flex-1 px-4 py-12 outline-none">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100 text-center">
             Choose a template for this Try session

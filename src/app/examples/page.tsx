@@ -25,7 +25,7 @@ export default function ExamplesIndexPage() {
       />
       <SiteHeader variant="home" />
 
-      <main className="flex-1">
+      <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
         <section className="relative overflow-hidden border-b border-slate-200/80 dark:border-slate-800">
           <div
             className="pointer-events-none absolute -left-16 top-0 h-64 w-64 rounded-full bg-emerald-400/15 blur-3xl dark:bg-emerald-600/10"

@@ -15,7 +15,7 @@ export default function TermsPage() {
     <div className="min-h-screen flex flex-col">
       <SiteHeader variant="home" />
 
-      <main className="flex-1 max-w-3xl mx-auto w-full px-4 py-12">
+      <main id="main-content" tabIndex={-1} className="flex-1 max-w-3xl mx-auto w-full px-4 py-12 outline-none">
         <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
           Terms of Service
         </h1>

@@ -92,7 +92,7 @@ export default function ExampleDetailPage({ params }: Props) {
       />
       <SiteHeader variant="home" maxWidth="6xl" />
 
-      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-12 sm:px-6">
+      <main id="main-content" tabIndex={-1} className="mx-auto w-full max-w-4xl flex-1 px-4 py-12 sm:px-6 outline-none">
 
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-6">

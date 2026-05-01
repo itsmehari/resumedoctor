@@ -24,7 +24,7 @@ export default function BlogIndexPage() {
     <div className="min-h-screen flex flex-col bg-[#faf9f7] dark:bg-slate-950">
       <SiteHeader variant="home" />
 
-      <main className="flex-1">
+      <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
         {/* Hero */}
         <section className="relative overflow-hidden border-b border-slate-200/80 dark:border-slate-800/80">
           <div

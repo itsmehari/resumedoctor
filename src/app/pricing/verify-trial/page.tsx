@@ -13,7 +13,7 @@ export default function VerifyTrialPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <SiteHeader variant="app" maxWidth="xl" />
-      <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-10 sm:py-14">
+      <main id="main-content" tabIndex={-1} className="mx-auto w-full max-w-3xl flex-1 px-4 py-10 sm:py-14 outline-none">
         <TrialSectionBackdrop>
           <div className="grid gap-8 md:grid-cols-2 md:items-center">
             <div>

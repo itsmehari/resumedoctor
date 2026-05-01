@@ -15,7 +15,7 @@ export default function ResumeBuilderIndiaLp() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950">
       <SiteHeader variant="home" />
-      <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-4 py-16 sm:py-20">
+      <main id="main-content" tabIndex={-1} className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-4 py-16 sm:py-20 outline-none">
         <p className="text-center text-xs font-bold uppercase tracking-widest text-primary-600 dark:text-primary-400">
           India · Job applications
         </p>

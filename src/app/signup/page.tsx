@@ -57,7 +57,7 @@ export default function SignupPage() {
     return (
       <>
         <SiteHeader variant="app" />
-        <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4">
+        <main id="main-content" tabIndex={-1} className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4 outline-none">
           <div className="w-full max-w-md text-center space-y-4">
             <div className="rounded-full bg-green-100 dark:bg-green-900/30 w-16 h-16 mx-auto flex items-center justify-center">
               <svg
@@ -88,7 +88,7 @@ export default function SignupPage() {
               Go to sign in
             </Link>
           </div>
-        </div>
+        </main>
       </>
     );
   }
@@ -96,7 +96,7 @@ export default function SignupPage() {
   return (
     <>
       <SiteHeader variant="app" />
-      <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4">
+      <main id="main-content" tabIndex={-1} className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4 outline-none">
         <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <Link href="/" className="text-2xl font-bold text-primary-600">
@@ -205,7 +205,7 @@ export default function SignupPage() {
           </Link>
         </p>
         </div>
-      </div>
+      </main>
     </>
   );
 }
