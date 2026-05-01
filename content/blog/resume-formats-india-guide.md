@@ -3,7 +3,7 @@ slug: resume-formats-india-guide
 title: "Resume Formats in India: Chronological vs Functional vs Combination"
 description: "Which resume format is best for Indian job seekers? Compare chronological, functional, and combination formats with examples."
 date: "2026-02-05"
-updated: "2026-04-10"
+updated: "2026-05-01"
 author: "ResumeDoctor"
 authorBio: "Practical resume guidance for India-focused job seekers."
 readTime: 16
@@ -12,6 +12,8 @@ coverImage: "/blog/covers/default.svg"
 ---
 
 Most Indian job seekers use the chronological format without thinking about it. But depending on your career stage, a different format could work significantly better. Here's a breakdown.
+
+If you are **changing industries or job families**, see [career change resume in India: framing and keywords](/blog/career-change-resume-india-framing)—that is a different problem than picking chronological vs combination layout alone.
 
 ## The Three Main Resume Formats
 

@@ -6,26 +6,30 @@ import { TrustBadges } from "@/components/trust-badges";
 import { LpTierClarification } from "@/components/lp/lp-tier-clarification";
 
 export const metadata: Metadata = {
-  title: "Resume Builder India — ATS-Friendly PDF & Word | ResumeDoctor",
+  title: "Fresher & Campus Resume — India | ResumeDoctor",
   description:
-    "Build a resume for Naukri, LinkedIn, and campus drives. OTP Try with no card; Pro unlocks PDF and Word on SuperProfile.",
-  alternates: { canonical: `${siteUrl}/lp/resume-builder-india` },
+    "First resume for campus placement and Naukri. OTP Try with no card; Pro adds PDF and Word when you are ready to apply.",
+  alternates: { canonical: `${siteUrl}/lp/fresher-campus-resume-india` },
 };
 
-export default function ResumeBuilderIndiaLp() {
+export default function FresherCampusResumeIndiaLp() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950">
       <SiteHeader variant="home" />
-      <main id="main-content" tabIndex={-1} className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-4 py-16 sm:py-20 outline-none">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-4 py-16 outline-none sm:py-20"
+      >
         <p className="text-center text-xs font-bold uppercase tracking-widest text-primary-600 dark:text-primary-400">
-          India · Job applications
+          Freshers · Campus · First job
         </p>
         <h1 className="mt-4 text-center text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-50 sm:text-4xl">
-          Resume builder for Indian job portals
+          Fresher resume for campus drives and Indian portals
         </h1>
         <p className="mt-4 text-center text-lg text-slate-600 dark:text-slate-400">
-          ATS-friendly layouts, AI help for bullets, and exports when you upgrade—aligned with how you actually apply on
-          Naukri and LinkedIn.
+          Clear sections, projects and skills that read well to parsers, and AI help when you are stuck on bullets—so
+          you can apply without a blank page.
         </p>
         <div className="mt-10 flex justify-center">
           <TrustBadges />
@@ -46,12 +50,18 @@ export default function ResumeBuilderIndiaLp() {
         </div>
         <LpTierClarification />
         <p className="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">
-          Deep guides:{" "}
-          <Link href="/blog/ats-friendly-resume-complete-guide" className="text-primary-600 hover:underline dark:text-primary-400">
-            ATS-friendly resume
+          Guides:{" "}
+          <Link
+            href="/blog/how-to-write-cv-for-freshers"
+            className="text-primary-600 hover:underline dark:text-primary-400"
+          >
+            CV for freshers
           </Link>{" "}
           ·{" "}
-          <Link href="/blog/resume-formats-india-guide" className="text-primary-600 hover:underline dark:text-primary-400">
+          <Link
+            href="/blog/resume-formats-india-guide"
+            className="text-primary-600 hover:underline dark:text-primary-400"
+          >
             Resume formats in India
           </Link>
         </p>

@@ -8,6 +8,9 @@
 ## Landing route
 
 - **India BOFU example:** [`/lp/resume-builder-india`](/lp/resume-builder-india) — short page, single CTA to Try, secondary to pricing.
+- **Additional BOFU LPs:** [`/lp/fresher-campus-resume-india`](/lp/fresher-campus-resume-india), [`/lp/tailor-resume-job-description`](/lp/tailor-resume-job-description), [`/lp/resume-export-pdf-docx-india`](/lp/resume-export-pdf-docx-india) — same pattern; export LP leads with pricing CTA first.
+- **UTM and ownership:** [`docs/LP-RUNBOOK.md`](./LP-RUNBOOK.md) (convention, KPI table, trust checklist).
+- **Stable product snapshot for ads/partners:** [`/features`](/features) — short, links to pricing for limits.
 
 ## Retargeting
 

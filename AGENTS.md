@@ -6,10 +6,11 @@ This project uses **role-based development** with Cursor agents. Read this file 
 
 ## Quick Start for Agents
 
-1. **Read the PRD** → `docs/PRD-ROLE-BASED.md`
-2. **Find your role** → Frontend, Backend, DevOps, Design, or Content
-3. **Check the WBS** → `docs/WBS-WORK-BREAKDOWN-STRUCTURE.md` for task details
-4. **Verify dependencies** → Ensure blocking tasks are done before starting
+1. **Read the project map (optional but useful)** → `.cursor/plans/project_blueprint.plan.md` — features, routes, APIs, data model, end-to-end flows
+2. **Read the PRD** → `docs/PRD-ROLE-BASED.md`
+3. **Find your role** → Frontend, Backend, DevOps, Design, or Content
+4. **Check the WBS** → `docs/WBS-WORK-BREAKDOWN-STRUCTURE.md` for task details
+5. **Verify dependencies** → Ensure blocking tasks are done before starting
 
 ---
 
@@ -42,6 +43,7 @@ Or:
 
 | Document | Purpose |
 |----------|---------|
+| `.cursor/plans/project_blueprint.plan.md` | Project map: features, routes, APIs, ER + UML (class/state/sequence), architecture diagrams, deployment, user flows, crons |
 | `docs/WBS-WORK-BREAKDOWN-STRUCTURE.md` | Complete task breakdown with IDs, owners, effort |
 | `docs/PRD-ROLE-BASED.md` | Role-specific PRD, acceptance criteria |
 | `docs/LOCAL-DEVELOPMENT-SETUP.md` | Dependencies, env vars, setup steps |
@@ -70,6 +72,7 @@ Or:
 
 ## Getting Unstuck
 
+- **Where does X live (route, API, feature)?** See `.cursor/plans/project_blueprint.plan.md`
 - **Blocked by another role?** Check WBS dependency graph; ping or document the blocker
 - **Unclear acceptance criteria?** Refer to PRD role section
 - **Env/build issues?** See LOCAL-DEVELOPMENT-SETUP.md

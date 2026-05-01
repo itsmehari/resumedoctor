@@ -33,6 +33,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${siteUrl}/blog`, changeFrequency: "weekly" as const, priority: 0.8 },
     { url: `${siteUrl}/examples`, changeFrequency: "monthly" as const, priority: 0.7 },
     { url: `${siteUrl}/lp/resume-builder-india`, changeFrequency: "monthly" as const, priority: 0.75 },
+    { url: `${siteUrl}/lp/fresher-campus-resume-india`, changeFrequency: "monthly" as const, priority: 0.75 },
+    { url: `${siteUrl}/lp/tailor-resume-job-description`, changeFrequency: "monthly" as const, priority: 0.75 },
+    { url: `${siteUrl}/lp/resume-export-pdf-docx-india`, changeFrequency: "monthly" as const, priority: 0.75 },
+    { url: `${siteUrl}/features`, changeFrequency: "monthly" as const, priority: 0.72 },
   ];
 
   return [

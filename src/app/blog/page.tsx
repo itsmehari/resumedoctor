@@ -77,6 +77,14 @@ export default function BlogIndexPage() {
                     Pricing — PDF & Word
                   </Link>
                 </li>
+                <li>
+                  <Link
+                    href="/blog/how-to-read-ats-job-match-feedback"
+                    className="font-semibold text-primary-600 hover:underline dark:text-primary-400"
+                  >
+                    Reading ATS / JD match feedback
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>

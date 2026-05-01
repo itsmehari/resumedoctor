@@ -3,7 +3,7 @@ slug: ats-friendly-resume-complete-guide
 title: "ATS-Friendly Resume: Complete Guide for 2026"
 description: "Learn how Applicant Tracking Systems work and how to format your resume so it passes ATS filters on Naukri, LinkedIn, and Indeed."
 date: "2026-03-01"
-updated: "2026-04-15"
+updated: "2026-05-01"
 author: ResumeDoctor
 authorBio: "ResumeDoctor publishes India-first resume playbooks used by thousands of job seekers."
 readTime: 18
@@ -26,6 +26,8 @@ Use one clear column, predictable headings, and keyword alignment with the job d
 </Callout>
 
 This guide explains how ATS think, what breaks parsing, and how to ship a resume that works on Indian portals in 2026. We will cover headings, file formats, keyword strategy, and how to pair these rules with [ResumeDoctor templates](/templates) so you spend more time on achievements and less on layout anxiety.
+
+If you use match or score-style feedback in a builder, read [how to interpret that feedback](/blog/how-to-read-ats-job-match-feedback) so you treat it as a checklist—not a promise of shortlist.
 
 <YouTubeEmbed id="jNQXAC9IVRw" title="Short example: keep layouts simple for parsers" />
 
