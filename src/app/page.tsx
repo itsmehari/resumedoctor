@@ -126,251 +126,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── STATS BAR ────────────────────────────────────────────────────── */}
-      <section className="bg-white/90 backdrop-blur border-b border-slate-200 dark:bg-slate-900/80 dark:border-slate-800">
-        <div className="max-w-5xl mx-auto px-4 py-8 grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
-          {[
-            { num: "30+", label: "Templates" },
-            { num: "ATS", label: "Friendly layouts" },
-            { num: "Try", label: "OTP preview flow" },
-            { num: "< 5 min", label: "First draft" },
-          ].map((s) => (
-            <div key={s.label}>
-              <p className="text-3xl font-extrabold text-primary-600 dark:text-primary-400 leading-none">{s.num}</p>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{s.label}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── PORTAL BAR ───────────────────────────────────────────────────── */}
-      <section className="py-10 bg-gradient-to-r from-slate-100 via-white to-slate-100 dark:from-slate-900 dark:via-slate-900/80 dark:to-slate-900 border-b border-slate-200 dark:border-slate-800">
-        <div className="max-w-5xl mx-auto px-4 text-center">
-          <p className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-6">
-            Our users apply to
-          </p>
-          <div className="flex flex-wrap justify-center items-center gap-8 sm:gap-12">
-            {["Naukri.com", "LinkedIn", "Indeed India", "Internshala", "TimesJobs", "Shine", "Foundit"].map((name) => (
-              <span key={name} className="rounded-full border border-slate-200 bg-white px-3 py-1 text-sm font-semibold text-slate-500 shadow-sm hover:text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
-                {name}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── HOW IT WORKS ─────────────────────────────────────────────────── */}
-      <section className="py-24 bg-white dark:bg-slate-950">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <p className="text-xs font-bold uppercase tracking-widest text-primary-500 mb-3">How it works</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100">
-              From blank page to hired — in 3 steps
-            </h2>
-          </div>
-
-          <div className="relative grid md:grid-cols-3 gap-8">
-            {/* Connecting line */}
-            <div className="hidden md:block absolute top-10 left-[calc(16.5%+1rem)] right-[calc(16.5%+1rem)] h-px bg-gradient-to-r from-transparent via-primary-300 to-transparent" aria-hidden />
-
-            {[
-              {
-                step: "01",
-                icon: PATHS.template,
-                color: "bg-primary-600",
-                title: "Pick a template",
-                description: "Browse 30 ATS-optimised designs. Filter by style, industry, or career stage.",
-              },
-              {
-                step: "02",
-                icon: PATHS.sparkle,
-                color: "bg-violet-600",
-                title: "Fill with AI assistance",
-                description: "Type a few keywords and let AI craft impactful bullet points. Each section guided.",
-              },
-              {
-                step: "03",
-                icon: PATHS.download,
-                color: "bg-emerald-600",
-                title: "Download & apply",
-                description: "One-click PDF or DOCX export. ATS score checked. Ready to send instantly.",
-              },
-            ].map((item) => (
-              <div key={item.step} className="relative flex flex-col items-center rounded-2xl border border-slate-200/70 bg-slate-50/80 p-6 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
-                <div className={`w-16 h-16 rounded-2xl ${item.color} flex items-center justify-center mb-5 shadow-lg`}>
-                  <Icon path={item.icon} size={28} className="text-white" />
-                </div>
-                <span className="text-[10px] font-bold text-slate-400 tracking-widest uppercase mb-1">{item.step}</span>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">{item.title}</h3>
-                <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{item.description}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <Link href="/try"
-              className="inline-flex items-center gap-2 rounded-xl bg-primary-600 hover:bg-primary-700 px-8 py-4 text-base font-bold text-white transition-all shadow-lg shadow-primary-900/25 hover:scale-[1.02]">
-              Start building with Try
-              <Icon path={PATHS.arrow} size={18} className="text-white" />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ── FEATURES GRID ─────────────────────────────────────────────────── */}
-      <section className="py-24 bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900/60 dark:to-slate-900/30">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <p className="text-xs font-bold uppercase tracking-widest text-primary-500 mb-3">Features</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100">
-              Built to get you from draft to “Send”
-            </h2>
-            <p className="mt-4 text-slate-500 dark:text-slate-400 max-w-xl mx-auto text-base">
-              Fewer formatting surprises on Naukri, LinkedIn, and campus drives—structure, wording help, and exports in
-              one workflow.
-            </p>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {FEATURES.map((f) => (
-              <FeatureCard key={f.title} {...f} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── AI SPOTLIGHT ─────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#0f0c29] via-[#2a255a] to-[#1a1d3a] py-24">
-        <div className="absolute inset-0 opacity-20"
-          style={{ backgroundImage: "radial-gradient(circle at 25% 50%, #7c3aed 0%, transparent 50%), radial-gradient(circle at 75% 50%, #3b82f6 0%, transparent 50%)" }}
-          aria-hidden />
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-sm font-semibold text-white/90">
-            <Icon path={PATHS.sparkle} size={16} className="text-yellow-400" />
-            AI-Powered Writing
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-            Stop staring at a blank page.<br />
-            <span className="text-violet-300">AI writes the hard parts for you.</span>
-          </h2>
-          <p className="text-white/70 text-base max-w-2xl mx-auto mb-12 leading-relaxed">
-            Paste your job title and keywords — ResumeDoctor&apos;s AI generates achievement-driven bullet points
-            tailored to your role. No generic fluff. Every line is ATS-optimised and quantified.
-          </p>
-
-          <div className="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto mb-12">
-            {[
-              { icon: PATHS.ai,      label: "Bullet generator",    sub: "Role-specific bullet points" },
-              { icon: PATHS.ats,     label: "ATS score checker",   sub: "Know your score before applying" },
-              { icon: PATHS.sparkle, label: "Summary writer",      sub: "Professional intro in 1 click" },
-            ].map((item) => (
-              <div key={item.label} className="rounded-2xl bg-white/8 border border-white/15 p-6 text-left hover:bg-white/12 transition-colors">
-                <Icon path={item.icon} size={22} className="text-violet-300 mb-3" />
-                <p className="font-semibold text-white text-sm">{item.label}</p>
-                <p className="text-white/55 text-xs mt-1">{item.sub}</p>
-              </div>
-            ))}
-          </div>
-
-          <Link href="/try"
-            className="inline-flex items-center gap-2 rounded-xl bg-violet-500 hover:bg-violet-400 px-8 py-4 text-base font-bold text-white transition-all shadow-lg shadow-violet-900/40 hover:scale-[1.02]">
-            Try AI features
-            <Icon path={PATHS.arrow} size={18} className="text-white" />
-          </Link>
-        </div>
-      </section>
-
-      {/* ── TEMPLATE SHOWCASE ─────────────────────────────────────────────── */}
-      <section className="py-24 bg-white dark:bg-slate-950">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10">
-            <p className="text-xs font-bold uppercase tracking-widest text-primary-500 mb-3">Templates</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100">
-              30 templates for every career
-            </h2>
-            <p className="mt-4 text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
-              Modern layouts, classic formats, dark sidebars, two-column designs — all ATS-safe and
-              recruiter-tested for the Indian job market.
-            </p>
-          </div>
-
-          {/* Style filter pills – link to /templates with category */}
-          <div className="flex flex-wrap gap-2 justify-center mb-10">
-            {([
-              { label: "All", category: "" },
-              { label: "Modern", category: "modern" },
-              { label: "Classic", category: "classic" },
-              { label: "Creative", category: "creative" },
-              { label: "Minimal", category: "minimal" },
-              { label: "Two-Column", category: "executive" },
-              { label: "Dark Sidebar", category: "ats" },
-            ] as const).map(({ label, category }) => (
-              <Link
-                key={label}
-                href={category ? `/templates?category=${category}` : "/templates"}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
-                  label === "All"
-                    ? "bg-primary-600 text-white border-primary-600"
-                    : "border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-primary-400 hover:text-primary-600"
-                }`}
-              >
-                {label}
-              </Link>
-            ))}
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {TEMPLATE_CARDS.map((t) => (
-              <TemplateShowcaseCard key={t.title} {...t} />
-            ))}
-          </div>
-
-          <div className="text-center mt-10">
-            <Link href="/templates"
-              className="inline-flex items-center gap-2 font-semibold text-primary-600 dark:text-primary-400 hover:underline">
-              See all 30 templates
-              <Icon path={PATHS.arrow} size={16} />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ── CAREER STAGES ────────────────────────────────────────────────── */}
-      <section className="py-24 bg-gradient-to-b from-slate-100 to-slate-50 dark:from-slate-900/60 dark:to-slate-900/30">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <p className="text-xs font-bold uppercase tracking-widest text-primary-500 mb-3">For everyone</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100">
-              Whichever stage you&apos;re at,<br className="hidden sm:block" /> we have you covered
-            </h2>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {CAREER_STAGES.map((stage) => (
-              <CareerCard key={stage.title} {...stage} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── TESTIMONIALS ─────────────────────────────────────────────────── */}
-      <section className="py-24 bg-white dark:bg-slate-950">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <p className="text-xs font-bold uppercase tracking-widest text-primary-500 mb-3">Reviews</p>
-            <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
-              Real job seekers. Real results.
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {TESTIMONIALS.map((t) => (
-              <TestimonialCard key={t.name} {...t} />
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── PRICING TEASER ───────────────────────────────────────────────── */}
       <section className="py-24 bg-gradient-to-b from-slate-100 to-slate-50 dark:from-slate-900/60 dark:to-slate-900/30">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -432,55 +187,340 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── INDUSTRY COVERAGE ────────────────────────────────────────────── */}
-      <section className="py-20 bg-white dark:bg-slate-950">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-xs font-bold uppercase tracking-widest text-primary-500 mb-4">Industries covered</p>
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-10">
-            Optimised for every sector in India
+      {/* ── AI SPOTLIGHT ─────────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#0f0c29] via-[#2a255a] to-[#1a1d3a] py-24">
+        <div className="absolute inset-0 opacity-20"
+          style={{ backgroundImage: "radial-gradient(circle at 25% 50%, #7c3aed 0%, transparent 50%), radial-gradient(circle at 75% 50%, #3b82f6 0%, transparent 50%)" }}
+          aria-hidden />
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-sm font-semibold text-white/90">
+            <Icon path={PATHS.sparkle} size={16} className="text-yellow-400" />
+            AI-Powered Writing
+          </div>
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
+            Stop staring at a blank page.<br />
+            <span className="text-violet-300">AI writes the hard parts for you.</span>
           </h2>
-          <div className="flex flex-wrap justify-center gap-3">
+          <p className="text-white/70 text-base max-w-2xl mx-auto mb-12 leading-relaxed">
+            Paste your job title and keywords — ResumeDoctor&apos;s AI generates achievement-driven bullet points
+            tailored to your role. No generic fluff. Every line is ATS-optimised and quantified.
+          </p>
+
+          <div className="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto mb-12">
             {[
-              "IT & Software", "Banking & Finance", "Healthcare", "Marketing & Advertising",
-              "Education", "Engineering", "Consulting", "E-commerce", "Government / PSU",
-              "Media & Journalism", "Hospitality", "Legal", "Retail", "Manufacturing", "Logistics",
-            ].map((industry) => (
-              <span key={industry}
-                className="px-4 py-2 rounded-full text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-primary-50 hover:text-primary-700 dark:hover:bg-primary-900/30 dark:hover:text-primary-300 transition-colors cursor-default border border-slate-200 dark:border-slate-700">
-                {industry}
-              </span>
+              { icon: PATHS.ai,      label: "Bullet generator",    sub: "Role-specific bullet points" },
+              { icon: PATHS.ats,     label: "ATS score checker",   sub: "Know your score before applying" },
+              { icon: PATHS.sparkle, label: "Summary writer",      sub: "Professional intro in 1 click" },
+            ].map((item) => (
+              <div key={item.label} className="rounded-2xl bg-white/8 border border-white/15 p-6 text-left hover:bg-white/12 transition-colors">
+                <Icon path={item.icon} size={22} className="text-violet-300 mb-3" />
+                <p className="font-semibold text-white text-sm">{item.label}</p>
+                <p className="text-white/55 text-xs mt-1">{item.sub}</p>
+              </div>
+            ))}
+          </div>
+
+          <Link href="/try"
+            className="inline-flex items-center gap-2 rounded-xl bg-violet-500 hover:bg-violet-400 px-8 py-4 text-base font-bold text-white transition-all shadow-lg shadow-violet-900/40 hover:scale-[1.02]">
+            Try AI features
+            <Icon path={PATHS.arrow} size={18} className="text-white" />
+          </Link>
+        </div>
+      </section>
+
+      {/* ── STATS BAR ────────────────────────────────────────────────────── */}
+      <section className="relative border-b border-slate-200/80 bg-gradient-to-b from-white to-slate-50/90 py-10 dark:border-slate-800 dark:from-slate-950 dark:to-slate-900/90">
+        <div className="pointer-events-none absolute inset-0 opacity-40 dark:opacity-25" aria-hidden
+          style={{ backgroundImage: "radial-gradient(circle at 20% 50%, rgb(59 130 246 / 0.12), transparent 45%), radial-gradient(circle at 80% 50%, rgb(124 58 237 / 0.1), transparent 45%)" }} />
+        <div className="relative max-w-5xl mx-auto px-4">
+          <div className="rounded-2xl border border-slate-200/90 bg-white/90 px-4 py-8 shadow-sm ring-1 ring-slate-200/40 backdrop-blur-sm dark:border-slate-700/80 dark:bg-slate-900/85 dark:ring-slate-700/50 sm:px-8">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-10 gap-x-4 sm:gap-y-8">
+              {[
+                { num: "30+", label: "Templates" },
+                { num: "ATS", label: "Friendly layouts" },
+                { num: "Try", label: "OTP preview flow" },
+                { num: "< 5 min", label: "First draft" },
+              ].map((s, i) => (
+                <div
+                  key={s.label}
+                  className={`text-center px-2 sm:px-4 ${i >= 2 ? "border-t border-slate-100 pt-10 dark:border-slate-800 sm:border-t-0 sm:pt-0" : ""} ${i % 2 === 1 ? "border-l border-slate-100 pl-6 dark:border-slate-800" : ""} ${i > 0 ? "sm:border-l sm:border-slate-200 sm:pl-6 dark:sm:border-slate-700 lg:pl-8" : ""}`}
+                >
+                  <p className="text-3xl font-extrabold tracking-tight text-primary-600 dark:text-primary-400 leading-none">{s.num}</p>
+                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-2">{s.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── PORTAL BAR ───────────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden border-b border-slate-200 py-14 dark:border-slate-800">
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-primary-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-primary-950/20" aria-hidden />
+        <div className="relative max-w-5xl mx-auto px-4 text-center">
+          <p className="text-xs font-bold uppercase tracking-widest text-primary-600 dark:text-primary-400 mb-2">
+            Trusted placements
+          </p>
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-8 max-w-lg mx-auto">
+            Our users send resumes to India&apos;s top job boards and employer portals.
+          </p>
+          <div className="mx-auto max-w-4xl rounded-3xl border border-slate-200/80 bg-white/70 px-5 py-8 shadow-sm ring-1 ring-slate-200/50 backdrop-blur-sm dark:border-slate-700/80 dark:bg-slate-800/40 dark:ring-slate-700/40">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-5">
+              Apply on
+            </p>
+            <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4">
+              {["Naukri.com", "LinkedIn", "Indeed India", "Internshala", "TimesJobs", "Shine", "Foundit"].map((name) => (
+                <span key={name} className="rounded-full border border-slate-200/90 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm transition-all hover:border-primary-300 hover:text-primary-700 hover:shadow-md dark:border-slate-600 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:border-primary-500 dark:hover:text-primary-300">
+                  {name}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── HOW IT WORKS ─────────────────────────────────────────────────── */}
+      <section className="relative py-24 bg-white dark:bg-slate-950">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary-200 to-transparent dark:via-primary-800/60" aria-hidden />
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16 max-w-2xl mx-auto">
+            <p className="text-xs font-bold uppercase tracking-widest text-primary-500 mb-3">How it works</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+              From blank page to hired — in 3 steps
+            </h2>
+            <p className="mt-4 text-slate-500 dark:text-slate-400 text-base leading-relaxed">
+              Pick a layout, let AI sharpen your story, then export and apply with confidence.
+            </p>
+          </div>
+
+          <div className="relative grid md:grid-cols-3 gap-8">
+            <div className="hidden md:block absolute top-[4.5rem] left-[calc(16.65%+0.5rem)] right-[calc(16.65%+0.5rem)] h-[2px] bg-gradient-to-r from-primary-200/80 via-violet-300/80 to-emerald-300/80 dark:from-primary-800/50 dark:via-violet-800/50 dark:to-emerald-800/50 rounded-full" aria-hidden />
+
+            {[
+              {
+                step: "01",
+                icon: PATHS.template,
+                color: "bg-primary-600",
+                title: "Pick a template",
+                description: "Browse 30 ATS-optimised designs. Filter by style, industry, or career stage.",
+              },
+              {
+                step: "02",
+                icon: PATHS.sparkle,
+                color: "bg-violet-600",
+                title: "Fill with AI assistance",
+                description: "Type a few keywords and let AI craft impactful bullet points. Each section guided.",
+              },
+              {
+                step: "03",
+                icon: PATHS.download,
+                color: "bg-emerald-600",
+                title: "Download & apply",
+                description: "One-click PDF or DOCX export. ATS score checked. Ready to send instantly.",
+              },
+            ].map((item) => (
+              <div key={item.step} className="relative flex flex-col items-center rounded-2xl border border-slate-200/90 bg-gradient-to-b from-white to-slate-50/90 p-7 text-center shadow-md ring-1 ring-slate-200/50 transition-all hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-700 dark:from-slate-900 dark:to-slate-950/90 dark:ring-slate-700/60 dark:hover:border-slate-600">
+                <div className={`relative z-10 w-16 h-16 rounded-2xl ${item.color} ring-4 ring-white dark:ring-slate-950 flex items-center justify-center mb-5 shadow-lg`}>
+                  <Icon path={item.icon} size={28} className="text-white" />
+                </div>
+                <span className="text-[10px] font-bold text-slate-400 tracking-widest uppercase mb-1">{item.step}</span>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">{item.title}</h3>
+                <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{item.description}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-14">
+            <Link href="/try"
+              className="inline-flex items-center gap-2 rounded-xl bg-primary-600 hover:bg-primary-700 px-8 py-4 text-base font-bold text-white transition-all shadow-lg shadow-primary-900/25 hover:scale-[1.02]">
+              Start building with Try
+              <Icon path={PATHS.arrow} size={18} className="text-white" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FEATURES GRID ─────────────────────────────────────────────────── */}
+      <section className="relative py-24 bg-gradient-to-b from-slate-50 via-white to-slate-100 dark:from-slate-900/70 dark:via-slate-950 dark:to-slate-900/40">
+        <div className="pointer-events-none absolute inset-0 opacity-[0.35] dark:opacity-20" aria-hidden
+          style={{ backgroundImage: "radial-gradient(ellipse 80% 50% at 50% -20%, rgb(59 130 246 / 0.15), transparent)" }} />
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16 max-w-2xl mx-auto">
+            <p className="text-xs font-bold uppercase tracking-widest text-primary-500 mb-3">Features</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+              Built to get you from draft to “Send”
+            </h2>
+            <p className="mt-4 text-slate-500 dark:text-slate-400 text-base leading-relaxed">
+              Fewer formatting surprises on Naukri, LinkedIn, and campus drives—structure, wording help, and exports in
+              one workflow.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7">
+            {FEATURES.map((f) => (
+              <FeatureCard key={f.title} {...f} />
             ))}
           </div>
         </div>
       </section>
 
+      {/* ── TEMPLATE SHOWCASE ─────────────────────────────────────────────── */}
+      <section className="relative py-24 bg-white dark:bg-slate-950">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-slate-50 to-transparent dark:from-slate-900 dark:to-transparent" aria-hidden />
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12 max-w-2xl mx-auto">
+            <p className="text-xs font-bold uppercase tracking-widest text-primary-500 mb-3">Templates</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+              30 templates for every career
+            </h2>
+            <p className="mt-4 text-slate-500 dark:text-slate-400 text-base leading-relaxed">
+              Modern layouts, classic formats, dark sidebars, two-column designs — all ATS-safe and
+              recruiter-tested for the Indian job market.
+            </p>
+          </div>
+
+          <div className="mb-12 flex justify-center">
+            <div className="inline-flex flex-wrap justify-center gap-2 rounded-2xl border border-slate-200/90 bg-slate-50/90 p-2 shadow-inner dark:border-slate-700 dark:bg-slate-900/60">
+              {([
+                { label: "All", category: "" },
+                { label: "Modern", category: "modern" },
+                { label: "Classic", category: "classic" },
+                { label: "Creative", category: "creative" },
+                { label: "Minimal", category: "minimal" },
+                { label: "Two-Column", category: "executive" },
+                { label: "Dark Sidebar", category: "ats" },
+              ] as const).map(({ label, category }) => (
+                <Link
+                  key={label}
+                  href={category ? `/templates?category=${category}` : "/templates"}
+                  className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                    label === "All"
+                      ? "bg-primary-600 text-white shadow-md shadow-primary-900/20"
+                      : "text-slate-600 dark:text-slate-400 hover:bg-white hover:text-primary-700 hover:shadow-sm dark:hover:bg-slate-800 dark:hover:text-primary-300"
+                  }`}
+                >
+                  {label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            {TEMPLATE_CARDS.map((t) => (
+              <TemplateShowcaseCard key={t.title} {...t} />
+            ))}
+          </div>
+
+          <div className="text-center mt-12">
+            <Link href="/templates"
+              className="inline-flex items-center gap-2 rounded-xl border border-primary-200 bg-primary-50 px-6 py-3 text-sm font-semibold text-primary-700 transition-all hover:bg-primary-100 dark:border-primary-800 dark:bg-primary-950/50 dark:text-primary-300 dark:hover:bg-primary-900/40">
+              See all 30 templates
+              <Icon path={PATHS.arrow} size={16} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── CAREER STAGES ────────────────────────────────────────────────── */}
+      <section className="relative py-24 bg-gradient-to-b from-slate-100 to-white dark:from-slate-900/70 dark:to-slate-950">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16 max-w-2xl mx-auto">
+            <p className="text-xs font-bold uppercase tracking-widest text-primary-500 mb-3">For everyone</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+              Whichever stage you&apos;re at,<br className="hidden sm:block" /> we have you covered
+            </h2>
+            <p className="mt-4 text-slate-500 dark:text-slate-400 text-base">
+              Section presets and guides tuned for freshers, experienced hires, career pivots, and academics.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {CAREER_STAGES.map((stage) => (
+              <CareerCard key={stage.title} {...stage} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── TESTIMONIALS ─────────────────────────────────────────────────── */}
+      <section className="relative py-24 bg-white dark:bg-slate-950">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-slate-50 to-transparent dark:from-slate-900/80 dark:to-transparent" aria-hidden />
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16 max-w-2xl mx-auto">
+            <p className="text-xs font-bold uppercase tracking-widest text-primary-500 mb-3">Reviews</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+              Real job seekers. Real results.
+            </h2>
+            <p className="mt-4 text-slate-500 dark:text-slate-400 text-base">
+              Hear how ResumeDoctor fits into real application workflows across India.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+            {TESTIMONIALS.map((t) => (
+              <TestimonialCard key={t.name} {...t} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── INDUSTRY COVERAGE ────────────────────────────────────────────── */}
+      <section className="py-20 sm:py-24 bg-slate-50 dark:bg-slate-950 border-y border-slate-200/80 dark:border-slate-800">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-xs font-bold uppercase tracking-widest text-primary-500 mb-3">Industries covered</p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100 tracking-tight mb-4">
+            Optimised for every sector in India
+          </h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400 max-w-xl mx-auto mb-10">
+            Templates and wording cues align with how recruiters search in each domain.
+          </p>
+          <div className="rounded-3xl border border-slate-200/90 bg-white/80 px-6 py-8 shadow-sm ring-1 ring-slate-100 dark:border-slate-700 dark:bg-slate-900/70 dark:ring-slate-800">
+            <div className="flex flex-wrap justify-center gap-2.5 sm:gap-3">
+              {[
+                "IT & Software", "Banking & Finance", "Healthcare", "Marketing & Advertising",
+                "Education", "Engineering", "Consulting", "E-commerce", "Government / PSU",
+                "Media & Journalism", "Hospitality", "Legal", "Retail", "Manufacturing", "Logistics",
+              ].map((industry) => (
+                <span key={industry}
+                  className="px-4 py-2 rounded-full text-sm font-medium bg-slate-50 text-slate-700 border border-slate-200/90 shadow-sm transition-colors hover:border-primary-300 hover:bg-primary-50 hover:text-primary-800 dark:bg-slate-800/80 dark:text-slate-300 dark:border-slate-600 dark:hover:border-primary-600 dark:hover:bg-primary-950/50 dark:hover:text-primary-200">
+                  {industry}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── FAQ ──────────────────────────────────────────────────────────── */}
-      <section className="py-24 bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900/50 dark:to-slate-900/30" aria-labelledby="faq-heading">
+      <section className="py-24 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900/40 dark:to-slate-950" aria-labelledby="faq-heading">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-14">
+          <div className="text-center mb-14 max-w-xl mx-auto">
             <p className="text-xs font-bold uppercase tracking-widest text-primary-500 mb-3">FAQ</p>
-            <h2 id="faq-heading" className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+            <h2 id="faq-heading" className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
               Frequently asked questions
             </h2>
+            <p className="mt-3 text-slate-500 dark:text-slate-400 text-sm">
+              Quick answers before you start your resume.
+            </p>
           </div>
-          <div className="space-y-5">
+          <div className="space-y-4">
             {FAQ_ITEMS.map((item, i) => (
-              <div key={i} className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6">
+              <div key={i} className="group rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm transition-all hover:border-primary-200 hover:shadow-md dark:border-slate-700 dark:bg-slate-900 dark:hover:border-primary-800/60">
                 <h3 className="font-semibold text-slate-900 dark:text-slate-100 flex items-start gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400 text-xs font-bold flex items-center justify-center mt-0.5">
+                  <span className="flex-shrink-0 w-7 h-7 rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400 text-xs font-bold flex items-center justify-center mt-0.5 ring-2 ring-white dark:ring-slate-900">
                     {i + 1}
                   </span>
                   {item.question}
                 </h3>
-                <p className="mt-3 text-slate-600 dark:text-slate-400 leading-relaxed text-sm pl-9">
+                <p className="mt-3 text-slate-600 dark:text-slate-400 leading-relaxed text-sm pl-10 border-l-2 border-primary-100 dark:border-primary-900/50 ml-1">
                   {item.answer}
                 </p>
               </div>
             ))}
           </div>
-          <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-8">
+          <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-10">
             Still have questions?{" "}
-            <Link href="/blog" className="text-primary-600 hover:underline">Read our resume guides →</Link>
+            <Link href="/blog" className="font-medium text-primary-600 hover:underline dark:text-primary-400">Read our resume guides →</Link>
           </p>
         </div>
       </section>
@@ -489,24 +529,29 @@ export default function HomePage() {
       <section className="relative overflow-hidden bg-gradient-to-br from-primary-700 via-primary-600 to-indigo-900 py-28">
         <div className="absolute inset-0 opacity-15"
           style={{ backgroundImage: "radial-gradient(circle at 70% 50%, #fbbf24 0%, transparent 60%)" }} aria-hidden />
+        <div className="absolute inset-0 opacity-[0.07] bg-[linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] bg-[size:3rem_3rem]" aria-hidden />
         <div className="relative max-w-3xl mx-auto px-4 text-center">
+          <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-xs font-semibold text-white/90 tracking-wide">
+            <Icon path={PATHS.star} size={14} className="text-amber-300" />
+            Start free · Upgrade when you export
+          </div>
           <h2 className="text-3xl sm:text-5xl font-extrabold text-white leading-tight tracking-tight">
             Your dream job is<br />one resume away.
           </h2>
-          <p className="mt-5 text-lg text-white/80 max-w-lg mx-auto">
+          <p className="mt-5 text-lg text-white/80 max-w-lg mx-auto leading-relaxed">
             Build your best resume on ResumeDoctor. Start with Try, then upgrade when you need PDF, Word, and every template.
           </p>
-          <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center sm:items-center">
             <Link href="/try"
               className="rounded-xl bg-accent hover:bg-accent-hover px-10 py-4 text-lg font-bold text-accent-dark text-center transition-all shadow-xl shadow-black/25 hover:scale-[1.02]">
               Build my resume — try
             </Link>
             <Link href="/templates"
-              className="rounded-xl border-2 border-white/40 bg-white/10 hover:bg-white/20 px-8 py-4 text-base font-semibold text-white text-center transition-all">
+              className="rounded-xl border-2 border-white/40 bg-white/10 hover:bg-white/20 px-8 py-4 text-base font-semibold text-white text-center transition-all backdrop-blur-sm">
               View templates
             </Link>
           </div>
-          <p className="mt-5 text-sm text-white/55">No credit card · Email verification for the quick try</p>
+          <p className="mt-6 text-sm text-white/55">No credit card · Email verification for the quick try</p>
         </div>
       </section>
       </main>
@@ -665,20 +710,22 @@ function FeatureCard({ icon, color, title, description, badge, guideHref }: {
   icon: string; color: string; title: string; description: string; badge: string | null; guideHref?: string | null;
 }) {
   return (
-    <div className="group relative min-h-[260px] rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md hover:border-primary-300 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-primary-700">
+    <div className="group relative min-h-[260px] overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-6 shadow-md ring-1 ring-slate-100 transition-all hover:-translate-y-1 hover:border-primary-200 hover:shadow-lg dark:border-slate-700 dark:bg-slate-900 dark:ring-slate-800 dark:hover:border-primary-700/80">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary-400/0 via-primary-400/60 to-violet-400/0 opacity-0 transition-opacity group-hover:opacity-100 dark:via-primary-500/50" aria-hidden />
       {badge && (
-        <span className="absolute top-4 right-4 text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400">
+        <span className="absolute top-4 right-4 text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400 ring-1 ring-primary-200/50 dark:ring-primary-800/50">
           {badge}
         </span>
       )}
-      <div className={`w-11 h-11 rounded-xl ${color} flex items-center justify-center mb-4`}>
+      <div className={`relative w-11 h-11 rounded-xl ${color} flex items-center justify-center mb-4 shadow-sm ring-2 ring-white dark:ring-slate-900`}>
         <Icon path={icon} size={22} />
       </div>
       <h3 className="font-bold text-slate-900 dark:text-slate-100 mb-2 text-base">{title}</h3>
       <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{description}</p>
       {guideHref && (
-        <Link href={guideHref} className="mt-3 inline-block text-xs text-primary-600 dark:text-primary-400 hover:underline">
-          Read guide →
+        <Link href={guideHref} className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-primary-600 dark:text-primary-400 hover:underline">
+          Read guide
+          <Icon path={PATHS.arrow} size={12} />
         </Link>
       )}
     </div>
@@ -693,7 +740,7 @@ function TemplateShowcaseCard({ title, style, badge, accent, layout, slots }: {
 
   return (
     <Link href="/templates"
-      className="group rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-xl transition-all hover:-translate-y-1">
+      className="group rounded-2xl overflow-hidden border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-md ring-1 ring-slate-100 dark:ring-slate-800 hover:border-primary-200 dark:hover:border-primary-800 hover:shadow-xl hover:shadow-primary-900/10 transition-all hover:-translate-y-1">
       {/* Preview */}
       <div className="relative bg-slate-50 dark:bg-slate-800 overflow-hidden" style={{ aspectRatio: "3/4" }}>
         {/* Simulated resume layout */}
@@ -785,13 +832,16 @@ function CareerCard({ emoji, title, color, accent, sections, cta, href, guideHre
   sections: string[]; cta: string; href: string; guideHref?: string;
 }) {
   return (
-    <div className={`rounded-2xl border-2 ${color} bg-white dark:bg-slate-900 p-6 flex flex-col h-full shadow-sm hover:shadow-md transition-all`}>
-      <div className="text-3xl mb-3">{emoji}</div>
+    <div className={`relative overflow-hidden rounded-2xl border-2 ${color} bg-white dark:bg-slate-900 p-6 flex flex-col h-full shadow-md ring-1 ring-slate-100/80 transition-all hover:-translate-y-0.5 hover:shadow-lg dark:ring-slate-800`}>
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-400/70 via-violet-400/70 to-emerald-400/70 opacity-80 dark:opacity-60" aria-hidden />
+      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-2xl shadow-inner dark:bg-slate-800 mb-4">{emoji}</div>
       <h3 className={`font-bold text-base ${accent} mb-3`}>{title}</h3>
-      <ul className="space-y-1.5 flex-1 mb-5">
+      <ul className="space-y-2 flex-1 mb-5">
         {sections.map((s) => (
-          <li key={s} className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
-            <span className="w-1 h-1 rounded-full bg-slate-400 flex-shrink-0" />
+          <li key={s} className="flex items-center gap-2.5 text-xs text-slate-600 dark:text-slate-400">
+            <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900/40">
+              <Icon path={PATHS.check} size={8} className="text-primary-600 dark:text-primary-400" />
+            </span>
             {s}
           </li>
         ))}
@@ -816,16 +866,17 @@ function TestimonialCard({ name, role, avatar, color, rating, text }: {
   name: string; role: string; avatar: string; color: string; rating: number; text: string;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-all">
-      <div className="flex gap-0.5">
+    <div className="relative flex flex-col gap-4 overflow-hidden rounded-2xl border border-slate-200/90 bg-gradient-to-b from-white to-slate-50/90 p-6 pt-8 shadow-md ring-1 ring-slate-100 transition-all hover:border-primary-200 hover:shadow-lg dark:border-slate-700 dark:from-slate-900 dark:to-slate-950 dark:ring-slate-800 dark:hover:border-primary-800/60">
+      <span className="absolute left-5 top-4 font-serif text-5xl leading-none text-primary-200/90 dark:text-primary-900/50" aria-hidden>&ldquo;</span>
+      <div className="relative flex gap-0.5">
         {Array.from({ length: rating }).map((_, i) => (
-          <svg key={i} className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+          <svg key={i} className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
           </svg>
         ))}
       </div>
-      <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed italic">&quot;{text}&quot;</p>
-      <div className="flex items-center gap-3 mt-auto pt-2 border-t border-slate-100 dark:border-slate-800">
+      <p className="relative text-slate-700 dark:text-slate-300 text-sm leading-relaxed">{text}</p>
+      <div className="flex items-center gap-3 mt-auto pt-4 border-t border-slate-100 dark:border-slate-800">
         <div className={`w-9 h-9 rounded-full ${color} flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>
           {avatar}
         </div>
