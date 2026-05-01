@@ -13,9 +13,17 @@ const TRIAL_EXTEND_MINUTES = 3; // extra time for returning trial users
 const MAX_VERIFY_ATTEMPTS = 5;
 const LOCKOUT_MINUTES = 15;
 
+function safeTrialReturnTo(raw: unknown): string {
+  if (typeof raw !== "string" || !raw.startsWith("/")) return "/try/templates";
+  if (raw.startsWith("//") || raw.includes("..")) return "/try/templates";
+  if (!raw.startsWith("/resumes/")) return "/try/templates";
+  return raw;
+}
+
 const schema = z.object({
   email: z.string().email("Invalid email address"),
   otp: z.string().length(6, "OTP must be 6 digits").regex(/^\d+$/, "OTP must be digits only"),
+  returnTo: z.string().optional(),
 });
 
 export async function POST(req: Request) {
@@ -27,8 +35,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: msg }, { status: 400 });
     }
 
-    const { email, otp } = parsed.data;
+    const { email, otp, returnTo: returnToRaw } = parsed.data;
     const normalizedEmail = email.toLowerCase().trim();
+    const returnTo = safeTrialReturnTo(returnToRaw);
 
     // Lockout check: too many failed verify attempts
     const lockoutStart = subMinutes(new Date(), LOCKOUT_MINUTES);
@@ -177,7 +186,7 @@ export async function POST(req: Request) {
       {
         success: true,
         sessionExpiresAt: sessionExpiresAt.toISOString(),
-        redirectTo: "/try/templates",
+        redirectTo: returnTo,
       },
       { status: 200 }
     );

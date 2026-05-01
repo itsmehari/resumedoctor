@@ -8,6 +8,7 @@ import { randomBytes } from "crypto";
 import { compare } from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { verifyToken } from "@/lib/totp";
+import { normalizeEmail } from "@/lib/email-normalize";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -32,13 +33,35 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) return null;
 
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-          select: { id: true, email: true, name: true, image: true, passwordHash: true, twoFactorEnabled: true, twoFactorSecret: true, role: true },
+          where: { email: normalizeEmail(credentials.email) },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            image: true,
+            passwordHash: true,
+            emailVerified: true,
+            twoFactorEnabled: true,
+            twoFactorSecret: true,
+            role: true,
+          },
         });
         if (!user?.passwordHash) return null;
 
         const valid = await compare(credentials.password, user.passwordHash);
         if (!valid) return null;
+
+        if (!user.emailVerified) {
+          throw new Error("EMAIL_NOT_VERIFIED");
+        }
+
+        if (
+          process.env.REQUIRE_ADMIN_2FA === "true" &&
+          user.role === "admin" &&
+          !user.twoFactorEnabled
+        ) {
+          throw new Error("ADMIN_ENABLE_2FA");
+        }
 
         if (user.twoFactorEnabled && user.twoFactorSecret) {
           const token = randomBytes(32).toString("hex");
@@ -49,7 +72,7 @@ export const authOptions: NextAuthOptions = {
 
         return {
           id: user.id,
-          email: user.email,
+          email: normalizeEmail(user.email),
           name: user.name,
           image: user.image,
           role: (user as { role?: string }).role,
@@ -68,9 +91,26 @@ export const authOptions: NextAuthOptions = {
 
         const tf = await prisma.twoFactorToken.findUnique({
           where: { token: credentials.token },
-          include: { user: { select: { id: true, email: true, name: true, image: true, twoFactorSecret: true, twoFactorBackupCodes: true, role: true } } },
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                name: true,
+                image: true,
+                emailVerified: true,
+                twoFactorSecret: true,
+                twoFactorBackupCodes: true,
+                role: true,
+              },
+            },
+          },
         });
-        if (!tf || tf.expires < new Date() || !tf.user) return null;
+        if (!tf || !tf.user) return null;
+        if (tf.expires < new Date()) {
+          throw new Error("2FA_SESSION_EXPIRED");
+        }
+        if (!tf.user.emailVerified) return null;
 
         const user = tf.user as { twoFactorSecret: string | null; twoFactorBackupCodes: string | null };
         let codeValid = false;
@@ -87,7 +127,7 @@ export const authOptions: NextAuthOptions = {
 
         return {
           id: tf.user.id,
-          email: tf.user.email,
+          email: normalizeEmail(tf.user.email),
           name: tf.user.name,
           image: tf.user.image,
           role: (tf.user as { role?: string }).role,
@@ -115,7 +155,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user?.id) {
         token.id = user.id;
-        token.email = user.email;
+        token.email = typeof user.email === "string" ? normalizeEmail(user.email) : user.email;
         token.name = user.name;
         token.picture = user.image;
         const role = (user as { role?: string }).role;
@@ -128,12 +168,16 @@ export const authOptions: NextAuthOptions = {
           token.role = db?.role ?? "user";
         }
       }
+      if (typeof token.email === "string") {
+        token.email = normalizeEmail(token.email);
+      }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         (session.user as { id?: string }).id = token.id as string;
-        session.user.email = token.email as string;
+        session.user.email =
+          typeof token.email === "string" ? normalizeEmail(token.email) : "";
         session.user.name = token.name as string;
         session.user.image = token.picture as string;
         (session.user as { role?: string }).role = token.role as string;
@@ -147,9 +191,13 @@ export const authOptions: NextAuthOptions = {
       // Auto-link OAuth accounts to existing users (e.g. user signed up with
       // email+password and now tries to sign in with Google/LinkedIn).
       const existing = await prisma.user.findUnique({
-        where: { email: user.email },
+        where: { email: normalizeEmail(user.email) },
         include: { accounts: true },
       });
+
+      if (existing?.role === "admin") {
+        return "/login?error=AdminOAuthDenied";
+      }
 
       if (existing) {
         const alreadyLinked = existing.accounts.some(
@@ -186,10 +234,23 @@ export const authOptions: NextAuthOptions = {
     },
   },
   events: {
+    async createUser({ user }) {
+      if (!user.id || !user.email) return;
+      const norm = normalizeEmail(user.email);
+      if (norm === user.email) return;
+      try {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { email: norm },
+        });
+      } catch (err) {
+        console.error("[auth] createUser email normalize:", err);
+      }
+    },
     async signIn({ user, account }) {
       if (account?.provider !== "credentials" && user.email) {
         const existing = await prisma.user.findUnique({
-          where: { email: user.email },
+          where: { email: normalizeEmail(user.email) },
         });
         if (existing && !existing.emailVerified) {
           await prisma.user.update({

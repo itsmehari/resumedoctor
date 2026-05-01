@@ -1,22 +1,37 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
+import { TrustBadges } from "@/components/trust-badges";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [verifyResendBusy, setVerifyResendBusy] = useState(false);
+  const [verifyResendMsg, setVerifyResendMsg] = useState<string | null>(null);
+  const [needsEmailVerify, setNeedsEmailVerify] = useState(false);
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+
+  useEffect(() => {
+    const q = searchParams.get("error");
+    if (q === "AdminOAuthDenied") {
+      setError(
+        "Administrator accounts must sign in with email and password, not Google or LinkedIn."
+      );
+    }
+  }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+    setVerifyResendMsg(null);
+    setNeedsEmailVerify(false);
     setLoading(true);
     try {
       const res = await signIn("credentials", {
@@ -28,7 +43,27 @@ function LoginForm() {
       if (res?.error) {
         if (res.error.startsWith("2FA_REQUIRED:")) {
           const token = res.error.split(":")[1];
-          window.location.href = `/login/2fa?token=${token}&callbackUrl=${encodeURIComponent(callbackUrl)}`;
+          try {
+            sessionStorage.setItem("2fa_pending_token", token);
+          } catch {
+            /* ignore */
+          }
+          window.location.href = `/login/2fa?callbackUrl=${encodeURIComponent(callbackUrl)}`;
+          return;
+        }
+        if (res.error === "EMAIL_NOT_VERIFIED") {
+          setNeedsEmailVerify(true);
+          setError(
+            "Verify your email before signing in. Open the link we sent when you signed up, or resend a new link below."
+          );
+          setLoading(false);
+          return;
+        }
+        if (res.error === "ADMIN_ENABLE_2FA") {
+          setError(
+            "Your administrator account must enable two-factor authentication before you can sign in. Use another session or contact support."
+          );
+          setLoading(false);
           return;
         }
         setError("Invalid email or password");
@@ -58,13 +93,59 @@ function LoginForm() {
               Sign up
             </Link>
           </p>
+          <p className="mt-3 text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+            Pick up where you left off—your saved resumes, exports, and Pro access stay on this account.
+          </p>
+          <div className="mt-5 flex justify-center">
+            <TrustBadges />
+          </div>
         </div>
 
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-8 shadow-sm">
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
-              <div className="rounded-lg bg-red-50 dark:bg-red-900/20 px-4 py-3 text-sm text-red-700 dark:text-red-400">
-                {error}
+              <div className="rounded-lg bg-red-50 dark:bg-red-900/20 px-4 py-3 text-sm text-red-700 dark:text-red-400 space-y-3">
+                <p>{error}</p>
+                {needsEmailVerify && (
+                  <div className="pt-1 border-t border-red-200/60 dark:border-red-900/40">
+                    {verifyResendMsg && (
+                      <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">{verifyResendMsg}</p>
+                    )}
+                    <button
+                      type="button"
+                      disabled={verifyResendBusy || !email.trim()}
+                      onClick={async () => {
+                        setVerifyResendMsg(null);
+                        setVerifyResendBusy(true);
+                        try {
+                          const r = await fetch("/api/auth/request-verification-email", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ email: email.trim() }),
+                          });
+                          const data = await r.json().catch(() => ({}));
+                          if (!r.ok) {
+                            setVerifyResendMsg(
+                              (data.error as string) || "Could not send email. Try again later."
+                            );
+                          } else {
+                            setVerifyResendMsg(
+                              (data.message as string) ||
+                                "If that email needs verification, we sent a link."
+                            );
+                          }
+                        } catch {
+                          setVerifyResendMsg("Something went wrong.");
+                        } finally {
+                          setVerifyResendBusy(false);
+                        }
+                      }}
+                      className="text-sm font-medium text-primary-600 dark:text-primary-400 hover:underline disabled:opacity-50"
+                    >
+                      {verifyResendBusy ? "Sending…" : "Resend verification email"}
+                    </button>
+                  </div>
+                )}
               </div>
             )}
             <div>

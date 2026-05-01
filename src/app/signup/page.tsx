@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { trackEvent, trackMetaEvent, trackMetaCustom, trackLinkedInConversion } from "@/lib/analytics";
 import { SiteHeader } from "@/components/site-header";
+import { TrustBadges } from "@/components/trust-badges";
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -13,8 +13,6 @@ export default function SignupPage() {
   const [error, setError] = useState<Record<string, string[]>>({});
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const router = useRouter();
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError({});
@@ -49,7 +47,6 @@ export default function SignupPage() {
       trackMetaEvent("Lead");
       trackMetaCustom("SignUp");
       trackLinkedInConversion();
-      setTimeout(() => router.push("/login"), 2000);
     } catch {
       setError({ _: ["Something went wrong"] });
     }
@@ -80,9 +77,16 @@ export default function SignupPage() {
             <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
               Account created!
             </h1>
-            <p className="text-slate-600 dark:text-slate-400">
-              Redirecting to sign in...
+            <p className="text-slate-600 dark:text-slate-400 text-sm max-w-sm mx-auto">
+              We sent a verification link to your email. Open it to confirm your address, then sign in. Email
+              verification is required before you can log in with your password.
             </p>
+            <Link
+              href="/login"
+              className="inline-block rounded-lg bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary-700"
+            >
+              Go to sign in
+            </Link>
           </div>
         </div>
       </>
@@ -96,17 +100,24 @@ export default function SignupPage() {
         <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <Link href="/" className="text-2xl font-bold text-primary-600">
-            Zesty
+            ResumeDoctor
           </Link>
           <h1 className="mt-6 text-2xl font-bold text-slate-900 dark:text-slate-100">
             Create your account
           </h1>
+          <p className="mt-2 text-slate-600 dark:text-slate-400 max-w-md mx-auto">
+            Save unlimited resumes in the cloud, sync upgrades with the same email you use on SuperProfile, and pick up
+            where OTP Try left off.
+          </p>
           <p className="mt-2 text-slate-600 dark:text-slate-400">
             Already have an account?{" "}
             <Link href="/login" className="text-primary-600 hover:underline">
               Sign in
             </Link>
           </p>
+          <div className="mt-6 flex justify-center">
+            <TrustBadges />
+          </div>
         </div>
 
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-8 shadow-sm">

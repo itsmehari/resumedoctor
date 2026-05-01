@@ -1,18 +1,31 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
 
+const TWOFA_STORAGE_KEY = "2fa_pending_token";
+
 function TwoFactorForm() {
   const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const [token, setToken] = useState<string | null | undefined>(undefined);
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let t: string | null = null;
+    try {
+      t = sessionStorage.getItem(TWOFA_STORAGE_KEY);
+    } catch {
+      /* ignore */
+    }
+    if (!t) t = searchParams.get("token");
+    setToken(t ?? null);
+  }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -30,9 +43,29 @@ function TwoFactorForm() {
         callbackUrl,
       });
       if (res?.error) {
-        setError("Invalid code");
+        if (res.error === "2FA_SESSION_EXPIRED") {
+          try {
+            sessionStorage.removeItem(TWOFA_STORAGE_KEY);
+          } catch {
+            /* ignore */
+          }
+          setToken(null);
+          setError(
+            "That sign-in step expired. Please go back to login and enter your password again to get a new code."
+          );
+          setLoading(false);
+          return;
+        }
+        setError(
+          "That code did not work. Try again, use a backup code if you saved one, or sign in again from the login page."
+        );
         setLoading(false);
         return;
+      }
+      try {
+        sessionStorage.removeItem(TWOFA_STORAGE_KEY);
+      } catch {
+        /* ignore */
       }
       window.location.href = callbackUrl;
     } catch {
@@ -41,11 +74,23 @@ function TwoFactorForm() {
     }
   }
 
+  if (token === undefined) {
+    return (
+      <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-4 text-slate-500">
+        Loading...
+      </div>
+    );
+  }
+
   if (!token) {
     return (
-      <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-4">
-        <p className="text-red-600 dark:text-red-400 mb-4">Invalid or expired session. Please sign in again.</p>
-        <Link href="/login" className="text-primary-600 hover:underline">Back to login</Link>
+      <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-4 max-w-md mx-auto text-center">
+        <p className="text-red-600 dark:text-red-400 mb-4 text-sm">
+          {error || "Invalid or expired session. Please sign in again."}
+        </p>
+        <Link href="/login" className="text-primary-600 hover:underline font-medium">
+          Back to login
+        </Link>
       </div>
     );
   }

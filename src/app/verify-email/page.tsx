@@ -2,37 +2,54 @@
 
 import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
+import { getActionTokenFromUrl } from "@/lib/client-action-token";
+
+type VerifyFail = "invalid" | "expired" | "server" | null;
 
 function VerifyContent() {
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const [token, setToken] = useState<string | null>(null);
+  const [failReason, setFailReason] = useState<VerifyFail>(null);
 
   useEffect(() => {
-    if (!token) {
+    const t = getActionTokenFromUrl();
+    setToken(t);
+    if (!t) {
+      setFailReason("invalid");
       setStatus("error");
       return;
     }
     fetch("/api/auth/verify-email", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token }),
+      body: JSON.stringify({ token: t }),
     })
-      .then((res) => {
-        return res.json().then((data) => ({ ok: res.ok, data }));
+      .then(async (res) => {
+        const data = (await res.json().catch(() => ({}))) as { code?: string };
+        if (res.ok) {
+          setStatus("success");
+          return;
+        }
+        const code = data.code;
+        if (code === "expired") setFailReason("expired");
+        else if (code === "invalid") setFailReason("invalid");
+        else setFailReason("server");
+        setStatus("error");
       })
-      .then(({ ok }) => {
-        setStatus(ok ? "success" : "error");
-      })
-      .catch(() => setStatus("error"));
-  }, [token]);
+      .catch(() => {
+        setFailReason("server");
+        setStatus("error");
+      });
+  }, []);
 
-  if (!token) {
+  if (token === null && status === "error" && failReason === "invalid") {
     return (
       <div className="text-center space-y-4">
-        <p className="text-red-600 dark:text-red-400">Invalid verification link.</p>
+        <p className="text-red-600 dark:text-red-400">
+          This link is missing a token. Open the link from your email, or request a new verification email after you sign
+          in.
+        </p>
         <Link href="/login" className="text-primary-600 hover:underline">
           Go to sign in
         </Link>
@@ -62,9 +79,10 @@ function VerifyContent() {
             />
           </svg>
         </div>
-        <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-          Email verified!
-        </h1>
+        <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">Email verified!</h1>
+        <p className="text-sm text-slate-600 dark:text-slate-400">
+          You can sign in with your email and password.
+        </p>
         <Link
           href="/login"
           className="inline-block rounded-lg bg-primary-600 px-4 py-2 text-white hover:bg-primary-700"
@@ -77,9 +95,22 @@ function VerifyContent() {
 
   return (
     <div className="text-center space-y-4">
-      <p className="text-red-600 dark:text-red-400">
-        Verification failed. The link may be expired.
-      </p>
+      {failReason === "expired" && (
+        <p className="text-red-600 dark:text-red-400">
+          This verification link has expired. Sign in and use &quot;Resend verification email&quot; on the login page, or
+          sign up again if you have not completed registration.
+        </p>
+      )}
+      {failReason === "invalid" && (
+        <p className="text-red-600 dark:text-red-400">
+          This verification link is not valid. Request a new one from the login page after you enter your password.
+        </p>
+      )}
+      {failReason !== "expired" && failReason !== "invalid" && (
+        <p className="text-red-600 dark:text-red-400">
+          Something went wrong while verifying. Try again in a moment or request a new link from sign in.
+        </p>
+      )}
       <Link href="/login" className="text-primary-600 hover:underline">
         Go to sign in
       </Link>

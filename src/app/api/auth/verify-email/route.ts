@@ -24,9 +24,15 @@ export async function POST(req: Request) {
       where: { token },
     });
 
-    if (!verification || verification.expires < new Date()) {
+    if (!verification) {
       return NextResponse.json(
-        { error: "Invalid or expired verification link" },
+        { error: "Invalid verification link", code: "invalid" },
+        { status: 400 }
+      );
+    }
+    if (verification.expires < new Date()) {
+      return NextResponse.json(
+        { error: "This verification link has expired", code: "expired" },
         { status: 400 }
       );
     }
