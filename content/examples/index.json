@@ -87,6 +87,7 @@
       "Owned monthly revenue reconciliation SQL pipeline; cut manual errors by standardizing joins and QA checks.",
       "Partnered with marketing on funnel analysis; identified drop-off stage contributing to 12% improvement in lead quality."
     ],
+    "indiaContext": "Analyst hiring in India spans IT services GCCs, banking and NBFC reporting teams, e-commerce, and growth-stage startups. Most recruiters expect credible SQL, strong Excel, and at least one viz tool in production—plus bullets that show business questions answered, not a shallow list of every BI certificate.",
     "tips": [
       "Minimum credible story: SQL + spreadsheets + one viz tool (Power BI, Tableau, Looker). Add Python/R only if you use them.",
       "Frame bullets as question → analysis → decision or impact (time saved, accuracy, adoption).",
@@ -123,6 +124,7 @@
       "Partnered with engineering and design on API roadmap; balanced tech debt vs revenue features with exec-visible tradeoffs.",
       "Defined success metrics and dashboards; presented monthly outcomes to leadership and CS leadership."
     ],
+    "indiaContext": "Product roles in India include domestic startups, GCC product teams, and tech firms with platform ownership. Panels care about outcomes—retention, revenue, adoption—and clear ownership of discovery and prioritization, not a calendar of meetings. Align your title with the JD (PM vs PO vs APM) when it matches your real scope.",
     "tips": [
       "Summary: domain (B2B/B2C), years, and one metric (retention, revenue, adoption, NPS).",
       "Bullets: problem insight → decision → launch → measurable outcome — not meeting lists.",
@@ -159,6 +161,7 @@
       "Launched monsoon campaign: 22% lift in category sessions; coordinated influencers, CRM, and on-site merchandising.",
       "Built weekly performance reporting cadence for leadership; shortened decision cycles on budget shifts."
     ],
+    "indiaContext": "Digital and performance marketing in India is dominated by D2C, e-commerce marketplaces, and BFSI app growth. In-house and agency roles both value channel ownership and rupee-level spend discipline—portfolios and metrics should show impact on revenue or CAC, not only creative awards.",
     "tips": [
       "State channel ownership early: performance, brand, growth, CRM, or mix.",
       "Every campaign bullet should include audience, channel, and outcome (reach, CAC, ROAS, conversion).",
@@ -195,6 +198,7 @@
       "Opened 14 new logos in FY24 in manufacturing vertical; partnered with presales on POC-to-close motion.",
       "Maintained 4.2× pipeline coverage; improved forecast accuracy for region to leadership targets."
     ],
+    "indiaContext": "Sales hiring spans IT services, SaaS, manufacturing, insurance, and retail. B2B panels expect CRM hygiene, pipeline language, and honest quota or revenue signals (use % or bands if numbers are sensitive). Field vs inside sales and territory should be obvious from your CV.",
     "tips": [
       "Summary: domain (B2B/B2C), motion (hunter/farmer), average deal or segment.",
       "Bullets: quota %, revenue or ACV bands, new logos, cycle time — use ranges if confidentiality matters.",
@@ -231,6 +235,7 @@
       "Redesigned onboarding journey with IT and admin; cut Day-1 friction tickets by ~30%.",
       "Partnered with leadership on engagement pulse; rolled out manager toolkit for 1:1s and feedback."
     ],
+    "indiaContext": "Indian enterprises and scaling startups hire TA and HR generalists with strong volume hiring, statutory awareness, and HRIS/payroll familiarity. GCC-style HR roles may mirror global process language—still anchor outcomes (joiners, TAT, engagement) in facts you can defend.",
     "tips": [
       "Clarify spine: TA, HRBP, comp & benefits, or generalist — recruiters match fast.",
       "Quantify: offers/month, TAT, offer-to-join, attrition support, engagement scores.",
@@ -267,6 +272,7 @@
       "Handled billing and plan-change queries; reduced repeat contacts by confirming resolution steps.",
       "Trained 8 new hires on CRM notes, de-escalation, and compliance scripts."
     ],
+    "indiaContext": "Indian BPO and GCC hiring emphasizes shift-ready reliability, language coverage (English plus Hindi or regional languages), and measurable quality—CSAT, QA, AHT—where available. Clear process type (voice vs chat) helps recruiters map you to the right queue.",
     "tips": [
       "State process type: voice, chat, email, or blended; name domain if allowed (telecom, banking).",
       "Metrics: CSAT, AHT, FCR, QA scores, attendance — pick what you truly have.",
@@ -303,6 +309,7 @@
       "Prepared GST returns and reconciliations; resolved mismatches with clear documentation for partner review.",
       "Assisted month-end close: accruals, prepaid schedules, and bank reconciliations for ₹80Cr+ revenue entity."
     ],
+    "indiaContext": "Accountant and CA-pipeline hiring in India is credential-sensitive: articleship, group clearance, and GST/tally depth matter. Industry vs audit firm CVs use different proof—close cycles and compliance for industry; engagement scope and walkthroughs for practice.",
     "tips": [
       "Lead with qualification stage: CA final/inter, CMA, M.Com, B.Com — and articleship where relevant.",
       "Separate audit firm experience from industry roles; scope each clearly.",
@@ -339,6 +346,7 @@
       "Led maths club and inter-school quiz prep; coordinated with parents on learning gaps and support plans.",
       "Participated in NCERT workshop on competency-based assessment; piloted rubric-style grading in unit tests."
     ],
+    "indiaContext": "School hiring in India varies by board (CBSE, ICSE, State), medium, and institution type. JDs scan for subject mastery, grade band, B.Ed/TET status, and classroom management—keep tone formal and avoid unsubstantiated outcome claims.",
     "tips": [
       "Open with subjects, grades, and boards taught (CBSE, ICSE, State).",
       "Bullets: curriculum, assessment methods, parent engagement, co-curricular leadership.",
