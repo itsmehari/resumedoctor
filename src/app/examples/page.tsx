@@ -5,12 +5,12 @@ import { getExamplesSortedByTier } from "@/lib/examples";
 import { getAllPosts } from "@/lib/blog";
 import { SiteHeader } from "@/components/site-header";
 import { ExamplesItemListJsonLd } from "@/components/seo/json-ld";
-import { ArrowUpRight, Layers, Sparkles } from "lucide-react";
+import { ArrowUpRight, Check, Layers, Sparkles } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Resume Examples by Role – India",
   description:
-    "Resume examples for Software Engineer, Fresher, Data Analyst, Marketing, BPO, and more. Sample lines, sections, and ATS tips for Indian job applications.",
+    "Resume examples for Software Engineer, Fresher, Data Analyst, Marketing, BPO, and more. Each guide includes sample lines, India context, AI-era advice, tools by career stage, ATS keywords, and mistakes to avoid.",
   alternates: { canonical: `${siteUrl}/examples` },
 };
 
@@ -40,6 +40,9 @@ function ExampleCard({
           {ex.title}
         </h2>
         <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{ex.description}</p>
+        <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
+          Includes AI-era note &amp; tools by career stage
+        </p>
         <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary-600 dark:text-primary-400">
           Read full guide
           <ArrowUpRight className="h-4 w-4 transition group-hover:translate-x-0.5" aria-hidden />
@@ -87,6 +90,29 @@ export default function ExamplesIndexPage() {
               Sample lines, section order, ATS keywords, and mistakes to avoid — then open the builder to make your own
               version.
             </p>
+            <p className="mt-4 max-w-2xl text-sm font-medium text-slate-700 dark:text-slate-300">
+              Every role guide includes the same depth: India hiring context,{" "}
+              <span className="text-slate-900 dark:text-slate-100">AI era &amp; tools by career stage</span> (early →
+              mid → senior), expert tips, common mistakes, and role-specific ATS keywords.
+            </p>
+            <ul
+              className="mt-5 grid max-w-2xl gap-2 text-sm text-slate-600 dark:text-slate-400 sm:grid-cols-2"
+              aria-label="Contents of each resume example guide"
+            >
+              {[
+                "Sample resume lines",
+                "India hiring context",
+                "AI-era note & tools by stage",
+                "Expert tips & mistakes to avoid",
+                "ATS keywords & checklist",
+                "Related blog links",
+              ].map((label) => (
+                <li key={label} className="flex items-start gap-2">
+                  <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden />
+                  <span>{label}</span>
+                </li>
+              ))}
+            </ul>
             <div className="mt-8">
               <Link
                 href="/try"

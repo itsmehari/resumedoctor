@@ -15,16 +15,20 @@ export async function generateStaticParams() {
   return getExampleSlugs().map((slug) => ({ slug }));
 }
 
+const META_SUFFIX =
+  " Includes India hiring context, AI-era guidance, and concrete tools to list by career stage (early, mid, senior).";
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const ex = getExampleBySlug(params.slug);
   if (!ex) return {};
+  const description = `${ex.description}${META_SUFFIX}`;
   return {
     title: `${ex.title} | ResumeDoctor`,
-    description: ex.description,
+    description,
     alternates: { canonical: `${siteUrl}/examples/${ex.slug}` },
     openGraph: {
       title: ex.title,
-      description: ex.description,
+      description,
       url: `${siteUrl}/examples/${ex.slug}`,
     },
   };
