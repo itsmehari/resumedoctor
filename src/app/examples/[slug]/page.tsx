@@ -145,6 +145,47 @@ export default function ExampleDetailPage({ params }: Props) {
               </section>
             ) : null}
 
+            <section
+              className="overflow-hidden rounded-2xl border border-violet-200/90 bg-violet-50/50 dark:border-violet-900/40 dark:bg-violet-950/15"
+              aria-label="AI era and tools by career stage"
+            >
+              <div className="border-b border-violet-200/80 bg-violet-100/60 px-6 py-4 dark:border-violet-900/50 dark:bg-violet-950/40">
+                <h2 className="text-base font-bold text-violet-950 dark:text-violet-100">
+                  AI era &amp; tools by career stage
+                </h2>
+                <p className="mt-2 text-sm leading-relaxed text-violet-900/95 dark:text-violet-200/90">
+                  {ex.aiEraNote}
+                </p>
+              </div>
+              <div className="grid gap-4 px-6 py-5 sm:grid-cols-3">
+                {(
+                  [
+                    { key: "earlyCareer" as const, label: "Early career", sub: "Fresher · trainee · 0–2 yrs" },
+                    { key: "midLevel" as const, label: "Mid-level", sub: "~2–6 yrs" },
+                    { key: "senior" as const, label: "Senior / lead", sub: "6+ yrs · ownership" },
+                  ] as const
+                ).map(({ key, label, sub }) => (
+                  <div
+                    key={key}
+                    className="rounded-xl border border-violet-200/70 bg-white/90 p-4 shadow-sm dark:border-violet-900/50 dark:bg-slate-950/50"
+                  >
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">{label}</h3>
+                    <p className="text-[10px] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                      {sub}
+                    </p>
+                    <ul className="mt-3 space-y-2 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+                      {ex.toolsByLevel[key].map((item, i) => (
+                        <li key={i} className="flex gap-2">
+                          <span className="mt-1.5 h-1 w-1 flex-shrink-0 rounded-full bg-violet-500" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </section>
+
             <section className="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800">
               <div className="border-b border-slate-200 bg-slate-50 px-6 py-4 dark:border-slate-800 dark:bg-slate-900">
                 <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">

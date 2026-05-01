@@ -4,6 +4,13 @@ import path from "path";
 
 export type ExamplePriorityTier = "A" | "B" | "C";
 
+/** Role-specific tools to emphasize on the resume by career stage (India hiring). */
+export interface ExampleToolsByLevel {
+  earlyCareer: string[];
+  midLevel: string[];
+  senior: string[];
+}
+
 export interface ResumeExample {
   slug: string;
   title: string;
@@ -19,6 +26,9 @@ export interface ResumeExample {
   atsKeywords: string[];
   atsChecklist: string[];
   indiaContext?: string;
+  /** How AI tools fit this role: assistive drafting vs core skills interviews still test. */
+  aiEraNote: string;
+  toolsByLevel: ExampleToolsByLevel;
   priorityTier: ExamplePriorityTier;
 }
 

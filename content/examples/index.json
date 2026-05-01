@@ -14,6 +14,12 @@
       "Mentored 2 junior engineers on code review, testing, and production readiness practices."
     ],
     "indiaContext": "Campus and off-campus hiring in India often combines DSA rounds with system design (for experienced roles) and deep project discussion. Your resume should back every stack claim with employers, timeframes, and measurable outcomes so recruiters can match you to the right panel.",
+    "aiEraNote": "Copilot-style coding assistants and ChatGPT can speed up learning and boilerplate, but Indian tech interviews still test problem-solving, system design (mid/senior), and code you can explain. List AI/ML frameworks only when you have real projects — recruiters discount buzzwords without shipped work.",
+    "toolsByLevel": {
+      "earlyCareer": ["Git + one IDE (VS Code / IntelliJ)", "One primary language + basics of HTML/CSS or REST", "Unit tests & debugger comfort", "DSA practice platform + GitHub portfolio"],
+      "midLevel": ["Your stack’s frameworks (e.g. Spring Boot, React, Django)", "CI/CD basics (GitHub Actions, Jenkins)", "Cloud fundamentals (AWS/GCP/Azure) where you deploy", "Observability: logs, metrics, basic troubleshooting"],
+      "senior": ["System design & trade-offs (scale, reliability, cost)", "Ownership: on-call, incidents, mentoring", "Security & performance tuning in production", "Architecture patterns — microservices, events, data stores"]
+    },
     "tips": [
       "Open with a tight summary: years of experience, primary stack, and one proof point (scale, reliability, or product impact).",
       "For each role, use 3–5 bullets: what you built, technologies, and a metric or clear outcome — avoid task-only lines like \"worked on modules\".",
@@ -51,6 +57,12 @@
       "Summer internship — ABC Infotech: automated weekly Excel reports with Python; saved ~4 hours/week for the team."
     ],
     "indiaContext": "Mass recruiting and campus drives reward one crisp page: clear degree, CGPA or percentage if strong, projects with your real contribution, and skills that match the companies you target. Avoid long \"career objective\" essays.",
+    "aiEraNote": "It is fine to use AI to brainstorm bullets or study — interviews will still ask you to explain your projects and write code on the spot. Never list \"prompt engineering\" or vague AI skills unless the role is ML/GenAI; focus on languages, Git, and projects you can defend.",
+    "toolsByLevel": {
+      "earlyCareer": ["Git basics & one structured project repo", "Core language + simple web or API stack from coursework", "Excel or Sheets for internship reporting tasks", "Documentation & debugging habits over tool hoarding"],
+      "midLevel": ["Deepen one stack (e.g. MERN or Java/Spring) with 2+ shipped projects", "SQL if targeting analyst-adjacent roles", "Internship tools from real use — not certificate spam", "Optional: LeetCode patterns aligned to target companies"],
+      "senior": ["Not typical for freshers — if pivoting with experience, show transferable tools from prior domain", "Leadership in college tech clubs / OSS only if substantiated", "Certifications that match JD (cloud, security) when earned"]
+    },
     "tips": [
       "Order: Education → Projects/Internships → Skills → Certifications. Put the strongest proof early.",
       "Use a 2-line objective or summary: role you want + 1 strength (stack, internship, or rank).",
@@ -88,6 +100,12 @@
       "Partnered with marketing on funnel analysis; identified drop-off stage contributing to 12% improvement in lead quality."
     ],
     "indiaContext": "Analyst hiring in India spans IT services GCCs, banking and NBFC reporting teams, e-commerce, and growth-stage startups. Most recruiters expect credible SQL, strong Excel, and at least one viz tool in production—plus bullets that show business questions answered, not a shallow list of every BI certificate.",
+    "aiEraNote": "AI assistants can draft SQL or summarize data — employers still expect you to validate numbers, know your joins, and explain dashboards in interviews. Mention Copilot/Notebook LM style workflows only if they reflect how you actually work; core signals remain SQL, Excel depth, and one BI stack.",
+    "toolsByLevel": {
+      "earlyCareer": ["SQL + Excel (pivot, lookups)", "One viz tool: Power BI or Tableau", "Spreadsheet hygiene & basic statistics"],
+      "midLevel": ["Advanced SQL & data modelling concepts", "Python or R for repeatable analysis — only if used", "Stakeholder-ready decks (PowerPoint / Slides) + KPI ownership", "ETL familiarity (dbt, SSIS, or similar) when truthful"],
+      "senior": ["Metric design & experimentation mindset", "Warehouse/lake awareness (Snowflake, BigQuery) if enterprise", "Governance: definitions, QA, stakeholder alignment", "Coaching juniors — less about listing every BI toy"]
+    },
     "tips": [
       "Minimum credible story: SQL + spreadsheets + one viz tool (Power BI, Tableau, Looker). Add Python/R only if you use them.",
       "Frame bullets as question → analysis → decision or impact (time saved, accuracy, adoption).",
@@ -125,6 +143,12 @@
       "Defined success metrics and dashboards; presented monthly outcomes to leadership and CS leadership."
     ],
     "indiaContext": "Product roles in India include domestic startups, GCC product teams, and tech firms with platform ownership. Panels care about outcomes—retention, revenue, adoption—and clear ownership of discovery and prioritization, not a calendar of meetings. Align your title with the JD (PM vs PO vs APM) when it matches your real scope.",
+    "aiEraNote": "AI tools accelerate PRD drafts and research synthesis — hiring managers still judge judgment, prioritization, and stakeholder stories. Listing \"ChatGPT\" as a skill adds little; emphasize discovery, analytics, and outcomes you owned.",
+    "toolsByLevel": {
+      "earlyCareer": ["Jira / Linear / Azure DevOps for backlog hygiene", "Docs & FigJam/Miro for flows", "Basic product analytics (GA4, Mixpanel, Amplitude) when exposed"],
+      "midLevel": ["Roadmap & prioritization frameworks (RICE, OKRs)", "SQL or BI read access for self-serve metrics", "Customer interview & survey tools (Zoom, Typeform, UserTesting)", "Release coordination with engineering & design"],
+      "senior": ["Portfolio strategy, pricing/partnerships exposure when real", "Exec-ready narratives & revenue/retention accountability", "Org-wide rollout & change management", "Mentoring PMs — less about individual tickets"]
+    },
     "tips": [
       "Summary: domain (B2B/B2C), years, and one metric (retention, revenue, adoption, NPS).",
       "Bullets: problem insight → decision → launch → measurable outcome — not meeting lists.",
@@ -162,6 +186,12 @@
       "Built weekly performance reporting cadence for leadership; shortened decision cycles on budget shifts."
     ],
     "indiaContext": "Digital and performance marketing in India is dominated by D2C, e-commerce marketplaces, and BFSI app growth. In-house and agency roles both value channel ownership and rupee-level spend discipline—portfolios and metrics should show impact on revenue or CAC, not only creative awards.",
+    "aiEraNote": "AI copy and creative generators are common — differentiate with channel expertise, experiment results, and rupee accountability. Resumes should highlight platforms you operated (Meta, Google) and outcomes, not generic \"AI marketing\" hype.",
+    "toolsByLevel": {
+      "earlyCareer": ["Meta Ads Manager & Google Ads basics", "Google Analytics / GA4 exposure", "Creative testing discipline & UTM hygiene"],
+      "midLevel": ["Full-funnel reporting & attribution conversations", "SEO suites (Ahrefs, SEMrush) when used", "CRM/lifecycle tools (Clevertap, MoEngage, WebEngage) for retention roles", "Budget pacing & cohort reporting"],
+      "senior": ["Multi-crore budget ownership & vendor/agency governance", "Brand + performance mix strategy", "Leadership of analysts/growth pods", "Board-ready ROI narratives"]
+    },
     "tips": [
       "State channel ownership early: performance, brand, growth, CRM, or mix.",
       "Every campaign bullet should include audience, channel, and outcome (reach, CAC, ROAS, conversion).",
@@ -199,6 +229,12 @@
       "Maintained 4.2× pipeline coverage; improved forecast accuracy for region to leadership targets."
     ],
     "indiaContext": "Sales hiring spans IT services, SaaS, manufacturing, insurance, and retail. B2B panels expect CRM hygiene, pipeline language, and honest quota or revenue signals (use % or bands if numbers are sensitive). Field vs inside sales and territory should be obvious from your CV.",
+    "aiEraNote": "AI outreach and dialer assistants exist — credibility still comes from quota proof, CRM accuracy, and deal storytelling. List sales engagement AI only if your employer adopted it and you operated it daily.",
+    "toolsByLevel": {
+      "earlyCareer": ["CRM hygiene (Salesforce, Zoho, HubSpot)", "Email/calendar discipline & pipeline stages", "Basics of LinkedIn for prospecting"],
+      "midLevel": ["Forecasting & pipeline reviews in CRM", "CPQ or proposal tools if enterprise", "LinkedIn Sales Navigator / ZoomInfo-style research when used", "Territory & account planning artifacts"],
+      "senior": ["Multi-threaded enterprise deals & exec sponsors", "Channel / partner models when applicable", "Forecast accuracy & revenue committee exposure", "Team leadership & coverage design"]
+    },
     "tips": [
       "Summary: domain (B2B/B2C), motion (hunter/farmer), average deal or segment.",
       "Bullets: quota %, revenue or ACV bands, new logos, cycle time — use ranges if confidentiality matters.",
@@ -236,6 +272,12 @@
       "Partnered with leadership on engagement pulse; rolled out manager toolkit for 1:1s and feedback."
     ],
     "indiaContext": "Indian enterprises and scaling startups hire TA and HR generalists with strong volume hiring, statutory awareness, and HRIS/payroll familiarity. GCC-style HR roles may mirror global process language—still anchor outcomes (joiners, TAT, engagement) in facts you can defend.",
+    "aiEraNote": "AI sourcing and chatbots assist TA — shortlisting still needs human judgment on fit and compliance. Emphasize HRIS, ATS, and metrics you owned; avoid claiming strategic AI transformation unless that was your mandate.",
+    "toolsByLevel": {
+      "earlyCareer": ["ATS basics (Naukri RMS, Lever, Greenhouse) when exposed", "Scheduling & candidate comms", "Excel trackers for hiring funnels"],
+      "midLevel": ["HRIS modules (Workday, Darwinbox, Zoho People)", "LinkedIn Recruiter / sourcing craft", "Offer & onboarding workflows with payroll partners", "Dashboards for TAT and joiner analytics"],
+      "senior": ["Workforce planning with leadership", "Policy & ER complexity with compliance awareness", "HR analytics & engagement programme ownership", "Vendor management for RPO/benefits"]
+    },
     "tips": [
       "Clarify spine: TA, HRBP, comp & benefits, or generalist — recruiters match fast.",
       "Quantify: offers/month, TAT, offer-to-join, attrition support, engagement scores.",
@@ -273,6 +315,12 @@
       "Trained 8 new hires on CRM notes, de-escalation, and compliance scripts."
     ],
     "indiaContext": "Indian BPO and GCC hiring emphasizes shift-ready reliability, language coverage (English plus Hindi or regional languages), and measurable quality—CSAT, QA, AHT—where available. Clear process type (voice vs chat) helps recruiters map you to the right queue.",
+    "aiEraNote": "Chatbots and AI assist handles tier-1 queries — humans still own escalations, empathy, and quality scores. Your resume should highlight CRM, languages, and KPIs; \"AI support\" is relevant only for tech-support roles with real tool exposure.",
+    "toolsByLevel": {
+      "earlyCareer": ["CRM case logging (Zendesk, Freshdesk, Salesforce Service)", "Knowledge base & macros", "Typing speed for chat; headset discipline for voice"],
+      "midLevel": ["QA calibration & coaching readiness", "Escalation paths & compliance scripts", "Blended voice/chat or email queues", "Basic Excel for queue reporting"],
+      "senior": ["Team lead / SME tracks & training ownership", "Process improvement & CSAT recovery programmes", "Vendor/client stakeholder coordination", "WFM familiarity when truthful"]
+    },
     "tips": [
       "State process type: voice, chat, email, or blended; name domain if allowed (telecom, banking).",
       "Metrics: CSAT, AHT, FCR, QA scores, attendance — pick what you truly have.",
@@ -310,6 +358,12 @@
       "Assisted month-end close: accruals, prepaid schedules, and bank reconciliations for ₹80Cr+ revenue entity."
     ],
     "indiaContext": "Accountant and CA-pipeline hiring in India is credential-sensitive: articleship, group clearance, and GST/tally depth matter. Industry vs audit firm CVs use different proof—close cycles and compliance for industry; engagement scope and walkthroughs for practice.",
+    "aiEraNote": "Excel copilots and tax software automation help — errors still land on you professionally. Lead with qualifications, ERP, and compliance depth; AI is optional colour only if your firm adopted specific tools you used.",
+    "toolsByLevel": {
+      "earlyCareer": ["Tally / Zoho Books / busy tools from articleship", "GST portal workflows & reconciliations", "Advanced Excel for schedules"],
+      "midLevel": ["SAP FI / MS Dynamics exposure when real", "Month-end close packs & MIS", "Audit documentation tools & sampling"],
+      "senior": ["Consolidation & group reporting patterns", "Tax strategy support with CA sign-off context", "ERP rollout / process migration participation", "Team review & statutory deadline ownership"]
+    },
     "tips": [
       "Lead with qualification stage: CA final/inter, CMA, M.Com, B.Com — and articleship where relevant.",
       "Separate audit firm experience from industry roles; scope each clearly.",
@@ -347,6 +401,12 @@
       "Participated in NCERT workshop on competency-based assessment; piloted rubric-style grading in unit tests."
     ],
     "indiaContext": "School hiring in India varies by board (CBSE, ICSE, State), medium, and institution type. JDs scan for subject mastery, grade band, B.Ed/TET status, and classroom management—keep tone formal and avoid unsubstantiated outcome claims.",
+    "aiEraNote": "AI tutors and lesson generators can assist planning — schools still evaluate your pedagogy, classroom control, and assessment integrity. Mention LMS / smart-class tools only when you actively used them with students.",
+    "toolsByLevel": {
+      "earlyCareer": ["Board-aligned textbooks & lesson planning", "Basic LMS / Google Classroom if deployed in school", "B.Ed methodology & formative assessment basics"],
+      "midLevel": ["Digital worksheets, quiz tools (Kahoot, Quizizz) when school-approved", "Parent communication apps", "Subject lab / activity coordination"],
+      "senior": ["Department lead, syllabus workshops, mentoring juniors", "Exam moderation & rubric design", "Institutional initiatives — remedial, enrichment"]
+    },
     "tips": [
       "Open with subjects, grades, and boards taught (CBSE, ICSE, State).",
       "Bullets: curriculum, assessment methods, parent engagement, co-curricular leadership.",
