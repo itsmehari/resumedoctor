@@ -92,7 +92,9 @@ Set these in **Vercel → Environment Variables** (Production). Values are the *
 
 Also set **`SUPERPROFILE_WEBHOOK_SECRET`** (long random string). The app accepts `Authorization: Bearer <secret>` or `X-Superprofile-Webhook-Secret: <secret>` on `POST /api/webhooks/superprofile`.
 
-**Fulfillment endpoint (production):** `https://www.resumedoctor.in/api/webhooks/superprofile` (or `${NEXT_PUBLIC_APP_URL}/api/webhooks/superprofile`).
+**Fulfillment endpoint (production — use this exact host):** `https://www.resumedoctor.in/api/webhooks/superprofile`
+
+**Important:** `https://resumedoctor.in/...` (no `www`) responds with **308** to `www`. Many webhook clients **do not follow redirects for POST** or may drop the JSON body. Point Zapier / Make / SuperProfile automation at the **`www`** URL above — do **not** rely on `${NEXT_PUBLIC_APP_URL}` if that variable is set to the apex domain.
 
 **Automation payload (JSON):** `idempotencyKey` (unique per payment), `email` (must match a ResumeDoctor user), `productKey` one of `pro_monthly` | `pro_annual` | `pro_trial_14` | `resume_pack`. For `resume_pack` only, include optional `credits` (1–100; default 5).
 

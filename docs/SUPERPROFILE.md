@@ -14,6 +14,14 @@ Environment variables `NEXT_PUBLIC_SUPERPROFILE_URL_TRIAL_14`, `NEXT_PUBLIC_SUPE
 
 After updating the URL in Vercel (Project → Settings → Environment Variables), redeploy.
 
+## Webhook URL (Zapier / Make / SuperProfile automation)
+
+Fulfillment is **`POST /api/webhooks/superprofile`** on production. Use the **`www`** hostname:
+
+`https://www.resumedoctor.in/api/webhooks/superprofile`
+
+The apex domain redirects (`resumedoctor.in` → `www`) with **308**; some tools never complete a POST after that redirect, so purchases never reach the app. Match **`SUPERPROFILE_WEBHOOK_SECRET`** in Vercel with `Authorization: Bearer …` or `X-Superprofile-Webhook-Secret`. JSON body contract and `productKey` values are documented in **`docs/DEPLOYMENT-REQUIREMENTS.md`** (SuperProfile section).
+
 ## Price on SuperProfile
 
 Set the product price on SuperProfile (e.g. **₹49** for the 14-day trial) to match what you advertise on [resumedoctor.in/pricing](https://resumedoctor.in/pricing). ResumeDoctor only links to your page; it does not set SuperProfile’s price.
