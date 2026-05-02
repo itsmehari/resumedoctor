@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { ArrowLeft, Save } from "lucide-react";
+import { ADMIN_SUBSCRIPTION_OPTIONS } from "@/lib/subscription-admin";
 
 interface UserDetail {
   id: string;
@@ -119,7 +120,14 @@ export default function AdminUserDetailPage() {
         setUser({ ...user, ...updated });
       } else {
         const data = await res.json().catch(() => ({}));
-        setSaveError(data.error || "Failed to save changes");
+        const msg =
+          typeof data.error === "string"
+            ? data.error
+            : data.error?.formErrors?.join?.(", ") ||
+              (data.error?.fieldErrors
+                ? Object.values(data.error.fieldErrors).flat().join(", ")
+                : null);
+        setSaveError(msg || "Failed to save changes");
       }
     } catch {
       setSaveError("Failed to save changes");
@@ -274,12 +282,16 @@ export default function AdminUserDetailPage() {
                 onChange={(e) => setEditSubscription(e.target.value)}
                 className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100"
               >
-                <option value="basic">Basic</option>
-                <option value="trial">Trial</option>
-                <option value="pro_trial_14">Pro Trial (14-day, SuperProfile)</option>
-                <option value="pro_monthly">Pro Monthly</option>
-                <option value="pro_annual">Pro Annual</option>
+                {ADMIN_SUBSCRIPTION_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
               </select>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                Set after confirming offline purchase (UPI ref, invoice, etc.). Pro trial
+                (14-day) sets expiry automatically.
+              </p>
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">

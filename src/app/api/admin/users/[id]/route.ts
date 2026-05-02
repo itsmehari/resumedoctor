@@ -82,11 +82,6 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const admin = await requireSuperAdmin();
-  if (!admin) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
-
   const { id } = await params;
 
   const user = await prisma.user.findUnique({ where: { id } });
@@ -99,6 +94,20 @@ export async function PATCH(
     const parsed = updateSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+    }
+
+    const roleChanging =
+      parsed.data.role !== undefined && parsed.data.role !== user.role;
+    const actor = roleChanging ? await requireSuperAdmin() : await requireAdmin();
+    if (!actor) {
+      return NextResponse.json(
+        {
+          error: roleChanging
+            ? "Forbidden — changing user role requires super admin"
+            : "Forbidden",
+        },
+        { status: 403 }
+      );
     }
 
     const data: Record<string, unknown> = { ...parsed.data };
@@ -121,7 +130,7 @@ export async function PATCH(
 
     await logAdminAction({
       action: "admin_user_update",
-      adminUserId: admin.id,
+      adminUserId: actor.id,
       targetUserId: id,
       meta: { fields: Object.keys(parsed.data) },
     });

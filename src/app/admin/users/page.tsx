@@ -3,7 +3,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import {
+  ADMIN_SUBSCRIPTION_OPTIONS,
+  coerceAdminPlanSelectValue,
+  type AdminSubscriptionValue,
+} from "@/lib/subscription-admin";
 
 interface UserRow {
   id: string;
@@ -32,6 +37,10 @@ export default function AdminUsersPage() {
   const [roleFilter, setRoleFilter] = useState("");
   const [page, setPage] = useState(1);
   const [error, setError] = useState<string | null>(null);
+  /** Row-level plan dropdown overrides before Save */
+  const [planDrafts, setPlanDrafts] = useState<Record<string, AdminSubscriptionValue>>({});
+  const [planSavingId, setPlanSavingId] = useState<string | null>(null);
+  const [planToast, setPlanToast] = useState<string | null>(null);
 
   const fetchUsers = () => {
     setLoading(true);
@@ -66,8 +75,44 @@ export default function AdminUsersPage() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    setPlanToast(null);
     setPage(1);
     fetchUsers();
+  };
+
+  const rowPlanValue = (u: UserRow): AdminSubscriptionValue =>
+    planDrafts[u.id] ?? coerceAdminPlanSelectValue(u.subscription);
+
+  const saveRowPlan = async (u: UserRow) => {
+    const next = rowPlanValue(u);
+    const current = coerceAdminPlanSelectValue(u.subscription);
+    if (next === current) return;
+    setPlanSavingId(u.id);
+    setPlanToast(null);
+    try {
+      const res = await fetch(`/api/admin/users/${u.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ subscription: next }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setPlanToast(
+          typeof data.error === "string" ? data.error : "Could not update plan"
+        );
+        return;
+      }
+      setPlanDrafts((prev) => {
+        const copy = { ...prev };
+        delete copy[u.id];
+        return copy;
+      });
+      setPlanToast(`Plan updated for ${u.email}`);
+      fetchUsers();
+    } finally {
+      setPlanSavingId(null);
+    }
   };
 
   return (
@@ -76,7 +121,8 @@ export default function AdminUsersPage() {
         Users
       </h1>
       <p className="mt-1 text-slate-600 dark:text-slate-400">
-        Manage all users, search, and filter by plan or role.
+        Manage all users, search, and filter by plan or role. Change plan here after
+        offline payment (UPI, invoice, etc.); changes apply immediately.
       </p>
 
       <form onSubmit={handleSearch} className="mt-6 flex flex-wrap gap-4">
@@ -118,6 +164,18 @@ export default function AdminUsersPage() {
           Search
         </button>
       </form>
+
+      {planToast && (
+        <div
+          className={`mt-6 rounded-lg px-4 py-3 text-sm ${
+            planToast.startsWith("Plan updated")
+              ? "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-200"
+              : "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400"
+          }`}
+        >
+          {planToast}
+        </div>
+      )}
 
       {error && (
         <div className="mt-6 rounded-lg bg-red-50 dark:bg-red-900/20 px-4 py-3 text-sm text-red-700 dark:text-red-400">
@@ -164,8 +222,45 @@ export default function AdminUsersPage() {
                         <p className="text-slate-500 text-xs">{u.email}</p>
                       </div>
                     </td>
-                    <td className="px-4 py-3">
-                      <span className="capitalize">{((u.subscription === "free" ? "basic" : u.subscription) ?? "basic").replace(/_/g, " ")}</span>
+                    <td className="px-4 py-3 min-w-[200px]">
+                      <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-2">
+                        <select
+                          aria-label={`Plan for ${u.email}`}
+                          value={rowPlanValue(u)}
+                          onChange={(e) =>
+                            setPlanDrafts((prev) => ({
+                              ...prev,
+                              [u.id]: e.target.value as AdminSubscriptionValue,
+                            }))
+                          }
+                          disabled={planSavingId === u.id}
+                          className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-2 py-1.5 text-xs text-slate-900 dark:text-slate-100 max-w-[11rem]"
+                        >
+                          {ADMIN_SUBSCRIPTION_OPTIONS.map((opt) => (
+                            <option key={opt.value} value={opt.value}>
+                              {opt.label}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          type="button"
+                          onClick={() => saveRowPlan(u)}
+                          disabled={
+                            planSavingId === u.id ||
+                            rowPlanValue(u) === coerceAdminPlanSelectValue(u.subscription)
+                          }
+                          className="inline-flex items-center justify-center gap-1 rounded-lg bg-primary-600 px-2 py-1.5 text-xs font-medium text-white hover:bg-primary-700 disabled:opacity-40 disabled:pointer-events-none whitespace-nowrap"
+                        >
+                          {planSavingId === u.id ? (
+                            <>
+                              <Loader2 className="h-3 w-3 animate-spin" />
+                              Saving
+                            </>
+                          ) : (
+                            "Update plan"
+                          )}
+                        </button>
+                      </div>
                     </td>
                     <td className="px-4 py-3">
                       <span
