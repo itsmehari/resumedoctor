@@ -35,25 +35,33 @@ function verifyWebhookSecret(req: Request): boolean {
 }
 
 export async function POST(req: Request) {
-  if (!verifyWebhookSecret(req)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!process.env.SUPERPROFILE_WEBHOOK_SECRET) {
+    console.warn("[superprofile_webhook] SUPERPROFILE_WEBHOOK_SECRET missing — fulfillment disabled");
+    return NextResponse.json({ error: "Webhook not configured" }, { status: 503 });
   }
 
-  if (!process.env.SUPERPROFILE_WEBHOOK_SECRET) {
-    return NextResponse.json({ error: "Webhook not configured" }, { status: 503 });
+  if (!verifyWebhookSecret(req)) {
+    console.warn("[superprofile_webhook] auth_failed — check Bearer or x-superprofile-webhook-secret matches Vercel env");
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   let json: unknown;
   try {
     json = await req.json();
   } catch {
+    console.warn("[superprofile_webhook] invalid_json");
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
   const parsed = bodySchema.safeParse(json);
   if (!parsed.success) {
+    const flat = parsed.error.flatten();
+    console.warn("[superprofile_webhook] validation_failed", {
+      fieldErrors: flat.fieldErrors,
+      formErrors: flat.formErrors,
+    });
     return NextResponse.json(
-      { error: "Invalid body", details: parsed.error.flatten() },
+      { error: "Invalid body", details: flat },
       { status: 400 }
     );
   }
@@ -65,6 +73,7 @@ export async function POST(req: Request) {
   if (productKey === "resume_pack") {
     // credits optional; other products ignore credits
   } else if (credits !== undefined) {
+    console.warn("[superprofile_webhook] validation_failed credits_without_resume_pack");
     return NextResponse.json(
       { error: "credits is only allowed when productKey is resume_pack" },
       { status: 400 }
@@ -85,6 +94,7 @@ export async function POST(req: Request) {
   if (result.ok && !result.duplicate) {
     return NextResponse.json({ ok: true, userId: result.userId });
   }
+  console.warn("[superprofile_webhook] user_not_found — no ResumeDoctor User for checkout email; purchase not recorded in admin");
   // 200 so Zapier/custom automations do not infinite-retry on missing account
   return NextResponse.json({
     ok: false,
