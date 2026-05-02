@@ -1,10 +1,17 @@
 "use client";
 
-// Phase 1.2 – Paste job description → AI tailor
-import { useState } from "react";
-import { Briefcase, Sparkles, Loader2, Check, Plus } from "lucide-react";
+// Phase 1.2 – Paste job description → keyword match + AI tailor
+import { useEffect, useState } from "react";
+import { Briefcase, Sparkles, Loader2, Check, Plus, Target } from "lucide-react";
 import type { ResumeSection } from "@/types/resume";
 import { useToast } from "@/contexts/toast-context";
+
+interface JobMatchResult {
+  score: number;
+  matchedTerms: string[];
+  missingTerms: string[];
+  termCount: number;
+}
 
 interface TailorResult {
   keywords: string[];
@@ -41,10 +48,16 @@ export function JobPastePanel({
   const [jobUrl, setJobUrl] = useState("");
   const [urlLoading, setUrlLoading] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [matchLoading, setMatchLoading] = useState(false);
+  const [matchResult, setMatchResult] = useState<JobMatchResult | null>(null);
   const [result, setResult] = useState<TailorResult | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [applied, setApplied] = useState<Set<string>>(new Set());
   const { toast } = useToast();
+
+  useEffect(() => {
+    setMatchResult(null);
+  }, [jobDesc]);
 
   const handleFetchUrl = async () => {
     if (!jobUrl.trim()) return;
@@ -66,6 +79,30 @@ export function JobPastePanel({
       toast("Could not fetch URL. Paste the description instead.", { variant: "error" });
     } finally {
       setUrlLoading(false);
+    }
+  };
+
+  const handleKeywordMatch = async () => {
+    if (!jobDesc.trim() || jobDesc.trim().length < 50) {
+      toast("Job description should be at least 50 characters", { variant: "error" });
+      return;
+    }
+    setMatchLoading(true);
+    try {
+      const res = await fetch(`/api/resumes/${resumeId}/job-match`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jobDescription: jobDesc.trim() }),
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Match failed");
+      setMatchResult(data as JobMatchResult);
+      setExpanded(true);
+    } catch (err) {
+      toast(err instanceof Error ? err.message : "Something went wrong", { variant: "error" });
+    } finally {
+      setMatchLoading(false);
     }
   };
 
@@ -283,7 +320,7 @@ export function JobPastePanel({
       {expanded && (
         <div className="px-4 pb-4 space-y-3 border-t border-slate-200 dark:border-slate-700 pt-3">
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            Paste a job description to get AI suggestions for keywords, skills, and bullet improvements.
+            Paste a job description. Run a fast keyword match (no AI), then use AI tailoring for deeper edits.
           </p>
           <div className="flex gap-2 mb-2">
             <input
@@ -309,24 +346,109 @@ export function JobPastePanel({
             rows={4}
             className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
-          <button
-            type="button"
-            onClick={handleTailor}
-            disabled={loading || jobDesc.trim().length < 50}
-            className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Analyzing…
-              </>
-            ) : (
-              <>
-                <Sparkles className="h-4 w-4" />
-                Tailor for this job
-              </>
-            )}
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={handleKeywordMatch}
+              disabled={matchLoading || jobDesc.trim().length < 50}
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {matchLoading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Checking…
+                </>
+              ) : (
+                <>
+                  <Target className="h-4 w-4 text-primary-600" />
+                  Check keyword match
+                </>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={handleTailor}
+              disabled={loading || jobDesc.trim().length < 50}
+              className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Analyzing…
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4" />
+                  Tailor with AI
+                </>
+              )}
+            </button>
+          </div>
+          {matchResult && matchResult.termCount > 0 && (
+            <div className="rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/50 p-3 space-y-2">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                  Keyword overlap with this resume
+                </p>
+                <span className="text-sm font-semibold tabular-nums text-slate-900 dark:text-slate-100">
+                  {matchResult.score}%
+                </span>
+              </div>
+              <div className="h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-emerald-500 transition-all"
+                  style={{ width: `${matchResult.score}%` }}
+                  role="progressbar"
+                  aria-valuenow={matchResult.score}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-label="Keyword match score"
+                />
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Based on {matchResult.termCount} salient terms from the job description (deterministic; not AI).
+              </p>
+              {matchResult.matchedTerms.length > 0 && (
+                <div>
+                  <p className="text-xs font-medium text-emerald-700 dark:text-emerald-400 mb-1">
+                    In your resume
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {matchResult.matchedTerms.slice(0, 16).map((t) => (
+                      <span
+                        key={t}
+                        className="rounded px-2 py-0.5 text-xs bg-emerald-100 dark:bg-emerald-900/40 text-emerald-900 dark:text-emerald-100"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {matchResult.missingTerms.length > 0 && (
+                <div>
+                  <p className="text-xs font-medium text-amber-800 dark:text-amber-300 mb-1">
+                    Not found (consider adding)
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {matchResult.missingTerms.slice(0, 16).map((t) => (
+                      <span
+                        key={t}
+                        className="rounded px-2 py-0.5 text-xs bg-amber-100 dark:bg-amber-900/35 text-amber-950 dark:text-amber-100"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          {matchResult && matchResult.termCount === 0 && (
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              No distinctive keywords extracted from this posting (mostly generic wording). Try pasting more of the requirements or tech stack.
+            </p>
+          )}
           {result && (
             <div className="space-y-3 pt-2">
               <div className="flex items-center justify-between gap-2 pb-2 border-b border-slate-200 dark:border-slate-700">

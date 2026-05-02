@@ -1,5 +1,6 @@
 // WBS 7.2, 7.3 – Rule-based ATS checks and suggestions
 import type { ResumeSection } from "@/types/resume";
+import { resumeSectionsToPlainText } from "@/lib/resume-utils";
 
 export interface AtsSuggestion {
   type: "warning" | "improvement" | "good";
@@ -19,49 +20,13 @@ const ATS_KEYWORDS = [
   "results", "metrics", "efficiency", "revenue", "growth",
 ];
 
-function extractText(sections: ResumeSection[]): string {
-  const parts: string[] = [];
-  for (const s of sections) {
-    if (s.type === "summary" && s.data.text) parts.push(s.data.text);
-    if (s.type === "experience") {
-      const d = s.data as { entries?: Array<{ title: string; company: string; bullets?: string[] }> };
-      const entries = d.entries ?? [d as { title: string; company: string; bullets?: string[] }];
-      const expList = Array.isArray(entries) ? entries : [entries];
-      for (const e of expList) {
-        if (e.title) parts.push(e.title);
-        if (e.company) parts.push(e.company);
-        if (e.bullets) parts.push(...e.bullets);
-      }
-    }
-    if (s.type === "education") {
-      const d = s.data as { entries?: Array<{ degree: string; school: string }> };
-      const entries = d.entries ?? [d as { degree: string; school: string }];
-      const eduList = Array.isArray(entries) ? entries : [entries];
-      for (const e of eduList) {
-        if (e.degree) parts.push(e.degree);
-        if (e.school) parts.push(e.school);
-      }
-    }
-    if (s.type === "skills" && s.data.items) parts.push(...s.data.items);
-    if (s.type === "projects") {
-      const d = s.data;
-      const projEntries = "entries" in d ? d.entries : [d as { name?: string; bullets?: string[] }];
-      for (const p of projEntries) {
-        if (p.name) parts.push(p.name);
-        if (p.bullets) parts.push(...(p.bullets || []));
-      }
-    }
-  }
-  return parts.join(" ").toLowerCase();
-}
-
 function countWords(text: string): number {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
 export function computeAtsScore(sections: ResumeSection[]): AtsResult {
   const sorted = [...sections].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-  const fullText = extractText(sorted);
+  const fullText = resumeSectionsToPlainText(sorted);
   const wordCount = countWords(fullText);
   const suggestions: AtsSuggestion[] = [];
   const checks: { name: string; pass: boolean; detail?: string }[] = [];

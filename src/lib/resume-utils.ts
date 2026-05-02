@@ -90,6 +90,64 @@ export function parseResumeContent(content: unknown): ResumeContent {
   return { sections, ...(meta && { meta }) };
 }
 
+/** Concatenate resume section text for keyword / ATS-style matching (lowercased). */
+export function resumeSectionsToPlainText(sections: ResumeSection[]): string {
+  const parts: string[] = [];
+  for (const s of sections) {
+    if (s.type === "summary" && s.data.text) parts.push(s.data.text);
+    if (s.type === "experience") {
+      const d = s.data as { entries?: Array<{ title: string; company: string; bullets?: string[] }> };
+      const entries = d.entries ?? [d as { title: string; company: string; bullets?: string[] }];
+      const expList = Array.isArray(entries) ? entries : [entries];
+      for (const e of expList) {
+        if (e.title) parts.push(e.title);
+        if (e.company) parts.push(e.company);
+        if (e.bullets) parts.push(...e.bullets);
+      }
+    }
+    if (s.type === "education") {
+      const d = s.data as { entries?: Array<{ degree: string; school: string }> };
+      const entries = d.entries ?? [d as { degree: string; school: string }];
+      const eduList = Array.isArray(entries) ? entries : [entries];
+      for (const e of eduList) {
+        if (e.degree) parts.push(e.degree);
+        if (e.school) parts.push(e.school);
+      }
+    }
+    if (s.type === "skills" && s.data.items) parts.push(...s.data.items);
+    if (s.type === "projects") {
+      const d = s.data;
+      if ("entries" in d && Array.isArray(d.entries)) {
+        for (const p of d.entries) {
+          if (p.name) parts.push(p.name);
+          if (p.description) parts.push(p.description);
+          if (p.link) parts.push(p.link);
+          if (p.tech?.length) parts.push(...p.tech);
+          if (p.bullets?.length) parts.push(...p.bullets);
+        }
+      } else {
+        const legacy = d as {
+          name?: string;
+          description?: string;
+          link?: string;
+          bullets?: string[];
+        };
+        if (legacy.name) parts.push(legacy.name);
+        if (legacy.description) parts.push(legacy.description);
+        if (legacy.link) parts.push(legacy.link);
+        if (legacy.bullets?.length) parts.push(...legacy.bullets);
+      }
+    }
+    if (s.type === "contact") {
+      const c = s.data as { name?: string; title?: string; email?: string };
+      if (c.name) parts.push(c.name);
+      if (c.title) parts.push(c.title);
+    }
+    if (s.type === "objective" && "text" in s.data && s.data.text) parts.push(String(s.data.text));
+  }
+  return parts.join(" ").toLowerCase();
+}
+
 /**
  * WBS 9.3 – Extract keywords from resume content for job matching.
  * Returns skills, job titles, and key nouns.
