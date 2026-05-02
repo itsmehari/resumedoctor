@@ -80,15 +80,21 @@ const nextConfig = {
   },
 };
 
-module.exports = withSentryConfig(nextConfig, {
-  // Sentry org + project (set in CI env vars: SENTRY_ORG, SENTRY_PROJECT, SENTRY_AUTH_TOKEN)
-  org: process.env.SENTRY_ORG,
-  project: process.env.SENTRY_PROJECT,
-  // Silent in dev to avoid noise; enabled in CI via SENTRY_AUTH_TOKEN
-  silent: !process.env.CI,
-  // Upload source maps only in CI/production
-  widenClientFileUpload: true,
-  hideSourceMaps: true,
-  disableLogger: true,
-  automaticVercelMonitors: true,
-});
+// Only wrap with Sentry build plugin when org + project are set (e.g. Vercel / CI with secrets).
+// Empty secrets in GitHub Actions become "" and trigger "missing organization slug" — skip plugin then.
+// Runtime Sentry still works via sentry.*.config.ts when NEXT_PUBLIC_SENTRY_DSN is set on the host.
+const sentryOrg = process.env.SENTRY_ORG?.trim();
+const sentryProject = process.env.SENTRY_PROJECT?.trim();
+const useSentryWebpackPlugin = Boolean(sentryOrg && sentryProject);
+
+module.exports = useSentryWebpackPlugin
+  ? withSentryConfig(nextConfig, {
+      org: sentryOrg,
+      project: sentryProject,
+      silent: !process.env.CI,
+      widenClientFileUpload: true,
+      hideSourceMaps: true,
+      disableLogger: true,
+      automaticVercelMonitors: true,
+    })
+  : nextConfig;
