@@ -6,6 +6,8 @@
 
 **Completion Status:** Phases 1–3, 5 complete. Phases 4, 6–13 pending.
 
+**Reality sync:** Many phase 6–12 tasks exist in code (AI tailor-for-job, ATS API, jobs, cover letters, admin, content). See **[BACKLOG-PRIORITIZED.md](./BACKLOG-PRIORITIZED.md)** for codebase-aligned status and the ordered ship list (JD match + WBS follow-through).
+
 ---
 
 ## WBS Overview
