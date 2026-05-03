@@ -3,6 +3,7 @@ import { timingSafeEqual } from "crypto";
 import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { fulfillSuperprofilePurchase, SUPERPROFILE_PRODUCT_KEYS } from "@/lib/superprofile-fulfillment";
+import { normalizeSuperprofileWebhookPayload } from "@/lib/superprofile-webhook-normalize";
 
 export const runtime = "nodejs";
 
@@ -53,7 +54,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const parsed = bodySchema.safeParse(json);
+  let parsed = bodySchema.safeParse(json);
+  if (!parsed.success) {
+    const normalized = normalizeSuperprofileWebhookPayload(json);
+    if (normalized) {
+      parsed = bodySchema.safeParse(normalized);
+      if (parsed.success) {
+        console.warn("[superprofile_webhook] accepted_normalized_payload (nested or snake_case fields)");
+      }
+    }
+  }
   if (!parsed.success) {
     const flat = parsed.error.flatten();
     console.warn("[superprofile_webhook] validation_failed", {
