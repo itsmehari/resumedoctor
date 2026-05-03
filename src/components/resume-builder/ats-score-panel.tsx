@@ -24,6 +24,19 @@ export function AtsScorePanel({ resumeId, sections, isPro }: Props) {
   const [loading, setLoading] = useState(false);
 
   const [teaserUsed, setTeaserUsed] = useState(false);
+  const [trialBlocked, setTrialBlocked] = useState(false);
+
+  useEffect(() => {
+    if (!resumeId || isPro) return;
+    fetch(`/api/resumes/${resumeId}/ats/eligibility`, { credentials: "include" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: { teaserConsumed?: boolean; trialBlocked?: boolean } | null) => {
+        if (!d) return;
+        if (d.trialBlocked) setTrialBlocked(true);
+        if (d.teaserConsumed) setTeaserUsed(true);
+      })
+      .catch(() => {});
+  }, [resumeId, isPro]);
 
   type FetchOut = { ok: true; data: AtsResult } | { ok: false; error?: unknown; code?: string };
 
@@ -57,6 +70,28 @@ export function AtsScorePanel({ resumeId, sections, isPro }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resumeId, isPro]);
 
+  if (trialBlocked) {
+    return (
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4 bg-slate-50 dark:bg-slate-800/50">
+        <h3 className="font-semibold text-slate-900 dark:text-slate-100 text-sm">ATS Checker</h3>
+        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 mb-3">
+          Create a free account to save your resume and run ATS checks. Apply with confidence once your draft lives on a
+          full account — see{" "}
+          <a href="/pricing" className="font-medium text-primary-600 hover:underline dark:text-primary-400">
+            pricing
+          </a>{" "}
+          for full checks on Basic vs Pro.
+        </p>
+        <a
+          href="/signup"
+          className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+        >
+          Sign up →
+        </a>
+      </div>
+    );
+  }
+
   if (!isPro && !teaserUsed) {
     return (
       <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4 bg-slate-50 dark:bg-slate-800/50">
@@ -64,7 +99,8 @@ export function AtsScorePanel({ resumeId, sections, isPro }: Props) {
           ATS Checker
         </h3>
         <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 mb-3">
-          Get one ATS score and top 3 suggestions per resume on Basic. Upgrade to Pro for full suggestions and re-checks.
+          On Basic you get one ATS score and the top three suggestions per resume — enough to see how parsers read your
+          draft. Upgrade to Pro for unlimited re-checks and every suggestion.
         </p>
         <button
           type="button"
@@ -85,13 +121,14 @@ export function AtsScorePanel({ resumeId, sections, isPro }: Props) {
           ATS Checker
         </h3>
         <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-          You&apos;ve used your Basic check for this resume. Upgrade to Pro to see all suggestions and re-check anytime.
+          You&apos;ve used your Basic check for this resume. Move to Pro when you want portal-ready PDFs and Word files
+          plus unlimited ATS runs — see plans for details.
         </p>
         <a
           href="/pricing"
-          className="mt-2 inline-block text-sm font-medium text-primary-600 hover:underline"
+          className="mt-2 inline-block text-sm font-medium text-primary-600 hover:underline dark:text-primary-400"
         >
-          Upgrade to Pro →
+          View plans →
         </a>
       </div>
     );
@@ -190,7 +227,7 @@ export function AtsScorePanel({ resumeId, sections, isPro }: Props) {
 
       {result.teaser && (
         <p className="text-xs text-primary-600 dark:text-primary-400 font-medium">
-          Upgrade to Pro to see all suggestions and re-check anytime.
+          Pro unlocks every suggestion and unlimited re-checks — plus PDF and Word built for applications.
         </p>
       )}
       {result.suggestions.length > 0 && (

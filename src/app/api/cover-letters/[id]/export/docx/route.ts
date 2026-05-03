@@ -1,10 +1,9 @@
 // WBS 8.6 – Cover letter DOCX export
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { buildCoverLetterDocx } from "@/lib/docx-export";
-import { sessionUserEmail } from "@/lib/session-user";
+import { getResumeAuth } from "@/lib/trial-auth";
+import { hasFullProAccess } from "@/lib/subscription-entitlements";
 
 function slugify(s: string): string {
   return s
@@ -17,17 +16,36 @@ export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getServerSession(authOptions);
-  const sessionEmail = sessionUserEmail(session);
-  if (!sessionEmail) {
+  const auth = await getResumeAuth();
+  if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  if (auth.isTrial) {
+    return NextResponse.json(
+      {
+        error: "Sign up for full account access to export cover letters for applications.",
+        code: "TRIAL_EXPORT_BLOCKED",
+      },
+      { status: 403 }
+    );
+  }
+
   const user = await prisma.user.findUnique({
-    where: { email: sessionEmail },
-    select: { id: true },
+    where: { id: auth.userId },
+    select: { id: true, subscription: true, subscriptionExpiresAt: true },
   });
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
+
+  if (!hasFullProAccess(user.subscription, user.subscriptionExpiresAt)) {
+    return NextResponse.json(
+      {
+        error: "Upgrade to Pro for Word export — same as resume portal-ready files.",
+        code: "PRO_REQUIRED",
+      },
+      { status: 403 }
+    );
+  }
 
   const { id } = await params;
   const letter = await prisma.coverLetter.findFirst({

@@ -2,6 +2,7 @@
 
 // Phase 1.2 – Paste job description → keyword match + AI tailor
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Briefcase, Sparkles, Loader2, Check, Plus, Target } from "lucide-react";
 import type { ResumeSection } from "@/types/resume";
 import { useToast } from "@/contexts/toast-context";
@@ -31,6 +32,9 @@ interface JobPastePanelProps {
   resumeId: string;
   sections: ResumeSection[];
   onSectionsChange: (sections: ResumeSection[]) => void;
+  aiDailyUsed?: number | null;
+  aiDailyLimit?: number | null;
+  isPro?: boolean;
 }
 
 function genId(): string {
@@ -43,6 +47,9 @@ export function JobPastePanel({
   resumeId,
   sections,
   onSectionsChange,
+  aiDailyUsed,
+  aiDailyLimit,
+  isPro = false,
 }: JobPastePanelProps) {
   const [jobDesc, setJobDesc] = useState("");
   const [jobUrl, setJobUrl] = useState("");
@@ -320,8 +327,24 @@ export function JobPastePanel({
       {expanded && (
         <div className="px-4 pb-4 space-y-3 border-t border-slate-200 dark:border-slate-700 pt-3">
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            Paste a job description. Run a fast keyword match (no AI), then use AI tailoring for deeper edits.
+            Paste a job description. Keyword match is free on Basic (no AI). AI tailoring uses the same daily pool as
+            other AI actions in the builder.
           </p>
+          {aiDailyLimit != null && aiDailyUsed != null ? (
+            <p className="text-xs leading-relaxed text-slate-600 dark:text-slate-400 rounded-lg bg-slate-50 dark:bg-slate-800/80 px-3 py-2 border border-slate-200 dark:border-slate-600">
+              <span className="font-semibold text-slate-800 dark:text-slate-200">AI today (UTC):</span> {aiDailyUsed} /{" "}
+              {aiDailyLimit} used.
+              {!isPro ? (
+                <>
+                  {" "}
+                  <Link href="/pricing" className="font-medium text-primary-600 hover:underline dark:text-primary-400">
+                    Pro raises your daily pool
+                  </Link>{" "}
+                  when you are tailoring many roles.
+                </>
+              ) : null}
+            </p>
+          ) : null}
           <div className="flex gap-2 mb-2">
             <input
               type="url"

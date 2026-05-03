@@ -112,6 +112,16 @@ const compareTdPass =
 const compareTdPro =
   "border-l border-primary-200/80 bg-primary-50/75 p-3.5 text-center align-middle dark:border-primary-800/35 dark:bg-primary-950/18";
 
+const compareThTry =
+  "border-l border-violet-300/90 bg-gradient-to-b from-violet-100 to-violet-50/90 p-4 text-center text-xs font-bold uppercase tracking-wide text-violet-950 dark:border-violet-700/50 dark:from-violet-950/45 dark:to-violet-950/25 dark:text-violet-50";
+const compareThBasic =
+  "border-l border-slate-300/90 bg-gradient-to-b from-slate-100 to-slate-50/90 p-4 text-center text-xs font-bold uppercase tracking-wide text-slate-900 dark:border-slate-600 dark:from-slate-900/70 dark:to-slate-900/40 dark:text-slate-100";
+
+const compareTdTry =
+  "border-l border-violet-200/80 bg-violet-50/75 p-3.5 text-center align-middle dark:border-violet-800/35 dark:bg-violet-950/22";
+const compareTdBasic =
+  "border-l border-slate-200/80 bg-slate-50/85 p-3.5 text-center align-middle dark:border-slate-700/35 dark:bg-slate-900/25";
+
 function PlansAtGlance({
   isIndia,
   proMonthlyDisplay,
@@ -134,8 +144,8 @@ function PlansAtGlance({
       </p>
       <div
         className={cn(
-          "mx-auto mt-6 grid max-w-5xl gap-4",
-          isIndia ? "sm:grid-cols-2 xl:grid-cols-3" : "sm:grid-cols-2"
+          "mx-auto mt-6 grid max-w-6xl gap-4",
+          isIndia ? "sm:grid-cols-2 xl:grid-cols-4" : "sm:grid-cols-2 xl:grid-cols-3"
         )}
       >
         <article className="flex flex-col rounded-2xl border-2 border-violet-300 bg-violet-50/80 p-5 shadow-sm dark:border-violet-700 dark:bg-violet-950/35">
@@ -152,6 +162,24 @@ function PlansAtGlance({
             className="mt-4 text-xs font-semibold text-violet-800 underline-offset-2 hover:underline dark:text-violet-200"
           >
             Open Try →
+          </Link>
+        </article>
+
+        <article className="flex flex-col rounded-2xl border-2 border-slate-300 bg-slate-50/90 p-5 shadow-sm dark:border-slate-600 dark:bg-slate-900/40">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400">
+            Free · Basic
+          </span>
+          <h3 className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-50">Basic account</h3>
+          <p className="mt-1 text-2xl font-extrabold text-slate-800 dark:text-slate-100">₹0</p>
+          <p className="mt-2 flex-1 text-xs leading-relaxed text-slate-700 dark:text-slate-300">
+            Sign in to save resumes: TXT export, keyword match vs job descriptions, one ATS teaser per resume, 10 templates,
+            5 AI runs per day (UTC).
+          </p>
+          <Link
+            href="/signup"
+            className="mt-4 text-xs font-semibold text-slate-700 underline-offset-2 hover:underline dark:text-slate-200"
+          >
+            Create free account →
           </Link>
         </article>
 
@@ -200,65 +228,101 @@ function PlansAtGlance({
   );
 }
 
-/** India: third column is the ₹49 pass — same Pro capabilities, fixed 14-day window. */
+/** Full matrix: Try (OTP), Basic (free), optional India 14-day pass, Pro (monthly/annual). */
 const COMPARE_PLAN_ROWS: {
   feature: string;
   featureNote?: string;
-  trial: CompareCellValue;
+  tryOtp: CompareCellValue;
+  basic: CompareCellValue;
+  pass14: CompareCellValue;
   pro: CompareCellValue;
 }[] = [
   {
     feature: "How long it lasts",
-    featureNote: "After checkout, access lines up with the term you picked.",
-    trial: "14 calendar days from activation",
+    featureNote: "Try is a short preview session; Basic is ongoing; pass and Pro start after SuperProfile checkout.",
+    tryOtp: "Short OTP session",
+    basic: "Ongoing free account",
+    pass14: "14 calendar days from activation",
     pro: "1 month or 1 year from activation",
   },
   {
-    feature: "PDF export",
-    featureNote: "Download a print-ready file.",
-    trial: true,
+    feature: "Resume PDF export",
+    featureNote: "Print-ready file for portals.",
+    tryOtp: false,
+    basic: "Pro or resume pack",
+    pass14: true,
     pro: true,
   },
   {
-    feature: "Word (DOCX) export",
-    featureNote: "Edit offline in Microsoft Word or Google Docs.",
-    trial: true,
+    feature: "Resume Word (DOCX) export",
+    featureNote: "Edit offline in Word or Google Docs.",
+    tryOtp: false,
+    basic: "Pro or resume pack",
+    pass14: true,
+    pro: true,
+  },
+  {
+    feature: "Cover letter Word export",
+    featureNote: "Same rule as resume Word — portal-ready files on Pro.",
+    tryOtp: false,
+    basic: false,
+    pass14: true,
     pro: true,
   },
   {
     feature: "TXT export",
-    featureNote: "Plain text for forms or parsers.",
-    trial: true,
+    featureNote: "Resume and cover letter plain text where enabled.",
+    tryOtp: false,
+    basic: true,
+    pass14: true,
     pro: true,
   },
   {
     feature: "Print & HTML preview",
-    featureNote: "Browser preview and printing.",
-    trial: true,
+    featureNote: "Browser preview and printing (signed-in Basic+).",
+    tryOtp: false,
+    basic: true,
+    pass14: true,
     pro: true,
   },
   {
     feature: "Templates",
-    featureNote: "Layouts and styles included in the builder.",
-    trial: "All 30",
-    pro: "All 30",
+    featureNote: "Layouts in the resume builder.",
+    tryOtp: "Trial subset",
+    basic: "10 base layouts",
+    pass14: "All 30+",
+    pro: "All 30+",
   },
   {
     feature: "ATS score checker",
-    featureNote: "How well your resume matches a job description.",
-    trial: "Unlimited during the pass",
+    featureNote: "Resume checks vs best practices; JD paste uses keyword match separately.",
+    tryOtp: false,
+    basic: "1 teaser per resume",
+    pass14: "Unlimited",
     pro: "Unlimited",
   },
   {
-    feature: "AI bullet suggestions",
-    featureNote: "Per calendar day; count resets at midnight (UTC).",
-    trial: "50 per day during the pass",
-    pro: "50 per day",
+    feature: "Keyword match vs job description",
+    featureNote: "Fast deterministic match (no AI); signed-in accounts.",
+    tryOtp: false,
+    basic: true,
+    pass14: true,
+    pro: true,
   },
   {
-    feature: "Watermark on PDF & Word",
-    featureNote: "Only applies when that export type is available.",
-    trial: "None — full-quality files",
+    feature: "AI writing assist",
+    featureNote: "Per calendar day; resets midnight UTC (all AI actions share one pool).",
+    tryOtp: "Preview only — sign up for counted usage",
+    basic: "5 runs / day",
+    pass14: "50 runs / day",
+    pro: "50 runs / day",
+  },
+  {
+    feature: "Watermark on resume PDF & Word",
+    featureNote: "When export is available without full Pro.",
+    tryOtp: "N/A",
+    basic: "None with Pro or pack",
+    pass14: "None — full-quality files",
     pro: "None — full-quality files",
   },
 ];
@@ -721,26 +785,36 @@ export default function PricingPage() {
                 <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-relaxed text-slate-600 dark:text-slate-400">
                   {isIndia ? (
                     <>
-                      The <Link href="/try" className="font-medium text-primary-600 underline-offset-2 hover:underline dark:text-primary-400">Try</Link> page
-                      (OTP) is for exploring the editor — it is{" "}
-                      <strong className="font-medium text-slate-800 dark:text-slate-200">not</strong> a billing tier in
-                      this table. The <strong className="font-medium text-slate-800 dark:text-slate-200">14-day pass</strong>{" "}
-                      matches Pro features for two weeks; monthly and annual Pro differ only in{" "}
-                      <strong className="font-medium text-slate-800 dark:text-slate-200">how long</strong> access lasts.
+                      <strong className="font-medium text-slate-800 dark:text-slate-200">Try</strong> (
+                      <Link href="/try" className="font-medium text-primary-600 underline-offset-2 hover:underline dark:text-primary-400">
+                        OTP
+                      </Link>
+                      ) previews the editor; <strong className="font-medium text-slate-800 dark:text-slate-200">Basic</strong>{" "}
+                      is your signed-in free tier. The{" "}
+                      <strong className="font-medium text-slate-800 dark:text-slate-200">14-day pass</strong> matches Pro
+                      capabilities for two weeks; monthly and annual Pro differ only in how long access lasts.
                     </>
                   ) : (
                     <>
-                      The <Link href="/try" className="font-medium text-primary-600 underline-offset-2 hover:underline dark:text-primary-400">Try</Link>{" "}
-                      page is a short OTP preview — not a billing tier.{" "}
-                      <strong className="font-medium text-slate-800 dark:text-slate-200">Pro</strong> plans are paid via
+                      <strong className="font-medium text-slate-800 dark:text-slate-200">Try</strong> is a short OTP preview;{" "}
+                      <strong className="font-medium text-slate-800 dark:text-slate-200">Basic</strong> is the free signed-in
+                      tier. <strong className="font-medium text-slate-800 dark:text-slate-200">Pro</strong> plans are paid via
                       SuperProfile.
                     </>
                   )}
                 </p>
                 <div
-                  className="mx-auto mt-5 flex max-w-2xl flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-slate-600 dark:text-slate-400"
+                  className="mx-auto mt-5 flex max-w-3xl flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-slate-600 dark:text-slate-400"
                   aria-hidden
                 >
+                  <span className="inline-flex items-center gap-2">
+                    <span className="h-3 w-5 shrink-0 rounded border border-violet-400 bg-violet-100 dark:border-violet-600 dark:bg-violet-950/60" />
+                    Try (OTP)
+                  </span>
+                  <span className="inline-flex items-center gap-2">
+                    <span className="h-3 w-5 shrink-0 rounded border border-slate-400 bg-slate-100 dark:border-slate-600 dark:bg-slate-800/80" />
+                    Basic
+                  </span>
                   {isIndia ? (
                     <span className="inline-flex items-center gap-2">
                       <span className="h-3 w-5 shrink-0 rounded border border-amber-400 bg-amber-100 dark:border-amber-600 dark:bg-amber-950/60" />
@@ -753,11 +827,23 @@ export default function PricingPage() {
                   </span>
                 </div>
                 <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200/80 shadow-inner dark:border-slate-700/80">
-                  <table className="w-full min-w-[320px] border-collapse text-sm">
+                  <table className="w-full min-w-[56rem] border-collapse text-sm">
                     <thead>
                       <tr className="border-b border-slate-200 dark:border-slate-700">
                         <th scope="col" className={cn(compareThFeature, "rounded-tl-2xl")}>
                           What you get
+                        </th>
+                        <th scope="col" className={compareThTry}>
+                          <span className="block">Try (OTP)</span>
+                          <span className="mt-1.5 block text-[10px] font-semibold normal-case leading-snug text-violet-950/90 dark:text-violet-100/95">
+                            No card · preview session
+                          </span>
+                        </th>
+                        <th scope="col" className={compareThBasic}>
+                          <span className="block">Basic</span>
+                          <span className="mt-1.5 block text-[10px] font-semibold normal-case leading-snug text-slate-800/95 dark:text-slate-100/95">
+                            Free signed-in account
+                          </span>
                         </th>
                         {isIndia && (
                           <th scope="col" className={compareThPass}>
@@ -792,9 +878,15 @@ export default function PricingPage() {
                               </span>
                             ) : null}
                           </th>
+                          <td className={compareTdTry}>
+                            <CompareCell value={row.tryOtp} />
+                          </td>
+                          <td className={compareTdBasic}>
+                            <CompareCell value={row.basic} />
+                          </td>
                           {isIndia && (
                             <td className={compareTdPass}>
-                              <CompareCell value={row.trial} />
+                              <CompareCell value={row.pass14} />
                             </td>
                           )}
                           <td className={compareTdPro}>

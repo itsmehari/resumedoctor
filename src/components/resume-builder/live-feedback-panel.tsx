@@ -26,7 +26,8 @@ export function LiveFeedbackPanel({ sections, isPro = true }: LiveFeedbackPanelP
         </div>
         {!isPro && (
           <p className="mt-3 text-xs text-slate-600 dark:text-slate-400">
-            Full ATS checks and higher AI limits follow your subscription; exports may use Pro or a resume pack—see{" "}
+            Apply with confidence when your tier matches how you send files: full ATS runs and more AI drafts on Pro;
+            resume exports may use Pro or a resume pack—see{" "}
             <Link href="/pricing" className="font-medium text-primary-600 hover:underline dark:text-primary-400">
               Pricing
             </Link>
@@ -96,7 +97,7 @@ export function LiveFeedbackPanel({ sections, isPro = true }: LiveFeedbackPanelP
       )}
       {!isPro && (
         <p className="px-4 pb-3 pt-1 text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-700">
-          Full ATS checks and higher AI limits follow your subscription; PDF and Word may use Pro or a resume pack—see{" "}
+          Portal-ready PDF and Word usually mean Pro or a resume pack for resumes; unlimited ATS re-checks are on Pro—see{" "}
           <Link href="/pricing" className="font-medium text-primary-600 hover:underline dark:text-primary-400">
             Pricing
           </Link>

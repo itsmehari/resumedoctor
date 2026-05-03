@@ -7,6 +7,7 @@ import {
   resolveTemplateId,
 } from "@/lib/templates";
 import { getResumeAuth } from "@/lib/trial-auth";
+import { hasFullProAccess } from "@/lib/subscription-entitlements";
 
 /** Legacy template ids still allowed for existing resumes */
 export const LEGACY_TRIAL_TEMPLATE_IDS = [
@@ -21,18 +22,6 @@ const trialOrdered = TEMPLATES.filter((t) => t.trialAvailable);
 /** First 10 trial-marked templates in registry order — matches pricing “10 base” for Basic */
 export const BASIC_PLAN_TEMPLATE_IDS = trialOrdered.slice(0, 10).map((t) => t.id);
 
-function hasProEntitlement(subscription: string, subscriptionExpiresAt: Date | null): boolean {
-  if (subscription === "pro_monthly" || subscription === "pro_annual") return true;
-  if (
-    subscription === "pro_trial_14" &&
-    subscriptionExpiresAt &&
-    new Date(subscriptionExpiresAt) > new Date()
-  ) {
-    return true;
-  }
-  return false;
-}
-
 function uniqueIds(ids: string[]): string[] {
   return Array.from(new Set(ids));
 }
@@ -46,7 +35,7 @@ export function getAllowedTemplateIds(
   if (isTrial) {
     return uniqueIds([...TRIAL_TEMPLATE_IDS, ...legacy]);
   }
-  if (hasProEntitlement(subscription, subscriptionExpiresAt)) {
+  if (hasFullProAccess(subscription, subscriptionExpiresAt)) {
     return uniqueIds([...AVAILABLE_TEMPLATE_IDS, ...legacy]);
   }
   return uniqueIds([...BASIC_PLAN_TEMPLATE_IDS, ...legacy]);

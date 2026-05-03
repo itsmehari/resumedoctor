@@ -1,10 +1,9 @@
 // WBS 6.7 – AI rate limiting (Basic: 5/day, Pro: 50/day)
 import { prisma } from "@/lib/prisma";
+import { hasFullProAccess } from "@/lib/subscription-entitlements";
 
-const PRO_SUBSCRIPTIONS = ["pro_monthly", "pro_annual"];
-const PRO_TRIAL_14 = "pro_trial_14";
-const LIMIT_BASIC = 5;
-const LIMIT_PRO = 50;
+export const AI_DAILY_LIMIT_BASIC = 5;
+export const AI_DAILY_LIMIT_PRO = 50;
 
 export type AiAction =
   | "improve-bullet"
@@ -26,21 +25,6 @@ function startOfTodayUTC(): Date {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
 }
 
-function isProUser(
-  subscription: string,
-  subscriptionExpiresAt: Date | null
-): boolean {
-  if (PRO_SUBSCRIPTIONS.includes(subscription)) return true;
-  if (
-    subscription === PRO_TRIAL_14 &&
-    subscriptionExpiresAt &&
-    new Date(subscriptionExpiresAt) > new Date()
-  ) {
-    return true;
-  }
-  return false;
-}
-
 /**
  * Check AI rate limit and optionally record usage.
  * Call before performing the AI action.
@@ -54,12 +38,12 @@ export async function checkAiRateLimit(
     select: { subscription: true, subscriptionExpiresAt: true },
   });
   if (!user) {
-    return { allowed: false, limit: LIMIT_BASIC, used: LIMIT_BASIC };
+    return { allowed: false, limit: AI_DAILY_LIMIT_BASIC, used: AI_DAILY_LIMIT_BASIC };
   }
 
-  const limit = isProUser(user.subscription, user.subscriptionExpiresAt)
-    ? LIMIT_PRO
-    : LIMIT_BASIC;
+  const limit = hasFullProAccess(user.subscription, user.subscriptionExpiresAt)
+    ? AI_DAILY_LIMIT_PRO
+    : AI_DAILY_LIMIT_BASIC;
   const since = startOfTodayUTC();
 
   const count = await prisma.aiUsageLog.count({
@@ -79,6 +63,26 @@ export async function checkAiRateLimit(
   }
 
   return { allowed: true, limit, used: count };
+}
+
+/** Today's AI usage vs tier limit (UTC day). */
+export async function getAiDailyUsageState(userId: string): Promise<{
+  used: number;
+  limit: number;
+  isProTier: boolean;
+} | null> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { subscription: true, subscriptionExpiresAt: true },
+  });
+  if (!user) return null;
+  const isProTier = hasFullProAccess(user.subscription, user.subscriptionExpiresAt);
+  const limit = isProTier ? AI_DAILY_LIMIT_PRO : AI_DAILY_LIMIT_BASIC;
+  const since = startOfTodayUTC();
+  const used = await prisma.aiUsageLog.count({
+    where: { userId, createdAt: { gte: since } },
+  });
+  return { used, limit, isProTier };
 }
 
 /**

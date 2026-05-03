@@ -28,7 +28,14 @@ export default function EditResumePage() {
   const editorPaneRef = useRef<HTMLDivElement>(null);
   const { resume, loading, saveStatus, updateContent, updateTitle, updateTemplateId, retrySave } =
     useResume(id);
-  const { isPro, isTrial, resumePackCredits } = useSubscription();
+  const {
+    isPro,
+    isTrial,
+    resumePackCredits,
+    aiDailyUsed,
+    aiDailyLimit,
+    loading: subLoading,
+  } = useSubscription();
   const { secondsLeft, expired } = useTrialTimer(isTrial);
   const [templates, setTemplates] = useState<Array<{ id: string; name: string; isProOnly?: boolean }>>([]);
   const [templateHint, setTemplateHint] = useState<string | null>(null);
@@ -383,6 +390,30 @@ export default function EditResumePage() {
             </div>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            {!subLoading && aiDailyLimit != null && aiDailyUsed != null ? (
+              <span
+                className="hidden md:inline-flex max-w-[14rem] flex-col gap-0.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-left dark:border-slate-600 dark:bg-slate-800/50"
+                title="AI actions reset at midnight UTC"
+              >
+                <span className="text-[10px] font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                  AI today
+                </span>
+                <span className="text-xs font-medium text-slate-800 dark:text-slate-200">
+                  {aiDailyUsed} / {aiDailyLimit} used
+                  {!isPro ? (
+                    <>
+                      {" · "}
+                      <Link
+                        href="/pricing"
+                        className="text-primary-600 hover:underline dark:text-primary-400"
+                      >
+                        Higher limit on Pro
+                      </Link>
+                    </>
+                  ) : null}
+                </span>
+              </span>
+            ) : null}
             <Link
               href={`/cover-letters/new?resumeId=${id}`}
               className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
@@ -453,6 +484,9 @@ export default function EditResumePage() {
               resumeId={id}
               sections={sections}
               onSectionsChange={handleSectionsChange}
+              aiDailyUsed={aiDailyUsed}
+              aiDailyLimit={aiDailyLimit}
+              isPro={isPro}
             />
             {resume.importSource && sections.length > 0 && (
               <div className="rounded-xl border border-violet-200 dark:border-violet-800 bg-violet-50/50 dark:bg-violet-900/20 p-4">

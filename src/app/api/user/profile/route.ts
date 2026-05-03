@@ -10,6 +10,7 @@ import { getMergedOnboardingForUser, type OnboardingStepKey } from "@/lib/onboar
 import { recordProductEvent } from "@/lib/product-events";
 import { AnalyticsEvents } from "@/lib/analytics-event-names";
 import { sessionUserEmail } from "@/lib/session-user";
+import { hasFullProAccess } from "@/lib/subscription-entitlements";
 
 const updateSchema = z.object({
   name: z.string().min(1).max(100).optional(),
@@ -58,17 +59,13 @@ export async function GET() {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  const isProTrial14Active =
-    user.subscription === "pro_trial_14" &&
-    user.subscriptionExpiresAt &&
-    new Date(user.subscriptionExpiresAt) > new Date();
   const normalizedSubscription = user.subscription === "free" ? "basic" : user.subscription;
 
   return NextResponse.json({
     ...user,
     subscription: normalizedSubscription,
     isTrial: user.subscription === "trial",
-    isPro: ["pro_monthly", "pro_annual"].includes(user.subscription) || isProTrial14Active,
+    isPro: hasFullProAccess(user.subscription, user.subscriptionExpiresAt),
     isImpersonating: auth.isImpersonating ?? false,
     resumePackCredits: user.resumePackCredits ?? 0,
   });

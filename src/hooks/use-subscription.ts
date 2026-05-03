@@ -13,6 +13,9 @@ export function useSubscription(): {
   isImpersonating: boolean;
   resumePackCredits: number;
   emailVerified: boolean | null;
+  aiDailyUsed: number | null;
+  aiDailyLimit: number | null;
+  aiDailyRemaining: number | null;
 } {
   const [subscription, setSubscription] = useState("basic");
   const [isPro, setIsPro] = useState(false);
@@ -22,12 +25,20 @@ export function useSubscription(): {
   const [isImpersonating, setIsImpersonating] = useState(false);
   const [resumePackCredits, setResumePackCredits] = useState(0);
   const [emailVerified, setEmailVerified] = useState<boolean | null>(null);
+  const [aiDailyUsed, setAiDailyUsed] = useState<number | null>(null);
+  const [aiDailyLimit, setAiDailyLimit] = useState<number | null>(null);
+  const [aiDailyRemaining, setAiDailyRemaining] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/user/profile", { credentials: "include" })
-      .then((res) => (res.ok ? res.json() : { subscription: "basic", isTrial: false, isPro: false }))
-      .then((data) => {
+    Promise.all([
+      fetch("/api/user/profile", { credentials: "include" }),
+      fetch("/api/user/feature-limits", { credentials: "include" }),
+    ])
+      .then(async ([profileRes, limitsRes]) => {
+        const data = profileRes.ok
+          ? await profileRes.json()
+          : { subscription: "basic", isTrial: false, isPro: false };
         const normalized = data.subscription === "free" ? "basic" : (data.subscription ?? "basic");
         setSubscription(normalized);
         setIsPro(data.isPro === true);
@@ -37,6 +48,25 @@ export function useSubscription(): {
         setIsImpersonating(data.isImpersonating === true);
         setResumePackCredits(data.resumePackCredits ?? 0);
         setEmailVerified(data.emailVerified != null);
+
+        if (limitsRes.ok) {
+          const lim = await limitsRes.json();
+          if (lim.ai && typeof lim.ai.used === "number" && typeof lim.ai.limit === "number") {
+            setAiDailyUsed(lim.ai.used);
+            setAiDailyLimit(lim.ai.limit);
+            setAiDailyRemaining(
+              typeof lim.ai.remaining === "number" ? lim.ai.remaining : Math.max(0, lim.ai.limit - lim.ai.used)
+            );
+          } else {
+            setAiDailyUsed(null);
+            setAiDailyLimit(null);
+            setAiDailyRemaining(null);
+          }
+        } else {
+          setAiDailyUsed(null);
+          setAiDailyLimit(null);
+          setAiDailyRemaining(null);
+        }
       })
       .catch(() => {
         setSubscription("basic");
@@ -45,6 +75,9 @@ export function useSubscription(): {
         setDisplayName(null);
         setIsImpersonating(false);
         setEmailVerified(null);
+        setAiDailyUsed(null);
+        setAiDailyLimit(null);
+        setAiDailyRemaining(null);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -59,5 +92,8 @@ export function useSubscription(): {
     isImpersonating,
     resumePackCredits,
     emailVerified,
+    aiDailyUsed,
+    aiDailyLimit,
+    aiDailyRemaining,
   };
 }

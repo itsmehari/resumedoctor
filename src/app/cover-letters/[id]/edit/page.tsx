@@ -8,6 +8,7 @@ import { useSession } from "next-auth/react";
 import { Sparkles, FileDown, FileText, FileType, Save } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useToast } from "@/contexts/toast-context";
+import { useSubscription } from "@/hooks/use-subscription";
 import { SiteHeader } from "@/components/site-header";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
@@ -45,6 +46,7 @@ export default function EditCoverLetterPage() {
   const id = params.id as string;
   const { data: session, status } = useSession();
   const { toast } = useToast();
+  const { isPro, loading: subLoading } = useSubscription();
   const [letter, setLetter] = useState<CoverLetter | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -210,12 +212,22 @@ export default function EditCoverLetterPage() {
   };
 
   const downloadExport = async (format: "txt" | "docx") => {
+    if (format === "docx" && !subLoading && !isPro) {
+      toast("Portal-ready Word for cover letters is included with Pro — same as resume exports for applications.", {
+        variant: "error",
+        action: { label: "View plans", href: "/pricing" },
+      });
+      return;
+    }
     setExportLoading(format);
     try {
       const res = await fetch(`/api/cover-letters/${id}/export/${format}`, {
         credentials: "include",
       });
-      if (!res.ok) throw new Error("Failed");
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(typeof errJson.error === "string" ? errJson.error : "Failed");
+      }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -224,14 +236,24 @@ export default function EditCoverLetterPage() {
       a.click();
       URL.revokeObjectURL(url);
       trackEvent("cover_letter_export", { format });
-    } catch {
-      alert(`Failed to download ${format.toUpperCase()}`);
+    } catch (e) {
+      toast(e instanceof Error ? e.message : `Failed to download ${format.toUpperCase()}`, {
+        variant: "error",
+        action: !isPro ? { label: "View plans", href: "/pricing" } : undefined,
+      });
     } finally {
       setExportLoading(null);
     }
   };
 
   const downloadPdf = useCallback(async () => {
+    if (!subLoading && !isPro) {
+      toast("Download a print-ready PDF on Pro — built for submitting on portals alongside your resume.", {
+        variant: "error",
+        action: { label: "View plans", href: "/pricing" },
+      });
+      return;
+    }
     const el = previewRef.current;
     if (!el) {
       alert("Preview not available");
@@ -260,7 +282,7 @@ export default function EditCoverLetterPage() {
     } finally {
       setExportLoading(null);
     }
-  }, [letter?.title]);
+  }, [letter?.title, isPro, subLoading, toast]);
 
   if (status === "loading" || loading) {
     return (
@@ -306,20 +328,20 @@ export default function EditCoverLetterPage() {
               TXT
             </button>
             <button
-              onClick={downloadPdf}
-              disabled={!!exportLoading}
+              onClick={() => void downloadPdf()}
+              disabled={!!exportLoading || subLoading}
               className="flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
             >
               <FileType className="h-4 w-4" />
-              {exportLoading === "pdf" ? "..." : "PDF"}
+              {exportLoading === "pdf" ? "..." : !isPro ? "PDF (Pro)" : "PDF"}
             </button>
             <button
-              onClick={() => downloadExport("docx")}
-              disabled={!!exportLoading}
+              onClick={() => void downloadExport("docx")}
+              disabled={!!exportLoading || subLoading}
               className="flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
             >
               <FileDown className="h-4 w-4" />
-              Word
+              {!isPro ? "Word (Pro)" : "Word"}
             </button>
           </div>
         </div>

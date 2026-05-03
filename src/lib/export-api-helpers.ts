@@ -3,9 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { parseResumeContent } from "@/lib/resume-utils";
 import { getResumeAuth } from "@/lib/trial-auth";
-
-const PRO_SUBSCRIPTIONS = ["pro_monthly", "pro_annual"];
-const PRO_TRIAL_14 = "pro_trial_14";
+import { hasFullProAccess } from "@/lib/subscription-entitlements";
 
 export async function getResumeForExport(
   resumeId: string,
@@ -36,11 +34,10 @@ export async function getResumeForExport(
   }
 
   if (options?.requirePro) {
-    const isPro =
-      PRO_SUBSCRIPTIONS.includes(resume.user.subscription) ||
-      (resume.user.subscription === PRO_TRIAL_14 &&
-        resume.user.subscriptionExpiresAt &&
-        new Date(resume.user.subscriptionExpiresAt) > new Date());
+    const isPro = hasFullProAccess(
+      resume.user.subscription,
+      resume.user.subscriptionExpiresAt
+    );
     const hasPackCredits = (resume.user.resumePackCredits ?? 0) > 0;
     if (!isPro && !hasPackCredits) {
       return {
@@ -66,11 +63,7 @@ export function isProSubscription(
   subscription: string,
   subscriptionExpiresAt?: Date | string | null
 ): boolean {
-  if (PRO_SUBSCRIPTIONS.includes(subscription)) return true;
-  if (subscription === PRO_TRIAL_14 && subscriptionExpiresAt) {
-    return new Date(subscriptionExpiresAt) > new Date();
-  }
-  return false;
+  return hasFullProAccess(subscription, subscriptionExpiresAt);
 }
 
 export async function logExport(
@@ -100,11 +93,7 @@ export async function consumePackCreditIfNeeded(userId: string): Promise<boolean
     select: { subscription: true, subscriptionExpiresAt: true, resumePackCredits: true },
   });
   if (!user) return false;
-  const isPro =
-    PRO_SUBSCRIPTIONS.includes(user.subscription) ||
-    (user.subscription === PRO_TRIAL_14 &&
-      user.subscriptionExpiresAt &&
-      new Date(user.subscriptionExpiresAt) > new Date());
+  const isPro = hasFullProAccess(user.subscription, user.subscriptionExpiresAt);
   if (isPro) return false; // Pro users don't use credits
   const credits = user.resumePackCredits ?? 0;
   if (credits <= 0) return false;

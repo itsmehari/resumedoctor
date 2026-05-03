@@ -5,9 +5,8 @@ import { parseResumeContent } from "@/lib/resume-utils";
 import { getResumeAuth } from "@/lib/trial-auth";
 import { computeAtsScore } from "@/lib/ats-checker";
 import { recordFeatureUsage } from "@/lib/feature-usage";
+import { hasFullProAccess } from "@/lib/subscription-entitlements";
 
-const PRO_SUBSCRIPTIONS = ["pro_monthly", "pro_annual"];
-const PRO_TRIAL_14 = "pro_trial_14";
 const BASIC_TEASER_SUGGESTIONS = 3;
 
 export async function GET(
@@ -36,11 +35,10 @@ export async function GET(
     return NextResponse.json({ error: "Resume not found" }, { status: 404 });
   }
 
-  const isPro =
-    PRO_SUBSCRIPTIONS.includes(resume.user.subscription) ||
-    (resume.user.subscription === PRO_TRIAL_14 &&
-      resume.user.subscriptionExpiresAt &&
-      new Date(resume.user.subscriptionExpiresAt) > new Date());
+  const isPro = hasFullProAccess(
+    resume.user.subscription,
+    resume.user.subscriptionExpiresAt
+  );
 
   const content = parseResumeContent(resume.content);
   const sections = content.sections ?? [];
