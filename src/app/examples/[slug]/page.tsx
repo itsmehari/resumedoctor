@@ -111,29 +111,35 @@ export default function ExampleDetailPage({ params }: Props) {
 
         <div className="grid gap-8 md:grid-cols-3">
           <div className="space-y-8 md:col-span-2">
-            <section className="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800">
-              <div className="border-b border-slate-200 bg-slate-50 px-6 py-4 dark:border-slate-800 dark:bg-slate-900">
-                <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
-                  Sample resume lines
-                </h2>
-                <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-                  Illustrative patterns only — swap in your real employers, dates, and verified metrics.
-                </p>
-              </div>
-              <div className="space-y-4 bg-white px-6 py-5 dark:bg-slate-950/40">
-                <p className="border-l-4 border-primary-500 pl-4 text-sm font-medium leading-relaxed text-slate-800 dark:text-slate-200">
-                  {ex.sampleSummary}
-                </p>
-                <ul className="space-y-3 font-mono text-sm leading-relaxed text-slate-700 dark:text-slate-300">
-                  {ex.sampleBullets.map((line, i) => (
-                    <li key={i} className="flex gap-2">
-                      <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-slate-400" />
-                      <span>{line}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </section>
+            {(ex.sampleSummary.trim().length > 0 || ex.sampleBullets.length > 0) ? (
+              <section className="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800">
+                <div className="border-b border-slate-200 bg-slate-50 px-6 py-4 dark:border-slate-800 dark:bg-slate-900">
+                  <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                    Sample resume lines
+                  </h2>
+                  <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                    Illustrative patterns only — swap in your real employers, dates, and verified metrics.
+                  </p>
+                </div>
+                <div className="space-y-4 bg-white px-6 py-5 dark:bg-slate-950/40">
+                  {ex.sampleSummary.trim().length > 0 ? (
+                    <p className="border-l-4 border-primary-500 pl-4 text-sm font-medium leading-relaxed text-slate-800 dark:text-slate-200">
+                      {ex.sampleSummary}
+                    </p>
+                  ) : null}
+                  {ex.sampleBullets.length > 0 ? (
+                    <ul className="space-y-3 font-mono text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+                      {ex.sampleBullets.map((line, i) => (
+                        <li key={i} className="flex gap-2">
+                          <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-slate-400" />
+                          <span>{line}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </div>
+              </section>
+            ) : null}
 
             {ex.indiaContext ? (
               <section
@@ -151,7 +157,7 @@ export default function ExampleDetailPage({ params }: Props) {
 
             <section
               className="overflow-hidden rounded-2xl border border-violet-200/90 bg-violet-50/50 dark:border-violet-900/40 dark:bg-violet-950/15"
-              aria-label="AI era and tools by career stage"
+              aria-label="AI era guidance and tools to list by career stage"
             >
               <div className="border-b border-violet-200/80 bg-violet-100/60 px-6 py-4 dark:border-violet-900/50 dark:bg-violet-950/40">
                 <h2 className="text-base font-bold text-violet-950 dark:text-violet-100">
@@ -230,69 +236,79 @@ export default function ExampleDetailPage({ params }: Props) {
               </div>
             </section>
 
-            <section className="overflow-hidden rounded-2xl border border-rose-200 dark:border-rose-900/50">
-              <div className="border-b border-rose-200 bg-rose-50 px-6 py-4 dark:border-rose-900/40 dark:bg-rose-950/30">
-                <h2 className="text-base font-bold text-rose-900 dark:text-rose-200">
-                  Common mistakes to avoid
-                </h2>
-              </div>
-              <ul className="divide-y divide-rose-100 dark:divide-rose-900/20">
-                {ex.mistakesToAvoid.map((m, i) => (
-                  <li key={i} className="px-6 py-3 text-sm leading-relaxed text-rose-950/90 dark:text-rose-100/85">
-                    {m}
-                  </li>
-                ))}
-              </ul>
-            </section>
-
-            <section className="overflow-hidden rounded-2xl border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-900/10">
-              <div className="border-b border-amber-200 px-6 py-4 dark:border-amber-800">
-                <h2 className="text-base font-bold text-amber-900 dark:text-amber-200">
-                  ATS keywords for this role
-                </h2>
-              </div>
-              <div className="space-y-4 px-6 py-4">
-                <p className="text-sm leading-relaxed text-amber-900 dark:text-amber-200/95">
-                  {ex.atsIntro}
-                </p>
-                <div className="flex flex-wrap gap-2" aria-label="Role-specific keywords">
-                  {ex.atsKeywords.map((kw) => (
-                    <span
-                      key={kw}
-                      className="rounded-full border border-amber-300/80 bg-white/90 px-2.5 py-1 text-xs font-medium text-amber-950 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-100"
-                    >
-                      {kw}
-                    </span>
-                  ))}
+            {ex.mistakesToAvoid.length > 0 ? (
+              <section className="overflow-hidden rounded-2xl border border-rose-200 dark:border-rose-900/50">
+                <div className="border-b border-rose-200 bg-rose-50 px-6 py-4 dark:border-rose-900/40 dark:bg-rose-950/30">
+                  <h2 className="text-base font-bold text-rose-900 dark:text-rose-200">
+                    Common mistakes to avoid
+                  </h2>
                 </div>
-                <ul className="list-inside list-disc space-y-1.5 text-sm text-amber-900 dark:text-amber-200/95">
-                  {ex.atsChecklist.map((item, i) => (
-                    <li key={i}>{item}</li>
+                <ul className="divide-y divide-rose-100 dark:divide-rose-900/20">
+                  {ex.mistakesToAvoid.map((m, i) => (
+                    <li key={i} className="px-6 py-3 text-sm leading-relaxed text-rose-950/90 dark:text-rose-100/85">
+                      {m}
+                    </li>
                   ))}
                 </ul>
-                {deepDivePost ? (
-                  <p className="text-sm text-amber-900/90 dark:text-amber-200/90">
-                    <Link
-                      href={`/blog/${deepDivePost.slug}`}
-                      className="font-semibold text-primary-700 underline decoration-primary-400/60 underline-offset-2 hover:text-primary-800 dark:text-primary-300"
-                    >
-                      {deepDivePost.title}
-                    </Link>
-                    <span className="text-amber-800 dark:text-amber-300/90"> — deeper guide on ATS and formatting.</span>
+              </section>
+            ) : null}
+
+            {ex.atsIntro.trim().length > 0 ||
+            ex.atsKeywords.length > 0 ||
+            ex.atsChecklist.length > 0 ? (
+              <section className="overflow-hidden rounded-2xl border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-900/10">
+                <div className="border-b border-amber-200 px-6 py-4 dark:border-amber-800">
+                  <h2 className="text-base font-bold text-amber-900 dark:text-amber-200">
+                    ATS keywords for {ex.role}
+                  </h2>
+                  <p className="mt-1 text-xs text-amber-800/90 dark:text-amber-300/80">
+                    Words and checks tuned to this role — not generic filler. Pair with our{" "}
+                    {deepDivePost ? (
+                      <Link
+                        href={`/blog/${deepDivePost.slug}`}
+                        className="font-semibold text-primary-800 underline decoration-primary-500/50 underline-offset-2 hover:text-primary-900 dark:text-primary-300"
+                      >
+                        {deepDivePost.title}
+                      </Link>
+                    ) : (
+                      <Link
+                        href="/blog/ats-friendly-resume-complete-guide"
+                        className="font-semibold text-primary-800 underline decoration-primary-500/50 underline-offset-2 hover:text-primary-900 dark:text-primary-300"
+                      >
+                        ATS-friendly resume guide
+                      </Link>
+                    )}
+                    .
                   </p>
-                ) : (
-                  <p className="text-sm text-amber-900/90 dark:text-amber-200/90">
-                    <Link
-                      href="/blog/ats-friendly-resume-complete-guide"
-                      className="font-semibold text-primary-700 underline decoration-primary-400/60 underline-offset-2 hover:text-primary-800 dark:text-primary-300"
-                    >
-                      ATS-friendly resume guide
-                    </Link>
-                    <span className="text-amber-800 dark:text-amber-300/90"> — formatting and keyword hygiene.</span>
-                  </p>
-                )}
-              </div>
-            </section>
+                </div>
+                <div className="space-y-4 px-6 py-4">
+                  {ex.atsIntro.trim().length > 0 ? (
+                    <p className="text-sm leading-relaxed text-amber-900 dark:text-amber-200/95">
+                      {ex.atsIntro}
+                    </p>
+                  ) : null}
+                  {ex.atsKeywords.length > 0 ? (
+                    <div className="flex flex-wrap gap-2" aria-label="Role-specific ATS keywords">
+                      {ex.atsKeywords.map((kw) => (
+                        <span
+                          key={kw}
+                          className="rounded-full border border-amber-300/80 bg-white/90 px-2.5 py-1 text-xs font-medium text-amber-950 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-100"
+                        >
+                          {kw}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
+                  {ex.atsChecklist.length > 0 ? (
+                    <ul className="list-inside list-disc space-y-1.5 text-sm text-amber-900 dark:text-amber-200/95">
+                      {ex.atsChecklist.map((item, i) => (
+                        <li key={i}>{item}</li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </div>
+              </section>
+            ) : null}
           </div>
 
           <div className="space-y-6">
@@ -319,11 +335,12 @@ export default function ExampleDetailPage({ params }: Props) {
               </p>
               <Link
                 href="/try"
+                aria-label="Open the resume builder — free preview, no sign-up required"
                 className="block w-full rounded-xl bg-white py-2.5 text-sm font-bold text-primary-700 shadow transition-colors hover:bg-slate-50"
               >
-                Open builder — free preview
+                Open resume builder (free preview)
               </Link>
-              <p className="mt-2 text-xs text-white/50">No sign-up required to preview</p>
+              <p className="mt-2 text-xs text-white/50">No account needed to try the editor</p>
             </div>
 
             {relatedPosts.length > 0 ? (

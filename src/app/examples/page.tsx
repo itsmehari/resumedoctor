@@ -14,13 +14,23 @@ export const metadata: Metadata = {
   alternates: { canonical: `${siteUrl}/examples` },
 };
 
+function sampleExcerpt(summary: string, maxLen = 160): string | null {
+  const t = summary.trim();
+  if (!t) return null;
+  if (t.length <= maxLen) return t;
+  const cut = t.slice(0, maxLen);
+  const lastSpace = cut.lastIndexOf(" ");
+  return `${(lastSpace > 40 ? cut.slice(0, lastSpace) : cut).trim()}…`;
+}
+
 function ExampleCard({
   ex,
   badge,
 }: {
-  ex: { slug: string; title: string; description: string; industry: string };
+  ex: { slug: string; title: string; description: string; industry: string; sampleSummary?: string };
   badge?: string;
 }) {
+  const preview = ex.sampleSummary ? sampleExcerpt(ex.sampleSummary) : null;
   return (
     <li>
       <Link
@@ -40,6 +50,12 @@ function ExampleCard({
           {ex.title}
         </h2>
         <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{ex.description}</p>
+        {preview ? (
+          <p className="mt-3 border-l-2 border-emerald-400/70 pl-3 text-xs leading-relaxed text-slate-600 dark:border-emerald-600/50 dark:text-slate-400">
+            <span className="font-semibold text-slate-700 dark:text-slate-300">Sample line: </span>
+            {preview}
+          </p>
+        ) : null}
         <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
           Includes AI-era note &amp; tools by career stage
         </p>
@@ -116,9 +132,10 @@ export default function ExamplesIndexPage() {
             <div className="mt-8">
               <Link
                 href="/try"
+                aria-label="Open the resume builder — free preview, no sign-up required"
                 className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold text-white shadow-lg transition hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
               >
-                Open the builder
+                Open resume builder
                 <ArrowUpRight className="h-4 w-4" aria-hidden />
               </Link>
             </div>
