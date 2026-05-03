@@ -121,22 +121,23 @@ export default function ExampleDetailPage({ params }: Props) {
                     Illustrative patterns only — swap in your real employers, dates, and verified metrics.
                   </p>
                 </div>
-                <div className="space-y-4 bg-white px-6 py-5 dark:bg-slate-950/40">
-                  {ex.sampleSummary.trim().length > 0 ? (
-                    <p className="border-l-4 border-primary-500 pl-4 text-sm font-medium leading-relaxed text-slate-800 dark:text-slate-200">
-                      {ex.sampleSummary}
-                    </p>
-                  ) : null}
-                  {ex.sampleBullets.length > 0 ? (
-                    <ul className="space-y-3 font-mono text-sm leading-relaxed text-slate-700 dark:text-slate-300">
-                      {ex.sampleBullets.map((line, i) => (
-                        <li key={i} className="flex gap-2">
-                          <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-slate-400" />
-                          <span>{line}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : null}
+                <div className="bg-white px-6 py-5 dark:bg-slate-950/40">
+                  <figure className="overflow-hidden rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900/80">
+                    <figcaption className="border-b border-slate-200 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-600 dark:border-slate-700 dark:text-slate-400">
+                      Example excerpt (plain text)
+                    </figcaption>
+                    <pre
+                      className="max-h-[28rem] overflow-auto whitespace-pre-wrap break-words px-4 py-4 font-mono text-sm leading-relaxed text-slate-800 dark:text-slate-200"
+                      tabIndex={0}
+                    >
+                      {[
+                        ex.sampleSummary.trim(),
+                        ...ex.sampleBullets.map((b) => `• ${b}`),
+                      ]
+                        .filter(Boolean)
+                        .join("\n\n")}
+                    </pre>
+                  </figure>
                 </div>
               </section>
             ) : null}
