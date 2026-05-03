@@ -156,6 +156,20 @@ export default function ExampleDetailPage({ params }: Props) {
               </section>
             ) : null}
 
+            {ex.seniorityNote ? (
+              <section
+                className="rounded-2xl border border-sky-200/90 bg-sky-50/80 px-6 py-5 dark:border-sky-900/40 dark:bg-sky-950/20"
+                aria-label="Seniority guidance for this role"
+              >
+                <h2 className="text-sm font-bold text-sky-900 dark:text-sky-200">
+                  Junior vs senior — what to emphasize
+                </h2>
+                <p className="mt-2 text-sm leading-relaxed text-sky-900/90 dark:text-sky-100/90">
+                  {ex.seniorityNote}
+                </p>
+              </section>
+            ) : null}
+
             <section
               className="overflow-hidden rounded-2xl border border-violet-200/90 bg-violet-50/50 dark:border-violet-900/40 dark:bg-violet-950/15"
               aria-label="AI era guidance and tools to list by career stage"

@@ -26,6 +26,8 @@ export interface ResumeExample {
   atsKeywords: string[];
   atsChecklist: string[];
   indiaContext?: string;
+  /** Optional: what junior vs senior resumes should emphasize for this role (India hiring). */
+  seniorityNote?: string;
   /** How AI tools fit this role: assistive drafting vs core skills interviews still test. */
   aiEraNote: string;
   toolsByLevel: ExampleToolsByLevel;
@@ -94,6 +96,7 @@ function normalizeResumeExample(raw: unknown): ResumeExample | null {
     atsKeywords: stringArray(r.atsKeywords),
     atsChecklist: stringArray(r.atsChecklist),
     indiaContext: typeof r.indiaContext === "string" ? r.indiaContext : undefined,
+    seniorityNote: typeof r.seniorityNote === "string" ? r.seniorityNote : undefined,
     aiEraNote:
       typeof r.aiEraNote === "string"
         ? r.aiEraNote

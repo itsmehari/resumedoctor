@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { siteUrl } from "@/lib/seo";
-import { getExamplesSortedByTier } from "@/lib/examples";
+import { getExamplesSortedByTier, type ResumeExample } from "@/lib/examples";
 import { getAllPosts } from "@/lib/blog";
 import { SiteHeader } from "@/components/site-header";
 import { ExamplesItemListJsonLd } from "@/components/seo/json-ld";
@@ -13,6 +13,12 @@ export const metadata: Metadata = {
     "Resume examples for Software Engineer, Fresher, Data Analyst, Marketing, BPO, and more. Each guide includes sample lines, India context, AI-era advice, tools by career stage, ATS keywords, and mistakes to avoid.",
   alternates: { canonical: `${siteUrl}/examples` },
 };
+
+function exampleMatchesIndustry(ex: ResumeExample, filter: string): boolean {
+  if (!filter) return true;
+  if (ex.industry === "All") return true;
+  return ex.industry === filter;
+}
 
 function sampleExcerpt(summary: string, maxLen = 160): string | null {
   const t = summary.trim();
@@ -68,16 +74,39 @@ function ExampleCard({
   );
 }
 
-export default function ExamplesIndexPage() {
+type ExamplesPageProps = {
+  searchParams?: Record<string, string | string[] | undefined>;
+};
+
+export default function ExamplesIndexPage({ searchParams }: ExamplesPageProps) {
   const examples = getExamplesSortedByTier();
-  const featured = examples.filter((e) => e.priorityTier === "A");
-  const more = examples.filter((e) => e.priorityTier !== "A");
+  const industries = Array.from(new Set(examples.map((e) => e.industry))).sort((a, b) => {
+    if (a === "All") return -1;
+    if (b === "All") return 1;
+    return a.localeCompare(b);
+  });
+
+  const requested =
+    typeof searchParams?.industry === "string" ? searchParams.industry.trim() : "";
+  const industryFilter =
+    requested && industries.includes(requested) ? requested : "";
+
+  const filtered = examples.filter((e) => exampleMatchesIndustry(e, industryFilter));
+  const featured = filtered.filter((e) => e.priorityTier === "A");
+  const more = filtered.filter((e) => e.priorityTier !== "A");
   const recentPosts = getAllPosts().slice(0, 4);
+
+  const pillBase =
+    "inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950";
+  const pillInactive =
+    "border-slate-200 bg-white text-slate-700 hover:border-emerald-300/70 hover:bg-emerald-50/50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-emerald-800";
+  const pillActive =
+    "border-primary-600 bg-primary-50 text-primary-900 dark:border-primary-500 dark:bg-primary-950/50 dark:text-primary-100";
 
   return (
     <div className="flex min-h-screen flex-col bg-[#faf9f7] dark:bg-slate-950">
       <ExamplesItemListJsonLd
-        examples={examples.map((e) => ({ slug: e.slug, title: e.title, description: e.description }))}
+        examples={filtered.map((e) => ({ slug: e.slug, title: e.title, description: e.description }))}
       />
       <SiteHeader variant="home" />
 
@@ -143,6 +172,41 @@ export default function ExamplesIndexPage() {
         </section>
 
         <section
+          className="mx-auto max-w-6xl border-b border-slate-200/80 px-4 pb-10 pt-2 dark:border-slate-800 sm:px-6 lg:px-8"
+          aria-label="Filter resume examples by industry"
+        >
+          <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">Browse by industry</p>
+          <ul className="mt-3 flex flex-wrap gap-2">
+            <li>
+              <Link
+                href="/examples"
+                className={`${pillBase} ${!industryFilter ? pillActive : pillInactive}`}
+                aria-current={!industryFilter ? "page" : undefined}
+              >
+                All industries
+              </Link>
+            </li>
+            {industries.map((ind) => (
+              <li key={ind}>
+                <Link
+                  href={`/examples?industry=${encodeURIComponent(ind)}`}
+                  className={`${pillBase} ${industryFilter === ind ? pillActive : pillInactive}`}
+                  aria-current={industryFilter === ind ? "page" : undefined}
+                >
+                  {ind}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          {industryFilter ? (
+            <p className="mt-3 max-w-2xl text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+              Showing guides tagged <span className="font-semibold text-slate-700 dark:text-slate-300">{industryFilter}</span>, plus{" "}
+              <span className="font-semibold text-slate-700 dark:text-slate-300">All</span> (cross-cutting roles such as fresher or HR).
+            </p>
+          ) : null}
+        </section>
+
+        <section
           className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8"
           aria-label="Popular resume example guides"
         >
@@ -150,11 +214,21 @@ export default function ExamplesIndexPage() {
           <p className="mt-1 max-w-2xl text-sm text-slate-600 dark:text-slate-400">
             Highest-demand roles — full sample lines, India context, and tailored ATS keywords.
           </p>
-          <ul className="mt-8 grid gap-5 sm:grid-cols-2">
-            {featured.map((ex) => (
-              <ExampleCard key={ex.slug} ex={ex} badge="Popular pick" />
-            ))}
-          </ul>
+          {featured.length === 0 ? (
+            <p className="mt-8 text-sm text-slate-500 dark:text-slate-400">
+              No guides in this filter. Choose another industry or{" "}
+              <Link href="/examples" className="font-medium text-primary-600 underline dark:text-primary-400">
+                view all
+              </Link>
+              .
+            </p>
+          ) : (
+            <ul className="mt-8 grid gap-5 sm:grid-cols-2">
+              {featured.map((ex) => (
+                <ExampleCard key={ex.slug} ex={ex} badge="Popular pick" />
+              ))}
+            </ul>
+          )}
         </section>
 
         <section
@@ -165,11 +239,17 @@ export default function ExamplesIndexPage() {
           <p className="mt-1 max-w-2xl text-sm text-slate-600 dark:text-slate-400">
             Marketing, sales, HR, BPO, finance, and teaching — same structure, role-specific content.
           </p>
-          <ul className="mt-8 grid gap-5 sm:grid-cols-2">
-            {more.map((ex) => (
-              <ExampleCard key={ex.slug} ex={ex} />
-            ))}
-          </ul>
+          {more.length === 0 ? (
+            <p className="mt-8 text-sm text-slate-500 dark:text-slate-400">
+              No additional guides in this filter.
+            </p>
+          ) : (
+            <ul className="mt-8 grid gap-5 sm:grid-cols-2">
+              {more.map((ex) => (
+                <ExampleCard key={ex.slug} ex={ex} />
+              ))}
+            </ul>
+          )}
         </section>
 
         <section className="border-t border-slate-200/80 bg-white/70 py-14 dark:border-slate-800 dark:bg-slate-900/40">

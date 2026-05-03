@@ -20,6 +20,7 @@
       "midLevel": ["Your stack’s frameworks (e.g. Spring Boot, React, Django)", "CI/CD basics (GitHub Actions, Jenkins)", "Cloud fundamentals (AWS/GCP/Azure) where you deploy", "Observability: logs, metrics, basic troubleshooting"],
       "senior": ["System design & trade-offs (scale, reliability, cost)", "Ownership: on-call, incidents, mentoring", "Security & performance tuning in production", "Architecture patterns — microservices, events, data stores"]
     },
+    "seniorityNote": "Junior and mid-level engineers should foreground shipped features, honest stack depth, and measurable impact (latency, reliability, adoption). Senior and staff profiles should highlight architecture trade-offs, production ownership, and mentoring—only when those were truly part of your mandate.",
     "tips": [
       "Open with a tight summary: years of experience, primary stack, and one proof point (scale, reliability, or product impact).",
       "For each role, use 3–5 bullets: what you built, technologies, and a metric or clear outcome — avoid task-only lines like \"worked on modules\".",
@@ -63,6 +64,7 @@
       "midLevel": ["Deepen one stack (e.g. MERN or Java/Spring) with 2+ shipped projects", "SQL if targeting analyst-adjacent roles", "Internship tools from real use — not certificate spam", "Optional: LeetCode patterns aligned to target companies"],
       "senior": ["Not typical for freshers — if pivoting with experience, show transferable tools from prior domain", "Leadership in college tech clubs / OSS only if substantiated", "Certifications that match JD (cloud, security) when earned"]
     },
+    "seniorityNote": "Campus and entry-level hiring reads one profile: education, projects, and internships first—tone stays trainee, not executive. If you have serious freelance or part-time delivery, add a short experience block with dates and outcomes without overstating title seniority.",
     "tips": [
       "Order: Education → Projects/Internships → Skills → Certifications. Put the strongest proof early.",
       "Use a 2-line objective or summary: role you want + 1 strength (stack, internship, or rank).",
@@ -106,6 +108,7 @@
       "midLevel": ["Advanced SQL & data modelling concepts", "Python or R for repeatable analysis — only if used", "Stakeholder-ready decks (PowerPoint / Slides) + KPI ownership", "ETL familiarity (dbt, SSIS, or similar) when truthful"],
       "senior": ["Metric design & experimentation mindset", "Warehouse/lake awareness (Snowflake, BigQuery) if enterprise", "Governance: definitions, QA, stakeholder alignment", "Coaching juniors — less about listing every BI toy"]
     },
+    "seniorityNote": "Early-career analysts win on credible SQL, Excel, and one BI tool backed by internship or project proof. Mid-level resumes should tie bullets to recurring stakeholders and decisions influenced. Senior profiles add metric ownership, data QA, and mentoring teammates—when accurate.",
     "tips": [
       "Minimum credible story: SQL + spreadsheets + one viz tool (Power BI, Tableau, Looker). Add Python/R only if you use them.",
       "Frame bullets as question → analysis → decision or impact (time saved, accuracy, adoption).",
@@ -149,6 +152,7 @@
       "midLevel": ["Roadmap & prioritization frameworks (RICE, OKRs)", "SQL or BI read access for self-serve metrics", "Customer interview & survey tools (Zoom, Typeform, UserTesting)", "Release coordination with engineering & design"],
       "senior": ["Portfolio strategy, pricing/partnerships exposure when real", "Exec-ready narratives & revenue/retention accountability", "Org-wide rollout & change management", "Mentoring PMs — less about individual tickets"]
     },
+    "seniorityNote": "Associate PMs should show structured discovery, analytics literacy, and shipped experiments or features tied to learning. Mid-level PMs need retention, revenue, or adoption metrics linked to bets they owned. Senior PMs signal portfolio judgment, exec-ready narratives, and cross-org rollouts—without borrowing engineering delivery wins.",
     "tips": [
       "Summary: domain (B2B/B2C), years, and one metric (retention, revenue, adoption, NPS).",
       "Bullets: problem insight → decision → launch → measurable outcome — not meeting lists.",
@@ -192,6 +196,7 @@
       "midLevel": ["Full-funnel reporting & attribution conversations", "SEO suites (Ahrefs, SEMrush) when used", "CRM/lifecycle tools (Clevertap, MoEngage, WebEngage) for retention roles", "Budget pacing & cohort reporting"],
       "senior": ["Multi-crore budget ownership & vendor/agency governance", "Brand + performance mix strategy", "Leadership of analysts/growth pods", "Board-ready ROI narratives"]
     },
+    "seniorityNote": "Coordinators and executives emphasize execution cadence, creative tests, and rupee discipline at different scales. Mid-level marketers should show owned budgets or channels with funnel outcomes; senior profiles add agency governance, mixed brand–performance strategy, and leadership scope—only when real.",
     "tips": [
       "State channel ownership early: performance, brand, growth, CRM, or mix.",
       "Every campaign bullet should include audience, channel, and outcome (reach, CAC, ROAS, conversion).",
@@ -235,6 +240,7 @@
       "midLevel": ["Forecasting & pipeline reviews in CRM", "CPQ or proposal tools if enterprise", "LinkedIn Sales Navigator / ZoomInfo-style research when used", "Territory & account planning artifacts"],
       "senior": ["Multi-threaded enterprise deals & exec sponsors", "Channel / partner models when applicable", "Forecast accuracy & revenue committee exposure", "Team leadership & coverage design"]
     },
+    "seniorityNote": "SMB and inside sellers highlight pipeline hygiene, conversion discipline, and CRM accuracy; enterprise sellers stress multi-threaded pursuits, deal bands, and forecast reliability. Senior sales leaders add coverage design and team outcomes—avoid marketing ROAS language unless that remit was truly yours.",
     "tips": [
       "Summary: domain (B2B/B2C), motion (hunter/farmer), average deal or segment.",
       "Bullets: quota %, revenue or ACV bands, new logos, cycle time — use ranges if confidentiality matters.",
@@ -278,6 +284,7 @@
       "midLevel": ["HRIS modules (Workday, Darwinbox, Zoho People)", "LinkedIn Recruiter / sourcing craft", "Offer & onboarding workflows with payroll partners", "Dashboards for TAT and joiner analytics"],
       "senior": ["Workforce planning with leadership", "Policy & ER complexity with compliance awareness", "HR analytics & engagement programme ownership", "Vendor management for RPO/benefits"]
     },
+    "seniorityNote": "Coordinators spotlight scheduling, ATS hygiene, and candidate experience basics. Mid-level TA leads show hiring volume, TAT, and offer-to-join wins. Senior HRBP or HR heads emphasize workforce planning with business leaders, ER awareness, and engagement programmes anchored in metrics—without overstating legal authority.",
     "tips": [
       "Clarify spine: TA, HRBP, comp & benefits, or generalist — recruiters match fast.",
       "Quantify: offers/month, TAT, offer-to-join, attrition support, engagement scores.",
@@ -321,6 +328,7 @@
       "midLevel": ["QA calibration & coaching readiness", "Escalation paths & compliance scripts", "Blended voice/chat or email queues", "Basic Excel for queue reporting"],
       "senior": ["Team lead / SME tracks & training ownership", "Process improvement & CSAT recovery programmes", "Vendor/client stakeholder coordination", "WFM familiarity when truthful"]
     },
+    "seniorityNote": "Frontline resumes foreground languages, adherence, and CSAT/QA where permitted. Team leads and SMEs should add training batches, calibration participation, and measurable process fixes—keep metrics truthful to client policies.",
     "tips": [
       "State process type: voice, chat, email, or blended; name domain if allowed (telecom, banking).",
       "Metrics: CSAT, AHT, FCR, QA scores, attendance — pick what you truly have.",
@@ -364,6 +372,7 @@
       "midLevel": ["SAP FI / MS Dynamics exposure when real", "Month-end close packs & MIS", "Audit documentation tools & sampling"],
       "senior": ["Consolidation & group reporting patterns", "Tax strategy support with CA sign-off context", "ERP rollout / process migration participation", "Team review & statutory deadline ownership"]
     },
+    "seniorityNote": "Articleship-heavy CVs stress audit cycles, walkthroughs, and GST/statutory rigour. Industry accountants foreground close calendars, MIS packs, and ERP depth; vocabulary should mirror the JD family—audit, tax, GL, or reporting—without claiming partner-level sign-offs you did not hold.",
     "tips": [
       "Lead with qualification stage: CA final/inter, CMA, M.Com, B.Com — and articleship where relevant.",
       "Separate audit firm experience from industry roles; scope each clearly.",
@@ -407,6 +416,7 @@
       "midLevel": ["Digital worksheets, quiz tools (Kahoot, Quizizz) when school-approved", "Parent communication apps", "Subject lab / activity coordination"],
       "senior": ["Department lead, syllabus workshops, mentoring juniors", "Exam moderation & rubric design", "Institutional initiatives — remedial, enrichment"]
     },
+    "seniorityNote": "Classroom teachers highlight subjects, grades, boards, and assessment methods parents and principals trust. Senior educators and coordinators add department initiatives, peer mentoring, and institutional programmes—keep student outcome claims ethical and verifiable.",
     "tips": [
       "Open with subjects, grades, and boards taught (CBSE, ICSE, State).",
       "Bullets: curriculum, assessment methods, parent engagement, co-curricular leadership.",
