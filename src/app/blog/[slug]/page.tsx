@@ -7,7 +7,7 @@ import { SiteHeader } from "@/components/site-header";
 import { siteUrl } from "@/lib/seo";
 import { getPostBySlug, getPostSlugs } from "@/lib/blog";
 import { getRelatedExamplesForBlog, getRelatedPostsForBlog, type RelatedLink } from "@/lib/content-links";
-import { ArticleJsonLd, BlogFaqJsonLd, BreadcrumbJsonLd } from "@/components/seo/json-ld";
+import { ArticleJsonLd, BlogFaqJsonLd, BlogPostingJsonLd, BreadcrumbJsonLd } from "@/components/seo/json-ld";
 import { compileBlogMdx } from "@/lib/compile-blog-mdx";
 import { extractMarkdownHeadings, splitContentForMidRelated } from "@/lib/blog-headings";
 import { ArrowLeft, ArrowUpRight, Clock } from "lucide-react";
@@ -23,6 +23,16 @@ import { BlogReaderMode } from "@/components/blog/blog-reader-mode";
 import { cn } from "@/lib/utils";
 interface Props {
   params: { slug: string };
+}
+
+function getContentSummary(content: string): string {
+  const plain = content
+    .replace(/^---[\s\S]*?---/m, "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\[[^\]]+\]\([^)]+\)/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return plain.slice(0, 260);
 }
 
 function resolveImageUrl(path?: string): string | undefined {
@@ -45,6 +55,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${post.title} | ResumeDoctor Blog`,
     description: post.description,
     alternates: { canonical: `${siteUrl}/blog/${post.slug}` },
+    keywords: Array.from(new Set([...post.tags, "resume tips", "ats", "job search", "india"])),
+    authors: [{ name: post.author || "ResumeDoctor", url: `${siteUrl}/about` }],
     openGraph: {
       title: post.title,
       description: post.description,
@@ -65,14 +77,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 const proseArticle =
   "prose prose-slate max-w-none dark:prose-invert " +
-  "prose-p:transition-colors prose-p:first-of-type:text-[1.12rem] prose-p:first-of-type:font-medium " +
+  "prose-p:transition-colors prose-p:first-of-type:text-[1.16rem] prose-p:first-of-type:font-medium " +
   "prose-p:first-of-type:leading-relaxed " +
   "prose-headings:scroll-mt-24 prose-headings:font-bold prose-headings:tracking-tight " +
   "prose-h1:text-2xl prose-h1:mt-12 prose-h1:mb-4 " +
-  "prose-h2:mt-12 prose-h2:mb-4 prose-h2:border-b prose-h2:border-slate-200 prose-h2:pb-2 prose-h2:text-xl dark:prose-h2:border-slate-700 " +
-  "prose-h3:mt-8 prose-h3:mb-3 prose-h3:text-lg " +
-  "prose-p:text-[1.05rem] prose-p:leading-[1.75] prose-p:text-slate-700 dark:prose-p:text-slate-300 " +
+  "prose-h2:mt-12 prose-h2:mb-4 prose-h2:border-b prose-h2:border-slate-200 prose-h2:pb-2 prose-h2:text-[1.45rem] dark:prose-h2:border-slate-700 " +
+  "prose-h3:mt-8 prose-h3:mb-3 prose-h3:text-[1.2rem] " +
+  "prose-p:text-[1.06rem] prose-p:leading-[1.8] prose-p:text-slate-700 dark:prose-p:text-slate-300 " +
   "prose-li:marker:text-primary-500 prose-li:text-slate-700 dark:prose-li:text-slate-300 " +
+  "prose-li:leading-[1.75] " +
+  "prose-ul:my-5 prose-ol:my-5 " +
   "prose-a:font-medium prose-a:text-primary-600 prose-a:underline-offset-2 prose-a:transition-all hover:prose-a:underline " +
   "prose-strong:text-slate-900 dark:prose-strong:text-white " +
   "prose-code:rounded-md prose-code:bg-slate-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm prose-code:text-primary-800 dark:prose-code:bg-slate-800 dark:prose-code:text-primary-200 " +
@@ -117,6 +131,8 @@ export default async function BlogPostPage({ params }: Props) {
   const cover = post.coverImage || "/blog/covers/default.svg";
   const imageUrlForJson = resolveImageUrl(post.ogImage || post.coverImage);
   const authorImage = post.authorImage;
+  const summary = getContentSummary(post.content);
+  const chapterHeadings = headings.slice(0, 5);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#faf9f7] print:bg-white dark:bg-slate-950">
@@ -128,6 +144,16 @@ export default async function BlogPostPage({ params }: Props) {
         author={post.author}
         dateModified={post.updated}
         imageUrl={imageUrlForJson}
+      />
+      <BlogPostingJsonLd
+        title={post.title}
+        description={post.description}
+        slug={post.slug}
+        date={post.date}
+        dateModified={post.updated}
+        author={post.author}
+        imageUrl={imageUrlForJson}
+        keywords={post.tags}
       />
       {post.faq?.length ? <BlogFaqJsonLd items={post.faq} /> : null}
       <BreadcrumbJsonLd
@@ -233,8 +259,8 @@ export default async function BlogPostPage({ params }: Props) {
           </div>
         </header>
 
-        <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-12">
-          <div className="xl:grid xl:grid-cols-[minmax(12rem,16rem)_minmax(0,1fr)] xl:gap-12">
+        <div className="mx-auto max-w-[88rem] px-4 py-10 sm:px-6 sm:py-12">
+          <div className="xl:grid xl:grid-cols-[minmax(13rem,18rem)_minmax(0,52rem)] xl:justify-center xl:gap-14">
             {headings.length > 0 ? (
               <aside className="mb-8 hidden xl:mb-0 xl:block" aria-label="On this page">
                 <div className="blog-toc-sticky sticky top-28 space-y-6">
@@ -242,7 +268,29 @@ export default async function BlogPostPage({ params }: Props) {
                 </div>
               </aside>
             ) : null}
-            <div>
+            <div className="min-w-0">
+              <section className="mb-8 rounded-2xl border border-slate-200/80 bg-white/90 p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/60 sm:p-6">
+                <p className="text-xs font-bold uppercase tracking-widest text-primary-700 dark:text-primary-300">Quick summary</p>
+                <p className="mt-2 text-sm leading-relaxed text-slate-700 dark:text-slate-300">{summary}</p>
+                {chapterHeadings.length > 0 ? (
+                  <div className="mt-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">In this guide</p>
+                    <ul className="mt-2 grid gap-2 sm:grid-cols-2">
+                      {chapterHeadings.map((h) => (
+                        <li key={h.id}>
+                          <a
+                            href={`#${h.id}`}
+                            className="block rounded-lg border border-slate-200/80 bg-slate-50/70 px-3 py-2 text-xs font-medium text-slate-700 transition hover:border-primary-300 hover:text-primary-700 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 dark:hover:border-primary-700 dark:hover:text-primary-300"
+                          >
+                            {h.text}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+              </section>
+
               <div
                 className={cn(
                   "blog-cta-strip blog-hide-in-reader print:hidden mb-10 flex flex-col gap-4 rounded-2xl border border-primary-200/60 bg-gradient-to-br from-primary-50 to-white p-5 shadow-sm dark:border-primary-900/40 dark:from-primary-950/40 dark:to-slate-900/80 sm:flex-row sm:items-center sm:justify-between sm:p-6"
@@ -261,13 +309,15 @@ export default async function BlogPostPage({ params }: Props) {
                 </Link>
               </div>
 
-              <div
-                className={cn("blog-prose", proseArticle)}
-                data-blog-article
-                id="article-body"
-                tabIndex={-1}
-              >
-                {body}
+              <div className="rounded-2xl border border-slate-200/70 bg-white/85 px-5 py-6 shadow-sm backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/55 sm:px-8 sm:py-8">
+                <div
+                  className={cn("blog-prose", proseArticle)}
+                  data-blog-article
+                  id="article-body"
+                  tabIndex={-1}
+                >
+                  {body}
+                </div>
               </div>
 
               {post.faq?.length ? <BlogFaqAccordion items={post.faq} /> : null}
@@ -302,13 +352,14 @@ export default async function BlogPostPage({ params }: Props) {
               {keepReading.length > 0 && (
                 <section className="print:hidden mt-14 border-t border-slate-200 pt-12 dark:border-slate-800">
                   <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Next best reads</h2>
-                  <ul className="mt-4 space-y-3">
+                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Stay in flow with closely related guides.</p>
+                  <ul className="mt-5 grid gap-3 sm:grid-cols-2">
                     {keepReading.map((p) => (
                       <li key={p.slug}>
                         <Link
                           href={`/blog/${p.slug}`}
                           prefetch
-                          className="group flex items-start justify-between gap-3 rounded-xl border border-transparent py-2 transition duration-200 hover:-translate-y-0.5 hover:border-slate-200 hover:bg-white dark:hover:border-slate-700 dark:hover:bg-slate-900/50"
+                          className="group flex h-full items-start justify-between gap-3 rounded-xl border border-slate-200/80 bg-white px-4 py-3 transition duration-200 hover:-translate-y-0.5 hover:border-primary-300 hover:shadow-sm dark:border-slate-700 dark:bg-slate-900/50 dark:hover:border-primary-700"
                         >
                           <span className="font-medium text-slate-800 group-hover:text-primary-600 dark:text-slate-200 dark:group-hover:text-primary-400">
                             {p.title}

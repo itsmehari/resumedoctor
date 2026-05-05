@@ -198,6 +198,59 @@ export function ArticleJsonLd({
   );
 }
 
+/** BlogPosting JSON-LD with richer signals for SEO/AIO on article pages. */
+export function BlogPostingJsonLd({
+  title,
+  description,
+  slug,
+  date,
+  dateModified,
+  author,
+  imageUrl,
+  keywords,
+}: {
+  title: string;
+  description: string;
+  slug: string;
+  date: string;
+  dateModified?: string;
+  author: string;
+  imageUrl?: string;
+  keywords?: string[];
+}) {
+  const schema: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: title,
+    description,
+    mainEntityOfPage: `${siteUrl}/blog/${slug}`,
+    url: `${siteUrl}/blog/${slug}`,
+    datePublished: date,
+    author: {
+      "@type": "Organization",
+      name: author || siteName,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: siteName,
+      url: siteUrl,
+      logo: { "@type": "ImageObject", url: `${siteUrl}/favicon.png` },
+    },
+    inLanguage: "en-IN",
+    isAccessibleForFree: true,
+  };
+  if (dateModified) schema.dateModified = dateModified;
+  if (imageUrl) schema.image = imageUrl;
+  if (keywords?.length) schema.keywords = keywords.join(", ");
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
 /** FAQPage JSON-LD for in-article FAQs (blog). */
 export function BlogFaqJsonLd({ items }: { items: { q: string; a: string }[] }) {
   if (!items.length) return null;
@@ -263,6 +316,34 @@ export function ExamplesItemListJsonLd({
       name: ex.title,
       description: ex.description,
       url: `${siteUrl}/examples/${ex.slug}`,
+    })),
+  };
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+/** ItemList for /blog index to help discovery engines parse article ordering. */
+export function BlogItemListJsonLd({
+  posts,
+}: {
+  posts: { slug: string; title: string; description: string }[];
+}) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "ResumeDoctor Blog Articles",
+    description: "ATS, resume writing, job description matching, and India-first job search guides.",
+    numberOfItems: posts.length,
+    itemListElement: posts.map((post, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: post.title,
+      description: post.description,
+      url: `${siteUrl}/blog/${post.slug}`,
     })),
   };
   return (

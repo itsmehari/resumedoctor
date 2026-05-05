@@ -5,6 +5,7 @@ import { getAllPostSummaries, getAllTagLabels, getFeaturedPost } from "@/lib/blo
 import { getExamplesSortedByTier } from "@/lib/examples";
 import { SiteHeader } from "@/components/site-header";
 import { BlogIndexClient } from "@/components/blog/blog-index-client";
+import { BlogItemListJsonLd, BreadcrumbJsonLd } from "@/components/seo/json-ld";
 import { ArrowUpRight, Sparkles } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -12,6 +13,13 @@ export const metadata: Metadata = {
   description:
     "Expert resume and job-search playbooks to help you get shortlisted faster. Practical guides, templates, and examples for India and global-English careers.",
   alternates: { canonical: `${siteUrl}/blog` },
+  keywords: [
+    "resume tips",
+    "ats resume guide",
+    "job description tailoring",
+    "india job search",
+    "resume doctor blog",
+  ],
 };
 
 export default function BlogIndexPage() {
@@ -22,6 +30,19 @@ export default function BlogIndexPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#faf9f7] dark:bg-slate-950">
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: siteUrl },
+          { name: "Blog", url: `${siteUrl}/blog` },
+        ]}
+      />
+      <BlogItemListJsonLd
+        posts={summaries.map((post) => ({
+          slug: post.slug,
+          title: post.title,
+          description: post.description,
+        }))}
+      />
       <SiteHeader variant="home" />
 
       <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
