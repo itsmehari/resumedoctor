@@ -1,4 +1,4 @@
-// WBS 4.1, 4.2, 4.6, 4.7 – Template registry (30 designs, each with unique 7-axis variant combo)
+// WBS 4.1, 4.2, 4.6, 4.7 – Template registry (31 designs, each with unique 7-axis variant combo)
 //
 // Axis matrix per template:
 //   layoutVariant  : single | two-column | dark-sidebar
@@ -662,6 +662,32 @@ export const TEMPLATES: TemplateMetadata[] = [
     sectionTitleVariant: "dot-prefix",
     accentStrip: false,
     showInitialsAvatar: false,
+    trialAvailable: false,
+  },
+
+  {
+    id: "lorna-pro",
+    name: "Lorna Pro",
+    description: "Premium profile sidebar with soft blue accent and timeline experience flow.",
+    version: "2",
+    fontFamily: "sans",
+    category: "creative",
+    colors: { primary: "#5e86b8", accent: "#3f6ea8", text: "#4b5563", muted: "#6b7280", border: "#d1d5db" },
+    layout: {
+      spacing: "normal", lineHeight: "relaxed", columns: "two-column", layoutType: "two-column",
+      sidebarSections: ["contact", "summary", "skills", "languages"],
+    },
+    wrapperClass: "font-sans",
+    layoutVariant: "profile-sidebar",
+    headerVariant: "default",
+    skillsVariant: "plain",
+    experienceVariant: "timeline",
+    sectionTitleVariant: "underline",
+    sidebarBg: true,
+    accentStrip: false,
+    showInitialsAvatar: false,
+    showPhotoPlaceholder: true,
+    sectionIcons: false,
     trialAvailable: false,
   },
 

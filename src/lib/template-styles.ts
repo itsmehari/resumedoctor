@@ -63,6 +63,7 @@ export function getTemplateStyle(templateId: string): TemplateStyle {
   const columns =
     layoutVariant === "two-column" ||
     layoutVariant === "dark-sidebar" ||
+    layoutVariant === "profile-sidebar" ||
     layoutType === "two-column" ||
     layoutType === "dark-sidebar" ||
     columnsFromLayout === "two-column"

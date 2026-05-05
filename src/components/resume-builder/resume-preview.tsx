@@ -274,6 +274,41 @@ function SplitHeader({
   );
 }
 
+function ProfileSidebarHero({
+  data,
+  accentColor,
+  showPhoto,
+}: {
+  data?: ContactData;
+  accentColor: string;
+  showPhoto?: boolean;
+}) {
+  return (
+    <div className="relative -mx-5 -mt-6 mb-5 px-5 pt-8 pb-5 overflow-hidden border-b"
+      style={{ borderColor: accentColor + "35", backgroundColor: "#f3f4f6" }}>
+      <div className="absolute -top-12 -left-16 w-56 h-36 rotate-[-34deg]" style={{ backgroundColor: accentColor }} />
+      <div className="relative z-10 flex flex-col items-center text-center">
+        {showPhoto ? (
+          <div className="mb-3 rounded-full p-1.5 bg-white/95 shadow-sm">
+            <PhotoPlaceholder size={92} />
+          </div>
+        ) : (
+          <div className="w-20 h-20 mb-3 rounded-full flex items-center justify-center text-white font-semibold text-xl shadow-sm"
+            style={{ backgroundColor: accentColor }}>
+            {getInitials(data?.name)}
+          </div>
+        )}
+        <h1 className="text-[2rem] leading-[1.05] font-light tracking-wide" style={{ color: accentColor }}>
+          {data?.name || "Your Name"}
+        </h1>
+        {data?.title && (
+          <p className="text-sm mt-1.5 text-slate-500">{data.title}</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── Proficiency map ──────────────────────────────────────────────────────────
 
 const PROFICIENCY_LEVELS: Record<string, number> = {
@@ -959,8 +994,9 @@ export function ResumePreview({
   const sectionSpacing = spacingOverride && spaceMap[spacingOverride] ? spaceMap[spacingOverride] : "space-y-4";
 
   const isDarkSidebar = layoutVariant === "dark-sidebar";
-  const isTwoColumn = layoutVariant === "two-column" || (style.columns === "two-column" && !isDarkSidebar);
-  const rawSidebarTypes = isDarkSidebar || isTwoColumn ? getSidebarSections(templateId) : [];
+  const isProfileSidebar = layoutVariant === "profile-sidebar";
+  const isTwoColumn = layoutVariant === "two-column" || (style.columns === "two-column" && !isDarkSidebar && !isProfileSidebar);
+  const rawSidebarTypes = isDarkSidebar || isTwoColumn || isProfileSidebar ? getSidebarSections(templateId) : [];
 
   const contactSection = sorted.find((s) => s.type === "contact");
   const contactData: ContactData | undefined = contactSection?.type === "contact" ? contactSection.data : undefined;
@@ -969,7 +1005,7 @@ export function ResumePreview({
     (headerVariant === "top-bar" || headerVariant === "centered" || headerVariant === "split") && contactSection;
   const nonContactSections = sorted.filter((s) => s.type !== "contact");
 
-  const sidebarSections = isDarkSidebar || isTwoColumn
+  const sidebarSections = isDarkSidebar || isTwoColumn || isProfileSidebar
     ? sorted.filter((s) => rawSidebarTypes.includes(s.type))
     : [];
   const mainSections = isDarkSidebar || isTwoColumn
@@ -1031,6 +1067,33 @@ export function ResumePreview({
           </div>
           <div className={`flex-1 px-7 py-8 ${sectionSpacing}`}>
             {mainSections.map((section) => (
+              <SectionPreview key={section.id} section={section} {...sectionProps} isDark={false} />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── PROFILE SIDEBAR (premium) ────────────────────────────────────────────
+  if (isProfileSidebar) {
+    const profileSidebarSections = sorted.filter((s) => rawSidebarTypes.includes(s.type));
+    const profileMainSections = sorted.filter((s) => !rawSidebarTypes.includes(s.type) && s.type !== "contact");
+    return (
+      <div className={`bg-white text-slate-800 shadow-lg rounded-lg overflow-hidden max-w-[21cm] mx-auto ${wrapperFont} ${textSize} ${className}`}
+        style={wrapperStyle}>
+        <div className="flex" style={{ minHeight: "inherit" }}>
+          <div className={`w-[33%] flex-shrink-0 px-5 py-6 ${sectionSpacing}`} style={{ backgroundColor: "#f3f4f6" }}>
+            <ProfileSidebarHero data={contactData} accentColor={accentColor} showPhoto={showPhotoPlaceholder} />
+            {profileSidebarSections.filter((s) => s.type !== "contact").map((section) => (
+              <SectionPreview key={section.id} section={section} {...sectionProps} isDark={false} />
+            ))}
+            {profileSidebarSections.filter((s) => s.type === "contact").map((section) => (
+              <SectionPreview key={section.id} section={section} {...sectionProps} isDark={false} />
+            ))}
+          </div>
+          <div className={`flex-1 px-7 py-7 ${sectionSpacing}`}>
+            {profileMainSections.map((section) => (
               <SectionPreview key={section.id} section={section} {...sectionProps} isDark={false} />
             ))}
           </div>

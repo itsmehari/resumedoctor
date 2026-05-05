@@ -44,7 +44,8 @@ export type TemplateSectionTitleVariant =
 export type TemplateLayoutVariant =
   | "single"        // One column, full width
   | "two-column"    // Left sidebar (33%) + main content (67%)
-  | "dark-sidebar"; // Full dark left panel (34%) + white right panel (66%)
+  | "dark-sidebar"  // Full dark left panel (34%) + white right panel (66%)
+  | "profile-sidebar"; // Light profile sidebar with diagonal accent + right content
 
 // ─── Color / layout sub-types ─────────────────────────────────────────────────
 
