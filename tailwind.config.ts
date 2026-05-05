@@ -10,6 +10,8 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ["var(--font-poppins)", "var(--font-inter)", "system-ui", "sans-serif"],
+        /** Long-form reading (blog article body): Inter-first for clarity and line rhythm */
+        article: ["var(--font-inter)", "system-ui", "sans-serif"],
       },
       colors: {
         primary: {

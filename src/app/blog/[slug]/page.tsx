@@ -75,19 +75,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+/** Comfort reading: Inter body + Poppins headings, 65ch column, generous lead and paragraph gaps. */
 const proseArticle =
   "prose prose-slate max-w-none dark:prose-invert " +
-  "prose-headings:relative " +
-  "prose-p:transition-colors prose-p:first-of-type:text-[1.16rem] prose-p:first-of-type:font-medium " +
-  "prose-p:first-of-type:leading-relaxed " +
-  "prose-headings:scroll-mt-24 prose-headings:font-bold prose-headings:tracking-tight " +
+  "prose-headings:relative prose-headings:font-sans " +
+  "prose-p:transition-colors prose-p:first-of-type:text-[1.14rem] prose-p:first-of-type:font-medium " +
+  "prose-p:first-of-type:leading-[1.65] " +
+  "prose-headings:scroll-mt-28 prose-headings:font-bold " +
   "prose-h1:text-2xl prose-h1:mt-12 prose-h1:mb-4 " +
-  "prose-h2:mt-12 prose-h2:mb-4 prose-h2:border-b prose-h2:border-slate-200 prose-h2:pb-2 prose-h2:text-[1.45rem] dark:prose-h2:border-slate-700 " +
-  "prose-h3:mt-8 prose-h3:mb-3 prose-h3:text-[1.2rem] " +
-  "prose-p:text-[1.06rem] prose-p:leading-[1.8] prose-p:text-slate-700 dark:prose-p:text-slate-300 " +
+  "prose-h2:mt-16 prose-h2:mb-6 prose-h2:scroll-mt-28 prose-h2:border-b prose-h2:border-slate-200/90 prose-h2:pb-3.5 " +
+  "prose-h2:text-[1.375rem] sm:prose-h2:text-[1.65rem] prose-h2:font-extrabold prose-h2:tracking-tight prose-h2:text-slate-900 dark:prose-h2:border-slate-600 dark:prose-h2:text-slate-50 " +
+  "prose-h3:mt-11 prose-h3:mb-4 prose-h3:text-lg sm:prose-h3:text-xl prose-h3:font-bold prose-h3:tracking-tight prose-h3:text-slate-800 dark:prose-h3:text-slate-100 " +
+  "prose-p:mb-[1.35rem] prose-p:text-[1.035rem] prose-p:leading-[1.92] prose-p:tracking-[0.01em] prose-p:text-slate-700 prose-p:text-pretty sm:prose-p:text-[1.06rem] dark:prose-p:text-slate-300 " +
   "prose-li:marker:text-primary-500 prose-li:text-slate-700 dark:prose-li:text-slate-300 " +
-  "prose-li:leading-[1.75] " +
-  "prose-ul:my-5 prose-ol:my-5 " +
+  "prose-li:my-2 prose-li:leading-[1.85] " +
+  "prose-ul:my-7 prose-ol:my-7 prose-ul:space-y-2 prose-ol:space-y-2 " +
   "prose-a:font-medium prose-a:text-primary-600 prose-a:underline-offset-2 prose-a:transition-all hover:prose-a:underline " +
   "prose-strong:text-slate-900 dark:prose-strong:text-white " +
   "prose-code:rounded-md prose-code:bg-slate-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm prose-code:text-primary-800 dark:prose-code:bg-slate-800 dark:prose-code:text-primary-200 " +
@@ -267,8 +269,8 @@ export default async function BlogPostPage({ params }: Props) {
           </div>
         </header>
 
-        <div className="mx-auto max-w-[88rem] px-4 py-10 sm:px-6 sm:py-12">
-          <div className="xl:grid xl:grid-cols-[minmax(13rem,18rem)_minmax(0,52rem)] xl:justify-center xl:gap-14">
+        <div className="mx-auto max-w-[88rem] px-4 py-10 sm:px-6 sm:py-14">
+          <div className="xl:grid xl:grid-cols-[minmax(13rem,18rem)_minmax(0,56rem)] xl:justify-center xl:gap-14">
             {headings.length > 0 ? (
               <aside className="mb-8 hidden xl:mb-0 xl:block" aria-label="On this page">
                 <div className="blog-toc-sticky sticky top-28 space-y-6">
@@ -277,13 +279,13 @@ export default async function BlogPostPage({ params }: Props) {
               </aside>
             ) : null}
             <div className="min-w-0">
-              <section className="mb-8 rounded-2xl border border-slate-200/80 bg-white/90 p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/60 sm:p-6">
+              <section className="mx-auto mb-10 max-w-[65ch] rounded-2xl border border-slate-200/90 bg-gradient-to-br from-white to-slate-50/80 p-6 shadow-md shadow-slate-200/40 ring-1 ring-slate-200/60 dark:border-slate-700 dark:from-slate-900/80 dark:to-slate-950/60 dark:shadow-none dark:ring-slate-700/80 sm:p-7">
                 <p className="text-xs font-bold uppercase tracking-widest text-primary-700 dark:text-primary-300">Quick summary</p>
-                <p className="mt-2 text-sm leading-relaxed text-slate-700 dark:text-slate-300">{summary}</p>
+                <p className="mt-3 font-article text-sm leading-[1.8] tracking-[0.01em] text-slate-700 dark:text-slate-300">{summary}</p>
                 {chapterHeadings.length > 0 ? (
-                  <div className="mt-4">
+                  <div className="mt-5">
                     <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Storyline</p>
-                    <ul className="mt-2 grid gap-2 sm:grid-cols-2">
+                    <ul className="mt-3 grid gap-2.5 sm:grid-cols-2">
                       {chapterHeadings.map((h) => (
                         <li key={h.id}>
                           <a
@@ -301,7 +303,7 @@ export default async function BlogPostPage({ params }: Props) {
 
               <div
                 className={cn(
-                  "blog-cta-strip blog-hide-in-reader print:hidden mb-10 flex flex-col gap-4 rounded-2xl border border-primary-200/60 bg-gradient-to-br from-primary-50 to-white p-5 shadow-sm dark:border-primary-900/40 dark:from-primary-950/40 dark:to-slate-900/80 sm:flex-row sm:items-center sm:justify-between sm:p-6"
+                  "blog-cta-strip blog-hide-in-reader print:hidden mx-auto mb-10 flex w-full max-w-[65ch] flex-col gap-4 rounded-2xl border border-primary-200/60 bg-gradient-to-br from-primary-50 to-white p-5 shadow-sm dark:border-primary-900/40 dark:from-primary-950/40 dark:to-slate-900/80 sm:flex-row sm:items-center sm:justify-between sm:p-6"
                 )}
               >
                 <p className="text-sm font-medium leading-snug text-primary-950 dark:text-primary-100">
@@ -317,18 +319,32 @@ export default async function BlogPostPage({ params }: Props) {
                 </Link>
               </div>
 
-              <div className="rounded-2xl border border-slate-200/70 bg-white/85 px-5 py-6 shadow-sm backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/55 sm:px-8 sm:py-8">
-                <div
-                  className={cn("blog-prose", proseArticle)}
-                  data-blog-article
-                  id="article-body"
-                  tabIndex={-1}
-                >
-                  {body}
+              <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-lg shadow-slate-200/50 ring-1 ring-slate-200/50 dark:border-slate-700/90 dark:bg-slate-900/70 dark:shadow-xl dark:shadow-black/20 dark:ring-slate-700/60">
+                <div className="border-b border-slate-100 bg-gradient-to-r from-slate-50 via-white to-primary-50/30 px-6 py-3 dark:border-slate-700 dark:from-slate-900 dark:via-slate-900 dark:to-primary-950/20 sm:px-8">
+                  <div className="mx-auto max-w-[65ch]">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Main article</p>
+                  </div>
+                </div>
+                <div className="px-5 py-9 sm:px-8 sm:py-11">
+                  <div className="mx-auto max-w-[65ch]">
+                    <div
+                      className={cn("blog-prose font-article antialiased", proseArticle)}
+                      data-blog-article
+                      id="article-body"
+                      lang="en-IN"
+                      tabIndex={-1}
+                    >
+                      {body}
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {post.faq?.length ? <BlogFaqAccordion items={post.faq} /> : null}
+              {post.faq?.length ? (
+                <div className="mx-auto mt-12 max-w-[65ch]">
+                  <BlogFaqAccordion items={post.faq} />
+                </div>
+              ) : null}
 
               <div className="blog-lead print:hidden mt-12">
                 <BlogLeadMagnet />
