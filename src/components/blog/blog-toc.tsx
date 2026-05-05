@@ -37,20 +37,31 @@ export function BlogToc({ headings, className, onNavigate }: Props) {
   if (h2h3.length === 0) return null;
 
   return (
-    <nav className={cn("text-sm", className)} aria-label="On this page">
-      <p className="mb-3 font-bold text-slate-800 dark:text-slate-200">On this page</p>
-      <ul className="space-y-2 border-l-2 border-slate-200 pl-3 dark:border-slate-600">
-        {h2h3.map((h) => (
-          <li key={h.id} className={h.depth === 3 ? "ml-2" : ""}>
+    <nav
+      className={cn(
+        "rounded-2xl border border-slate-200/80 bg-white/90 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/70",
+        className
+      )}
+      aria-label="On this page"
+    >
+      <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        Chapter map
+      </p>
+      <ul className="space-y-1.5 border-l-2 border-slate-200 pl-3 dark:border-slate-700">
+        {h2h3.map((h, index) => (
+          <li key={h.id} className={h.depth === 3 ? "ml-3" : ""}>
             <a
               href={`#${h.id}`}
               onClick={() => onNavigate?.()}
               className={cn(
-                "block break-words text-slate-600 transition hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400",
-                active === h.id && "font-semibold text-primary-600 dark:text-primary-400"
+                "group flex items-start gap-2 rounded-lg px-2 py-1.5 text-slate-600 transition hover:bg-slate-50 hover:text-primary-600 dark:text-slate-400 dark:hover:bg-slate-800/60 dark:hover:text-primary-300",
+                active === h.id && "bg-primary-50 font-semibold text-primary-700 dark:bg-primary-950/40 dark:text-primary-300"
               )}
             >
-              {h.text}
+              <span className="mt-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-md bg-slate-100 px-1 text-[10px] font-bold text-slate-500 group-hover:bg-primary-100 group-hover:text-primary-700 dark:bg-slate-800 dark:text-slate-300 dark:group-hover:bg-primary-900/50 dark:group-hover:text-primary-300">
+                {index + 1}
+              </span>
+              <span className="break-words text-sm leading-snug">{h.text}</span>
             </a>
           </li>
         ))}

@@ -13,6 +13,19 @@ coverImage: "/blog/covers/default.svg"
 
 A one-size-fits-all resume rarely wins. Tailoring your resume to each job description (JD) improves your ATS score and helps recruiters see you as a match. Here’s how to do it in practice.
 
+<Tip title="Use this before every application">
+Start from one strong master resume, then tailor only the top third (headline, summary, first 2-3 bullets, and skills order). This keeps quality high while still matching each job.
+</Tip>
+
+<Checklist title="60-second pre-tailor checklist">
+<ul>
+  <li>Role title in the JD is clear</li>
+  <li>Top 3 must-have skills are identified</li>
+  <li>One measurable outcome from your recent role is ready</li>
+  <li>One sentence value summary is drafted</li>
+</ul>
+</Checklist>
+
 ## Why tailoring matters
 
 - **ATS** — Many companies use Applicant Tracking Systems that rank candidates by keyword and section match. Mirroring the JD (without stuffing) helps you get shortlisted.
@@ -46,6 +59,11 @@ Keep this list next to you while you tailor.
 Example: JD asks for "experience improving conversion and running A/B tests."  
 **Before:** "Worked on the checkout flow."  
 **After:** "Ran A/B tests on checkout flow; improved conversion by 12% and reduced drop-off by 8%."
+
+<Example title="Before vs after in one glance">
+<p><strong>Before:</strong> Worked on checkout flow.</p>
+<p><strong>After:</strong> Ran A/B tests on checkout flow; improved conversion by 12% and reduced drop-off by 8%.</p>
+</Example>
 
 ## Step 4: Order and emphasize
 
@@ -91,6 +109,10 @@ Services companies may reward **client delivery** and **utilization** language; 
 ## When tailoring conflicts with truth
 
 Never fabricate tools or tenure. If you **lack** a must-have, address it elsewhere: coursework, GitHub, certification in progress, or a candid note in the cover letter. Recruiters prefer transparent gaps over keyword stuffing that collapses in interview.
+
+<Mistake title="Common mistake to avoid">
+Copy-pasting every JD phrase into your summary makes your resume read like a keyword dump. Add only terms you can defend with real work.
+</Mistake>
 
 ## Summary
 

@@ -25,9 +25,23 @@ An Applicant Tracking System (ATS) is software used by employers and job portals
 Use one clear column, predictable headings, and keyword alignment with the job description. Fancy design rarely beats clean structure for online applications.
 </Callout>
 
+<Checklist title="ATS-safe baseline">
+<ul>
+  <li>Single-column layout</li>
+  <li>Standard headings (Experience, Education, Skills)</li>
+  <li>No tables for critical information</li>
+  <li>Keywords mapped to the actual JD</li>
+</ul>
+</Checklist>
+
 This guide explains how ATS think, what breaks parsing, and how to ship a resume that works on Indian portals in 2026. We will cover headings, file formats, keyword strategy, and how to pair these rules with [ResumeDoctor templates](/templates) so you spend more time on achievements and less on layout anxiety.
 
 If you use match or score-style feedback in a builder, read [how to interpret that feedback](/blog/how-to-read-ats-job-match-feedback) so you treat it as a checklist—not a promise of shortlist.
+
+<Example title="High-signal bullet formula">
+<p><strong>Template:</strong> Action verb + scope + measurable outcome + relevant keyword.</p>
+<p><strong>Example:</strong> Built automated SQL reporting for weekly retention review, cutting manual effort by 6 hours/week.</p>
+</Example>
 
 <YouTubeEmbed id="jNQXAC9IVRw" title="Short example: keep layouts simple for parsers" />
 

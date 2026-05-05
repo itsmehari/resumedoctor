@@ -77,6 +77,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 const proseArticle =
   "prose prose-slate max-w-none dark:prose-invert " +
+  "prose-headings:relative " +
   "prose-p:transition-colors prose-p:first-of-type:text-[1.16rem] prose-p:first-of-type:font-medium " +
   "prose-p:first-of-type:leading-relaxed " +
   "prose-headings:scroll-mt-24 prose-headings:font-bold prose-headings:tracking-tight " +
@@ -91,6 +92,9 @@ const proseArticle =
   "prose-strong:text-slate-900 dark:prose-strong:text-white " +
   "prose-code:rounded-md prose-code:bg-slate-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm prose-code:text-primary-800 dark:prose-code:bg-slate-800 dark:prose-code:text-primary-200 " +
   "prose-pre:my-4 " +
+  "prose-table:block prose-table:w-full prose-table:overflow-x-auto prose-table:rounded-xl prose-table:border prose-table:border-slate-200 dark:prose-table:border-slate-700 " +
+  "prose-th:bg-slate-50 dark:prose-th:bg-slate-800/70 prose-th:px-3 prose-th:py-2 prose-th:text-left prose-th:text-xs prose-th:uppercase prose-th:tracking-wide " +
+  "prose-td:border-t prose-td:border-slate-200 prose-td:px-3 prose-td:py-2 dark:prose-td:border-slate-700 " +
   "prose-blockquote:border-l-4 prose-blockquote:border-violet-500 prose-blockquote:bg-violet-50/50 prose-blockquote:py-3 prose-blockquote:pl-4 " +
   "prose-blockquote:italic prose-blockquote:font-serif dark:prose-blockquote:bg-violet-950/20 " +
   "prose-hr:border-slate-200 dark:prose-hr:border-slate-700";
@@ -169,11 +173,15 @@ export default async function BlogPostPage({ params }: Props) {
       <article id="main-content" tabIndex={-1} className="blog-post-article flex-1 outline-none">
         <header className="blog-masthead relative overflow-hidden border-b border-slate-200/80 dark:border-slate-800">
           <div
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-40%,rgba(59,130,246,0.12),transparent)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-30%,rgba(99,102,241,0.15),transparent)]"
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-35%,rgba(59,130,246,0.16),transparent)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-30%,rgba(99,102,241,0.2),transparent)]"
             aria-hidden
           />
           <div
             className="pointer-events-none absolute inset-0 opacity-[0.04] [background-image:radial-gradient(#0f172a_1px,transparent_1px)] [background-size:8px_8px] dark:opacity-[0.07] dark:[background-image:radial-gradient(#fff_1px,transparent_1px)]"
+            aria-hidden
+          />
+          <div
+            className="pointer-events-none absolute -right-24 top-8 h-48 w-48 rounded-full bg-violet-300/40 blur-3xl dark:bg-violet-700/30"
             aria-hidden
           />
           <div className="relative mx-auto max-w-3xl px-4 pb-8 pt-10 sm:px-6 sm:pb-12 sm:pt-12">
@@ -203,7 +211,7 @@ export default async function BlogPostPage({ params }: Props) {
                 </div>
               </div>
             ) : null}
-            <h1 className="text-3xl font-bold leading-[1.15] tracking-tight text-slate-900 dark:text-slate-50 sm:text-4xl sm:leading-tight lg:text-[2.5rem]">
+            <h1 className="text-3xl font-black leading-[1.12] tracking-tight text-slate-900 dark:text-slate-50 sm:text-4xl sm:leading-tight lg:text-[2.75rem]">
               {post.title}
             </h1>
             <p className="mt-5 text-lg leading-relaxed text-slate-600 dark:text-slate-400">{post.description}</p>
@@ -274,7 +282,7 @@ export default async function BlogPostPage({ params }: Props) {
                 <p className="mt-2 text-sm leading-relaxed text-slate-700 dark:text-slate-300">{summary}</p>
                 {chapterHeadings.length > 0 ? (
                   <div className="mt-4">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">In this guide</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Storyline</p>
                     <ul className="mt-2 grid gap-2 sm:grid-cols-2">
                       {chapterHeadings.map((h) => (
                         <li key={h.id}>

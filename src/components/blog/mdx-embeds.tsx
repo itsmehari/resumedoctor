@@ -82,3 +82,65 @@ export function LoomEmbed({ id, title }: { id: string; title?: string }) {
     </div>
   );
 }
+
+export function Tip({
+  title = "Pro tip",
+  children,
+}: {
+  title?: string;
+  children: ReactNode;
+}) {
+  return (
+    <aside className="my-7 rounded-2xl border border-emerald-200/80 bg-gradient-to-br from-emerald-50 to-white p-4 shadow-sm dark:border-emerald-800/60 dark:from-emerald-950/30 dark:to-slate-900/70">
+      <p className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">{title}</p>
+      <div className="mt-2 text-[0.98rem] leading-relaxed text-emerald-950 dark:text-emerald-100">{children}</div>
+    </aside>
+  );
+}
+
+export function Mistake({
+  title = "Common mistake",
+  children,
+}: {
+  title?: string;
+  children: ReactNode;
+}) {
+  return (
+    <aside className="my-7 rounded-2xl border border-rose-200/80 bg-gradient-to-br from-rose-50 to-white p-4 shadow-sm dark:border-rose-800/60 dark:from-rose-950/30 dark:to-slate-900/70">
+      <p className="text-xs font-bold uppercase tracking-wider text-rose-700 dark:text-rose-300">{title}</p>
+      <div className="mt-2 text-[0.98rem] leading-relaxed text-rose-950 dark:text-rose-100">{children}</div>
+    </aside>
+  );
+}
+
+export function Example({
+  title = "Example",
+  children,
+}: {
+  title?: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="my-7 rounded-2xl border border-primary-200/80 bg-white p-4 shadow-sm dark:border-primary-800/60 dark:bg-slate-900/60 sm:p-5">
+      <p className="text-xs font-bold uppercase tracking-wider text-primary-700 dark:text-primary-300">{title}</p>
+      <div className="mt-2 text-[0.99rem] leading-relaxed text-slate-800 dark:text-slate-200">{children}</div>
+    </section>
+  );
+}
+
+export function Checklist({
+  title = "Quick checklist",
+  children,
+}: {
+  title?: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="my-7 rounded-2xl border border-slate-200/90 bg-slate-50/70 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/50 sm:p-5">
+      <p className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">{title}</p>
+      <div className="mt-3 [&_li]:my-1.5 [&_li]:list-none [&_li]:pl-0 [&_ul]:m-0 [&_ul]:space-y-1 [&_ul]:p-0 text-[0.98rem] leading-relaxed text-slate-800 dark:text-slate-200">
+        {children}
+      </div>
+    </section>
+  );
+}

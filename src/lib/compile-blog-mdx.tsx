@@ -1,7 +1,17 @@
 import { compileMDX } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
-import { Callout, Compare, LoomEmbed, Steps, YouTubeEmbed } from "@/components/blog/mdx-embeds";
+import {
+  Callout,
+  Checklist,
+  Compare,
+  Example,
+  LoomEmbed,
+  Mistake,
+  Steps,
+  Tip,
+  YouTubeEmbed,
+} from "@/components/blog/mdx-embeds";
 import { MdxPre } from "@/components/blog/mdx-pre";
 
 const mdxComponents = {
@@ -9,6 +19,10 @@ const mdxComponents = {
   Callout,
   Steps,
   Compare,
+  Tip,
+  Mistake,
+  Example,
+  Checklist,
   YouTubeEmbed,
   LoomEmbed,
 };
