@@ -107,6 +107,17 @@ const EXAMPLE_TO_BLOG: Record<string, string[]> = {
 export interface RelatedLink {
   slug: string;
   title: string;
+  /** Small label for related-article cards */
+  category?: string;
+}
+
+function formatTagAsCategory(tags: string[]): string | undefined {
+  const t = tags[0];
+  if (!t) return undefined;
+  return t
+    .split("-")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
 }
 
 /** Related resume examples for a blog post (by slug). */
@@ -130,12 +141,20 @@ export function getRelatedPostsForBlog(currentSlug: string): RelatedLink[] {
       .map((slug) => posts.find((p) => p.slug === slug))
       .filter((p): p is NonNullable<typeof p> => !!p)
       .slice(0, 3)
-      .map((p) => ({ slug: p.slug, title: p.title }));
+      .map((p) => ({
+        slug: p.slug,
+        title: p.title,
+        category: formatTagAsCategory(p.tags),
+      }));
   }
   return posts
     .filter((p) => p.slug !== currentSlug)
     .slice(0, 3)
-    .map((p) => ({ slug: p.slug, title: p.title }));
+    .map((p) => ({
+      slug: p.slug,
+      title: p.title,
+      category: formatTagAsCategory(p.tags),
+    }));
 }
 
 /** Related blog posts for an example page (by example slug). */
@@ -147,5 +166,9 @@ export function getRelatedPostsForExample(exampleSlug: string): RelatedLink[] {
     .map((slug) => posts.find((p) => p.slug === slug))
     .filter((p): p is NonNullable<typeof p> => !!p)
     .slice(0, 3)
-    .map((p) => ({ slug: p.slug, title: p.title }));
+    .map((p) => ({
+      slug: p.slug,
+      title: p.title,
+      category: formatTagAsCategory(p.tags),
+    }));
 }

@@ -10,12 +10,14 @@ import { getRelatedExamplesForBlog, getRelatedPostsForBlog, type RelatedLink } f
 import { ArticleJsonLd, BlogFaqJsonLd, BlogPostingJsonLd, BreadcrumbJsonLd } from "@/components/seo/json-ld";
 import { compileBlogMdx } from "@/lib/compile-blog-mdx";
 import { extractMarkdownHeadings, splitContentForMidRelated } from "@/lib/blog-headings";
-import { ArrowLeft, ArrowUpRight, Clock } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, ChevronRight, Clock } from "lucide-react";
 import { BlogReadingProgress } from "@/components/blog/blog-reading-progress";
 import { BlogShareRow } from "@/components/blog/blog-share-row";
 import { BlogToc } from "@/components/blog/blog-toc";
 import { BlogFloatingChrome } from "@/components/blog/blog-floating-chrome";
 import { BlogMidRelatedCarousel } from "@/components/blog/blog-mid-related";
+import { BlogArticleMobileNav } from "@/components/blog/blog-article-mobile-nav";
+import { BlogStepHeadingDecorator } from "@/components/blog/blog-step-heading-decorator";
 import { BlogFaqAccordion } from "@/components/blog/blog-faq-accordion";
 import { BlogArticleFeedback } from "@/components/blog/blog-article-feedback";
 import { BlogLeadMagnet } from "@/components/blog/blog-lead-magnet";
@@ -75,31 +77,31 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-/** Comfort reading: Inter body + Poppins headings, 65ch column, generous lead and paragraph gaps. */
+/** SaaS guide reading: ~780px measure, 1.65 body line-height, clear H2/H3 scale. */
 const proseArticle =
   "prose prose-slate max-w-none dark:prose-invert " +
   "prose-headings:relative prose-headings:font-sans " +
-  "prose-p:transition-colors prose-p:first-of-type:text-[1.14rem] prose-p:first-of-type:font-medium " +
+  "prose-p:transition-colors prose-p:first-of-type:text-[1.0625rem] prose-p:first-of-type:font-medium " +
   "prose-p:first-of-type:leading-[1.65] " +
-  "prose-headings:scroll-mt-28 prose-headings:font-bold " +
+  "prose-headings:scroll-mt-32 prose-headings:font-bold " +
   "prose-h1:text-2xl prose-h1:mt-12 prose-h1:mb-4 " +
-  "prose-h2:mt-16 prose-h2:mb-6 prose-h2:scroll-mt-28 prose-h2:border-b prose-h2:border-slate-200/90 prose-h2:pb-3.5 " +
-  "prose-h2:text-[1.375rem] sm:prose-h2:text-[1.65rem] prose-h2:font-extrabold prose-h2:tracking-tight prose-h2:text-slate-900 dark:prose-h2:border-slate-600 dark:prose-h2:text-slate-50 " +
-  "prose-h3:mt-11 prose-h3:mb-4 prose-h3:text-lg sm:prose-h3:text-xl prose-h3:font-bold prose-h3:tracking-tight prose-h3:text-slate-800 dark:prose-h3:text-slate-100 " +
-  "prose-p:mb-[1.35rem] prose-p:text-[1.035rem] prose-p:leading-[1.92] prose-p:tracking-[0.01em] prose-p:text-slate-700 prose-p:text-pretty sm:prose-p:text-[1.06rem] dark:prose-p:text-slate-300 " +
-  "prose-li:marker:text-primary-500 prose-li:text-slate-700 dark:prose-li:text-slate-300 " +
-  "prose-li:my-2 prose-li:leading-[1.85] " +
-  "prose-ul:my-7 prose-ol:my-7 prose-ul:space-y-2 prose-ol:space-y-2 " +
-  "prose-a:font-medium prose-a:text-primary-600 prose-a:underline-offset-2 prose-a:transition-all hover:prose-a:underline " +
+  "prose-h2:mt-14 prose-h2:mb-8 prose-h2:scroll-mt-32 prose-h2:border-b prose-h2:border-slate-200/90 prose-h2:pb-4 " +
+  "prose-h2:text-[1.5rem] sm:prose-h2:text-[1.625rem] prose-h2:font-extrabold prose-h2:tracking-tight prose-h2:text-slate-900 dark:prose-h2:border-slate-600 dark:prose-h2:text-slate-50 " +
+  "prose-h3:mt-10 prose-h3:mb-4 prose-h3:text-lg sm:prose-h3:text-xl prose-h3:font-bold prose-h3:tracking-tight prose-h3:text-slate-800 dark:prose-h3:text-slate-100 " +
+  "prose-p:mb-5 prose-p:text-[1.0625rem] sm:prose-p:text-[1.125rem] prose-p:leading-[1.65] prose-p:text-slate-700 prose-p:text-pretty dark:prose-p:text-slate-300 " +
+  "prose-li:marker:text-primary-600 prose-li:text-slate-700 dark:prose-li:text-slate-300 " +
+  "prose-li:my-2 prose-li:leading-[1.65] " +
+  "prose-ul:my-8 prose-ol:my-8 prose-ul:space-y-2 prose-ol:space-y-2 " +
+  "prose-a:font-medium prose-a:text-primary-600 prose-a:underline-offset-2 prose-a:transition-colors hover:prose-a:text-primary-700 hover:prose-a:underline " +
   "prose-strong:text-slate-900 dark:prose-strong:text-white " +
-  "prose-code:rounded-md prose-code:bg-slate-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm prose-code:text-primary-800 dark:prose-code:bg-slate-800 dark:prose-code:text-primary-200 " +
+  "prose-code:rounded-md prose-code:bg-slate-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[0.9em] prose-code:text-primary-800 dark:prose-code:bg-slate-800 dark:prose-code:text-primary-200 " +
   "prose-pre:my-4 " +
   "prose-table:block prose-table:w-full prose-table:overflow-x-auto prose-table:rounded-xl prose-table:border prose-table:border-slate-200 dark:prose-table:border-slate-700 " +
   "prose-th:bg-slate-50 dark:prose-th:bg-slate-800/70 prose-th:px-3 prose-th:py-2 prose-th:text-left prose-th:text-xs prose-th:uppercase prose-th:tracking-wide " +
   "prose-td:border-t prose-td:border-slate-200 prose-td:px-3 prose-td:py-2 dark:prose-td:border-slate-700 " +
-  "prose-blockquote:border-l-4 prose-blockquote:border-violet-500 prose-blockquote:bg-violet-50/50 prose-blockquote:py-3 prose-blockquote:pl-4 " +
-  "prose-blockquote:italic prose-blockquote:font-serif dark:prose-blockquote:bg-violet-950/20 " +
-  "prose-hr:border-slate-200 dark:prose-hr:border-slate-700";
+  "prose-blockquote:border-l-4 prose-blockquote:border-primary-400 prose-blockquote:bg-primary-50/40 prose-blockquote:py-3 prose-blockquote:pl-4 prose-blockquote:not-italic " +
+  "prose-blockquote:text-slate-700 dark:prose-blockquote:border-primary-600 dark:prose-blockquote:bg-primary-950/20 dark:prose-blockquote:text-slate-200 " +
+  "prose-hr:my-14 prose-hr:border-slate-200/90 dark:prose-hr:border-slate-700";
 
 export default async function BlogPostPage({ params }: Props) {
   const post = getPostBySlug(params.slug);
@@ -141,7 +143,7 @@ export default async function BlogPostPage({ params }: Props) {
   const chapterHeadings = headings.slice(0, 5);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#faf9f7] print:bg-white dark:bg-slate-950">
+    <div className="min-h-screen flex flex-col bg-[var(--blog-page-bg)] print:bg-white dark:bg-[var(--blog-page-bg)]">
       <ArticleJsonLd
         title={post.title}
         description={post.description}
@@ -173,24 +175,33 @@ export default async function BlogPostPage({ params }: Props) {
       <SiteHeader variant="home" />
 
       <article id="main-content" tabIndex={-1} className="blog-post-article flex-1 outline-none">
-        <header className="blog-masthead relative overflow-hidden border-b border-slate-200/80 dark:border-slate-800">
-          <div
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-35%,rgba(59,130,246,0.16),transparent)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-30%,rgba(99,102,241,0.2),transparent)]"
-            aria-hidden
-          />
-          <div
-            className="pointer-events-none absolute inset-0 opacity-[0.04] [background-image:radial-gradient(#0f172a_1px,transparent_1px)] [background-size:8px_8px] dark:opacity-[0.07] dark:[background-image:radial-gradient(#fff_1px,transparent_1px)]"
-            aria-hidden
-          />
-          <div
-            className="pointer-events-none absolute -right-24 top-8 h-48 w-48 rounded-full bg-violet-300/40 blur-3xl dark:bg-violet-700/30"
-            aria-hidden
-          />
-          <div className="relative mx-auto max-w-3xl px-4 pb-8 pt-10 sm:px-6 sm:pb-12 sm:pt-12">
+        <header className="blog-masthead relative border-b border-[var(--color-border)] bg-[var(--surface)] dark:border-slate-800 dark:bg-slate-950">
+          <div className="relative mx-auto max-w-4xl px-4 pb-8 pt-8 sm:px-6 sm:pb-10 sm:pt-10">
+            <nav aria-label="Breadcrumb" className="mb-4 print:hidden">
+              <ol className="flex flex-wrap items-center gap-1 text-[13px] text-[var(--color-muted)]">
+                <li>
+                  <Link href="/" className="font-medium text-slate-600 transition hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400">
+                    Home
+                  </Link>
+                </li>
+                <li className="flex items-center gap-1" aria-hidden>
+                  <ChevronRight className="h-3.5 w-3.5 opacity-60" />
+                </li>
+                <li>
+                  <Link href="/blog" className="font-medium text-slate-600 transition hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400">
+                    Blog
+                  </Link>
+                </li>
+                <li className="flex items-center gap-1" aria-hidden>
+                  <ChevronRight className="h-3.5 w-3.5 opacity-60" />
+                </li>
+                <li className="line-clamp-1 font-semibold text-slate-800 dark:text-slate-200">{post.title}</li>
+              </ol>
+            </nav>
             <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
               <Link
                 href="/blog"
-                className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400"
+                className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400 print:hidden"
               >
                 <ArrowLeft className="h-4 w-4" aria-hidden />
                 Blog
@@ -213,12 +224,37 @@ export default async function BlogPostPage({ params }: Props) {
                 </div>
               </div>
             ) : null}
-            <h1 className="text-3xl font-black leading-[1.12] tracking-tight text-slate-900 dark:text-slate-50 sm:text-4xl sm:leading-tight lg:text-[2.75rem]">
+            <h1 className="text-[clamp(1.875rem,4.2vw,3rem)] font-black leading-[1.15] tracking-tight text-slate-900 dark:text-slate-50">
               {post.title}
             </h1>
-            <p className="mt-5 text-lg leading-relaxed text-slate-600 dark:text-slate-400">{post.description}</p>
+            <p className="mt-4 text-base leading-relaxed text-slate-600 sm:text-lg dark:text-slate-400">{post.description}</p>
+            <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-[var(--color-muted)]">
+              <span className="inline-flex items-center gap-1 font-medium text-slate-600 dark:text-slate-400">
+                <Clock className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                {post.readTime} min read
+              </span>
+              <span aria-hidden className="text-slate-300 dark:text-slate-600">
+                ·
+              </span>
+              <span className="font-medium text-slate-600 dark:text-slate-400">{post.contentCategory ?? "Resume guide"}</span>
+              {post.updated ? (
+                <>
+                  <span aria-hidden className="text-slate-300 dark:text-slate-600">
+                    ·
+                  </span>
+                  <time className="font-medium text-slate-600 dark:text-slate-400" dateTime={post.updated}>
+                    Updated{" "}
+                    {new Date(post.updated).toLocaleDateString("en-IN", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </time>
+                </>
+              ) : null}
+            </div>
             <BlogShareRow url={shareUrl} title={post.title} />
-            <div className="mt-8 flex flex-wrap items-center gap-4 border-t border-slate-200/80 pt-8 dark:border-slate-800">
+            <div className="mt-8 flex flex-wrap items-center gap-4 border-t border-[var(--color-border)] pt-8 dark:border-slate-800">
               {authorImage ? (
                 <Image
                   src={authorImage}
@@ -242,6 +278,7 @@ export default async function BlogPostPage({ params }: Props) {
                 <p className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-500 dark:text-slate-400">
                   {post.date ? (
                     <span>
+                      Published{" "}
                       {new Date(post.date).toLocaleDateString("en-IN", {
                         day: "numeric",
                         month: "long",
@@ -249,28 +286,17 @@ export default async function BlogPostPage({ params }: Props) {
                       })}
                     </span>
                   ) : null}
-                  {post.updated ? (
-                    <span className="text-primary-600 dark:text-primary-400">
-                      · Updated{" "}
-                      {new Date(post.updated).toLocaleDateString("en-IN", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
-                    </span>
-                  ) : null}
-                  <span className="inline-flex items-center gap-1">
-                    <Clock className="h-3.5 w-3.5" aria-hidden />
-                    {post.readTime} min read
-                  </span>
                 </p>
               </div>
             </div>
           </div>
         </header>
 
-        <div className="mx-auto max-w-[88rem] px-4 py-10 sm:px-6 sm:py-14">
-          <div className="xl:grid xl:grid-cols-[minmax(13rem,18rem)_minmax(0,56rem)] xl:justify-center xl:gap-14">
+        {headings.length > 0 ? <BlogArticleMobileNav headings={headings} /> : null}
+        <BlogStepHeadingDecorator />
+
+        <div className="mx-auto max-w-[88rem] px-4 py-8 sm:px-6 sm:py-12">
+          <div className="xl:grid xl:grid-cols-[minmax(13rem,17rem)_minmax(0,var(--container-reading))] xl:justify-center xl:gap-12">
             {headings.length > 0 ? (
               <aside className="mb-8 hidden xl:mb-0 xl:block" aria-label="On this page">
                 <div className="blog-toc-sticky sticky top-28 space-y-6">
@@ -279,18 +305,18 @@ export default async function BlogPostPage({ params }: Props) {
               </aside>
             ) : null}
             <div className="min-w-0">
-              <section className="mx-auto mb-10 max-w-[65ch] rounded-2xl border border-slate-200/90 bg-gradient-to-br from-white to-slate-50/80 p-6 shadow-md shadow-slate-200/40 ring-1 ring-slate-200/60 dark:border-slate-700 dark:from-slate-900/80 dark:to-slate-950/60 dark:shadow-none dark:ring-slate-700/80 sm:p-7">
+              <section className="mx-auto mb-10 max-w-[var(--container-reading)] rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-soft)] dark:border-slate-700 dark:bg-slate-900/40 sm:p-7">
                 <p className="text-xs font-bold uppercase tracking-widest text-primary-700 dark:text-primary-300">Quick summary</p>
                 <p className="mt-3 font-article text-sm leading-[1.8] tracking-[0.01em] text-slate-700 dark:text-slate-300">{summary}</p>
                 {chapterHeadings.length > 0 ? (
                   <div className="mt-5">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Storyline</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">Storyline</p>
                     <ul className="mt-3 grid gap-2.5 sm:grid-cols-2">
                       {chapterHeadings.map((h) => (
                         <li key={h.id}>
                           <a
                             href={`#${h.id}`}
-                            className="block rounded-lg border border-slate-200/80 bg-slate-50/70 px-3 py-2 text-xs font-medium text-slate-700 transition hover:border-primary-300 hover:text-primary-700 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 dark:hover:border-primary-700 dark:hover:text-primary-300"
+                            className="block min-h-[44px] rounded-lg border border-[var(--color-border)] bg-[var(--surface-soft)] px-3 py-2.5 text-xs font-medium text-slate-700 transition hover:border-primary-300 hover:text-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-300 dark:hover:border-primary-700 dark:hover:text-primary-300 dark:focus-visible:ring-offset-slate-950"
                           >
                             {h.text}
                           </a>
@@ -303,7 +329,7 @@ export default async function BlogPostPage({ params }: Props) {
 
               <div
                 className={cn(
-                  "blog-cta-strip blog-hide-in-reader print:hidden mx-auto mb-10 flex w-full max-w-[65ch] flex-col gap-4 rounded-2xl border border-primary-200/60 bg-gradient-to-br from-primary-50 to-white p-5 shadow-sm dark:border-primary-900/40 dark:from-primary-950/40 dark:to-slate-900/80 sm:flex-row sm:items-center sm:justify-between sm:p-6"
+                  "blog-cta-strip blog-hide-in-reader print:hidden mx-auto mb-10 flex w-full max-w-[var(--container-reading)] flex-col gap-4 rounded-[var(--radius-card)] border border-primary-200/60 bg-gradient-to-br from-[var(--color-primary-soft)] to-white p-5 shadow-[var(--shadow-soft)] dark:border-primary-900/40 dark:from-primary-950/40 dark:to-slate-900/80 sm:flex-row sm:items-center sm:justify-between sm:p-6"
                 )}
               >
                 <p className="text-sm font-medium leading-snug text-primary-950 dark:text-primary-100">
@@ -312,21 +338,21 @@ export default async function BlogPostPage({ params }: Props) {
                 <Link
                   href="/try"
                   prefetch
-                  className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400"
+                  className="inline-flex min-h-[48px] shrink-0 items-center justify-center gap-1.5 rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:bg-primary-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:bg-primary-500 dark:hover:bg-primary-400 dark:focus-visible:ring-offset-slate-950"
                 >
                   Start with Try
                   <ArrowUpRight className="h-4 w-4 opacity-90" aria-hidden />
                 </Link>
               </div>
 
-              <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-lg shadow-slate-200/50 ring-1 ring-slate-200/50 dark:border-slate-700/90 dark:bg-slate-900/70 dark:shadow-xl dark:shadow-black/20 dark:ring-slate-700/60">
-                <div className="border-b border-slate-100 bg-gradient-to-r from-slate-50 via-white to-primary-50/30 px-6 py-3 dark:border-slate-700 dark:from-slate-900 dark:via-slate-900 dark:to-primary-950/20 sm:px-8">
-                  <div className="mx-auto max-w-[65ch]">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Main article</p>
+              <div className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--surface)] shadow-[var(--shadow-soft)] dark:border-slate-700/90 dark:bg-slate-900/50 dark:shadow-lg dark:shadow-black/25">
+                <div className="border-b border-[var(--color-border)] bg-[var(--surface-soft)] px-5 py-3 dark:border-slate-700 dark:bg-slate-900/80 sm:px-8">
+                  <div className="mx-auto max-w-[var(--container-reading)]">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--color-muted)]">Main article</p>
                   </div>
                 </div>
-                <div className="px-5 py-9 sm:px-8 sm:py-11">
-                  <div className="mx-auto max-w-[65ch]">
+                <div className="px-5 py-8 sm:px-8 sm:py-10">
+                  <div className="mx-auto max-w-[var(--container-reading)]">
                     <div
                       className={cn("blog-prose font-article antialiased", proseArticle)}
                       data-blog-article
@@ -341,7 +367,7 @@ export default async function BlogPostPage({ params }: Props) {
               </div>
 
               {post.faq?.length ? (
-                <div className="mx-auto mt-12 max-w-[65ch]">
+                <div className="mx-auto mt-12 max-w-[var(--container-reading)]">
                   <BlogFaqAccordion items={post.faq} />
                 </div>
               ) : null}
@@ -374,21 +400,35 @@ export default async function BlogPostPage({ params }: Props) {
               </div>
 
               {keepReading.length > 0 && (
-                <section className="print:hidden mt-14 border-t border-slate-200 pt-12 dark:border-slate-800">
-                  <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Next best reads</h2>
-                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Stay in flow with closely related guides.</p>
-                  <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+                <section className="print:hidden mt-14 border-t border-[var(--color-border)] pt-12 dark:border-slate-800" aria-labelledby="next-reads-heading">
+                  <h2 id="next-reads-heading" className="text-xl font-bold text-slate-900 dark:text-slate-100">
+                    Next best reads
+                  </h2>
+                  <p className="mt-1 text-sm text-[var(--color-muted)]">Stay in flow with closely related guides.</p>
+                  <ul className="mt-6 grid gap-4 sm:grid-cols-2">
                     {keepReading.map((p) => (
                       <li key={p.slug}>
                         <Link
                           href={`/blog/${p.slug}`}
                           prefetch
-                          className="group flex h-full items-start justify-between gap-3 rounded-xl border border-slate-200/80 bg-white px-4 py-3 transition duration-200 hover:-translate-y-0.5 hover:border-primary-300 hover:shadow-sm dark:border-slate-700 dark:bg-slate-900/50 dark:hover:border-primary-700"
+                          className="group flex h-full min-h-[132px] flex-col rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-soft)] transition duration-200 motion-reduce:transition-none hover:-translate-y-0.5 hover:border-primary-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-900/50 dark:hover:border-primary-600 dark:focus-visible:ring-offset-slate-950"
                         >
-                          <span className="font-medium text-slate-800 group-hover:text-primary-600 dark:text-slate-200 dark:group-hover:text-primary-400">
+                          {p.category ? (
+                            <span className="inline-flex w-fit rounded-full border border-slate-200/90 bg-[var(--surface-soft)] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-600 dark:border-slate-600 dark:bg-slate-800/80 dark:text-slate-400">
+                              {p.category}
+                            </span>
+                          ) : (
+                            <span className="inline-flex w-fit rounded-full border border-slate-200/90 bg-[var(--surface-soft)] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-600 dark:border-slate-600 dark:bg-slate-800/80 dark:text-slate-400">
+                              Guide
+                            </span>
+                          )}
+                          <span className="mt-3 line-clamp-3 flex-1 text-base font-bold leading-snug text-slate-900 group-hover:text-primary-700 dark:text-slate-50 dark:group-hover:text-primary-300">
                             {p.title}
                           </span>
-                          <ArrowUpRight className="mt-0.5 h-4 w-4 shrink-0 text-slate-400 opacity-0 transition group-hover:translate-x-0.5 group-hover:opacity-100" aria-hidden />
+                          <span className="mt-4 inline-flex items-center gap-1 text-xs font-bold text-primary-700 dark:text-primary-300">
+                            Read
+                            <ArrowUpRight className="h-3.5 w-3.5 transition duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transition-none" aria-hidden />
+                          </span>
                         </Link>
                       </li>
                     ))}

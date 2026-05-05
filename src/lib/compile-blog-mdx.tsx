@@ -2,14 +2,20 @@ import { compileMDX } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import {
+  BeforeAfterCompare,
   Callout,
   Checklist,
   Compare,
   Example,
+  KeyTakeaway,
   LoomEmbed,
   Mistake,
+  ResumeDoctorCta,
   Steps,
+  TermBlock,
   Tip,
+  WarningAdvice,
+  WhyAudienceGrid,
   YouTubeEmbed,
 } from "@/components/blog/mdx-embeds";
 import { MdxPre } from "@/components/blog/mdx-pre";
@@ -23,6 +29,12 @@ const mdxComponents = {
   Mistake,
   Example,
   Checklist,
+  KeyTakeaway,
+  WhyAudienceGrid,
+  BeforeAfterCompare,
+  WarningAdvice,
+  ResumeDoctorCta,
+  TermBlock,
   YouTubeEmbed,
   LoomEmbed,
 };

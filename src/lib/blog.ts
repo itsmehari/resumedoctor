@@ -30,6 +30,8 @@ export interface BlogPost {
   ogImage?: string;
   featured?: boolean;
   tags: string[];
+  /** Short label for hero metadata, e.g. "Resume Guide" */
+  contentCategory?: string;
   faq?: FaqItem[];
 }
 
@@ -84,6 +86,7 @@ function loadPost(slug: string): BlogPost | null {
     ogImage: typeof data.ogImage === "string" ? data.ogImage : undefined,
     featured: Boolean(data.featured),
     tags: normalizeTags(data.tags),
+    contentCategory: typeof data.contentCategory === "string" ? data.contentCategory : undefined,
     faq: normalizeFaq(data.faq),
   };
 }

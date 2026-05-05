@@ -5,6 +5,28 @@
 :root {
   --foreground-rgb: 15 23 42;
   --background-rgb: 255 255 255;
+
+  /* Blog / SaaS content tokens */
+  --color-primary: #0d65d9;
+  --color-primary-soft: #eef4fc;
+  --color-text: #0f172a;
+  --color-muted: #64748b;
+  --color-border: #e2e8f0;
+  --surface: #ffffff;
+  --surface-soft: #f8fafc;
+  --radius-card: 1rem;
+  --shadow-soft: 0 1px 3px 0 rgb(15 23 42 / 0.06), 0 1px 2px -1px rgb(15 23 42 / 0.06);
+  --container-reading: 48.75rem; /* ~780px */
+  --blog-page-bg: #f4f7fb;
+}
+
+.dark {
+  --color-text: #f1f5f9;
+  --color-muted: #94a3b8;
+  --color-border: #334155;
+  --surface: #0f172a;
+  --surface-soft: #1e293b;
+  --blog-page-bg: #020617;
 }
 
 @media (prefers-color-scheme: dark) {

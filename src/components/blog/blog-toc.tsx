@@ -39,14 +39,12 @@ export function BlogToc({ headings, className, onNavigate }: Props) {
   return (
     <nav
       className={cn(
-        "rounded-2xl border border-slate-200/80 bg-white/90 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/70",
+        "rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--surface)]/95 p-4 shadow-[var(--shadow-soft)] dark:border-slate-700 dark:bg-slate-900/70",
         className
       )}
       aria-label="On this page"
     >
-      <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-        Chapter map
-      </p>
+      <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[var(--color-muted)]">On this page</p>
       <ul className="space-y-1.5 border-l-2 border-slate-200 pl-3 dark:border-slate-700">
         {h2h3.map((h, index) => (
           <li key={h.id} className={h.depth === 3 ? "ml-3" : ""}>

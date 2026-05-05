@@ -10,6 +10,9 @@ export interface MarkdownHeading {
 export function extractMarkdownHeadings(md: string): MarkdownHeading[] {
   const slugger = new GithubSlugger();
   const out: MarkdownHeading[] = [];
+  if (md.includes("<WhyAudienceGrid")) {
+    out.push({ depth: 2, text: "Why tailoring matters", id: slugger.slug("Why tailoring matters") });
+  }
   const lines = md.split(/\r?\n/);
   for (const line of lines) {
     const m = /^(#{2,3})\s+(.+)$/.exec(line.trim());
