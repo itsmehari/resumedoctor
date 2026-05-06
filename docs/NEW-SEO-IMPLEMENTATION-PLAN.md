@@ -54,7 +54,7 @@
 | Trust badges component with schema | `src/components/trust-badges.tsx` | ✅ |
 | Clear conversion paths (primary CTA per section) | Home, Pricing | ✅ |
 | Social proof section (testimonials placeholder) | Home | ✅ |
-| Add noindex for low-value auth pages | login, signup layouts | 🔲 |
+| Add noindex/nofollow for low-value auth pages | login, signup, forgot/reset, verify | ✅ |
 
 ---
 

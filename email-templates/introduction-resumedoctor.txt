@@ -1,0 +1,70 @@
+ResumeDoctor — introduction (multipart plain-text companion)
+Replace {{UNSUBSCRIBE_URL}} with your ESP’s unsubscribe merge tag before sending promotional mail.
+
+----------------------------------------------------------------
+PREHEADER (snippet): Portal-ready resumes, ATS-friendly layouts, and exports when you upgrade—built for Indian job seekers on Naukri, LinkedIn & more.
+
+----------------------------------------------------------------
+
+Apply with confidence
+
+Get a credible, ATS-readable resume fast—then ship portal-ready PDF and Word when you upgrade. Try the product without a card, save your work on a free account, and compare Pro on our pricing page.
+
+— Plans at a glance —
+
+Trusted by job seekers across India
+• 30+ resume templates
+• ATS parse-friendly layouts  
+• India: Naukri, LinkedIn & more
+• Typical first draft in under 5 minutes
+
+WHAT YOU GET
+
+• PDF export (Pro): Attach a sharp PDF to Naukri, LinkedIn, and email.
+• Word (DOCX) export (Pro): Revise wording after feedback without rebuilding the layout.
+• No watermarks on Pro files: Application-ready documents.
+
+TRY (OTP)
+No card — short exploration session — not billed, not a subscription.
+https://www.resumedoctor.in/try?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu&utm_content=plan-try
+
+BASIC ACCOUNT
+Free tier while you draft: TXT export, keyword match vs job descriptions, ATS teaser, core templates, and daily AI assists.
+Create free account:
+https://www.resumedoctor.in/signup?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu&utm_content=plan-basic
+
+PRO (via SuperProfile)
+Monthly or annual: full exports, every template, higher limits.
+In India: optional 14-day full Pro pass (one-time checkout, no auto-renew).
+
+See live prices on:
+https://www.resumedoctor.in/pricing?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu&utm_content=cta-secondary
+
+IMPORTANT — Pay on SuperProfile with the SAME email as your ResumeDoctor account so your purchase activates after checkout.
+
+----------------------------------------------------------------
+PRIMARY ACTION — Start with Try (no credit card):
+https://www.resumedoctor.in/try?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu&utm_content=cta-primary
+
+Compare plans & pricing:
+https://www.resumedoctor.in/pricing?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu&utm_content=cta-secondary
+
+More links:
+Templates: https://www.resumedoctor.in/templates?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu&utm_content=templates
+ATS guide: https://www.resumedoctor.in/blog/ats-friendly-resume-complete-guide?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu&utm_content=ats-guide
+About: https://www.resumedoctor.in/about?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu&utm_content=about
+
+----------------------------------------------------------------
+Questions: resumedoctorweb@gmail.com
+
+Privacy: https://www.resumedoctor.in/privacy?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu
+Terms: https://www.resumedoctor.in/terms?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu
+
+Facebook: https://www.facebook.com/profile.php?id=61580973342626
+Instagram: https://www.instagram.com/resumedoctorweb/
+LinkedIn: https://www.linkedin.com/company/112700097/
+X: https://x.com/ResumeDoctorWeb
+
+Unsubscribe: {{UNSUBSCRIBE_URL}}
+
+© 2026 ResumeDoctor. All rights reserved.

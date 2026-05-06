@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Create Account",
   description: "Create your ResumeDoctor account to save resumes and export to PDF & Word.",
   alternates: { canonical: `${siteUrl}/signup` },
-  robots: { index: false, follow: true },
+  robots: { index: false, follow: false },
 };
 
 export default function SignupLayout({
