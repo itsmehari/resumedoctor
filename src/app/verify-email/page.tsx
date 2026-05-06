@@ -1,18 +1,9 @@
 "use client";
 
-import type { Metadata } from "next";
 import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { getActionTokenFromUrl } from "@/lib/client-action-token";
-import { siteUrl } from "@/lib/seo";
-
-export const metadata: Metadata = {
-  title: "Verify Email",
-  description: "Verify your email address for your ResumeDoctor account.",
-  alternates: { canonical: `${siteUrl}/verify-email` },
-  robots: { index: false, follow: false },
-};
 
 type VerifyFail = "invalid" | "expired" | "server" | null;
 

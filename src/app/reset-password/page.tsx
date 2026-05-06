@@ -1,18 +1,9 @@
 "use client";
 
-import type { Metadata } from "next";
 import { useState, Suspense, useEffect } from "react";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { getActionTokenFromUrl } from "@/lib/client-action-token";
-import { siteUrl } from "@/lib/seo";
-
-export const metadata: Metadata = {
-  title: "Reset Password",
-  description: "Set a new password for your ResumeDoctor account.",
-  alternates: { canonical: `${siteUrl}/reset-password` },
-  robots: { index: false, follow: false },
-};
 
 function ResetPasswordForm() {
   const [password, setPassword] = useState("");
