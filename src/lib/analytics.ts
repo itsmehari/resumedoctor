@@ -65,7 +65,7 @@ export function trackEvent(
 export function trackPageView(path: string, title?: string): void {
   if (typeof window === "undefined" || !hasConsent()) return;
   if (window.gtag) {
-    window.gtag("config", process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "G-K4VS43PF7T", {
+    window.gtag("config", process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "G-WDPGFYERFD", {
       page_path: path,
       page_title: title,
     });

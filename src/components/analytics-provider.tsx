@@ -8,7 +8,7 @@ import { useConsent } from "@/contexts/consent-context";
 import { trackPageView } from "@/lib/analytics";
 import Clarity from "@microsoft/clarity";
 
-const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "G-K4VS43PF7T";
+const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "G-WDPGFYERFD";
 const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 const LINKEDIN_ID = process.env.NEXT_PUBLIC_LINKEDIN_PARTNER_ID;
 const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID ?? "vw2ci97dos";
