@@ -152,8 +152,8 @@ function TemplatesPageContent() {
             Resume Templates
           </h1>
           <p className="mt-3 text-slate-600 dark:text-slate-400 text-center max-w-2xl mx-auto">
-            Layouts built to survive ATS screens on Indian job portals—pick one, then fill in your story. Pro unlocks
-            every style plus PDF and Word when you need to submit.
+            Recruiter-tested layouts for the Indian job market — pick one, fill in your story, and
+            share it as a link. Pro unlocks every style plus PDF and Word when you need to submit a file.
           </p>
 
           <div className="mt-6 max-w-3xl mx-auto">

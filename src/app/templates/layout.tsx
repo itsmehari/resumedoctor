@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { siteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "30 Resume Templates – ATS-Friendly Designs for India",
+  title: "30 Resume Templates — Professional Designs for India",
   description:
-    "Choose from 30 professional, ATS-friendly resume templates. Professional, Modern, Minimal, Creative, Executive, Fresher & more. Designed for Naukri, LinkedIn, Indeed.",
+    "Choose from 30 professional resume templates — Modern, Classic, Creative, Minimal, Two-Column, Dark Sidebar. Recruiter-tested for Naukri, LinkedIn, and Indeed. Share as a link or export to PDF and Word on Pro.",
   alternates: { canonical: `${siteUrl}/templates` },
 };
 
