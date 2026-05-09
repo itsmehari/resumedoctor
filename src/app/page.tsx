@@ -321,21 +321,25 @@ export default function HomePage() {
 
       {/* ── HOW IT WORKS ─────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-primary-50/40 py-24 dark:from-slate-950 dark:via-slate-950 dark:to-primary-950/30">
-        {/* Decorative background — gradient blobs + dot grid (same family as Hero/AI Spotlight) */}
+        {/* Decorative background — gradient blobs + dual grids (Final CTA grid + soft dots, AI Spotlight depth) */}
+        <div className="pointer-events-none absolute inset-0 opacity-[0.055] dark:opacity-[0.04]" aria-hidden
+          style={{ backgroundImage: "linear-gradient(to right, rgb(148 163 184 / 0.45) 1px, transparent 1px), linear-gradient(to bottom, rgb(148 163 184 / 0.45) 1px, transparent 1px)", backgroundSize: "3rem 3rem" }} />
+        <div className="pointer-events-none absolute inset-0 opacity-[0.28] dark:opacity-[0.14]" aria-hidden
+          style={{ backgroundImage: "radial-gradient(circle, rgb(15 23 42 / 0.06) 1px, transparent 1px)", backgroundSize: "22px 22px" }} />
         <div className="pointer-events-none absolute -left-32 top-10 h-[420px] w-[420px] rounded-full opacity-40 blur-3xl dark:opacity-25"
           style={{ background: "radial-gradient(circle, #3b82f6 0%, transparent 65%)" }} aria-hidden />
         <div className="pointer-events-none absolute -right-24 bottom-0 h-[380px] w-[380px] rounded-full opacity-30 blur-3xl dark:opacity-20"
           style={{ background: "radial-gradient(circle, #10b981 0%, transparent 65%)" }} aria-hidden />
         <div className="pointer-events-none absolute left-1/2 top-1/3 h-[360px] w-[360px] -translate-x-1/2 rounded-full opacity-25 blur-3xl dark:opacity-15"
           style={{ background: "radial-gradient(circle, #a855f7 0%, transparent 65%)" }} aria-hidden />
-        <div className="pointer-events-none absolute inset-0 opacity-[0.35] dark:opacity-[0.18]" aria-hidden
-          style={{ backgroundImage: "radial-gradient(circle, rgb(15 23 42 / 0.08) 1px, transparent 1px)", backgroundSize: "22px 22px" }} />
+        <div className="pointer-events-none absolute inset-0 opacity-30 dark:opacity-20"
+          style={{ backgroundImage: "radial-gradient(circle at 80% 15%, rgb(251 191 36 / 0.12), transparent 42%)" }} aria-hidden />
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary-300/70 to-transparent dark:via-primary-700/70" aria-hidden />
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header — eyebrow pill + headline + sub */}
           <div className="text-center mb-16 max-w-2xl mx-auto">
-            <span className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full border border-primary-200/80 bg-white/80 backdrop-blur-sm text-[10px] font-bold uppercase tracking-[0.18em] text-primary-700 shadow-sm dark:border-primary-800/60 dark:bg-slate-900/70 dark:text-primary-300">
+            <span className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full border border-primary-200/90 bg-white/90 backdrop-blur-md text-[10px] font-bold uppercase tracking-[0.18em] text-primary-700 shadow-md shadow-primary-900/5 ring-1 ring-primary-100/80 dark:border-primary-800/60 dark:bg-slate-900/80 dark:text-primary-300 dark:ring-primary-900/40">
               <span className="h-1.5 w-1.5 rounded-full bg-primary-500 animate-pulse" />
               How it works
             </span>
@@ -352,8 +356,9 @@ export default function HomePage() {
 
           {/* Steps grid */}
           <div className="relative grid md:grid-cols-3 gap-6 lg:gap-8">
-            {/* Connector line — visible on md+ between the three glass cards */}
-            <div className="hidden md:block absolute top-[4.75rem] left-[calc(16.65%+0.75rem)] right-[calc(16.65%+0.75rem)] h-[3px] rounded-full bg-gradient-to-r from-primary-300/80 via-violet-300/80 to-emerald-300/80 dark:from-primary-800/60 dark:via-violet-800/60 dark:to-emerald-800/60 shadow-[0_0_12px_rgba(99,102,241,0.25)]" aria-hidden />
+            {/* Connector — thin luminous rail behind icon row (screenshot 3) */}
+            <div className="hidden md:block absolute top-[3.25rem] left-[12%] right-[12%] h-[2px] rounded-full bg-gradient-to-r from-primary-200/90 via-violet-200/90 to-emerald-200/90 shadow-[0_0_20px_rgba(59,130,246,0.35)] dark:from-primary-800/70 dark:via-violet-800/70 dark:to-emerald-800/70 dark:shadow-[0_0_24px_rgba(99,102,241,0.2)]" aria-hidden />
+            <div className="hidden md:block absolute top-[3.15rem] left-[12%] right-[12%] h-px rounded-full bg-white/60 dark:bg-white/10" aria-hidden />
 
             {[
               {
@@ -434,10 +439,10 @@ export default function HomePage() {
             ].map((item) => (
               <div
                 key={item.step}
-                className="group relative flex flex-col rounded-2xl border border-slate-200/80 bg-white/80 backdrop-blur-md p-7 shadow-[0_8px_30px_rgba(15,23,42,0.06)] ring-1 ring-slate-200/50 transition-all hover:-translate-y-1 hover:shadow-[0_18px_50px_rgba(15,23,42,0.10)] hover:border-slate-300 dark:border-slate-700/80 dark:bg-slate-900/70 dark:ring-slate-700/40 dark:hover:border-slate-600"
+                className="group relative flex flex-col items-center text-center rounded-2xl border border-slate-200/80 bg-white/85 backdrop-blur-md p-7 shadow-[0_8px_30px_rgba(15,23,42,0.07)] ring-1 ring-slate-200/50 transition-all hover:-translate-y-1 hover:shadow-[0_22px_55px_rgba(15,23,42,0.12)] hover:border-primary-200/80 hover:ring-primary-200/30 dark:border-slate-700/80 dark:bg-slate-900/75 dark:ring-slate-700/40 dark:hover:border-primary-700/50"
               >
                 {/* Step number ribbon */}
-                <span className={`absolute right-5 top-5 text-[11px] font-extrabold tracking-[0.2em] ${item.accent} opacity-90`}>
+                <span className={`absolute right-4 top-4 text-[11px] font-extrabold tracking-[0.2em] ${item.accent} opacity-90`}>
                   {item.step}
                 </span>
 
@@ -449,12 +454,14 @@ export default function HomePage() {
                 <h3 className="mt-5 text-lg font-bold text-slate-900 dark:text-slate-100">
                   {item.title}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400 max-w-[18rem] mx-auto">
                   {item.description}
                 </p>
 
                 {/* Mini preview block */}
-                {item.preview}
+                <div className="w-full max-w-[16.5rem]">
+                  {item.preview}
+                </div>
 
                 {/* Bottom accent line — appears on hover */}
                 <div className={`pointer-events-none absolute inset-x-6 bottom-0 h-[2px] rounded-full bg-gradient-to-r ${item.colorBg} opacity-0 transition-opacity group-hover:opacity-100`} aria-hidden />
@@ -462,14 +469,14 @@ export default function HomePage() {
             ))}
           </div>
 
-          {/* CTA */}
+          {/* CTA — primary yellow matches Final CTA band (screenshot 1) */}
           <div className="mt-14 flex flex-col items-center gap-3 text-center">
             <Link
               href="/try"
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-primary-600 via-blue-600 to-violet-600 px-8 py-4 text-base font-bold text-white shadow-xl shadow-primary-900/25 transition-all hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary-900/30"
+              className="inline-flex items-center gap-2 rounded-xl bg-accent hover:bg-accent-hover px-10 py-4 text-lg font-bold text-accent-dark shadow-xl shadow-black/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
               Start building with Try
-              <Icon path={PATHS.arrow} size={18} className="text-white" />
+              <Icon path={PATHS.arrow} size={18} className="text-accent-dark" />
             </Link>
             <p className="text-xs text-slate-500 dark:text-slate-400">
               No credit card · OTP-only access · ~ 5 minutes to a draft
@@ -503,22 +510,32 @@ export default function HomePage() {
       </section>
 
       {/* ── TEMPLATE SHOWCASE ─────────────────────────────────────────────── */}
-      <section className="relative py-24 bg-white dark:bg-slate-950">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-slate-50 to-transparent dark:from-slate-900 dark:to-transparent" aria-hidden />
+      <section className="relative overflow-hidden py-24 bg-gradient-to-b from-white via-slate-50/70 to-white dark:from-slate-950 dark:via-slate-950 dark:to-slate-950">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-slate-100/90 to-transparent dark:from-slate-900/90 dark:to-transparent" aria-hidden />
+        {/* Soft corner glows — aligned with “How it works” light-section polish */}
+        <div className="pointer-events-none absolute -left-28 top-12 h-80 w-80 rounded-full opacity-40 blur-3xl dark:opacity-22"
+          style={{ background: "radial-gradient(circle, rgb(59 130 246 / 0.38), transparent 68%)" }} aria-hidden />
+        <div className="pointer-events-none absolute -right-24 bottom-20 h-96 w-96 rounded-full opacity-32 blur-3xl dark:opacity-18"
+          style={{ background: "radial-gradient(circle, rgb(16 185 129 / 0.26), transparent 68%)" }} aria-hidden />
+        <div className="pointer-events-none absolute inset-0 opacity-[0.035] dark:opacity-[0.025]" aria-hidden
+          style={{ backgroundImage: "linear-gradient(to right, rgb(148 163 184 / 0.45) 1px, transparent 1px), linear-gradient(rgb(148 163 184 / 0.45) 1px, transparent 1px)", backgroundSize: "4rem 4rem" }} />
+
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 max-w-2xl mx-auto">
-            <p className="text-xs font-bold uppercase tracking-widest text-primary-500 mb-3">Templates</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+            <span className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full border border-primary-200/80 bg-white/90 backdrop-blur-md text-[10px] font-bold uppercase tracking-[0.18em] text-primary-600 shadow-md shadow-primary-900/5 ring-1 ring-primary-100/70 dark:border-primary-800/60 dark:bg-slate-900/85 dark:text-primary-400 dark:ring-primary-900/40">
+              Templates
+            </span>
+            <h2 className="text-3xl sm:text-[2.45rem] font-extrabold text-slate-900 dark:text-slate-100 tracking-tight leading-[1.12]">
               30 templates for every career
             </h2>
-            <p className="mt-4 text-slate-500 dark:text-slate-400 text-base leading-relaxed">
+            <p className="mt-4 text-slate-600 dark:text-slate-400 text-base leading-relaxed">
               Modern layouts, classic formats, dark sidebars, two-column designs — all ATS-safe and
               recruiter-tested for the Indian job market.
             </p>
           </div>
 
-          <div className="mb-12 flex justify-center">
-            <div className="inline-flex flex-wrap justify-center gap-2 rounded-2xl border border-slate-200/90 bg-slate-50/90 p-2 shadow-inner dark:border-slate-700 dark:bg-slate-900/60">
+          <div className="mb-10 flex justify-center px-1">
+            <div className="inline-flex max-w-full flex-wrap justify-center gap-1 rounded-full border border-slate-200/90 bg-white/95 p-1.5 shadow-[0_12px_40px_rgba(15,23,42,0.07)] ring-1 ring-slate-100/90 backdrop-blur-md dark:border-slate-700/80 dark:bg-slate-900/85 dark:ring-slate-800/80">
               {([
                 { label: "All", category: "" },
                 { label: "Modern", category: "modern" },
@@ -531,10 +548,10 @@ export default function HomePage() {
                 <Link
                   key={label}
                   href={category ? `/templates?category=${category}` : "/templates"}
-                  className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                  className={`whitespace-nowrap px-3.5 py-2 rounded-full text-sm font-semibold transition-all ${
                     label === "All"
-                      ? "bg-primary-600 text-white shadow-md shadow-primary-900/20"
-                      : "text-slate-600 dark:text-slate-400 hover:bg-white hover:text-primary-700 hover:shadow-sm dark:hover:bg-slate-800 dark:hover:text-primary-300"
+                      ? "bg-primary-600 text-white shadow-md shadow-primary-900/25"
+                      : "text-slate-600 dark:text-slate-400 hover:bg-primary-50 hover:text-primary-800 dark:hover:bg-slate-800/90 dark:hover:text-primary-300"
                   }`}
                 >
                   {label}
@@ -543,15 +560,17 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            {TEMPLATE_CARDS.map((t) => (
-              <TemplateShowcaseCard key={t.title} {...t} />
-            ))}
+          <div className="rounded-[1.75rem] border border-slate-200/85 bg-white/55 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.06)] ring-1 ring-slate-100/90 backdrop-blur-sm dark:border-slate-700/70 dark:bg-slate-900/45 dark:ring-slate-800 sm:p-8">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+              {TEMPLATE_CARDS.map((t) => (
+                <TemplateShowcaseCard key={t.title} {...t} />
+              ))}
+            </div>
           </div>
 
           <div className="text-center mt-12">
             <Link href="/templates"
-              className="inline-flex items-center gap-2 rounded-xl border border-primary-200 bg-primary-50 px-6 py-3 text-sm font-semibold text-primary-700 transition-all hover:bg-primary-100 dark:border-primary-800 dark:bg-primary-950/50 dark:text-primary-300 dark:hover:bg-primary-900/40">
+              className="inline-flex items-center gap-2 rounded-xl border border-primary-200 bg-primary-50 px-7 py-3.5 text-sm font-semibold text-primary-700 shadow-sm transition-all hover:bg-primary-100 hover:shadow-md dark:border-primary-800 dark:bg-primary-950/50 dark:text-primary-300 dark:hover:bg-primary-900/40">
               See all 30 templates
               <Icon path={PATHS.arrow} size={16} />
             </Link>
@@ -848,11 +867,11 @@ function TemplateShowcaseCard({ title, style, badge, accent, layout, slots }: {
 
   return (
     <Link href="/templates"
-      className="group rounded-2xl overflow-hidden border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-md ring-1 ring-slate-100 dark:ring-slate-800 hover:border-primary-200 dark:hover:border-primary-800 hover:shadow-xl hover:shadow-primary-900/10 transition-all hover:-translate-y-1">
+      className="group rounded-2xl overflow-hidden border border-slate-200/90 bg-white shadow-[0_14px_44px_rgba(15,23,42,0.08)] ring-1 ring-slate-100/95 transition-all hover:-translate-y-1 hover:border-primary-200/90 hover:shadow-[0_28px_60px_rgba(37,99,235,0.12)] dark:border-slate-700/90 dark:bg-slate-900 dark:ring-slate-800 dark:hover:border-primary-700/70">
       {/* Preview */}
-      <div className="relative bg-slate-50 dark:bg-slate-800 overflow-hidden" style={{ aspectRatio: "3/4" }}>
+      <div className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-slate-100/90 dark:from-slate-800 dark:to-slate-900/90" style={{ aspectRatio: "3/4" }}>
         {/* Simulated resume layout */}
-        <div className="absolute inset-4 bg-white dark:bg-slate-900 rounded-lg shadow-sm overflow-hidden">
+        <div className="absolute inset-4 overflow-hidden rounded-xl bg-white shadow-inner ring-1 ring-slate-200/80 dark:bg-slate-900 dark:ring-slate-700/80">
           {isSidebar ? (
             <div className="flex h-full">
               <div className="w-1/3 h-full p-2 space-y-2" style={{ backgroundColor: accent }}>
@@ -910,25 +929,25 @@ function TemplateShowcaseCard({ title, style, badge, accent, layout, slots }: {
           <div className="absolute left-0 top-0 bottom-0 w-1.5" style={{ backgroundColor: accent, opacity: isSidebar ? 0 : 0.8 }} />
         </div>
 
+        <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-transparent via-transparent to-black/[0.06] transition-all group-hover:to-black/[0.12]" />
         {badge && (
-          <span className="absolute top-5 left-5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary-600 text-white shadow-sm">
+          <span className="absolute top-4 left-4 z-10 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary-600 text-white shadow-md shadow-primary-900/25 ring-1 ring-white/20">
             {badge}
           </span>
         )}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/5 group-hover:to-black/10 transition-all" />
       </div>
 
       {/* Info */}
-      <div className="p-4 flex items-center justify-between">
+      <div className="flex items-center justify-between border-t border-slate-100/90 bg-white/95 px-5 py-4 dark:border-slate-800 dark:bg-slate-900/95">
         <div>
-          <h3 className="font-bold text-slate-900 dark:text-slate-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+          <h3 className="font-bold text-slate-900 dark:text-slate-100 transition-colors group-hover:text-primary-600 dark:group-hover:text-primary-400">
             {title}
           </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{style}</p>
+          <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{style}</p>
         </div>
-        <div className="w-6 h-6 rounded-full flex items-center justify-center"
-          style={{ backgroundColor: accent + "20" }}>
-          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: accent }} />
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full ring-2 ring-white shadow-sm dark:ring-slate-900"
+          style={{ backgroundColor: accent + "22" }}>
+          <div className="h-2.5 w-2.5 rounded-full shadow-inner" style={{ backgroundColor: accent }} />
         </div>
       </div>
     </Link>
