@@ -172,8 +172,7 @@ function PlansAtGlance({
           <h3 className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-50">Basic account</h3>
           <p className="mt-1 text-2xl font-extrabold text-slate-800 dark:text-slate-100">₹0</p>
           <p className="mt-2 flex-1 text-xs leading-relaxed text-slate-700 dark:text-slate-300">
-            Sign in to save resumes: TXT export, keyword match vs job descriptions, one ATS teaser per resume, 10 templates,
-            5 AI runs per day (UTC).
+            Sign in to save resumes &amp; share as a link: TXT export, keyword match vs job descriptions, one resume health check per resume, 10 templates, 5 AI runs per day (UTC).
           </p>
           <Link
             href="/signup"
@@ -214,7 +213,7 @@ function PlansAtGlance({
             <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">/ month from</span>
           </div>
           <p className="mt-2 flex-1 text-xs leading-relaxed text-slate-700 dark:text-slate-300">
-            PDF &amp; Word, watermark-free exports, all templates, higher ATS &amp; AI limits — billed on SuperProfile.
+            PDF &amp; Word, watermark-free exports, all templates, unlimited resume health checks &amp; higher AI limits — billed on SuperProfile.
           </p>
           <Link
             href="#pro-superprofile"
@@ -329,9 +328,10 @@ const COMPARE_PLAN_ROWS: {
 
 const PLAN_CARD_BULLETS = [
   "Send Naukri and LinkedIn-ready PDFs and Word files",
+  "Share your resume as one always-current link",
   "No watermarks on paid exports",
   "All 30+ templates while your access is active",
-  "Higher daily limits for ATS checks and AI bullets",
+  "Unlimited resume health checks and higher AI limits",
 ] as const;
 
 function PlanCardPro({
@@ -496,10 +496,10 @@ export default function PricingPage() {
           </h1>
           <p className="mx-auto mt-3 max-w-2xl text-slate-600 dark:text-slate-400">
             {region?.currency === "USD"
-              ? "Preview the builder with OTP Try (no card). When you are ready to send a PDF or Word file to employers, upgrade on SuperProfile—use the same email as this account so access turns on automatically."
+              ? "Preview the builder with OTP Try (no card). Build, share as a link, and when you are ready to send a PDF or Word file to employers, upgrade on SuperProfile—use the same email as this account so access turns on automatically."
               : region?.currency === "INR"
-                ? "Preview with OTP Try (no card). When you need portal-ready PDF and Word, every template, and higher ATS and AI limits, pay once on SuperProfile with the same email as this account."
-                : "Preview the builder with OTP Try (no card). When you are ready to send a PDF or Word file to employers, upgrade on SuperProfile—use the same email as this account so access turns on automatically."}
+                ? "Preview with OTP Try (no card). Build, share as a link, and upgrade on SuperProfile when you need portal-ready PDF and Word, every template, and higher AI limits — pay once with the same email as this account."
+                : "Preview the builder with OTP Try (no card). Build, share as a link, and when you are ready to send a PDF or Word file to employers, upgrade on SuperProfile—use the same email as this account so access turns on automatically."}
           </p>
           <div className="mx-auto mt-8 max-w-xl">
             <TrustBadges />
@@ -668,8 +668,8 @@ export default function PricingPage() {
                     Pro — keep applying without file limits
                   </h2>
                   <p className="mx-auto mt-2 max-w-xl text-center text-slate-600 dark:text-slate-400">
-                    Month or year of full exports, every template, and higher ATS and AI limits. Pay on SuperProfile with
-                    the same email as ResumeDoctor so your account unlocks right away.
+                    Month or year of full exports, every template, unlimited resume health checks, and higher AI
+                    limits. Pay on SuperProfile with the same email as ResumeDoctor so your account unlocks right away.
                   </p>
 
                   <div className="mt-10 grid gap-10 lg:grid-cols-2">

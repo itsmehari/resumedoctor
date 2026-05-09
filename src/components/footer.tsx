@@ -4,6 +4,7 @@ const footerLinks = {
   product: [
     { href: "/try", label: "Try" },
     { href: "/templates", label: "Templates" },
+    { href: "/resume-link", label: "Resume link" },
     { href: "/features", label: "Features" },
     { href: "/cover-letters", label: "Cover Letters" },
     { href: "/pricing", label: "Pricing" },
@@ -75,7 +76,7 @@ export function Footer() {
               ResumeDoctor
             </Link>
             <p className="mt-3 text-sm text-slate-400 max-w-xs leading-relaxed">
-              Build ATS-friendly resumes that land interviews. India&apos;s trusted resume & CV builder.
+              Create your resume, keep it current, and share it as a link — for WhatsApp, LinkedIn, and recruiter email. India&apos;s trusted resume &amp; CV builder.
             </p>
             <div className="mt-4 flex flex-wrap gap-4">
               {socialLinks.map(({ href, label, icon }) => (

@@ -68,8 +68,8 @@ export default function BlogIndexPage() {
               </span>
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-relaxed text-slate-600 dark:text-slate-400">
-              High-clarity guides on ATS, resume writing, profile optimization, and application strategy — designed to
-              help you turn job searches into interviews.
+              High-clarity guides on resume writing, profile optimization, recruiter-readability, and application
+              strategy — designed to help you turn job searches into interviews.
             </p>
 
             <div className="mt-10 rounded-2xl border border-slate-200/90 bg-white/80 p-5 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/70">

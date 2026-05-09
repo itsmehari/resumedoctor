@@ -24,8 +24,8 @@ export default function ResumeBuilderIndiaLp() {
           Resume builder for Indian job portals
         </h1>
         <p className="mt-4 text-center text-lg text-slate-600 dark:text-slate-400">
-          ATS-friendly layouts, AI help for bullets, and exports when you upgrade—aligned with how you actually apply on
-          Naukri and LinkedIn.
+          Recruiter-ready layouts, AI help for bullets, a shareable resume link for WhatsApp and LinkedIn, plus PDF and
+          Word exports when you upgrade — aligned with how you actually apply on Naukri and LinkedIn.
         </p>
         <div className="mt-10 flex justify-center">
           <TrustBadges />

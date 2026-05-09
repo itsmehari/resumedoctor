@@ -5,7 +5,9 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 
 const links = [
+  { href: "/try", label: "Try free · email" },
   { href: "/templates", label: "Templates" },
+  { href: "/resume-link", label: "Resume link" },
   { href: "/pricing", label: "Pricing" },
   { href: "/features", label: "Features" },
   { href: "/blog", label: "Blog" },
@@ -40,7 +42,7 @@ export function MobileNavMenu({ inverted }: { inverted?: boolean }) {
             aria-hidden="true"
           />
           <div
-            className={`absolute right-0 top-full mt-1 z-50 w-48 rounded-xl border shadow-xl py-2 ${bgCls}`}
+            className={`absolute right-0 top-full mt-1 z-50 w-52 rounded-xl border shadow-xl py-2 ${bgCls}`}
           >
             {links.map(({ href, label }) => (
               <Link

@@ -7,16 +7,22 @@ import { Footer } from "@/components/footer";
 export const metadata: Metadata = {
   title: "Features — ResumeDoctor",
   description:
-    "Templates, AI writing help, ATS match guidance, and PDF/DOCX exports for Indian job seekers. Try with OTP; Pro via SuperProfile.",
+    "Create your resume, share it as a link, and keep it always up to date. Templates, AI writing help, recruiter-readability checks, and PDF/DOCX exports for Indian job seekers. Try with OTP; Pro via SuperProfile.",
   alternates: { canonical: `${siteUrl}/features` },
 };
 
 const CAPABILITIES = [
   {
-    title: "ATS-friendly templates",
-    body: "Layouts aimed at parsers used by employers and portals. Pick a structure, then focus on achievements—not margins.",
+    title: "Resume as a link",
+    body: "Publish your resume to a public URL like resumedoctor.in/r/your-name. Share it on WhatsApp, LinkedIn, recruiter email, or a printed QR — and it always reflects your latest edits.",
+    href: "/resume-link",
+    linkLabel: "Resume link details",
+  },
+  {
+    title: "Recruiter-tested templates",
+    body: "Layouts built around how recruiters and portal parsers actually read resumes in India. Pick a structure, then focus on achievements—not margins.",
     href: "/blog/ats-friendly-resume-complete-guide",
-    linkLabel: "ATS guide",
+    linkLabel: "ATS-friendly resume guide",
   },
   {
     title: "AI help for bullets and summary",
@@ -32,7 +38,7 @@ const CAPABILITIES = [
   },
   {
     title: "ATS score checker",
-    body: "Basic includes one teaser score per resume (top suggestions). Pro unlocks unlimited re-checks — helpful before you apply with confidence.",
+    body: "Check how well your resume reads against best practices before you apply. Basic includes one teaser score per resume; Pro unlocks unlimited re-checks.",
     href: "/pricing",
     linkLabel: "Compare tiers",
   },
@@ -57,8 +63,8 @@ export default function FeaturesPage() {
             What you get with ResumeDoctor
           </h1>
           <p className="mt-4 text-lg text-slate-600 dark:text-slate-400">
-            One stack for India-first job search: build in the browser, tighten content with AI, check fit against a JD,
-            then export when your plan allows.
+            One stack for India-first job search: build in the browser, share as a link, tighten content with AI, check
+            fit against a JD, then export when your plan allows.
           </p>
 
           <ul className="mt-10 space-y-8">

@@ -10,7 +10,7 @@ import { ArrowUpRight, Check, Layers, Sparkles } from "lucide-react";
 export const metadata: Metadata = {
   title: "Resume Examples by Role – India",
   description:
-    "Resume examples for Software Engineer, Fresher, Data Analyst, Marketing, BPO, and more. Each guide includes sample lines, India context, AI-era advice, tools by career stage, ATS keywords, and mistakes to avoid.",
+    "Resume examples for Software Engineer, Fresher, Data Analyst, Marketing, BPO, and more. Each guide includes sample lines, India hiring context, AI-era advice, tools by career stage, role-specific keywords recruiters look for, and mistakes to avoid.",
   alternates: { canonical: `${siteUrl}/examples` },
 };
 
@@ -132,13 +132,13 @@ export default function ExamplesIndexPage({ searchParams }: ExamplesPageProps) {
               </span>
             </h1>
             <p className="mt-5 max-w-2xl text-lg text-slate-600 dark:text-slate-400">
-              Sample lines, section order, ATS keywords, and mistakes to avoid — then open the builder to make your own
-              version.
+              Sample lines, section order, role-specific keywords, and mistakes to avoid — then open the builder to
+              make your own version and publish it as a link.
             </p>
             <p className="mt-4 max-w-2xl text-sm font-medium text-slate-700 dark:text-slate-300">
               Every role guide includes the same depth: India hiring context,{" "}
               <span className="text-slate-900 dark:text-slate-100">AI era &amp; tools by career stage</span> (early →
-              mid → senior), expert tips, common mistakes, and role-specific ATS keywords.
+              mid → senior), expert tips, common mistakes, and role-specific ATS keywords recruiters search for.
             </p>
             <ul
               className="mt-5 grid max-w-2xl gap-2 text-sm text-slate-600 dark:text-slate-400 sm:grid-cols-2"

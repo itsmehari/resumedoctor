@@ -8,7 +8,7 @@ import { LpTierClarification } from "@/components/lp/lp-tier-clarification";
 export const metadata: Metadata = {
   title: "Tailor Your Resume to the Job Description | ResumeDoctor",
   description:
-    "Align your resume with a real JD: ATS-oriented layout plus match guidance. OTP Try; Pro for exports via SuperProfile.",
+    "Align your resume with a real JD: recruiter-readable layout plus keyword-match guidance. Build, share as a link, then export on Pro via SuperProfile when you need PDF or Word.",
   alternates: { canonical: `${siteUrl}/lp/tailor-resume-job-description` },
 };
 

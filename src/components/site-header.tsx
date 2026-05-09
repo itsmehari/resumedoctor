@@ -19,6 +19,7 @@ type SiteHeaderProps = {
 
 const publicNavLinks = [
   { href: "/templates", label: "Templates" },
+  { href: "/resume-link", label: "Resume link" },
   { href: "/pricing", label: "Pricing" },
   { href: "/features", label: "Features" },
   { href: "/blog", label: "Blog" },
