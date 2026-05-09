@@ -114,7 +114,7 @@ function TryPageContent() {
           </h1>
           <p className="mt-2 text-slate-600 dark:text-slate-400 text-center max-w-md mx-auto text-sm">
             {step === "email"
-              ? "In about five minutes you can pick a template, sketch sections, and preview. Enter your email for a code—we never ask for a card on this step."
+              ? "In about fifteen minutes you can pick a template, sketch sections, and preview. Enter your email for a code—we never ask for a card on this step."
               : "Enter the 6-digit code we sent to your email"}
           </p>
 
@@ -203,7 +203,7 @@ function TryPageContent() {
                   disabled={loading || otp.length !== 6}
                   className="w-full rounded-xl bg-accent hover:bg-accent-hover py-3 text-base font-semibold text-accent-dark transition-colors disabled:opacity-50"
                 >
-                  {loading ? "Verifying..." : "Verify and start 5-min trial"}
+                  {loading ? "Verifying..." : "Verify and start 15-min trial"}
                 </button>
                 <button
                   type="button"
@@ -237,7 +237,7 @@ function TryPageContent() {
           </div>
 
           <p className="mt-6 text-center text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
-            Five-minute session after verification. No credit card here. Sign up to keep your resume; Pro on SuperProfile
+            Fifteen-minute session after verification. No credit card here. Sign up to keep your resume; Pro on SuperProfile
             unlocks PDF and Word for real applications.
           </p>
         </div>

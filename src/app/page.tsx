@@ -101,15 +101,25 @@ export default function HomePage() {
                 ))}
               </ul>
 
-              {/* CTAs */}
+              {/* CTAs — primary "Try" (OTP) + secondary "Create account" so the
+                  funnel does not depend solely on the OTP/email pipe. */}
               <div className="mt-10 flex flex-col sm:flex-row gap-4">
                 <Link href="/try"
                   className="rounded-xl bg-accent hover:bg-accent-hover px-8 py-4 text-base font-bold text-accent-dark text-center transition-all shadow-xl shadow-black/30 hover:scale-[1.02] active:scale-[0.98]">
                   Build My Resume — Try
                 </Link>
-                <Link href="/templates"
-                  className="rounded-xl border-2 border-white/30 bg-white/5 hover:bg-white/15 px-8 py-4 text-base font-semibold text-white/90 text-center transition-all sm:max-w-[11rem] sm:self-center">
-                  Templates
+                <Link href="/signup"
+                  className="rounded-xl border-2 border-white/40 bg-white/10 hover:bg-white/20 px-8 py-4 text-base font-semibold text-white text-center transition-all backdrop-blur-sm">
+                  Create free account
+                </Link>
+              </div>
+              <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-white/70">
+                <Link href="/templates" className="underline-offset-2 hover:underline">
+                  Or browse templates →
+                </Link>
+                <span className="hidden sm:inline">·</span>
+                <Link href="/login" className="underline-offset-2 hover:underline">
+                  Already have an account? Sign in
                 </Link>
               </div>
 
@@ -123,6 +133,36 @@ export default function HomePage() {
               <HeroVisual />
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ── FINAL CTA ────────────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary-700 via-primary-600 to-indigo-900 py-28">
+        <div className="absolute inset-0 opacity-15"
+          style={{ backgroundImage: "radial-gradient(circle at 70% 50%, #fbbf24 0%, transparent 60%)" }} aria-hidden />
+        <div className="absolute inset-0 opacity-[0.07] bg-[linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] bg-[size:3rem_3rem]" aria-hidden />
+        <div className="relative max-w-3xl mx-auto px-4 text-center">
+          <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-xs font-semibold text-white/90 tracking-wide">
+            <Icon path={PATHS.star} size={14} className="text-amber-300" />
+            Start free · Upgrade when you export
+          </div>
+          <h2 className="text-3xl sm:text-5xl font-extrabold text-white leading-tight tracking-tight">
+            Your dream job is<br />one resume away.
+          </h2>
+          <p className="mt-5 text-lg text-white/80 max-w-lg mx-auto leading-relaxed">
+            Build your best resume on ResumeDoctor. Start with Try, then upgrade when you need PDF, Word, and every template.
+          </p>
+          <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center sm:items-center">
+            <Link href="/try"
+              className="rounded-xl bg-accent hover:bg-accent-hover px-10 py-4 text-lg font-bold text-accent-dark text-center transition-all shadow-xl shadow-black/25 hover:scale-[1.02]">
+              Build my resume — try
+            </Link>
+            <Link href="/templates"
+              className="rounded-xl border-2 border-white/40 bg-white/10 hover:bg-white/20 px-8 py-4 text-base font-semibold text-white text-center transition-all backdrop-blur-sm">
+              View templates
+            </Link>
+          </div>
+          <p className="mt-6 text-sm text-white/55">No credit card · Email verification for the quick try</p>
         </div>
       </section>
 
@@ -522,36 +562,6 @@ export default function HomePage() {
             Still have questions?{" "}
             <Link href="/blog" className="font-medium text-primary-600 hover:underline dark:text-primary-400">Read our resume guides →</Link>
           </p>
-        </div>
-      </section>
-
-      {/* ── FINAL CTA ────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary-700 via-primary-600 to-indigo-900 py-28">
-        <div className="absolute inset-0 opacity-15"
-          style={{ backgroundImage: "radial-gradient(circle at 70% 50%, #fbbf24 0%, transparent 60%)" }} aria-hidden />
-        <div className="absolute inset-0 opacity-[0.07] bg-[linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] bg-[size:3rem_3rem]" aria-hidden />
-        <div className="relative max-w-3xl mx-auto px-4 text-center">
-          <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-xs font-semibold text-white/90 tracking-wide">
-            <Icon path={PATHS.star} size={14} className="text-amber-300" />
-            Start free · Upgrade when you export
-          </div>
-          <h2 className="text-3xl sm:text-5xl font-extrabold text-white leading-tight tracking-tight">
-            Your dream job is<br />one resume away.
-          </h2>
-          <p className="mt-5 text-lg text-white/80 max-w-lg mx-auto leading-relaxed">
-            Build your best resume on ResumeDoctor. Start with Try, then upgrade when you need PDF, Word, and every template.
-          </p>
-          <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center sm:items-center">
-            <Link href="/try"
-              className="rounded-xl bg-accent hover:bg-accent-hover px-10 py-4 text-lg font-bold text-accent-dark text-center transition-all shadow-xl shadow-black/25 hover:scale-[1.02]">
-              Build my resume — try
-            </Link>
-            <Link href="/templates"
-              className="rounded-xl border-2 border-white/40 bg-white/10 hover:bg-white/20 px-8 py-4 text-base font-semibold text-white text-center transition-all backdrop-blur-sm">
-              View templates
-            </Link>
-          </div>
-          <p className="mt-6 text-sm text-white/55">No credit card · Email verification for the quick try</p>
         </div>
       </section>
       </main>

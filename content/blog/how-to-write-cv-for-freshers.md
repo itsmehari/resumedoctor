@@ -117,3 +117,5 @@ Add skills you can defend in an interview. Remove fluff.
 - [ ] PDF is readable and text-selectable
 
 Use [ResumeDoctor templates](/templates) to build quickly, then tailor in minutes for each role. Start your version at [Try free](/try), and review our [resume checklist](/blog/resume-checklist-before-you-apply) before applying.
+
+If you are deciding whether to use an AI builder or a static template for your first resume, our 2026 fresher-focused comparison — [AI resume builder vs template](/blog/ai-resume-builder-vs-template-india-2026) — walks through the decision tree with examples.

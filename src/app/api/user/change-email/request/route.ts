@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { compare } from "bcryptjs";
 import { randomBytes } from "crypto";
 import { sendEmailChangeVerification } from "@/lib/email";
+import { siteUrl } from "@/lib/seo";
 import { sessionUserEmail } from "@/lib/session-user";
 import { requireVerifiedEmailOr403 } from "@/lib/email-verification-guard";
 
@@ -76,8 +77,7 @@ export async function POST(req: Request) {
       },
     });
 
-    const baseUrl = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const verifyLink = `${baseUrl}/settings/change-email/verify#token=${token}`;
+    const verifyLink = `${siteUrl}/settings/change-email/verify#token=${token}`;
 
     const result = await sendEmailChangeVerification(newEmail, verifyLink, user.email);
     if (!result.ok) {

@@ -110,3 +110,5 @@ If you are targeting international roles:
 Consistency beats one-time polishing.
 
 Use [ResumeDoctor](/try) to create a polished resume you can mirror into profiles with consistent, ATS-friendly language.
+
+For a deeper field-by-field walkthrough of the Naukri form itself — headline length, key skills cap, role-tag selection, expected CTC, and the exact ATS pitfalls — see [How to pass Naukri's ATS in 2026](/blog/how-to-pass-naukri-ats-2026-india).

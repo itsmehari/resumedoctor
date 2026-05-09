@@ -5,6 +5,7 @@ import { z } from "zod";
 import { subHours } from "date-fns";
 import { prisma } from "@/lib/prisma";
 import { sendVerificationEmail } from "@/lib/email";
+import { siteUrl } from "@/lib/seo";
 import { normalizeEmail } from "@/lib/email-normalize";
 
 const MAX_PER_HOUR = 3;
@@ -66,8 +67,7 @@ export async function POST(req: Request) {
       },
     });
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const verifyLink = `${baseUrl}/verify-email#token=${verifyToken}`;
+    const verifyLink = `${siteUrl}/verify-email#token=${verifyToken}`;
 
     const emailResult = await sendVerificationEmail(email, verifyLink);
     await prisma.otpAttempt.create({

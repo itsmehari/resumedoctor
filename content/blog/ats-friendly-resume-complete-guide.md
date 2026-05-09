@@ -200,6 +200,7 @@ To pass ATS and partner tools: favor standard headings, honest keyword alignment
 
 ### Extra reading on ResumeDoctor
 
+- [AI resume builder vs template — which one gets Indian freshers shortlisted](/blog/ai-resume-builder-vs-template-india-2026) for the 2026 decision tree
 - [Tailor your resume to a job description](/blog/how-to-tailor-resume-for-job-description) for a posting-by-posting method
 - [Resume formats in India](/blog/resume-formats-india-guide) for campus vs experienced tracks
 - [Skills section guide](/blog/skills-section-guide) to cluster tools without a messy table

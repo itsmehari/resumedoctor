@@ -4,6 +4,7 @@ import { z } from "zod";
 import { randomBytes } from "crypto";
 import { prisma } from "@/lib/prisma";
 import { sendPasswordResetEmail } from "@/lib/email";
+import { siteUrl } from "@/lib/seo";
 import { normalizeEmail } from "@/lib/email-normalize";
 
 const schema = z.object({
@@ -43,8 +44,7 @@ export async function POST(req: Request) {
       data: { email: user.email, token, expires },
     });
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const resetLink = `${baseUrl}/reset-password#token=${token}`;
+    const resetLink = `${siteUrl}/reset-password#token=${token}`;
 
     const emailResult = await sendPasswordResetEmail(user.email, resetLink);
     if (!emailResult.ok) {

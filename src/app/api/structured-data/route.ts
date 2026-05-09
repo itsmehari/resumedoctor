@@ -28,7 +28,7 @@ export async function GET() {
       features: [
         "ATS-friendly resume templates",
         "PDF and Word export",
-        "5-minute OTP try session",
+        "15-minute OTP try session",
         "Works with Naukri, LinkedIn, Indeed",
       ],
     },

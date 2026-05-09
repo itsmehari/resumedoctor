@@ -2,6 +2,10 @@
 
 export const AnalyticsEvents = {
   sign_up: "sign_up",
+  /** Server: signup form was submitted (regardless of validation/email-send outcome). DB-backed funnel input independent of GA4. */
+  signup_attempt: "signup_attempt",
+  /** Server: trial OTP send-otp endpoint was hit (regardless of Resend outcome). */
+  otp_request_attempt: "otp_request_attempt",
   resume_created: "resume_created",
   trial_start: "trial_start",
   checkout_started: "checkout_started",
@@ -28,6 +32,8 @@ export type AnalyticsEventName = (typeof AnalyticsEvents)[keyof typeof Analytics
 /** Ordered list for admin dashboards and schema documentation */
 export const DOCUMENTED_PRODUCT_EVENT_NAMES: readonly AnalyticsEventName[] = [
   AnalyticsEvents.sign_up,
+  AnalyticsEvents.signup_attempt,
+  AnalyticsEvents.otp_request_attempt,
   AnalyticsEvents.resume_created,
   AnalyticsEvents.trial_start,
   AnalyticsEvents.checkout_started,

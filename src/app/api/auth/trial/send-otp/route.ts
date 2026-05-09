@@ -4,6 +4,8 @@ import { hash } from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { sendOtpEmail, resend } from "@/lib/email";
+import { recordProductEvent } from "@/lib/product-events";
+import { AnalyticsEvents } from "@/lib/analytics-event-names";
 import { subMinutes, subHours } from "date-fns";
 
 const MAX_SENDS_PER_EMAIL = 3;
@@ -33,6 +35,10 @@ export async function POST(req: Request) {
     const body = await req.json();
     const parsed = schema.safeParse(body);
     if (!parsed.success) {
+      await recordProductEvent({
+        name: AnalyticsEvents.otp_request_attempt,
+        props: { outcome: "invalid_input" },
+      });
       return NextResponse.json(
         { error: "Invalid email address" },
         { status: 400 }
@@ -41,6 +47,10 @@ export async function POST(req: Request) {
 
     const { email } = parsed.data;
     const normalizedEmail = email.toLowerCase().trim();
+    await recordProductEvent({
+      name: AnalyticsEvents.otp_request_attempt,
+      props: { email_domain: normalizedEmail.split("@")[1] ?? null },
+    });
 
     // Cooldown: 1 trial per email per 24h
     const cooldownStart = subHours(new Date(), TRIAL_COOLDOWN_HOURS);

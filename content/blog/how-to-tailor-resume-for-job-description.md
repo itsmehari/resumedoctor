@@ -154,3 +154,5 @@ Never fabricate tools or tenure. Show real adjacent proof (projects, coursework,
 - Order roles and skills by relevance and do a final consistency check.
 
 Tailoring takes 10–15 minutes per application but can significantly increase your shortlist rate. Use our [resume checklist](/blog/resume-checklist-before-you-apply) right before you submit.
+
+If you are weighing whether to do this manually or use an AI tailoring tool, see [AI resume builder vs template](/blog/ai-resume-builder-vs-template-india-2026) for when each approach pays off in 2026.

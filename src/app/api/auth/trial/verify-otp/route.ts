@@ -8,8 +8,12 @@ import { recordProductEvent } from "@/lib/product-events";
 import { AnalyticsEvents } from "@/lib/analytics-event-names";
 import { subMinutes } from "date-fns";
 
-const TRIAL_DURATION_MINUTES = 5;
-const TRIAL_EXTEND_MINUTES = 3; // extra time for returning trial users
+// May 2026: was 5 + 3. Five minutes is below realistic resume-build time;
+// users who hit the OTP wall and got logged out before they could finish a
+// draft did not come back. Lengthening the session is the cheapest lever to
+// improve trial→signup conversion and is reversible if abuse spikes.
+const TRIAL_DURATION_MINUTES = 15;
+const TRIAL_EXTEND_MINUTES = 5; // extra time for returning trial users
 const MAX_VERIFY_ATTEMPTS = 5;
 const LOCKOUT_MINUTES = 15;
 
@@ -171,7 +175,6 @@ export async function POST(req: Request) {
       trialSession.id
     );
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
     const isProd = process.env.NODE_ENV === "production";
     const cookieOptions = [
       `${getTrialCookieName()}=${token}`,

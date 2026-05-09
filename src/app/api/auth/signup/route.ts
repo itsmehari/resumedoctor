@@ -5,6 +5,7 @@ import { randomBytes } from "crypto";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { sendVerificationEmail } from "@/lib/email";
+import { siteUrl } from "@/lib/seo";
 import { recordProductEvent } from "@/lib/product-events";
 import { AnalyticsEvents } from "@/lib/analytics-event-names";
 
@@ -19,6 +20,12 @@ export async function POST(req: Request) {
     const body = await req.json();
     const parsed = signupSchema.safeParse(body);
     if (!parsed.success) {
+      // DB-backed funnel: log invalid attempts too so we can see if the form
+      // is being submitted but failing validation client-side.
+      await recordProductEvent({
+        name: AnalyticsEvents.signup_attempt,
+        props: { outcome: "invalid_input" },
+      });
       return NextResponse.json(
         { error: parsed.error.flatten().fieldErrors },
         { status: 400 }
@@ -27,6 +34,10 @@ export async function POST(req: Request) {
 
     const { email, password, name } = parsed.data;
     const normalizedEmail = email.toLowerCase().trim();
+    await recordProductEvent({
+      name: AnalyticsEvents.signup_attempt,
+      props: { email_domain: normalizedEmail.split("@")[1] ?? null },
+    });
 
     const existing = await prisma.user.findUnique({
       where: { email: normalizedEmail },
@@ -96,8 +107,7 @@ export async function POST(req: Request) {
         expires: verifyExpires,
       },
     });
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const verifyLink = `${baseUrl}/verify-email#token=${verifyToken}`;
+    const verifyLink = `${siteUrl}/verify-email#token=${verifyToken}`;
 
     const emailResult = await sendVerificationEmail(normalizedEmail, verifyLink);
     if (!emailResult.ok) {
@@ -106,11 +116,13 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       {
+        emailSent: emailResult.ok,
+        email: normalizedEmail,
         message: emailResult.ok
           ? "Account created. Check your email and open the verification link, then sign in with your password."
-          : "Account created, but we could not send the verification email. Use “Resend verification email” on the login page after entering your password, or contact support.",
+          : "Account created, but we could not send the verification email. Tap “Resend verification email” to try again or contact support.",
       },
-      { status: 201 }
+      { status: emailResult.ok ? 201 : 202 }
     );
   } catch (err) {
     console.error("Signup error:", err);
