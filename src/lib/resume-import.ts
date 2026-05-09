@@ -1,6 +1,6 @@
 // Phase 1.1 – Resume import (PDF/DOCX): extract text and parse with AI
 import type { ResumeContent, ResumeSection } from "@/types/resume";
-import { chatCompletion, isAiConfigured } from "@/lib/ai-client";
+import { chatCompletion, estimateTokens, isAiConfigured, maxAvailableTpm } from "@/lib/ai-client";
 import { generateSectionId } from "@/lib/resume-utils";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -227,17 +227,12 @@ Return ONLY valid JSON array of ${TEMPLATE_SUGGEST_COUNT} objects: [{"id":"templ
   }
 }
 
-/** Parse raw resume text into structured ResumeContent using AI */
-export async function parseResumeWithAi(rawText: string): Promise<ResumeContent> {
-  if (!rawText || rawText.trim().length < 50) {
-    return { sections: [] };
-  }
+const PARSE_SYSTEM_PROMPT =
+  "You are a resume parser. Output only valid JSON. No markdown code blocks, no explanations.";
 
-  // Use full text up to 40k chars – AI analyzes everything for complete extraction
-  const textToParse = rawText.slice(0, 40000);
-  const prompt = `Analyze this FULL resume text and extract EVERYTHING into structured JSON. Do not skip any section, bullet, or detail. Extract:
-- contact: name, email, phone, location, linkedin, github, portfolio, website (required - extract from header/top)
-- summary or objective: professional summary or career objective (2-3 sentences), use type "summary" or "objective"
+const PARSE_SCHEMA_HINT = `Extract EVERY detail (no summarising or skipping) into structured JSON:
+- contact: name, email, phone, location, linkedin, github, portfolio, website (extract from header/top)
+- summary or objective: 2-3 sentences (use type "summary" or "objective")
 - experience: array of { title, company, location, startDate, endDate, current, bullets[] }
 - education: array of { degree, school, location, startDate, endDate, gpa?, honours? }
 - skills: items array (and optionally categories: { name, items[] })
@@ -247,62 +242,154 @@ export async function parseResumeWithAi(rawText: string): Promise<ResumeContent>
 - awards: array of { title, issuer?, date, description? }
 - volunteer: array of { role, organization, location, startDate, endDate, current, bullets[] }
 
-Return ONLY valid JSON in this exact shape (no markdown, no extra text):
-{
-  "sections": [
-    { "id": "string", "type": "contact|summary|experience|education|skills|projects|certifications|languages|awards|volunteer", "order": number, "data": {...} }
-  ]
+Return ONLY valid JSON, no markdown:
+{ "sections": [ { "id": "string", "type": "contact|summary|experience|education|skills|projects|certifications|languages|awards|volunteer", "order": number, "data": {...} } ] }
+
+Use EXACT field names: contact.data uses name/title (not fullName/jobTitle); summary.data.text; experience.data.entries[].bullets (string[]).
+Order: 0=contact, 1=summary, 2=experience, 3=education, 4=skills, 5=projects, ...`;
+
+/** Split a long resume into roughly-equal chunks, ideally on section headings, so each
+ *  chunk fits within a model's TPM budget. Falls back to paragraph / size splits. */
+function chunkResumeText(text: string, targetCharsPerChunk: number): string[] {
+  if (text.length <= targetCharsPerChunk) return [text];
+
+  // Common resume section headings (case-insensitive) used as natural split points.
+  const headingRe = /^(?:\s*)(?:contact|summary|profile|objective|experience|work\s+experience|professional\s+experience|employment|education|skills|technical\s+skills|projects|certifications?|licenses?|languages?|awards?|honou?rs?|publications?|volunteer|references?|interests?|hobbies)\b[:\s-]*$/im;
+
+  const lines = text.split(/\n/);
+  const blocks: string[] = [];
+  let current: string[] = [];
+  for (const line of lines) {
+    if (headingRe.test(line) && current.length > 0) {
+      blocks.push(current.join("\n"));
+      current = [line];
+    } else {
+      current.push(line);
+    }
+  }
+  if (current.length) blocks.push(current.join("\n"));
+
+  // Greedy-pack blocks into chunks under targetCharsPerChunk.
+  const chunks: string[] = [];
+  let buf = "";
+  for (const b of blocks) {
+    if (!buf) {
+      buf = b;
+      continue;
+    }
+    if (buf.length + b.length + 2 <= targetCharsPerChunk) {
+      buf += "\n\n" + b;
+    } else {
+      chunks.push(buf);
+      buf = b;
+    }
+  }
+  if (buf) chunks.push(buf);
+
+  // If any chunk is still too big (e.g. one giant Experience section), hard-split it.
+  const finalChunks: string[] = [];
+  for (const c of chunks) {
+    if (c.length <= targetCharsPerChunk) {
+      finalChunks.push(c);
+      continue;
+    }
+    for (let i = 0; i < c.length; i += targetCharsPerChunk) {
+      finalChunks.push(c.slice(i, i + targetCharsPerChunk));
+    }
+  }
+  return finalChunks.length ? finalChunks : [text];
 }
 
-IMPORTANT - Use EXACT field names in data:
-- contact.data: name, title, email, phone, location, linkedin, github, portfolio, website (no fullName or jobTitle - use name and title)
-- summary.data: text (not description or summary)
-- experience.data.entries[].bullets (array of strings, not description)
-Use order: 0=contact, 1=summary, 2=experience, 3=education, 4=skills, 5=projects, etc.
-CRITICAL: Extract every bullet, every skill, every certification, every detail. Preserve all content – do not summarize or omit.
+async function parseChunkToSections(chunkText: string, isFirstChunk: boolean): Promise<unknown[]> {
+  const focusNote = isFirstChunk
+    ? "This is the FIRST/ONLY part of the resume – include the contact section."
+    : "This is a CONTINUATION chunk – the contact/summary may already be captured. Focus on the sections present in THIS chunk.";
+
+  const prompt = `${PARSE_SCHEMA_HINT}
+
+${focusNote}
 Resume text:
 ---
-${textToParse}
+${chunkText}
 ---`;
 
   const content = await chatCompletion(
     [
-      {
-        role: "system",
-        content:
-          "You are a resume parser. Output only valid JSON. No markdown code blocks, no explanations.",
-      },
+      { role: "system", content: PARSE_SYSTEM_PROMPT },
       { role: "user", content: prompt },
     ],
-    { maxTokens: 8000 }
+    { maxTokens: 4000 }
   );
 
-  if (!content) return { sections: [] };
-
+  if (!content) return [];
   const cleaned = content.replace(/```json|```/g, "").trim();
-  let parsed: { sections?: unknown[] };
   try {
-    parsed = JSON.parse(cleaned);
+    const parsed = JSON.parse(cleaned) as { sections?: unknown[] };
+    return Array.isArray(parsed?.sections) ? parsed.sections : [];
   } catch {
+    return [];
+  }
+}
+
+/** Parse raw resume text into structured ResumeContent using AI.
+ *  Handles arbitrarily large resumes by:
+ *  1. Estimating token count and choosing a chunk size that fits the strongest model's TPM.
+ *  2. Splitting on section headings when needed and parsing each chunk independently.
+ *  3. Merging chunked results into a single ResumeContent (sections of the same type are merged). */
+export async function parseResumeWithAi(rawText: string): Promise<ResumeContent> {
+  if (!rawText || rawText.trim().length < 50) {
     return { sections: [] };
   }
 
-  const rawSections = Array.isArray(parsed?.sections) ? parsed.sections : [];
-  const sections: ResumeSection[] = [];
-  let order = 0;
+  // Budget: leave room for the prompt scaffold (~600 tokens) + reserved output (~4000 tokens).
+  // Convert remaining TPM to chars (~4 chars/token) and cap at 60k chars per chunk.
+  const tpm = maxAvailableTpm();
+  const promptOverheadTokens = 800;
+  const reservedOutputTokens = 4200;
+  const inputTokenBudget = Math.max(2000, tpm - promptOverheadTokens - reservedOutputTokens);
+  const charsPerChunk = Math.min(60000, inputTokenBudget * 4);
 
-  for (const s of rawSections) {
-    if (!s || typeof s !== "object" || !("type" in s) || !("data" in s))
-      continue;
-    const sec = s as { type: string; data: unknown; id?: string };
-    const id = (sec.id as string) || generateSectionId();
+  const fullText = rawText.slice(0, 200000); // hard ceiling: 200k chars (~50k tokens)
+  const estimatedInputTokens = estimateTokens(fullText);
 
-    const normalized = normalizeSection(sec.type, sec.data, id, order);
-    if (normalized) {
-      sections.push(normalized);
-      order++;
+  const needsChunking = estimatedInputTokens > inputTokenBudget;
+  const chunks = needsChunking ? chunkResumeText(fullText, charsPerChunk) : [fullText];
+
+  const allRaw: unknown[] = [];
+  for (let i = 0; i < chunks.length; i++) {
+    try {
+      const sectionsFromChunk = await parseChunkToSections(chunks[i], i === 0);
+      allRaw.push(...sectionsFromChunk);
+    } catch (err) {
+      console.warn(
+        `[resume-import] Chunk ${i + 1}/${chunks.length} parse failed: ${err instanceof Error ? err.message : String(err)}`
+      );
     }
   }
+
+  if (allRaw.length === 0) return { sections: [] };
+
+  // Merge sections of the same type across chunks (Experience from chunk 1 + chunk 2 → one section).
+  const sectionsByType = new Map<string, ResumeSection>();
+  let order = 0;
+  for (const s of allRaw) {
+    if (!s || typeof s !== "object" || !("type" in s) || !("data" in s)) continue;
+    const sec = s as { type: string; data: unknown; id?: string };
+    const id = (sec.id as string) || generateSectionId();
+    const normalized = normalizeSection(sec.type, sec.data, id, order);
+    if (!normalized) continue;
+
+    const existing = sectionsByType.get(normalized.type);
+    if (!existing) {
+      sectionsByType.set(normalized.type, normalized);
+      order++;
+    } else {
+      mergeSectionInto(existing, normalized);
+    }
+  }
+
+  // Re-order using canonical section order so output is consistent regardless of chunk order.
+  const sections = sortSections(Array.from(sectionsByType.values()));
 
   // Fallback: if contact is missing/empty but raw text has email/phone, extract and add
   const contactSection = sections.find((s) => s.type === "contact");
@@ -348,6 +435,83 @@ ${textToParse}
   }
 
   return { sections };
+}
+
+/** Canonical section order for the final merged resume. */
+const SECTION_ORDER: Record<string, number> = {
+  contact: 0,
+  summary: 1,
+  objective: 1,
+  experience: 2,
+  education: 3,
+  skills: 4,
+  projects: 5,
+  certifications: 6,
+  languages: 7,
+  awards: 8,
+  volunteer: 9,
+};
+
+function sortSections(list: ResumeSection[]): ResumeSection[] {
+  const sorted = [...list].sort((a, b) => {
+    const ai = SECTION_ORDER[a.type] ?? 99;
+    const bi = SECTION_ORDER[b.type] ?? 99;
+    return ai - bi;
+  });
+  sorted.forEach((s, i) => {
+    (s as { order: number }).order = i;
+  });
+  return sorted;
+}
+
+/** Merge `next` into `target` in-place. Used when chunked parsing returns the same
+ *  section type from multiple chunks (e.g. Experience continued on chunk 2). */
+function mergeSectionInto(target: ResumeSection, next: ResumeSection): void {
+  if (target.type !== next.type) return;
+  const td = target.data as Record<string, unknown>;
+  const nd = next.data as Record<string, unknown>;
+
+  switch (target.type) {
+    case "contact": {
+      // Prefer non-empty values from `next` only when target's are missing.
+      for (const k of ["name", "title", "email", "phone", "location", "website", "linkedin", "github", "portfolio"]) {
+        if ((!td[k] || String(td[k]).trim() === "") && nd[k]) td[k] = nd[k];
+      }
+      return;
+    }
+    case "summary":
+    case "objective": {
+      const a = String(td.text ?? "").trim();
+      const b = String(nd.text ?? "").trim();
+      if (b && (!a || b.length > a.length)) td.text = b;
+      return;
+    }
+    case "skills": {
+      const aItems = Array.isArray(td.items) ? (td.items as string[]) : [];
+      const bItems = Array.isArray(nd.items) ? (nd.items as string[]) : [];
+      const seen = new Set<string>();
+      const merged: string[] = [];
+      for (const x of [...aItems, ...bItems]) {
+        const v = String(x ?? "").trim();
+        if (v && !seen.has(v.toLowerCase())) {
+          seen.add(v.toLowerCase());
+          merged.push(v);
+        }
+      }
+      td.items = merged.length ? merged : [""];
+      const aCats = Array.isArray(td.categories) ? (td.categories as Array<{ name: string; items: string[] }>) : [];
+      const bCats = Array.isArray(nd.categories) ? (nd.categories as Array<{ name: string; items: string[] }>) : [];
+      if (aCats.length || bCats.length) td.categories = [...aCats, ...bCats];
+      return;
+    }
+    default: {
+      // Entry-bearing sections (experience, education, projects, certifications, languages, awards, volunteer)
+      const aEntries = Array.isArray(td.entries) ? (td.entries as unknown[]) : [];
+      const bEntries = Array.isArray(nd.entries) ? (nd.entries as unknown[]) : [];
+      td.entries = [...aEntries, ...bEntries];
+      return;
+    }
+  }
 }
 
 /** Fallback: regex-extract email, phone, and first line (often name) when AI returns empty contact */
