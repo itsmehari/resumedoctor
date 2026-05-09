@@ -320,62 +320,160 @@ export default function HomePage() {
       </section>
 
       {/* ── HOW IT WORKS ─────────────────────────────────────────────────── */}
-      <section className="relative py-24 bg-white dark:bg-slate-950">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary-200 to-transparent dark:via-primary-800/60" aria-hidden />
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-primary-50/40 py-24 dark:from-slate-950 dark:via-slate-950 dark:to-primary-950/30">
+        {/* Decorative background — gradient blobs + dot grid (same family as Hero/AI Spotlight) */}
+        <div className="pointer-events-none absolute -left-32 top-10 h-[420px] w-[420px] rounded-full opacity-40 blur-3xl dark:opacity-25"
+          style={{ background: "radial-gradient(circle, #3b82f6 0%, transparent 65%)" }} aria-hidden />
+        <div className="pointer-events-none absolute -right-24 bottom-0 h-[380px] w-[380px] rounded-full opacity-30 blur-3xl dark:opacity-20"
+          style={{ background: "radial-gradient(circle, #10b981 0%, transparent 65%)" }} aria-hidden />
+        <div className="pointer-events-none absolute left-1/2 top-1/3 h-[360px] w-[360px] -translate-x-1/2 rounded-full opacity-25 blur-3xl dark:opacity-15"
+          style={{ background: "radial-gradient(circle, #a855f7 0%, transparent 65%)" }} aria-hidden />
+        <div className="pointer-events-none absolute inset-0 opacity-[0.35] dark:opacity-[0.18]" aria-hidden
+          style={{ backgroundImage: "radial-gradient(circle, rgb(15 23 42 / 0.08) 1px, transparent 1px)", backgroundSize: "22px 22px" }} />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary-300/70 to-transparent dark:via-primary-700/70" aria-hidden />
+
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header — eyebrow pill + headline + sub */}
           <div className="text-center mb-16 max-w-2xl mx-auto">
-            <p className="text-xs font-bold uppercase tracking-widest text-primary-500 mb-3">How it works</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
-              From blank page to hired — in 3 steps
+            <span className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full border border-primary-200/80 bg-white/80 backdrop-blur-sm text-[10px] font-bold uppercase tracking-[0.18em] text-primary-700 shadow-sm dark:border-primary-800/60 dark:bg-slate-900/70 dark:text-primary-300">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary-500 animate-pulse" />
+              How it works
+            </span>
+            <h2 className="text-3xl sm:text-[2.6rem] font-extrabold text-slate-900 dark:text-slate-100 tracking-tight leading-[1.1]">
+              From blank page to hired —{" "}
+              <span className="bg-gradient-to-r from-primary-600 via-violet-500 to-emerald-500 bg-clip-text text-transparent">
+                in 3 steps
+              </span>
             </h2>
-            <p className="mt-4 text-slate-500 dark:text-slate-400 text-base leading-relaxed">
+            <p className="mt-4 text-slate-600 dark:text-slate-400 text-base leading-relaxed">
               Pick a layout, let AI sharpen your story, then export and apply with confidence.
             </p>
           </div>
 
-          <div className="relative grid md:grid-cols-3 gap-8">
-            <div className="hidden md:block absolute top-[4.5rem] left-[calc(16.65%+0.5rem)] right-[calc(16.65%+0.5rem)] h-[2px] bg-gradient-to-r from-primary-200/80 via-violet-300/80 to-emerald-300/80 dark:from-primary-800/50 dark:via-violet-800/50 dark:to-emerald-800/50 rounded-full" aria-hidden />
+          {/* Steps grid */}
+          <div className="relative grid md:grid-cols-3 gap-6 lg:gap-8">
+            {/* Connector line — visible on md+ between the three glass cards */}
+            <div className="hidden md:block absolute top-[4.75rem] left-[calc(16.65%+0.75rem)] right-[calc(16.65%+0.75rem)] h-[3px] rounded-full bg-gradient-to-r from-primary-300/80 via-violet-300/80 to-emerald-300/80 dark:from-primary-800/60 dark:via-violet-800/60 dark:to-emerald-800/60 shadow-[0_0_12px_rgba(99,102,241,0.25)]" aria-hidden />
 
             {[
               {
                 step: "01",
                 icon: PATHS.template,
-                color: "bg-primary-600",
+                colorBg: "from-primary-500 to-blue-600",
+                glow: "shadow-primary-500/40 dark:shadow-primary-400/30",
+                ringTone: "ring-primary-200/60 dark:ring-primary-700/60",
+                accent: "text-primary-600 dark:text-primary-400",
                 title: "Pick a template",
-                description: "Browse 30 ATS-optimised designs. Filter by style, industry, or career stage.",
+                description: "Browse 30+ ATS-optimised designs. Filter by style, industry, or career stage.",
+                preview: (
+                  <div className="mt-4 grid grid-cols-3 gap-1.5">
+                    {[0,1,2,3,4,5].map((i) => (
+                      <div key={i} className={`aspect-[3/4] rounded-md border border-slate-200/90 ${i === 1 ? "bg-gradient-to-br from-primary-500 to-blue-600 ring-2 ring-primary-300" : "bg-slate-100 dark:bg-slate-800/80"} dark:border-slate-700/80 flex flex-col gap-0.5 p-1`}>
+                        <div className={`h-1 rounded-full ${i === 1 ? "bg-white/80" : "bg-slate-300 dark:bg-slate-600"}`} />
+                        <div className={`h-0.5 rounded-full ${i === 1 ? "bg-white/50" : "bg-slate-200 dark:bg-slate-700"} w-3/4`} />
+                        <div className={`h-0.5 rounded-full ${i === 1 ? "bg-white/40" : "bg-slate-200 dark:bg-slate-700"} w-1/2`} />
+                      </div>
+                    ))}
+                  </div>
+                ),
               },
               {
                 step: "02",
                 icon: PATHS.sparkle,
-                color: "bg-violet-600",
+                colorBg: "from-violet-500 to-fuchsia-600",
+                glow: "shadow-violet-500/40 dark:shadow-violet-400/30",
+                ringTone: "ring-violet-200/60 dark:ring-violet-700/60",
+                accent: "text-violet-600 dark:text-violet-400",
                 title: "Fill with AI assistance",
-                description: "Type a few keywords and let AI craft impactful bullet points. Each section guided.",
+                description: "Type a few keywords and let AI craft impactful, ATS-friendly bullet points.",
+                preview: (
+                  <div className="mt-4 space-y-1.5">
+                    <div className="flex items-center gap-1.5 text-[10px] text-slate-500 dark:text-slate-400">
+                      <span className="h-1.5 w-1.5 rounded-full bg-violet-500 animate-pulse" />
+                      Generating bullets...
+                    </div>
+                    <div className="rounded-md border border-violet-200/80 bg-gradient-to-r from-violet-50 to-white dark:border-violet-800/50 dark:from-violet-950/40 dark:to-slate-900 p-2 text-left">
+                      <div className="h-1.5 w-full rounded-full bg-violet-200/80 dark:bg-violet-800/60 mb-1.5" />
+                      <div className="h-1.5 w-5/6 rounded-full bg-violet-200/60 dark:bg-violet-800/40 mb-1.5" />
+                      <div className="h-1.5 w-2/3 rounded-full bg-violet-200/40 dark:bg-violet-800/30" />
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {["python", "leadership", "scaled", "+18%"].map((k) => (
+                        <span key={k} className="rounded-full border border-violet-200/80 bg-violet-50/90 px-1.5 py-0.5 text-[9px] font-semibold text-violet-700 dark:border-violet-800/40 dark:bg-violet-950/40 dark:text-violet-300">{k}</span>
+                      ))}
+                    </div>
+                  </div>
+                ),
               },
               {
                 step: "03",
                 icon: PATHS.download,
-                color: "bg-emerald-600",
+                colorBg: "from-emerald-500 to-teal-600",
+                glow: "shadow-emerald-500/40 dark:shadow-emerald-400/30",
+                ringTone: "ring-emerald-200/60 dark:ring-emerald-700/60",
+                accent: "text-emerald-600 dark:text-emerald-400",
                 title: "Download & apply",
                 description: "One-click PDF or DOCX export. ATS score checked. Ready to send instantly.",
+                preview: (
+                  <div className="mt-4 space-y-1.5 text-left">
+                    <div className="flex items-center justify-between rounded-md border border-emerald-200/70 bg-emerald-50/80 px-2 py-1.5 dark:border-emerald-800/40 dark:bg-emerald-950/40">
+                      <span className="text-[10px] font-semibold text-emerald-800 dark:text-emerald-300">resume.pdf</span>
+                      <span className="rounded-full bg-emerald-600 px-1.5 py-0.5 text-[9px] font-bold text-white">PDF</span>
+                    </div>
+                    <div className="flex items-center justify-between rounded-md border border-slate-200/70 bg-slate-50/90 px-2 py-1.5 dark:border-slate-700/60 dark:bg-slate-800/60">
+                      <span className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">resume.docx</span>
+                      <span className="rounded-full bg-blue-600 px-1.5 py-0.5 text-[9px] font-bold text-white">DOCX</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[10px] text-emerald-700 dark:text-emerald-400">
+                      <Icon path={PATHS.check} size={10} className="text-emerald-600" />
+                      ATS score: 92 / 100
+                    </div>
+                  </div>
+                ),
               },
             ].map((item) => (
-              <div key={item.step} className="relative flex flex-col items-center rounded-2xl border border-slate-200/90 bg-gradient-to-b from-white to-slate-50/90 p-7 text-center shadow-md ring-1 ring-slate-200/50 transition-all hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-700 dark:from-slate-900 dark:to-slate-950/90 dark:ring-slate-700/60 dark:hover:border-slate-600">
-                <div className={`relative z-10 w-16 h-16 rounded-2xl ${item.color} ring-4 ring-white dark:ring-slate-950 flex items-center justify-center mb-5 shadow-lg`}>
+              <div
+                key={item.step}
+                className="group relative flex flex-col rounded-2xl border border-slate-200/80 bg-white/80 backdrop-blur-md p-7 shadow-[0_8px_30px_rgba(15,23,42,0.06)] ring-1 ring-slate-200/50 transition-all hover:-translate-y-1 hover:shadow-[0_18px_50px_rgba(15,23,42,0.10)] hover:border-slate-300 dark:border-slate-700/80 dark:bg-slate-900/70 dark:ring-slate-700/40 dark:hover:border-slate-600"
+              >
+                {/* Step number ribbon */}
+                <span className={`absolute right-5 top-5 text-[11px] font-extrabold tracking-[0.2em] ${item.accent} opacity-90`}>
+                  {item.step}
+                </span>
+
+                {/* Icon — gradient + glow + ring (matches Hero/AI Spotlight icon styling) */}
+                <div className={`relative z-10 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br ${item.colorBg} ring-4 ring-white shadow-xl ${item.glow} transition-transform group-hover:scale-105 dark:ring-slate-950`}>
                   <Icon path={item.icon} size={28} className="text-white" />
                 </div>
-                <span className="text-[10px] font-bold text-slate-400 tracking-widest uppercase mb-1">{item.step}</span>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">{item.title}</h3>
-                <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{item.description}</p>
+
+                <h3 className="mt-5 text-lg font-bold text-slate-900 dark:text-slate-100">
+                  {item.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                  {item.description}
+                </p>
+
+                {/* Mini preview block */}
+                {item.preview}
+
+                {/* Bottom accent line — appears on hover */}
+                <div className={`pointer-events-none absolute inset-x-6 bottom-0 h-[2px] rounded-full bg-gradient-to-r ${item.colorBg} opacity-0 transition-opacity group-hover:opacity-100`} aria-hidden />
               </div>
             ))}
           </div>
 
-          <div className="text-center mt-14">
-            <Link href="/try"
-              className="inline-flex items-center gap-2 rounded-xl bg-primary-600 hover:bg-primary-700 px-8 py-4 text-base font-bold text-white transition-all shadow-lg shadow-primary-900/25 hover:scale-[1.02]">
+          {/* CTA */}
+          <div className="mt-14 flex flex-col items-center gap-3 text-center">
+            <Link
+              href="/try"
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-primary-600 via-blue-600 to-violet-600 px-8 py-4 text-base font-bold text-white shadow-xl shadow-primary-900/25 transition-all hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary-900/30"
+            >
               Start building with Try
               <Icon path={PATHS.arrow} size={18} className="text-white" />
             </Link>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              No credit card · OTP-only access · ~ 5 minutes to a draft
+            </p>
           </div>
         </div>
       </section>
