@@ -22,7 +22,7 @@ WHAT YOU GET
 
 • PDF export (Pro): Attach a sharp PDF to Naukri, LinkedIn, and email.
 • Word (DOCX) export (Pro): Revise wording after feedback without rebuilding the layout.
-• No watermarks on Pro files: Application-ready documents.
+• Keyword match vs job descriptions: Tune bullets for each role; Pro adds unlimited ATS checks and exports without watermarks.
 
 TRY (OTP)
 No card — short exploration session — not billed, not a subscription.
@@ -49,8 +49,12 @@ https://www.resumedoctor.in/try?utm_source=email&utm_medium=intro&utm_campaign=i
 Compare plans & pricing:
 https://www.resumedoctor.in/pricing?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu&utm_content=cta-secondary
 
+New for 2026 — AI resume builder vs template, which one gets Indian freshers shortlisted:
+https://www.resumedoctor.in/blog/ai-resume-builder-vs-template-india-2026?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu&utm_content=featured-guide
+
 More links:
 Templates: https://www.resumedoctor.in/templates?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu&utm_content=templates
+Blog: https://www.resumedoctor.in/blog?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu&utm_content=blog
 About: https://www.resumedoctor.in/about?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu&utm_content=about
 
 ----------------------------------------------------------------
