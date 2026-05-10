@@ -142,6 +142,323 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── RESUME LINK SHOWCASE ─────────────────────────────────────────── */}
+      <section className="relative overflow-hidden py-24 sm:py-28 bg-gradient-to-br from-slate-950 via-indigo-950 to-cyan-950">
+        {/* Background — grid + glows + diagonal glow */}
+        <div className="pointer-events-none absolute inset-0 opacity-[0.07]" aria-hidden
+          style={{ backgroundImage: "linear-gradient(to right, rgb(255 255 255 / 0.6) 1px, transparent 1px), linear-gradient(to bottom, rgb(255 255 255 / 0.6) 1px, transparent 1px)", backgroundSize: "3rem 3rem" }} />
+        <div className="pointer-events-none absolute -left-32 top-10 h-[500px] w-[500px] rounded-full opacity-30 blur-3xl"
+          style={{ background: "radial-gradient(circle, #06b6d4 0%, transparent 65%)" }} aria-hidden />
+        <div className="pointer-events-none absolute -right-24 bottom-0 h-[420px] w-[420px] rounded-full opacity-25 blur-3xl"
+          style={{ background: "radial-gradient(circle, #818cf8 0%, transparent 65%)" }} aria-hidden />
+        <div className="pointer-events-none absolute right-1/4 top-1/3 h-[300px] w-[300px] rounded-full opacity-20 blur-3xl"
+          style={{ background: "radial-gradient(circle, #fbbf24 0%, transparent 65%)" }} aria-hidden />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent" aria-hidden />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-indigo-400/40 to-transparent" aria-hidden />
+
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header */}
+          <div className="text-center mb-14 max-w-2xl mx-auto">
+            <span className="inline-flex items-center gap-2 mb-5 px-4 py-2 rounded-full border border-cyan-400/30 bg-cyan-500/10 backdrop-blur-md text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-200 shadow-lg ring-1 ring-cyan-400/20">
+              <Icon path={PATHS.link} size={12} className="text-cyan-300" />
+              Resume link
+            </span>
+            <h2 className="text-3xl sm:text-[2.75rem] font-extrabold text-white tracking-tight leading-[1.1]">
+              Your resume,{" "}
+              <span className="bg-gradient-to-r from-cyan-300 via-sky-200 to-indigo-300 bg-clip-text text-transparent">
+                as a link.
+              </span>
+            </h2>
+            <p className="mt-5 text-base sm:text-lg text-white/75 leading-relaxed">
+              One URL. Always the latest version. Paste it anywhere — WhatsApp, LinkedIn, recruiter
+              email, your bio. Update once, and every link you&apos;ve ever shared stays current.
+            </p>
+          </div>
+
+          {/* Stage row — browser mock + phone mock */}
+          <div className="grid lg:grid-cols-[1.5fr_1fr] gap-8 items-center mb-20">
+            {/* Browser frame mock */}
+            <div className="relative">
+              <div className="absolute -inset-4 rounded-[2rem] bg-gradient-to-br from-cyan-500/20 via-indigo-500/15 to-violet-500/20 blur-2xl" aria-hidden />
+              <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-slate-900/80 shadow-[0_30px_80px_rgba(0,0,0,0.5)] backdrop-blur-xl ring-1 ring-white/10">
+                {/* Browser chrome */}
+                <div className="flex items-center gap-2 border-b border-white/10 bg-slate-950/60 px-4 py-3">
+                  <div className="flex gap-1.5">
+                    <span className="h-3 w-3 rounded-full bg-rose-400/70" />
+                    <span className="h-3 w-3 rounded-full bg-amber-400/70" />
+                    <span className="h-3 w-3 rounded-full bg-emerald-400/70" />
+                  </div>
+                  <div className="ml-2 flex-1 flex items-center gap-2 rounded-lg border border-white/10 bg-slate-800/60 px-3 py-1.5 text-xs text-white/80">
+                    <Icon path={PATHS.shield} size={12} className="text-emerald-400" />
+                    <span className="font-mono">resumedoctor.in/r/<span className="text-cyan-300 font-bold">your-name</span></span>
+                  </div>
+                  <button type="button" className="flex items-center gap-1.5 rounded-md border border-cyan-400/40 bg-cyan-500/15 px-2.5 py-1 text-[11px] font-semibold text-cyan-200 hover:bg-cyan-500/25 transition-colors">
+                    <Icon path={PATHS.copy} size={10} />
+                    Copy link
+                  </button>
+                </div>
+                {/* Browser body — resume preview mock */}
+                <div className="p-6 sm:p-8 bg-gradient-to-b from-white/[0.04] to-white/[0.02]">
+                  <div className="rounded-lg bg-white shadow-xl p-6 sm:p-8 max-w-md mx-auto">
+                    {/* Resume header */}
+                    <div className="border-b-2 border-slate-900 pb-3 mb-4">
+                      <p className="text-lg font-extrabold text-slate-900 tracking-tight">Your Name</p>
+                      <p className="text-xs font-medium text-slate-500 mt-0.5">Frontend Engineer · Bengaluru, India</p>
+                      <div className="mt-1.5 flex items-center gap-2 text-[10px] text-slate-500">
+                        <span>your@email.com</span>
+                        <span>·</span>
+                        <span>+91 98xxx xxxxx</span>
+                      </div>
+                    </div>
+                    {/* Section: Summary */}
+                    <div className="mb-3">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-primary-600 mb-1">Summary</p>
+                      <div className="space-y-1">
+                        <div className="h-1.5 bg-slate-200 rounded w-full" />
+                        <div className="h-1.5 bg-slate-200 rounded w-5/6" />
+                      </div>
+                    </div>
+                    {/* Section: Experience */}
+                    <div className="mb-3">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-primary-600 mb-1.5">Experience</p>
+                      <div className="space-y-1.5">
+                        <div className="flex items-baseline justify-between">
+                          <div className="h-2 bg-slate-700 rounded w-1/3" />
+                          <div className="h-1.5 bg-slate-300 rounded w-16" />
+                        </div>
+                        <div className="space-y-0.5 pl-2">
+                          <div className="h-1 bg-slate-200 rounded w-11/12" />
+                          <div className="h-1 bg-slate-200 rounded w-4/5" />
+                          <div className="h-1 bg-slate-200 rounded w-3/4" />
+                        </div>
+                      </div>
+                    </div>
+                    {/* Section: Skills */}
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-primary-600 mb-1.5">Skills</p>
+                      <div className="flex flex-wrap gap-1">
+                        {["React", "TypeScript", "Node", "AWS"].map((s) => (
+                          <span key={s} className="rounded-full bg-primary-50 px-2 py-0.5 text-[9px] font-semibold text-primary-700">{s}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-4 flex items-center justify-center gap-2 text-[11px] text-white/60">
+                    <Icon path={PATHS.refresh} size={11} className="text-emerald-400" />
+                    Last updated 2 minutes ago — link reflects this version
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Phone mock */}
+            <div className="relative mx-auto w-full max-w-[280px]">
+              <div className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-br from-emerald-400/15 via-cyan-400/15 to-indigo-400/15 blur-2xl" aria-hidden />
+              <div className="relative rounded-[2.25rem] border-[6px] border-slate-800 bg-slate-900 shadow-[0_30px_60px_rgba(0,0,0,0.5)] overflow-hidden">
+                {/* Notch */}
+                <div className="relative bg-slate-950 px-4 py-1.5 flex items-center justify-between text-[10px] text-white/70">
+                  <span>9:41</span>
+                  <span className="absolute left-1/2 -translate-x-1/2 top-1 h-3.5 w-16 rounded-full bg-slate-950" />
+                  <span className="flex items-center gap-1">
+                    <span className="h-1 w-3 rounded-full bg-white/70" />
+                    <span className="h-1.5 w-2 rounded-sm bg-white/70" />
+                  </span>
+                </div>
+                {/* Mobile resume content */}
+                <div className="bg-slate-100 p-3 space-y-2 min-h-[420px]">
+                  <div className="rounded-lg bg-white p-3 shadow-sm">
+                    <p className="text-[11px] font-extrabold text-slate-900">Your Name</p>
+                    <p className="text-[8px] font-medium text-slate-500">Frontend Engineer</p>
+                    <div className="mt-1.5 flex items-center gap-1 text-[7px] text-slate-500">
+                      <Icon path={PATHS.globe} size={6} />
+                      resumedoctor.in/r/your-name
+                    </div>
+                  </div>
+                  <div className="rounded-lg bg-white p-3 shadow-sm">
+                    <p className="text-[8px] font-bold uppercase tracking-widest text-primary-600 mb-1">Experience</p>
+                    <div className="space-y-1">
+                      <div className="h-1 bg-slate-200 rounded w-full" />
+                      <div className="h-1 bg-slate-200 rounded w-5/6" />
+                      <div className="h-1 bg-slate-200 rounded w-3/4" />
+                    </div>
+                  </div>
+                  <div className="rounded-lg bg-white p-3 shadow-sm">
+                    <p className="text-[8px] font-bold uppercase tracking-widest text-primary-600 mb-1">Skills</p>
+                    <div className="flex flex-wrap gap-0.5">
+                      {["React", "TS", "Node", "AWS"].map((s) => (
+                        <span key={s} className="rounded-full bg-primary-50 px-1.5 py-0.5 text-[7px] font-bold text-primary-700">{s}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="rounded-lg bg-white p-3 shadow-sm">
+                    <p className="text-[8px] font-bold uppercase tracking-widest text-primary-600 mb-1">Education</p>
+                    <div className="space-y-1">
+                      <div className="h-1 bg-slate-200 rounded w-2/3" />
+                      <div className="h-1 bg-slate-200 rounded w-1/2" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p className="mt-4 text-center text-xs text-white/60">
+                One tap. Renders perfectly on any phone.
+              </p>
+            </div>
+          </div>
+
+          {/* Link vs PDF — comparison strip */}
+          <div className="mb-20">
+            <p className="text-center text-xs font-bold uppercase tracking-[0.2em] text-cyan-300/90 mb-6">
+              Why a link beats a PDF
+            </p>
+            <div className="grid md:grid-cols-2 gap-4 lg:gap-6">
+              {/* Link side */}
+              <div className="relative rounded-2xl border border-cyan-400/30 bg-gradient-to-br from-cyan-500/10 via-indigo-500/5 to-transparent p-6 sm:p-7 backdrop-blur-md ring-1 ring-cyan-400/10 shadow-xl">
+                <div className="flex items-center gap-2 mb-5">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-sky-500 ring-2 ring-cyan-300/40 shadow-lg shadow-cyan-500/30">
+                    <Icon path={PATHS.link} size={18} className="text-white" />
+                  </div>
+                  <p className="text-base font-bold text-white">ResumeDoctor link</p>
+                </div>
+                <ul className="space-y-3">
+                  {[
+                    { title: "Always the latest", body: "Update once — every shared link reflects it." },
+                    { title: "Opens in 1 tap on mobile", body: "Designed for WhatsApp and LinkedIn DMs." },
+                    { title: "One URL forever", body: "No more 'resume-final-final-v2.pdf'." },
+                    { title: "Recruiter clicks → reads", body: "No download, no app, no chrome warnings." },
+                  ].map((item) => (
+                    <li key={item.title} className="flex items-start gap-3">
+                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-400/20 ring-1 ring-emerald-400/40">
+                        <Icon path={PATHS.check} size={11} className="text-emerald-300" />
+                      </span>
+                      <div>
+                        <p className="text-sm font-semibold text-white">{item.title}</p>
+                        <p className="text-xs text-white/65 mt-0.5">{item.body}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* PDF side */}
+              <div className="relative rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-7 backdrop-blur-md ring-1 ring-white/5 shadow-xl">
+                <div className="flex items-center gap-2 mb-5">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-700 ring-2 ring-white/10">
+                    <Icon path={PATHS.template} size={18} className="text-white/70" />
+                  </div>
+                  <p className="text-base font-bold text-white/80">Sending a PDF</p>
+                </div>
+                <ul className="space-y-3">
+                  {[
+                    { title: "Stale the moment you send it", body: "Every edit means re-sending to everyone." },
+                    { title: "Awkward on phones", body: "Download → open → pinch-to-zoom." },
+                    { title: "Version chaos", body: "Final, final-v2, FINAL-revised, real-final…" },
+                    { title: "Easy to ignore", body: "Recruiters skip attachments; links open instantly." },
+                  ].map((item) => (
+                    <li key={item.title} className="flex items-start gap-3">
+                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-rose-400/15 ring-1 ring-rose-400/30">
+                        <Icon path={PATHS.close} size={11} className="text-rose-300" />
+                      </span>
+                      <div>
+                        <p className="text-sm font-semibold text-white/85">{item.title}</p>
+                        <p className="text-xs text-white/50 mt-0.5">{item.body}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Channel mocks — paste it anywhere */}
+          <div className="mb-16">
+            <p className="text-center text-xs font-bold uppercase tracking-[0.2em] text-cyan-300/90 mb-6">
+              Paste it anywhere
+            </p>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* WhatsApp bubble */}
+              <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#075e54]/30 to-emerald-900/30 p-4 backdrop-blur-md ring-1 ring-white/5 shadow-xl">
+                <div className="flex items-center gap-2 pb-2 border-b border-white/10">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500 text-[11px] font-bold text-white">W</div>
+                  <p className="text-xs font-semibold text-white">WhatsApp</p>
+                </div>
+                <div className="mt-3 ml-auto max-w-[90%] rounded-2xl rounded-tr-sm bg-emerald-500/90 p-2.5 shadow-md">
+                  <p className="text-[11px] text-white">Here&apos;s my resume — always up to date.</p>
+                  <div className="mt-1.5 rounded-md bg-emerald-700/60 px-2 py-1 text-[10px] font-mono text-white/95 break-all">
+                    resumedoctor.in/r/your-name
+                  </div>
+                  <p className="text-right text-[8px] text-white/70 mt-1">9:41 ✓✓</p>
+                </div>
+              </div>
+
+              {/* LinkedIn DM */}
+              <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#0a66c2]/30 to-blue-900/30 p-4 backdrop-blur-md ring-1 ring-white/5 shadow-xl">
+                <div className="flex items-center gap-2 pb-2 border-b border-white/10">
+                  <div className="flex h-7 w-7 items-center justify-center rounded bg-blue-600 text-[11px] font-bold text-white">in</div>
+                  <p className="text-xs font-semibold text-white">LinkedIn DM</p>
+                </div>
+                <div className="mt-3">
+                  <p className="text-[11px] text-white/85">Hi! Following up on the Frontend role —</p>
+                  <p className="text-[11px] text-white/85 mt-1">my resume:</p>
+                  <p className="mt-1.5 text-[11px] font-mono text-cyan-200 break-all underline decoration-cyan-300/40">
+                    resumedoctor.in/r/your-name
+                  </p>
+                </div>
+              </div>
+
+              {/* Email signature */}
+              <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-slate-700/30 to-slate-800/30 p-4 backdrop-blur-md ring-1 ring-white/5 shadow-xl">
+                <div className="flex items-center gap-2 pb-2 border-b border-white/10">
+                  <Icon path={PATHS.shield} size={14} className="text-amber-300" />
+                  <p className="text-xs font-semibold text-white">Email signature</p>
+                </div>
+                <div className="mt-3">
+                  <p className="text-[12px] font-bold text-white">Your Name</p>
+                  <p className="text-[10px] text-white/65">Frontend Engineer · Bengaluru</p>
+                  <p className="text-[10px] text-white/65 mt-0.5">+91 98xxx xxxxx</p>
+                  <p className="mt-1.5 text-[10px] font-mono text-cyan-200 break-all">
+                    resumedoctor.in/r/your-name
+                  </p>
+                </div>
+              </div>
+
+              {/* QR / business card */}
+              <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-violet-700/25 to-fuchsia-900/25 p-4 backdrop-blur-md ring-1 ring-white/5 shadow-xl">
+                <div className="flex items-center gap-2 pb-2 border-b border-white/10">
+                  <div className="flex h-7 w-7 items-center justify-center rounded bg-fuchsia-500 text-[11px] font-bold text-white">QR</div>
+                  <p className="text-xs font-semibold text-white">Print &amp; share</p>
+                </div>
+                <div className="mt-3 flex items-center gap-3">
+                  {/* Stylized QR */}
+                  <div className="grid grid-cols-7 gap-[2px] rounded-md bg-white p-1.5 shadow-md">
+                    {Array.from({ length: 49 }).map((_, i) => {
+                      const filled = [0,1,2,5,6,7,9,12,14,16,18,19,20,22,23,25,28,30,33,35,37,40,42,43,44,46,47,48].includes(i);
+                      return <span key={i} className={`h-1.5 w-1.5 rounded-[1px] ${filled ? "bg-slate-900" : "bg-white"}`} />;
+                    })}
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-semibold text-white">Scan from a card</p>
+                    <p className="text-[9px] text-white/60 mt-0.5">Networking events,<br />college fairs, expos.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA */}
+          <div className="text-center">
+            <Link href="/try"
+              className="inline-flex items-center gap-2 rounded-xl bg-accent hover:bg-accent-hover px-10 py-4 text-lg font-bold text-accent-dark shadow-2xl shadow-cyan-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]">
+              <Icon path={PATHS.link} size={18} className="text-accent-dark" />
+              Get your resume link
+            </Link>
+            <p className="mt-4 text-xs text-white/60 max-w-md mx-auto">
+              Free to publish. Update anytime — your link stays the same.
+              <span className="block sm:inline sm:ml-1">Anyone with the link can view.</span>
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* ── FINAL CTA ────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary-700 via-primary-600 to-indigo-900 py-28">
         <div className="absolute inset-0 opacity-15"
@@ -581,323 +898,6 @@ export default function HomePage() {
               See all 30 templates
               <Icon path={PATHS.arrow} size={16} />
             </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ── RESUME LINK SHOWCASE ─────────────────────────────────────────── */}
-      <section className="relative overflow-hidden py-24 sm:py-28 bg-gradient-to-br from-slate-950 via-indigo-950 to-cyan-950">
-        {/* Background — grid + glows + diagonal glow */}
-        <div className="pointer-events-none absolute inset-0 opacity-[0.07]" aria-hidden
-          style={{ backgroundImage: "linear-gradient(to right, rgb(255 255 255 / 0.6) 1px, transparent 1px), linear-gradient(to bottom, rgb(255 255 255 / 0.6) 1px, transparent 1px)", backgroundSize: "3rem 3rem" }} />
-        <div className="pointer-events-none absolute -left-32 top-10 h-[500px] w-[500px] rounded-full opacity-30 blur-3xl"
-          style={{ background: "radial-gradient(circle, #06b6d4 0%, transparent 65%)" }} aria-hidden />
-        <div className="pointer-events-none absolute -right-24 bottom-0 h-[420px] w-[420px] rounded-full opacity-25 blur-3xl"
-          style={{ background: "radial-gradient(circle, #818cf8 0%, transparent 65%)" }} aria-hidden />
-        <div className="pointer-events-none absolute right-1/4 top-1/3 h-[300px] w-[300px] rounded-full opacity-20 blur-3xl"
-          style={{ background: "radial-gradient(circle, #fbbf24 0%, transparent 65%)" }} aria-hidden />
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent" aria-hidden />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-indigo-400/40 to-transparent" aria-hidden />
-
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
-          <div className="text-center mb-14 max-w-2xl mx-auto">
-            <span className="inline-flex items-center gap-2 mb-5 px-4 py-2 rounded-full border border-cyan-400/30 bg-cyan-500/10 backdrop-blur-md text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-200 shadow-lg ring-1 ring-cyan-400/20">
-              <Icon path={PATHS.link} size={12} className="text-cyan-300" />
-              Resume link
-            </span>
-            <h2 className="text-3xl sm:text-[2.75rem] font-extrabold text-white tracking-tight leading-[1.1]">
-              Your resume,{" "}
-              <span className="bg-gradient-to-r from-cyan-300 via-sky-200 to-indigo-300 bg-clip-text text-transparent">
-                as a link.
-              </span>
-            </h2>
-            <p className="mt-5 text-base sm:text-lg text-white/75 leading-relaxed">
-              One URL. Always the latest version. Paste it anywhere — WhatsApp, LinkedIn, recruiter
-              email, your bio. Update once, and every link you&apos;ve ever shared stays current.
-            </p>
-          </div>
-
-          {/* Stage row — browser mock + phone mock */}
-          <div className="grid lg:grid-cols-[1.5fr_1fr] gap-8 items-center mb-20">
-            {/* Browser frame mock */}
-            <div className="relative">
-              <div className="absolute -inset-4 rounded-[2rem] bg-gradient-to-br from-cyan-500/20 via-indigo-500/15 to-violet-500/20 blur-2xl" aria-hidden />
-              <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-slate-900/80 shadow-[0_30px_80px_rgba(0,0,0,0.5)] backdrop-blur-xl ring-1 ring-white/10">
-                {/* Browser chrome */}
-                <div className="flex items-center gap-2 border-b border-white/10 bg-slate-950/60 px-4 py-3">
-                  <div className="flex gap-1.5">
-                    <span className="h-3 w-3 rounded-full bg-rose-400/70" />
-                    <span className="h-3 w-3 rounded-full bg-amber-400/70" />
-                    <span className="h-3 w-3 rounded-full bg-emerald-400/70" />
-                  </div>
-                  <div className="ml-2 flex-1 flex items-center gap-2 rounded-lg border border-white/10 bg-slate-800/60 px-3 py-1.5 text-xs text-white/80">
-                    <Icon path={PATHS.shield} size={12} className="text-emerald-400" />
-                    <span className="font-mono">resumedoctor.in/r/<span className="text-cyan-300 font-bold">your-name</span></span>
-                  </div>
-                  <button type="button" className="flex items-center gap-1.5 rounded-md border border-cyan-400/40 bg-cyan-500/15 px-2.5 py-1 text-[11px] font-semibold text-cyan-200 hover:bg-cyan-500/25 transition-colors">
-                    <Icon path={PATHS.copy} size={10} />
-                    Copy link
-                  </button>
-                </div>
-                {/* Browser body — resume preview mock */}
-                <div className="p-6 sm:p-8 bg-gradient-to-b from-white/[0.04] to-white/[0.02]">
-                  <div className="rounded-lg bg-white shadow-xl p-6 sm:p-8 max-w-md mx-auto">
-                    {/* Resume header */}
-                    <div className="border-b-2 border-slate-900 pb-3 mb-4">
-                      <p className="text-lg font-extrabold text-slate-900 tracking-tight">Your Name</p>
-                      <p className="text-xs font-medium text-slate-500 mt-0.5">Frontend Engineer · Bengaluru, India</p>
-                      <div className="mt-1.5 flex items-center gap-2 text-[10px] text-slate-500">
-                        <span>your@email.com</span>
-                        <span>·</span>
-                        <span>+91 98xxx xxxxx</span>
-                      </div>
-                    </div>
-                    {/* Section: Summary */}
-                    <div className="mb-3">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-primary-600 mb-1">Summary</p>
-                      <div className="space-y-1">
-                        <div className="h-1.5 bg-slate-200 rounded w-full" />
-                        <div className="h-1.5 bg-slate-200 rounded w-5/6" />
-                      </div>
-                    </div>
-                    {/* Section: Experience */}
-                    <div className="mb-3">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-primary-600 mb-1.5">Experience</p>
-                      <div className="space-y-1.5">
-                        <div className="flex items-baseline justify-between">
-                          <div className="h-2 bg-slate-700 rounded w-1/3" />
-                          <div className="h-1.5 bg-slate-300 rounded w-16" />
-                        </div>
-                        <div className="space-y-0.5 pl-2">
-                          <div className="h-1 bg-slate-200 rounded w-11/12" />
-                          <div className="h-1 bg-slate-200 rounded w-4/5" />
-                          <div className="h-1 bg-slate-200 rounded w-3/4" />
-                        </div>
-                      </div>
-                    </div>
-                    {/* Section: Skills */}
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-primary-600 mb-1.5">Skills</p>
-                      <div className="flex flex-wrap gap-1">
-                        {["React", "TypeScript", "Node", "AWS"].map((s) => (
-                          <span key={s} className="rounded-full bg-primary-50 px-2 py-0.5 text-[9px] font-semibold text-primary-700">{s}</span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-4 flex items-center justify-center gap-2 text-[11px] text-white/60">
-                    <Icon path={PATHS.refresh} size={11} className="text-emerald-400" />
-                    Last updated 2 minutes ago — link reflects this version
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Phone mock */}
-            <div className="relative mx-auto w-full max-w-[280px]">
-              <div className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-br from-emerald-400/15 via-cyan-400/15 to-indigo-400/15 blur-2xl" aria-hidden />
-              <div className="relative rounded-[2.25rem] border-[6px] border-slate-800 bg-slate-900 shadow-[0_30px_60px_rgba(0,0,0,0.5)] overflow-hidden">
-                {/* Notch */}
-                <div className="relative bg-slate-950 px-4 py-1.5 flex items-center justify-between text-[10px] text-white/70">
-                  <span>9:41</span>
-                  <span className="absolute left-1/2 -translate-x-1/2 top-1 h-3.5 w-16 rounded-full bg-slate-950" />
-                  <span className="flex items-center gap-1">
-                    <span className="h-1 w-3 rounded-full bg-white/70" />
-                    <span className="h-1.5 w-2 rounded-sm bg-white/70" />
-                  </span>
-                </div>
-                {/* Mobile resume content */}
-                <div className="bg-slate-100 p-3 space-y-2 min-h-[420px]">
-                  <div className="rounded-lg bg-white p-3 shadow-sm">
-                    <p className="text-[11px] font-extrabold text-slate-900">Your Name</p>
-                    <p className="text-[8px] font-medium text-slate-500">Frontend Engineer</p>
-                    <div className="mt-1.5 flex items-center gap-1 text-[7px] text-slate-500">
-                      <Icon path={PATHS.globe} size={6} />
-                      resumedoctor.in/r/your-name
-                    </div>
-                  </div>
-                  <div className="rounded-lg bg-white p-3 shadow-sm">
-                    <p className="text-[8px] font-bold uppercase tracking-widest text-primary-600 mb-1">Experience</p>
-                    <div className="space-y-1">
-                      <div className="h-1 bg-slate-200 rounded w-full" />
-                      <div className="h-1 bg-slate-200 rounded w-5/6" />
-                      <div className="h-1 bg-slate-200 rounded w-3/4" />
-                    </div>
-                  </div>
-                  <div className="rounded-lg bg-white p-3 shadow-sm">
-                    <p className="text-[8px] font-bold uppercase tracking-widest text-primary-600 mb-1">Skills</p>
-                    <div className="flex flex-wrap gap-0.5">
-                      {["React", "TS", "Node", "AWS"].map((s) => (
-                        <span key={s} className="rounded-full bg-primary-50 px-1.5 py-0.5 text-[7px] font-bold text-primary-700">{s}</span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="rounded-lg bg-white p-3 shadow-sm">
-                    <p className="text-[8px] font-bold uppercase tracking-widest text-primary-600 mb-1">Education</p>
-                    <div className="space-y-1">
-                      <div className="h-1 bg-slate-200 rounded w-2/3" />
-                      <div className="h-1 bg-slate-200 rounded w-1/2" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <p className="mt-4 text-center text-xs text-white/60">
-                One tap. Renders perfectly on any phone.
-              </p>
-            </div>
-          </div>
-
-          {/* Link vs PDF — comparison strip */}
-          <div className="mb-20">
-            <p className="text-center text-xs font-bold uppercase tracking-[0.2em] text-cyan-300/90 mb-6">
-              Why a link beats a PDF
-            </p>
-            <div className="grid md:grid-cols-2 gap-4 lg:gap-6">
-              {/* Link side */}
-              <div className="relative rounded-2xl border border-cyan-400/30 bg-gradient-to-br from-cyan-500/10 via-indigo-500/5 to-transparent p-6 sm:p-7 backdrop-blur-md ring-1 ring-cyan-400/10 shadow-xl">
-                <div className="flex items-center gap-2 mb-5">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-sky-500 ring-2 ring-cyan-300/40 shadow-lg shadow-cyan-500/30">
-                    <Icon path={PATHS.link} size={18} className="text-white" />
-                  </div>
-                  <p className="text-base font-bold text-white">ResumeDoctor link</p>
-                </div>
-                <ul className="space-y-3">
-                  {[
-                    { title: "Always the latest", body: "Update once — every shared link reflects it." },
-                    { title: "Opens in 1 tap on mobile", body: "Designed for WhatsApp and LinkedIn DMs." },
-                    { title: "One URL forever", body: "No more 'resume-final-final-v2.pdf'." },
-                    { title: "Recruiter clicks → reads", body: "No download, no app, no chrome warnings." },
-                  ].map((item) => (
-                    <li key={item.title} className="flex items-start gap-3">
-                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-400/20 ring-1 ring-emerald-400/40">
-                        <Icon path={PATHS.check} size={11} className="text-emerald-300" />
-                      </span>
-                      <div>
-                        <p className="text-sm font-semibold text-white">{item.title}</p>
-                        <p className="text-xs text-white/65 mt-0.5">{item.body}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* PDF side */}
-              <div className="relative rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-7 backdrop-blur-md ring-1 ring-white/5 shadow-xl">
-                <div className="flex items-center gap-2 mb-5">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-700 ring-2 ring-white/10">
-                    <Icon path={PATHS.template} size={18} className="text-white/70" />
-                  </div>
-                  <p className="text-base font-bold text-white/80">Sending a PDF</p>
-                </div>
-                <ul className="space-y-3">
-                  {[
-                    { title: "Stale the moment you send it", body: "Every edit means re-sending to everyone." },
-                    { title: "Awkward on phones", body: "Download → open → pinch-to-zoom." },
-                    { title: "Version chaos", body: "Final, final-v2, FINAL-revised, real-final…" },
-                    { title: "Easy to ignore", body: "Recruiters skip attachments; links open instantly." },
-                  ].map((item) => (
-                    <li key={item.title} className="flex items-start gap-3">
-                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-rose-400/15 ring-1 ring-rose-400/30">
-                        <Icon path={PATHS.close} size={11} className="text-rose-300" />
-                      </span>
-                      <div>
-                        <p className="text-sm font-semibold text-white/85">{item.title}</p>
-                        <p className="text-xs text-white/50 mt-0.5">{item.body}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          {/* Channel mocks — paste it anywhere */}
-          <div className="mb-16">
-            <p className="text-center text-xs font-bold uppercase tracking-[0.2em] text-cyan-300/90 mb-6">
-              Paste it anywhere
-            </p>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* WhatsApp bubble */}
-              <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#075e54]/30 to-emerald-900/30 p-4 backdrop-blur-md ring-1 ring-white/5 shadow-xl">
-                <div className="flex items-center gap-2 pb-2 border-b border-white/10">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500 text-[11px] font-bold text-white">W</div>
-                  <p className="text-xs font-semibold text-white">WhatsApp</p>
-                </div>
-                <div className="mt-3 ml-auto max-w-[90%] rounded-2xl rounded-tr-sm bg-emerald-500/90 p-2.5 shadow-md">
-                  <p className="text-[11px] text-white">Here&apos;s my resume — always up to date.</p>
-                  <div className="mt-1.5 rounded-md bg-emerald-700/60 px-2 py-1 text-[10px] font-mono text-white/95 break-all">
-                    resumedoctor.in/r/your-name
-                  </div>
-                  <p className="text-right text-[8px] text-white/70 mt-1">9:41 ✓✓</p>
-                </div>
-              </div>
-
-              {/* LinkedIn DM */}
-              <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#0a66c2]/30 to-blue-900/30 p-4 backdrop-blur-md ring-1 ring-white/5 shadow-xl">
-                <div className="flex items-center gap-2 pb-2 border-b border-white/10">
-                  <div className="flex h-7 w-7 items-center justify-center rounded bg-blue-600 text-[11px] font-bold text-white">in</div>
-                  <p className="text-xs font-semibold text-white">LinkedIn DM</p>
-                </div>
-                <div className="mt-3">
-                  <p className="text-[11px] text-white/85">Hi! Following up on the Frontend role —</p>
-                  <p className="text-[11px] text-white/85 mt-1">my resume:</p>
-                  <p className="mt-1.5 text-[11px] font-mono text-cyan-200 break-all underline decoration-cyan-300/40">
-                    resumedoctor.in/r/your-name
-                  </p>
-                </div>
-              </div>
-
-              {/* Email signature */}
-              <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-slate-700/30 to-slate-800/30 p-4 backdrop-blur-md ring-1 ring-white/5 shadow-xl">
-                <div className="flex items-center gap-2 pb-2 border-b border-white/10">
-                  <Icon path={PATHS.shield} size={14} className="text-amber-300" />
-                  <p className="text-xs font-semibold text-white">Email signature</p>
-                </div>
-                <div className="mt-3">
-                  <p className="text-[12px] font-bold text-white">Your Name</p>
-                  <p className="text-[10px] text-white/65">Frontend Engineer · Bengaluru</p>
-                  <p className="text-[10px] text-white/65 mt-0.5">+91 98xxx xxxxx</p>
-                  <p className="mt-1.5 text-[10px] font-mono text-cyan-200 break-all">
-                    resumedoctor.in/r/your-name
-                  </p>
-                </div>
-              </div>
-
-              {/* QR / business card */}
-              <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-violet-700/25 to-fuchsia-900/25 p-4 backdrop-blur-md ring-1 ring-white/5 shadow-xl">
-                <div className="flex items-center gap-2 pb-2 border-b border-white/10">
-                  <div className="flex h-7 w-7 items-center justify-center rounded bg-fuchsia-500 text-[11px] font-bold text-white">QR</div>
-                  <p className="text-xs font-semibold text-white">Print &amp; share</p>
-                </div>
-                <div className="mt-3 flex items-center gap-3">
-                  {/* Stylized QR */}
-                  <div className="grid grid-cols-7 gap-[2px] rounded-md bg-white p-1.5 shadow-md">
-                    {Array.from({ length: 49 }).map((_, i) => {
-                      const filled = [0,1,2,5,6,7,9,12,14,16,18,19,20,22,23,25,28,30,33,35,37,40,42,43,44,46,47,48].includes(i);
-                      return <span key={i} className={`h-1.5 w-1.5 rounded-[1px] ${filled ? "bg-slate-900" : "bg-white"}`} />;
-                    })}
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-semibold text-white">Scan from a card</p>
-                    <p className="text-[9px] text-white/60 mt-0.5">Networking events,<br />college fairs, expos.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* CTA */}
-          <div className="text-center">
-            <Link href="/try"
-              className="inline-flex items-center gap-2 rounded-xl bg-accent hover:bg-accent-hover px-10 py-4 text-lg font-bold text-accent-dark shadow-2xl shadow-cyan-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]">
-              <Icon path={PATHS.link} size={18} className="text-accent-dark" />
-              Get your resume link
-            </Link>
-            <p className="mt-4 text-xs text-white/60 max-w-md mx-auto">
-              Free to publish. Update anytime — your link stays the same.
-              <span className="block sm:inline sm:ml-1">Anyone with the link can view.</span>
-            </p>
           </div>
         </div>
       </section>
