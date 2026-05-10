@@ -1,74 +1,110 @@
 ResumeDoctor — introduction (multipart plain-text companion)
-Replace {{UNSUBSCRIBE_URL}} with your ESP’s unsubscribe merge tag before sending promotional mail.
+Replace {{UNSUBSCRIBE_URL}} and {{PREFERENCE_CENTER_URL}} with your ESP's
+merge tags before sending promotional mail.
 
 ----------------------------------------------------------------
-PREHEADER (snippet): Portal-ready resumes, ATS-friendly layouts, and exports when you upgrade—built for Indian job seekers on Naukri, LinkedIn & more.
+PREHEADER (snippet): Create your resume in under 5 minutes, share it as
+one link on WhatsApp or LinkedIn, and update it anytime — your link
+stays the same.
 
 ----------------------------------------------------------------
 
-Apply with confidence
+CREATE YOUR RESUME. SHARE IT AS A LINK. UPDATE ANYTIME.
 
-Get a credible, ATS-readable resume fast—then ship portal-ready PDF and Word when you upgrade. Try the product without a card, save your work on a free account, and compare Pro on our pricing page.
+Build a polished resume in under 5 minutes, publish it to a shareable
+URL like resumedoctor.in/r/your-name, and ship portal-ready PDF or Word
+on Pro when a portal still demands a file. Try the product without a
+card.
 
-— Plans at a glance —
+----------------------------------------------------------------
 
-Trusted by job seekers across India
-• 30+ resume templates
-• ATS parse-friendly layouts  
-• India: Naukri, LinkedIn & more
-• Typical first draft in under 5 minutes
+ONE STACK TO CREATE, MANAGE AND SHARE YOUR RESUME
+
+  - 1 link — always up to date
+  - 30+ resume templates
+  - India: Naukri, LinkedIn & more
+  - Typical first draft in under 5 minutes
+
+----------------------------------------------------------------
 
 WHAT YOU GET
 
-• PDF export (Pro): Attach a sharp PDF to Naukri, LinkedIn, and email.
-• Word (DOCX) export (Pro): Revise wording after feedback without rebuilding the layout.
-• Keyword match vs job descriptions: Tune bullets for each role; Pro adds unlimited ATS checks and exports without watermarks.
+1. Your resume as a shareable link
+   Publish to resumedoctor.in/r/your-name and share on WhatsApp,
+   LinkedIn, recruiter email, or a printed QR. Edit once and the link
+   reflects your latest version.
+
+2. PDF and Word exports (Pro)
+   Portal-ready files when Naukri or company portals require an upload.
+   Revise wording after feedback without rebuilding the layout.
+
+3. AI bullets and keyword match vs JD
+   Tune bullets for each role; Pro adds unlimited resume health checks
+   and exports without watermarks.
+
+----------------------------------------------------------------
+
+PLANS AT A GLANCE
 
 TRY (OTP)
 No card — short exploration session — not billed, not a subscription.
 https://www.resumedoctor.in/try?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu&utm_content=plan-try
 
 BASIC ACCOUNT
-Free tier while you draft: TXT export, keyword match vs job descriptions, ATS teaser, core templates, and daily AI assists.
+Free tier: save & share as a link, TXT export, keyword match vs JD,
+one resume health check, core templates, and daily AI assists.
 Create free account:
 https://www.resumedoctor.in/signup?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu&utm_content=plan-basic
 
 PRO (via SuperProfile)
-Monthly or annual: full exports, every template, higher limits.
-In India: optional 14-day full Pro pass (one-time checkout, no auto-renew).
+Monthly or annual: unlimited resumes & share-as-link, every template,
+PDF + DOCX export with no watermark, unlimited resume health checks,
+higher AI limits.
+In India: optional 14-day full Pro pass (one-time checkout, no
+auto-renew).
 
-See live prices on:
+See live prices:
 https://www.resumedoctor.in/pricing?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu&utm_content=cta-secondary
 
-IMPORTANT — Pay on SuperProfile with the SAME email as your ResumeDoctor account so your purchase activates after checkout.
+IMPORTANT — Pay on SuperProfile with the SAME email as your
+ResumeDoctor account so your purchase activates after checkout.
 
 ----------------------------------------------------------------
+
 PRIMARY ACTION — Start with Try (no credit card):
 https://www.resumedoctor.in/try?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu&utm_content=cta-primary
 
 Compare plans & pricing:
 https://www.resumedoctor.in/pricing?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu&utm_content=cta-secondary
 
-New for 2026 — AI resume builder vs template, which one gets Indian freshers shortlisted:
+See the resume link feature:
+https://www.resumedoctor.in/resume-link?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu&utm_content=cta-resume-link
+
+New for 2026 — AI resume builder vs template, which one gets Indian
+freshers shortlisted:
 https://www.resumedoctor.in/blog/ai-resume-builder-vs-template-india-2026?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu&utm_content=featured-guide
 
 More links:
 Templates: https://www.resumedoctor.in/templates?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu&utm_content=templates
-Blog: https://www.resumedoctor.in/blog?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu&utm_content=blog
-About: https://www.resumedoctor.in/about?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu&utm_content=about
+Blog:      https://www.resumedoctor.in/blog?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu&utm_content=blog
+About:     https://www.resumedoctor.in/about?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu&utm_content=about
 
 ----------------------------------------------------------------
 Questions: resumedoctorweb@gmail.com
 ResumeDoctor, [Legal Entity Name], [Postal Address], India
 
 Privacy: https://www.resumedoctor.in/privacy?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu
-Terms: https://www.resumedoctor.in/terms?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu
+Terms:   https://www.resumedoctor.in/terms?utm_source=email&utm_medium=intro&utm_campaign=introduction-tofu
 
-Facebook: https://www.facebook.com/profile.php?id=61580973342626
+Facebook:  https://www.facebook.com/profile.php?id=61580973342626
 Instagram: https://www.instagram.com/resumedoctorweb/
-LinkedIn: https://www.linkedin.com/company/112700097/
-X: https://x.com/ResumeDoctorWeb
+LinkedIn:  https://www.linkedin.com/company/112700097/
+X:         https://x.com/ResumeDoctorWeb
 
-Unsubscribe: {{UNSUBSCRIBE_URL}}
+You are receiving this because you opted in or asked to hear from
+ResumeDoctor.
 
-© 2026 ResumeDoctor. All rights reserved.
+Unsubscribe:       {{UNSUBSCRIBE_URL}}
+Email preferences: {{PREFERENCE_CENTER_URL}}
+
+(c) 2026 ResumeDoctor. All rights reserved.
