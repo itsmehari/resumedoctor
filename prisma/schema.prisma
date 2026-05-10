@@ -61,6 +61,16 @@ model User {
   // Pro ₹1 trial – expiry reminder emails (cron + Resend)
   proTrialReminder3dSentAt DateTime?
   proTrialReminder1dSentAt DateTime?
+
+  // ── Pro Link entitlement (vanity slug, view analytics, public-page footer removal) ──
+  // Annual Pro subscribers get this implicitly via subscription == "pro_annual";
+  // monthly Pro subscribers and Basic users can buy a standalone ₹99/mo SKU which
+  // sets proLinkExpiresAt to ~30 days out. The boolean is the cached "active right now"
+  // flag, kept in sync by the SuperProfile webhook + a daily cron when the standalone
+  // sub lapses. Implicit (annual) entitlement is computed at read time, not stored here.
+  proLinkActive       Boolean   @default(false)
+  proLinkExpiresAt    DateTime?
+  proLinkSource       String?   // "annual" | "standalone" | "complimentary" — diagnostic only
 }
 
 // WBS 10.6 – 14-day trial activation requests (user pays ₹1, submits UPI ref)
@@ -248,7 +258,13 @@ model Resume {
   templateId  String   @default("professional-v1")
   content     Json     // sections, blocks - flexible structure
   version     Int      @default(1)
-  publicSlug  String?  @unique // Phase 1.3 – shareable link e.g. /r/abc123
+  publicSlug  String?  @unique // Phase 1.3 – shareable random slug e.g. /r/abc123 (always present once published)
+  // Pro Link – user-claimed memorable slug, e.g. /r/hari-krishnan. Optional; both
+  // publicSlug and vanitySlug resolve to the same resume so legacy links never break.
+  vanitySlug  String?  @unique
+  // Pro Link – lightweight view counter (bot-filtered). Aggregate-only; no IP / UA stored.
+  viewCount   Int      @default(0)
+  lastViewedAt DateTime?
   importSource String? // Phase 1.1 – "pdf" | "docx" | null
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

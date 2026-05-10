@@ -23,7 +23,7 @@ export function SettingsContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { subscription, isPro, resumePackCredits, subscriptionExpiresAt } = useSubscription();
+  const { subscription, isPro, resumePackCredits, subscriptionExpiresAt, proLink } = useSubscription();
   const [name, setName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [loading, setLoading] = useState(false);
@@ -440,6 +440,23 @@ export function SettingsContent() {
                 <span className="ml-2 font-medium text-primary-600 dark:text-primary-400">
                   · {resumePackCredits} export credit{resumePackCredits !== 1 ? "s" : ""}
                 </span>
+              )}
+            </p>
+            <p className="mt-1.5 text-xs text-slate-600 dark:text-slate-400">
+              <span className="font-semibold text-slate-700 dark:text-slate-300">Pro Link:</span>{" "}
+              {proLink.active ? (
+                <span className="text-emerald-700 dark:text-emerald-400">{proLink.label}</span>
+              ) : (
+                <>
+                  <span className="text-slate-500 dark:text-slate-400">Inactive</span>
+                  <span className="ml-1 text-slate-400">·</span>{" "}
+                  <Link
+                    href="/pricing#pro-link"
+                    className="font-semibold text-primary-600 hover:underline dark:text-primary-400"
+                  >
+                    Upgrade
+                  </Link>
+                </>
               )}
             </p>
           </div>

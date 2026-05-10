@@ -11,6 +11,7 @@ import { recordProductEvent } from "@/lib/product-events";
 import { AnalyticsEvents } from "@/lib/analytics-event-names";
 import { sessionUserEmail } from "@/lib/session-user";
 import { hasFullProAccess } from "@/lib/subscription-entitlements";
+import { describeProLinkStatus, getProLinkStatus } from "@/lib/pro-link-entitlement";
 
 const updateSchema = z.object({
   name: z.string().min(1).max(100).optional(),
@@ -52,6 +53,9 @@ export async function GET() {
       twoFactorEnabled: true,
       createdAt: true,
       resumePackCredits: true,
+      proLinkActive: true,
+      proLinkExpiresAt: true,
+      proLinkSource: true,
     },
   });
 
@@ -60,6 +64,7 @@ export async function GET() {
   }
 
   const normalizedSubscription = user.subscription === "free" ? "basic" : user.subscription;
+  const proLink = getProLinkStatus(user);
 
   return NextResponse.json({
     ...user,
@@ -68,6 +73,13 @@ export async function GET() {
     isPro: hasFullProAccess(user.subscription, user.subscriptionExpiresAt),
     isImpersonating: auth.isImpersonating ?? false,
     resumePackCredits: user.resumePackCredits ?? 0,
+    proLink: {
+      active: proLink.active,
+      source: proLink.source,
+      expiresAt: proLink.expiresAt ? proLink.expiresAt.toISOString() : null,
+      isImplicit: proLink.isImplicit,
+      label: describeProLinkStatus(proLink),
+    },
   });
 }
 

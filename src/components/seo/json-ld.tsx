@@ -3,6 +3,7 @@
  * Helps search engines and AI systems understand the site.
  */
 import { siteUrl, siteName } from "@/lib/seo";
+import { FEATURE_ITEMS } from "@/components/features/features-data";
 
 export function HomeJsonLd() {
   const webSite = {
@@ -383,5 +384,46 @@ export function ExampleHowToJsonLd({
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
     />
+  );
+}
+
+/** WebPage + ItemList for /features — capabilities deep links for discovery. */
+export function FeaturesJsonLd() {
+  const graph = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${siteUrl}/features#webpage`,
+        url: `${siteUrl}/features`,
+        name: "Features — ResumeDoctor",
+        description:
+          "Create your resume, share it as one always-updated link, and apply with confidence on Indian portals. Templates, AI writing help, job description match, readability checks, and PDF or Word exports when you upgrade on SuperProfile.",
+        isPartOf: {
+          "@type": "WebSite",
+          name: siteName,
+          url: siteUrl,
+        },
+      },
+      {
+        "@type": "ItemList",
+        name: "ResumeDoctor product capabilities",
+        numberOfItems: FEATURE_ITEMS.length,
+        itemListElement: FEATURE_ITEMS.map((f, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: f.title,
+          item: {
+            "@type": "WebPage",
+            name: f.title,
+            description: f.body,
+            url: `${siteUrl}${f.href}`,
+          },
+        })),
+      },
+    ],
+  };
+  return (
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }} />
   );
 }

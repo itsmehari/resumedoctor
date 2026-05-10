@@ -14,6 +14,7 @@ import { trackEvent } from "@/lib/analytics";
  * | pro_monthly   | NEXT_PUBLIC_SUPERPROFILE_URL_PRO_MONTHLY |
  * | pro_annual    | NEXT_PUBLIC_SUPERPROFILE_URL_PRO_ANNUAL |
  * | resume_pack   | NEXT_PUBLIC_SUPERPROFILE_URL_RESUME_PACK |
+ * | pro_link      | NEXT_PUBLIC_SUPERPROFILE_URL_PRO_LINK |
  */
 const VP_HOST = "superprofile.bio";
 
@@ -22,12 +23,16 @@ export const SUPERPROFILE_PUBLISHED_CHECKOUT = {
   pro_monthly: `https://${VP_HOST}/vp/69db33e8da78960013e814b3`,
   pro_annual: `https://${VP_HOST}/vp/69dca13af2e2e30013365462`,
   resume_pack: `https://${VP_HOST}/vp/69e5caf05275a70013fc8928`,
+  // Pro Link standalone — published 2026-05-10. ₹99/mo recurring add-on,
+  // free for pro_annual subscribers (entitlement computed by getProLinkStatus).
+  pro_link: `https://${VP_HOST}/vp/6a00b215e8936a0013c248a2`,
 } as const;
 
 export const FALLBACK_TRIAL_14_URL = SUPERPROFILE_PUBLISHED_CHECKOUT.pro_trial_14;
 export const FALLBACK_PRO_MONTHLY_URL = SUPERPROFILE_PUBLISHED_CHECKOUT.pro_monthly;
 export const FALLBACK_PRO_ANNUAL_URL = SUPERPROFILE_PUBLISHED_CHECKOUT.pro_annual;
 export const FALLBACK_RESUME_PACK_URL = SUPERPROFILE_PUBLISHED_CHECKOUT.resume_pack;
+export const FALLBACK_PRO_LINK_URL = SUPERPROFILE_PUBLISHED_CHECKOUT.pro_link;
 
 /** SuperProfile “create payment page” URLs are for sellers; buyers need the published /vp/ link. */
 export function isSuperprofileSellerSetupUrl(url: string): boolean {
@@ -245,4 +250,29 @@ export function SuperprofileResumePackCta({ showEmailHint = true }: { showEmailH
       {showEmailHint ? defaultHint : null}
     </div>
   );
+}
+
+/**
+ * Pro Link standalone (₹99/mo) — SuperProfile checkout.
+ * Returns null when the env var is unset AND the fallback is empty: that combo means
+ * the SuperProfile product page hasn't been created yet, and we'd rather show a
+ * "Coming soon" hint elsewhere than render a broken button.
+ */
+export function SuperprofileProLinkCta({ showEmailHint = true, label = "Add Pro Link \u2014 \u20b999/mo" }: { showEmailHint?: boolean; label?: string }) {
+  const env = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_LINK;
+  const url = resolveSuperprofileCheckoutHref(env, FALLBACK_PRO_LINK_URL);
+  if (!url) return null;
+  return (
+    <div className="flex w-full flex-col gap-2 sm:w-auto">
+      <OutLink href={url} label={label} variant="primary" eventLabel="pro_link" />
+      {showEmailHint ? defaultHint : null}
+    </div>
+  );
+}
+
+/** True when a Pro Link checkout URL is configured (for hiding the upsell when not yet live). */
+export function isProLinkCheckoutConfigured(): boolean {
+  const env = process.env.NEXT_PUBLIC_SUPERPROFILE_URL_PRO_LINK;
+  if (env && env.trim()) return true;
+  return Boolean(FALLBACK_PRO_LINK_URL);
 }

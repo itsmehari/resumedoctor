@@ -1,4 +1,8 @@
-// Phase 1.3 – Fetch resume by public slug (for /r/[slug])
+// Phase 1.3 + Pro Link – fetch resume by public OR vanity slug.
+//
+// Both publicSlug (random, permanent, server-generated) and vanitySlug
+// (Pro Link, user-claimed, optional) resolve to the same resume. We never
+// 301 between them: every link the user has shared keeps working forever.
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
@@ -7,12 +11,15 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params;
-  if (!slug?.trim()) {
+  const trimmed = slug?.trim();
+  if (!trimmed) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const resume = await prisma.resume.findUnique({
-    where: { publicSlug: slug },
+  const resume = await prisma.resume.findFirst({
+    where: {
+      OR: [{ publicSlug: trimmed }, { vanitySlug: trimmed }],
+    },
     select: {
       id: true,
       title: true,

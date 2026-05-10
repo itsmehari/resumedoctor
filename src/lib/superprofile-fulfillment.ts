@@ -8,12 +8,19 @@ export const SUPERPROFILE_PRODUCT_KEYS = [
   "pro_annual",
   "pro_trial_14",
   "resume_pack",
+  // Pro Link – standalone ₹99/mo SKU. Optional add-on for monthly Pro and Basic
+  // users; redundant for annual Pro subscribers (annual already implies Pro Link
+  // via subscription-entitlement logic, so a separate purchase is wasteful but
+  // harmless — it just stacks the standalone expiry on top).
+  "pro_link",
 ] as const;
 
 export type SuperprofileProductKey = (typeof SUPERPROFILE_PRODUCT_KEYS)[number];
 
 const DEFAULT_RESUME_PACK_CREDITS = 5;
 const MAX_RESUME_PACK_CREDITS = 100;
+/** Standalone Pro Link is sold as a 30-day chunk (recurring monthly). */
+const PRO_LINK_DURATION_DAYS = 30;
 
 export type FulfillResult =
   | { ok: true; duplicate?: false; userId: string }
@@ -73,13 +80,48 @@ export async function fulfillSuperprofilePurchase(input: {
           billingProvider: "superprofile",
         },
       });
+    } else if (input.productKey === "pro_link") {
+      // Standalone Pro Link add-on. Does NOT touch `subscription` — a Basic or
+      // monthly-Pro user remains on their main plan; only the Pro Link entitlement
+      // window is extended. If the user already has time on the clock, we extend
+      // from the existing expiry; otherwise we extend from now.
+      const current = await tx.user.findUnique({
+        where: { id: user.id },
+        select: { proLinkExpiresAt: true },
+      });
+      const base =
+        current?.proLinkExpiresAt && current.proLinkExpiresAt > new Date()
+          ? new Date(current.proLinkExpiresAt)
+          : new Date();
+      base.setDate(base.getDate() + PRO_LINK_DURATION_DAYS);
+      await tx.user.update({
+        where: { id: user.id },
+        data: {
+          proLinkActive: true,
+          proLinkExpiresAt: base,
+          proLinkSource: "standalone",
+          billingProvider: "superprofile",
+        },
+      });
     } else {
+      // pro_monthly / pro_annual.
+      // Annual Pro implicitly grants Pro Link (computed by getProLinkStatus at read
+      // time); we still flip the cached flag for snappy reads in admin / billing UI
+      // and keep `proLinkSource` informative.
+      const isAnnual = input.productKey === "pro_annual";
       await tx.user.update({
         where: { id: user.id },
         data: {
           subscription: input.productKey,
           subscriptionExpiresAt: null,
           billingProvider: "superprofile",
+          ...(isAnnual
+            ? {
+                proLinkActive: true,
+                proLinkExpiresAt: null, // implicit, follows the subscription
+                proLinkSource: "annual",
+              }
+            : {}),
         },
       });
     }

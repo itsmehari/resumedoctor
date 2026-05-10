@@ -9,8 +9,10 @@ import { cn } from "@/lib/utils";
 import { trackEvent } from "@/lib/analytics";
 import {
   FALLBACK_TRIAL_14_URL,
+  isProLinkCheckoutConfigured,
   resolveSuperprofileCheckoutHref,
   SuperprofileProAnnualCta,
+  SuperprofileProLinkCta,
   SuperprofileProMonthlyCta,
   SuperprofileResumePackCta,
   SuperprofileTrialCta,
@@ -215,6 +217,26 @@ function PlansAtGlance({
           <p className="mt-2 flex-1 text-xs leading-relaxed text-slate-700 dark:text-slate-300">
             PDF &amp; Word, watermark-free exports, all templates, unlimited resume health checks &amp; higher AI limits — billed on SuperProfile.
           </p>
+          <ul className="mt-3 space-y-1 text-[11px] leading-snug text-slate-700 dark:text-slate-300">
+            <li className="flex items-start gap-1.5">
+              <span className="mt-0.5 inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300">
+                <Check className="h-2.5 w-2.5" strokeWidth={3} aria-hidden />
+              </span>
+              <span>
+                <strong className="font-semibold text-slate-900 dark:text-slate-100">Annual</strong>{" "}
+                includes Pro Link (custom URL, view analytics)
+              </span>
+            </li>
+            <li className="flex items-start gap-1.5">
+              <span className="mt-0.5 inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300">
+                <Sparkles className="h-2.5 w-2.5" aria-hidden />
+              </span>
+              <span>
+                <strong className="font-semibold text-slate-900 dark:text-slate-100">Monthly</strong>{" "}
+                — Pro Link is +{isIndia ? "₹99" : "$1.49"}/mo add-on
+              </span>
+            </li>
+          </ul>
           <Link
             href="#pro-superprofile"
             className="mt-4 text-xs font-semibold text-primary-800 underline-offset-2 hover:underline dark:text-primary-200"
@@ -323,6 +345,30 @@ const COMPARE_PLAN_ROWS: {
     basic: "None with Pro or pack",
     pass14: "None — full-quality files",
     pro: "None — full-quality files",
+  },
+  {
+    feature: "Custom resume URL (vanity slug)",
+    featureNote: "Replace /r/abc123xyz with /r/your-name. Pro Link.",
+    tryOtp: false,
+    basic: "Pro Link add-on",
+    pass14: false,
+    pro: "Pro annual: included · Monthly: +₹99/mo",
+  },
+  {
+    feature: "View analytics on your link",
+    featureNote: "How many times your resume link has been opened, plus last-viewed time. Pro Link.",
+    tryOtp: false,
+    basic: "Pro Link add-on",
+    pass14: false,
+    pro: "Pro annual: included · Monthly: +₹99/mo",
+  },
+  {
+    feature: "ResumeDoctor footer on public link",
+    featureNote: "Public /r/<slug> pages show a small ResumeDoctor footer. Pro Link removes it.",
+    tryOtp: "Shown",
+    basic: "Shown (removed with Pro Link)",
+    pass14: "Shown",
+    pro: "Pro annual: removed · Monthly: with Pro Link",
   },
 ];
 
@@ -767,6 +813,87 @@ export default function PricingPage() {
                 </div>
               </div>
             </div>
+
+            {/* Pro Link – live resume link upgrades. Anchored at #pro-link to match
+                upgrade CTAs in the share popover and /resume-link landing page. */}
+            <section
+              id="pro-link"
+              className="mt-10 scroll-mt-24 rounded-2xl border-2 border-primary-200 bg-gradient-to-br from-primary-50/80 via-white to-primary-50/40 p-6 shadow-sm dark:border-primary-800 dark:from-primary-950/30 dark:via-slate-900/40 dark:to-primary-950/15"
+              aria-labelledby="pro-link-heading"
+            >
+              <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+                <div>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-100 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-primary-800 dark:bg-primary-900/40 dark:text-primary-200">
+                    <Sparkles className="h-3 w-3" aria-hidden /> Pro Link
+                  </span>
+                  <h3 id="pro-link-heading" className="mt-2 text-xl font-bold text-slate-900 dark:text-slate-50">
+                    Make the link your own
+                  </h3>
+                  <p className="mt-1 max-w-2xl text-sm text-slate-700 dark:text-slate-300">
+                    Pro Link upgrades your shareable resume URL with a custom address, view analytics, and a clean public page — no ResumeDoctor footer.
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    From
+                  </p>
+                  <p className="text-2xl font-extrabold tabular-nums text-primary-700 dark:text-primary-300">
+                    {isIndia ? "₹99" : "$1.49"}
+                    <span className="text-xs font-semibold text-slate-600 dark:text-slate-400"> / mo</span>
+                  </p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">Free with Pro annual</p>
+                </div>
+              </div>
+
+              <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <li className="rounded-xl border border-primary-200/70 bg-white/80 p-3 text-sm dark:border-primary-800/40 dark:bg-slate-900/60">
+                  <p className="font-semibold text-slate-900 dark:text-slate-100">Custom URL</p>
+                  <p className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+                    /r/your-name instead of /r/abc123xyz. Goes on business cards, email signatures, LinkedIn.
+                  </p>
+                </li>
+                <li className="rounded-xl border border-primary-200/70 bg-white/80 p-3 text-sm dark:border-primary-800/40 dark:bg-slate-900/60">
+                  <p className="font-semibold text-slate-900 dark:text-slate-100">View analytics</p>
+                  <p className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+                    Total opens, last-viewed time. See when recruiters click the link you sent.
+                  </p>
+                </li>
+                <li className="rounded-xl border border-primary-200/70 bg-white/80 p-3 text-sm dark:border-primary-800/40 dark:bg-slate-900/60">
+                  <p className="font-semibold text-slate-900 dark:text-slate-100">No ResumeDoctor footer</p>
+                  <p className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+                    A clean public page with just your resume — your name, your URL, no co-branding.
+                  </p>
+                </li>
+              </ul>
+
+              <div className="mt-5 grid gap-4 sm:grid-cols-[1fr_auto] sm:items-center">
+                <div className="rounded-xl bg-white/70 p-3 text-xs text-slate-700 dark:bg-slate-900/50 dark:text-slate-300">
+                  <p className="font-semibold text-slate-900 dark:text-slate-100">How it&rsquo;s priced</p>
+                  <ul className="mt-1.5 space-y-1">
+                    <li>
+                      <span className="font-semibold">Pro annual ({isIndia ? "₹1,499/yr" : "$15.99/yr"}):</span>{" "}
+                      Pro Link included. Best value.
+                    </li>
+                    <li>
+                      <span className="font-semibold">Pro monthly ({isIndia ? "₹199/mo" : "$1.99/mo"}):</span>{" "}
+                      Add Pro Link for {isIndia ? "₹99" : "$1.49"}/mo.
+                    </li>
+                    <li>
+                      <span className="font-semibold">Basic (free):</span> Add Pro Link for {isIndia ? "₹99" : "$1.49"}/mo standalone.
+                    </li>
+                  </ul>
+                </div>
+                <div className="flex flex-col gap-2">
+                  {isProLinkCheckoutConfigured() ? (
+                    <SuperprofileProLinkCta showEmailHint />
+                  ) : (
+                    <p className="rounded-xl border border-dashed border-slate-300 bg-white/60 px-3 py-2 text-center text-xs text-slate-500 dark:border-slate-700 dark:bg-slate-900/40 dark:text-slate-400">
+                      Standalone Pro Link checkout coming soon. Get Pro annual now to lock in Pro Link free.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </section>
 
             {/* Comparison table */}
             <SectionRule

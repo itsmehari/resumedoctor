@@ -1,7 +1,25 @@
 // WBS 5.5 – Subscription status for export gating (includes trial, pro_trial_14)
+// Pro Link – also exposes the Pro Link entitlement so any client surface can
+// gate "vanity URL / view analytics / footer removal" without re-fetching.
 "use client";
 
 import { useEffect, useState } from "react";
+
+export interface ProLinkStatus {
+  active: boolean;
+  source: "annual" | "standalone" | "complimentary" | null;
+  expiresAt: string | null;
+  isImplicit: boolean;
+  label: string;
+}
+
+const INACTIVE_PRO_LINK: ProLinkStatus = {
+  active: false,
+  source: null,
+  expiresAt: null,
+  isImplicit: false,
+  label: "Inactive",
+};
 
 export function useSubscription(): {
   subscription: string;
@@ -16,6 +34,7 @@ export function useSubscription(): {
   aiDailyUsed: number | null;
   aiDailyLimit: number | null;
   aiDailyRemaining: number | null;
+  proLink: ProLinkStatus;
 } {
   const [subscription, setSubscription] = useState("basic");
   const [isPro, setIsPro] = useState(false);
@@ -28,6 +47,7 @@ export function useSubscription(): {
   const [aiDailyUsed, setAiDailyUsed] = useState<number | null>(null);
   const [aiDailyLimit, setAiDailyLimit] = useState<number | null>(null);
   const [aiDailyRemaining, setAiDailyRemaining] = useState<number | null>(null);
+  const [proLink, setProLink] = useState<ProLinkStatus>(INACTIVE_PRO_LINK);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -48,6 +68,17 @@ export function useSubscription(): {
         setIsImpersonating(data.isImpersonating === true);
         setResumePackCredits(data.resumePackCredits ?? 0);
         setEmailVerified(data.emailVerified != null);
+        if (data.proLink && typeof data.proLink === "object") {
+          setProLink({
+            active: data.proLink.active === true,
+            source: data.proLink.source ?? null,
+            expiresAt: data.proLink.expiresAt ?? null,
+            isImplicit: data.proLink.isImplicit === true,
+            label: typeof data.proLink.label === "string" ? data.proLink.label : "Inactive",
+          });
+        } else {
+          setProLink(INACTIVE_PRO_LINK);
+        }
 
         if (limitsRes.ok) {
           const lim = await limitsRes.json();
@@ -78,6 +109,7 @@ export function useSubscription(): {
         setAiDailyUsed(null);
         setAiDailyLimit(null);
         setAiDailyRemaining(null);
+        setProLink(INACTIVE_PRO_LINK);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -95,5 +127,6 @@ export function useSubscription(): {
     aiDailyUsed,
     aiDailyLimit,
     aiDailyRemaining,
+    proLink,
   };
 }

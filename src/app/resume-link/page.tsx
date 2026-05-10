@@ -323,6 +323,60 @@ export default function ResumeLinkPage() {
                 </div>
               ))}
             </div>
+
+            {/* ── Pro Link upsell band ───────────────────────────────────── */}
+            <div className="mt-16 rounded-3xl border-2 border-primary-200/80 bg-gradient-to-br from-primary-50/90 via-white to-cyan-50/40 p-6 sm:p-8 dark:border-primary-800/60 dark:from-primary-950/30 dark:via-slate-900/50 dark:to-cyan-950/20">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+                <div>
+                  <p className="inline-flex items-center gap-1.5 rounded-full bg-primary-100 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-primary-800 dark:bg-primary-900/40 dark:text-primary-200">
+                    Pro Link
+                  </p>
+                  <h3 className="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+                    Make the link your own
+                  </h3>
+                  <p className="mt-1 max-w-2xl text-sm text-slate-700 dark:text-slate-300">
+                    Pro Link upgrades your shareable URL with a custom address, view analytics, and a clean public page.
+                  </p>
+                </div>
+                <p className="text-right text-xs text-slate-500 dark:text-slate-400">
+                  Free with Pro annual ·{" "}
+                  <span className="font-semibold text-slate-900 dark:text-slate-100">
+                    ₹99/mo standalone
+                  </span>
+                </p>
+              </div>
+              <ul className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <li className="rounded-xl border border-primary-200/60 bg-white/80 p-3 text-sm dark:border-primary-800/40 dark:bg-slate-900/60">
+                  <p className="font-semibold text-slate-900 dark:text-slate-100">Custom URL</p>
+                  <p className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+                    /r/your-name instead of /r/abc123xyz. Lives on your business card and email signature.
+                  </p>
+                </li>
+                <li className="rounded-xl border border-primary-200/60 bg-white/80 p-3 text-sm dark:border-primary-800/40 dark:bg-slate-900/60">
+                  <p className="font-semibold text-slate-900 dark:text-slate-100">View analytics</p>
+                  <p className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+                    Total opens and last-viewed time, so you know when a recruiter is reading.
+                  </p>
+                </li>
+                <li className="rounded-xl border border-primary-200/60 bg-white/80 p-3 text-sm dark:border-primary-800/40 dark:bg-slate-900/60">
+                  <p className="font-semibold text-slate-900 dark:text-slate-100">No ResumeDoctor footer</p>
+                  <p className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+                    A clean public page — your name, your URL, no co-branding.
+                  </p>
+                </li>
+              </ul>
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                <Link
+                  href="/pricing#pro-link"
+                  className="inline-flex items-center justify-center rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 shadow-md shadow-primary-900/10"
+                >
+                  See Pro Link plans
+                </Link>
+                <p className="text-xs text-slate-600 dark:text-slate-400">
+                  Publishing a basic link is still free — Pro Link is just the upgrades.
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -505,7 +559,7 @@ const FAQS = [
   },
   {
     q: "Do I need a paid plan to publish a link?",
-    a: "No. Publishing your resume link is free on ResumeDoctor. Pro adds PDF and DOCX export and access to every template.",
+    a: "No. Publishing your resume link is free on ResumeDoctor. Pro Link is the optional paid layer on top — custom URL, view analytics, and a footer-free public page. Free with Pro annual, ₹99/mo standalone.",
   },
   {
     q: "Will my link show up on Google?",
@@ -513,7 +567,11 @@ const FAQS = [
   },
   {
     q: "Can I use a custom URL like /r/my-name?",
-    a: "Right now ResumeDoctor generates the slug for you. A custom (vanity) URL — let's say /r/hari-krishnan — is on our short-term roadmap.",
+    a: "Yes — that's the Pro Link upgrade. Claim a vanity slug like /r/hari-krishnan from the Share button. Reserved words and lookalike URLs are blocked. The legacy random URL keeps working too, so old shares never break.",
+  },
+  {
+    q: "How do I see who has viewed my resume link?",
+    a: "Pro Link shows you anonymous totals — number of opens and the last time it was viewed — in the Share popover. We deliberately do not log IPs, browsers, or visitor identities; the metric is privacy-safe and bot-filtered.",
   },
   {
     q: "Does the link work on WhatsApp and LinkedIn?",
