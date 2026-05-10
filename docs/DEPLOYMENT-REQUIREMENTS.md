@@ -1,6 +1,6 @@
 # ResumeDoctor – Deployment Requirements & Live Production Checklist (resumedoctor.in)
 
-**Last Updated:** 2026-04-11  
+**Last Updated:** 2026-05-10  
 **Target:** Vercel + Supabase/Neon (recommended) or AWS/GCP
 
 ---
@@ -72,14 +72,39 @@ S3_REGION=ap-south-1
 S3_ACCESS_KEY=
 S3_SECRET_KEY=
 
-# Email
+# Email (Resend — required for verification, OTP, password reset)
 RESEND_API_KEY=re_...
+# Production MUST set a verified-domain sender (see §2.1 below). Without it,
+# the app refuses to send from the Resend sandbox in production.
+EMAIL_FROM="ResumeDoctor <noreply@resumedoctor.in>"
+# Optional: replies route here (defaults in code to support@resumedoctor.in if unset)
+EMAIL_REPLY_TO=support@resumedoctor.in
 
 # Monitoring
 SENTRY_DSN=
 ```
 
-### 2.1 SuperProfile (India checkout + webhook)
+### 2.1 Production transactional email (Resend + Vercel) — WBS 13.10–13.16
+
+Transactional mail (signup verification, trial OTP, password reset) goes through [`src/lib/email.ts`](../src/lib/email.ts). In **production**, if `EMAIL_FROM` is missing or still the shared sandbox sender (`onboarding@resend.dev`), sends are **refused** so users do not silently hit Resend **403** sandbox restrictions.
+
+Execute in order; gates block the next step until complete.
+
+| WBS ID | Task | Owner | Gate |
+|--------|------|-------|------|
+| **13.10** | **Resend:** Domains → Add domain → `resumedoctor.in`. Pick region once (e.g. **US East `us-east-1`** or **EU West `eu-west-1`**). Open the DNS record sheet Resend shows. | DevOps | Domain row exists; SPF/DKIM/DMARC names/values visible |
+| **13.11** | **Registrar DNS:** Add the **TXT** records exactly as Resend specifies (SPF, DKIM; DMARC as guided). Wait for propagation if needed. **Resend:** click Verify until status is **Verified**. | DevOps | Resend domain **Verified** |
+| **13.12** | **Vercel:** Project → Settings → Environment Variables → **Production**: `EMAIL_FROM` = `ResumeDoctor <noreply@resumedoctor.in>` (or another address @ the verified domain). Optional: `EMAIL_REPLY_TO` = `support@resumedoctor.in`. Use **Preview** only if previews must send real email. CLI (after `vercel login`): `vercel env add EMAIL_FROM production` then paste value. | DevOps | Variables saved for Production |
+| **13.13** | **Redeploy** so serverless functions read new env: Deployments → ⋯ on latest → **Redeploy**, or push any commit to `main`. | DevOps | New Production deployment **Ready** |
+| **13.14** | **Smoke test (admin):** `POST https://www.resumedoctor.in/api/health/email` with session cookie or admin auth as implemented (`requireAdmin`). Body: `{ "to": "your-inbox@example.com" }`. Expect `{ "ok": true }` and inbox delivery. If `ok: false`, JSON includes `hint` for missing `RESEND_API_KEY` / `EMAIL_FROM`. | Backend/DevOps | 200 + email received |
+| **13.15** | **E2E:** Trial OTP (`/try` flow), password signup verification, **Resend** dashboard logs show **200** (not **403**). Test with a recipient **not** the Resend account owner (sandbox only delivers to owner). | QA | Flows succeed for arbitrary Gmail/etc. |
+| **13.16** | **Optional hygiene:** Rotate `GOOGLE_CLIENT_SECRET` if Vercel flags it; remove unused Resend API keys; keep one production key in Vercel only. | DevOps | Secrets tidy |
+
+**Export failed recipient addresses (historical audits):** Resend → **Logs** / **Emails** → filter **Failed** / status **403** → date range → copy or export the **To** field per row. This data is not stored in the app database.
+
+**Region note:** Changing region after domain creation in Resend can require re-setup — choose deliberately in **13.10**.
+
+### 2.2 SuperProfile (India checkout + webhook)
 
 Set these in **Vercel → Environment Variables** (Production). Values are the **public customer checkout URLs** from each SuperProfile Payment Page (**Copy link** in the editor preview). They are **not** the same as the dashboard editor URL (`/create-payment-page/...`).
 
@@ -209,6 +234,7 @@ vercel --prod
 | 4 | PDF export | Export resume as PDF |
 | 5 | Error tracking | Trigger error, verify Sentry |
 | 6 | Uptime monitor | Configure Pingdom/UptimeRobot |
+| 7 | Transactional email | §2.1 gates **13.14–13.15** (health email + trial OTP / verify) |
 
 ---
 
