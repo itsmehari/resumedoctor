@@ -1,5 +1,12 @@
 "use client";
 
+/**
+ * @deprecated Replaced by `src/components/site-header/mobile-mega-menu.tsx`
+ * (the `<MobileMegaMenu />` component) which is integrated into `site-header.tsx`
+ * for both public and dashboard variants. This file is kept temporarily so that
+ * any external imports keep compiling; delete it in a follow-up cleanup PR once
+ * the codebase is grep-clean.
+ */
 import Link from "next/link";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";

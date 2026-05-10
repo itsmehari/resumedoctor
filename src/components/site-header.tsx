@@ -1,11 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
 import { AuthNav } from "@/components/auth-nav";
-import { MobileNavMenu } from "@/components/mobile-nav-menu";
+import { MegaMenu } from "@/components/site-header/mega-menu";
+import { MobileMegaMenu } from "@/components/site-header/mobile-mega-menu";
 import { UserMenu } from "@/components/user-menu";
 import { useSession } from "next-auth/react";
 import { useSubscription } from "@/hooks/use-subscription";
@@ -16,23 +14,6 @@ type SiteHeaderProps = {
   navVariant?: "public" | "dashboard";
   maxWidth?: "xl" | "2xl" | "3xl" | "4xl" | "6xl";
 };
-
-const publicNavLinks = [
-  { href: "/templates", label: "Templates" },
-  { href: "/resume-link", label: "Resume link" },
-  { href: "/pricing", label: "Pricing" },
-  { href: "/features", label: "Features" },
-  { href: "/blog", label: "Blog" },
-  { href: "/examples", label: "Examples" },
-];
-
-const dashboardNavLinks = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/cover-letters", label: "Cover Letters" },
-  { href: "/jobs", label: "Jobs" },
-  { href: "/interview-prep", label: "Interview Prep" },
-  { href: "/settings", label: "Settings" },
-];
 
 function Logo({ inverted }: { inverted: boolean }) {
   return (
@@ -63,10 +44,9 @@ export function SiteHeader({
   navVariant = "public",
   maxWidth = "6xl",
 }: SiteHeaderProps) {
-  const pathname = usePathname();
-  const [dashboardNavOpen, setDashboardNavOpen] = useState(false);
   const { data: session, status } = useSession();
-  const { subscription, isPro, isTrial, subscriptionExpiresAt } = useSubscription();
+  const { subscription, isPro, isTrial, subscriptionExpiresAt } =
+    useSubscription();
   const isAdmin = (session?.user as { role?: string })?.role === "admin";
 
   const inverted = variant === "home";
@@ -79,59 +59,47 @@ export function SiteHeader({
     "6xl": "max-w-6xl",
   }[maxWidth];
 
-  // Unified marketing/public header across home and public pages.
+  // Unified marketing/public header — Variant A megamenu (glassy dark over blue)
   if (isPublicHeader) {
     return (
       <>
-      <a
-        href="#main-content"
-        className="sr-only focus:fixed focus:left-4 focus:top-20 focus:z-[100] focus:m-0 focus:inline-block focus:h-auto focus:w-auto focus:min-h-0 focus:min-w-0 focus:overflow-visible focus:whitespace-normal focus:rounded-lg focus:px-4 focus:py-2.5 focus:bg-white focus:text-slate-900 focus:shadow-lg focus:ring-2 focus:ring-primary-500 dark:focus:bg-slate-900 dark:focus:text-slate-100"
-      >
-        Skip to main content
-      </a>
-      <header className="site-header-shell sticky top-0 z-30 border-b border-white/10 bg-primary-600/95 backdrop-blur-sm">
-        <div
-          className={`${maxWidthClass} mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3 min-h-16 py-3 sm:py-0`}
+        <a
+          href="#main-content"
+          className="sr-only focus:fixed focus:left-4 focus:top-20 focus:z-[100] focus:m-0 focus:inline-block focus:h-auto focus:w-auto focus:min-h-0 focus:min-w-0 focus:overflow-visible focus:whitespace-normal focus:rounded-lg focus:px-4 focus:py-2.5 focus:bg-white focus:text-slate-900 focus:shadow-lg focus:ring-2 focus:ring-primary-500 dark:focus:bg-slate-900 dark:focus:text-slate-100"
         >
-          <Logo inverted />
-          <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-white/80">
-            {publicNavLinks.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className={`transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-white after:transition-all after:origin-left ${
-                  pathname === href || pathname.startsWith(href + "/")
-                    ? "text-white after:scale-x-100"
-                    : "hover:text-white after:scale-x-0 hover:after:scale-x-100"
-                }`}
-              >
-                {label}
-              </Link>
-            ))}
-          </nav>
-          <div className="flex items-center gap-2 shrink-0">
-            <MobileNavMenu inverted />
-            <AuthNav inverted />
+          Skip to main content
+        </a>
+        <header className="site-header-shell sticky top-0 z-30 border-b border-white/10 bg-primary-600/95 backdrop-blur-sm">
+          <div
+            className={`${maxWidthClass} mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3 min-h-16 py-3 sm:py-0`}
+            style={{ ["--megamenu-top" as string]: "4rem" }}
+          >
+            <Logo inverted />
+            <div className="hidden lg:flex">
+              <MegaMenu variant="A" />
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <MobileMegaMenu inverted />
+              <AuthNav inverted />
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
       </>
     );
   }
 
-  // App/dashboard header
-  const navLinks = navVariant === "dashboard" ? dashboardNavLinks : publicNavLinks;
+  // App/dashboard header — Variant B megamenu (light over white/slate)
   const showDashboardNav = navVariant === "dashboard" && !isTrial;
 
   return (
     <header className="site-header-shell sticky top-0 z-30 border-b border-slate-200/80 dark:border-slate-800 bg-white/98 dark:bg-slate-950/98 backdrop-blur-xl shadow-[0_4px_20px_-4px_rgba(13,101,217,0.08)] dark:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.4)]">
-      {/* Gradient accent line */}
       <div
         className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary-500/50 to-transparent"
         aria-hidden
       />
       <div
         className={`${maxWidthClass} mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3 min-h-16 py-3 relative`}
+        style={{ ["--megamenu-top" as string]: "4rem" }}
       >
         <Logo inverted={false} />
         <nav className="flex items-center gap-2 sm:gap-4">
@@ -148,97 +116,18 @@ export function SiteHeader({
               {getSubscriptionLabel(subscription, subscriptionExpiresAt)}
             </span>
           )}
-          {showDashboardNav ? (
-            <>
-              <div className="hidden lg:flex items-center gap-4">
-                {navLinks.map(({ href, label }) => (
-                  <Link
-                    key={href}
-                    href={href}
-                    className={`text-sm font-medium transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:rounded-full after:transition-all ${
-                      pathname === href || pathname.startsWith(href + "/")
-                        ? "text-primary-600 dark:text-primary-400 after:bg-primary-600 after:scale-x-100"
-                        : "text-slate-600 hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400 after:bg-primary-600 after:scale-x-0 hover:after:scale-x-100"
-                    }`}
-                  >
-                    {label}
-                  </Link>
-                ))}
-                {isAdmin && (
-                  <Link
-                    href="/admin"
-                    className="text-sm font-medium text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300"
-                  >
-                    Admin
-                  </Link>
-                )}
-              </div>
-              <div className="lg:hidden relative">
-                <button
-                  type="button"
-                  onClick={() => setDashboardNavOpen(!dashboardNavOpen)}
-                  className="flex items-center justify-center w-10 h-10 rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 min-h-[44px] min-w-[44px] touch-manipulation"
-                  aria-label={dashboardNavOpen ? "Close menu" : "Open menu"}
-                  aria-expanded={dashboardNavOpen}
-                >
-                  {dashboardNavOpen ? (
-                    <X className="h-5 w-5" />
-                  ) : (
-                    <Menu className="h-5 w-5" />
-                  )}
-                </button>
-                {dashboardNavOpen && (
-                  <>
-                    <div
-                      className="fixed inset-0 z-40"
-                      onClick={() => setDashboardNavOpen(false)}
-                      aria-hidden="true"
-                    />
-                    <div className="absolute right-0 top-full mt-1 z-50 w-44 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-xl py-2">
-                      {navLinks.map(({ href, label }) => (
-                        <Link
-                          key={href}
-                          href={href}
-                          onClick={() => setDashboardNavOpen(false)}
-                          className="block px-4 py-3 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary-600 dark:hover:text-primary-400"
-                        >
-                          {label}
-                        </Link>
-                      ))}
-                      {isAdmin && (
-                        <Link
-                          href="/admin"
-                          onClick={() => setDashboardNavOpen(false)}
-                          className="block px-4 py-3 text-sm text-amber-600 dark:text-amber-400 font-medium hover:bg-amber-50 dark:hover:bg-amber-900/20"
-                        >
-                          Admin
-                        </Link>
-                      )}
-                    </div>
-                  </>
-                )}
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="hidden md:flex items-center gap-6 text-sm font-medium">
-                {navLinks.map(({ href, label }) => (
-                  <Link
-                    key={href}
-                    href={href}
-                    className={`transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:rounded-full after:transition-all ${
-                      pathname === href || pathname.startsWith(href + "/")
-                        ? "text-primary-600 dark:text-primary-400 after:bg-primary-600 after:scale-x-100"
-                        : "text-slate-600 hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400 after:bg-primary-600 after:scale-x-0 hover:after:scale-x-100"
-                    }`}
-                  >
-                    {label}
-                  </Link>
-                ))}
-              </div>
-              <MobileNavMenu inverted={false} />
-            </>
-          )}
+          <div className="hidden lg:flex items-center gap-2">
+            <MegaMenu variant="B" />
+            {showDashboardNav && isAdmin && (
+              <Link
+                href="/admin"
+                className="text-sm font-medium text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300 px-3 py-2"
+              >
+                Admin
+              </Link>
+            )}
+          </div>
+          <MobileMegaMenu inverted={false} />
           {navVariant === "dashboard" ? (
             session ? (
               <UserMenu compact />
