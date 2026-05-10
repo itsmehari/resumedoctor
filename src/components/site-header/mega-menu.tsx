@@ -173,23 +173,34 @@ export function MegaMenu({ variant, className }: Props) {
 
   return (
     <>
-      {/* Backdrop dim (under panel) */}
+      {/* Backdrop dim — starts BELOW the header so the trigger row stays
+          interactive. If this covers the triggers, the browser fires
+          mouseleave on them the moment the panel opens, which races the
+          close timer and snaps the panel shut. */}
       {isOpen ? (
         <div
-          className={`fixed inset-x-0 top-0 bottom-0 z-30 ${tokens.backdrop}`}
+          className={`fixed inset-x-0 bottom-0 z-30 ${tokens.backdrop}`}
+          style={{ top: "var(--megamenu-top, 4rem)" }}
           aria-hidden
           onClick={() => close()}
         />
       ) : null}
 
+      {/* Hover region wraps BOTH the trigger row and the fixed-positioned
+          panel. Because the panel is a DOM descendant of this container,
+          mouseleave only fires when the cursor leaves the entire
+          interaction zone (triggers + panel + bridge). This prevents the
+          close timer from racing the panel's mouseenter when the cursor
+          crosses the header padding under the trigger row. */}
       <div
         ref={containerRef}
         className={`relative flex items-center ${className ?? ""}`}
+        onMouseLeave={scheduleClose}
+        onMouseEnter={clearCloseTimer}
       >
         <nav
           className="flex items-center gap-1"
           aria-label="Primary"
-          onMouseLeave={scheduleClose}
         >
           {MEGA_MENU_ITEMS.map((item, index) => {
             if (item.type === "link") {
@@ -270,7 +281,24 @@ export function MegaMenu({ variant, className }: Props) {
           })}
         </nav>
 
-        {/* Panel — single shared overlay, content swaps on cross-panel hover */}
+        {/* Invisible "hover bridge" — when the panel is open, this fills
+            the header's vertical padding (between the buttons' bottom edge
+            and the header's bottom edge) so the cursor moving downward
+            stays inside containerRef's DOM subtree the entire way. Without
+            it, the cursor enters dead space (header padding) and triggers
+            mouseleave on containerRef, racing the close timer. */}
+        {isOpen ? (
+          <div
+            aria-hidden
+            className="absolute left-0 right-0 top-full h-4 z-40"
+            onMouseEnter={clearCloseTimer}
+          />
+        ) : null}
+
+        {/* Panel — single shared overlay, content swaps on cross-panel hover.
+            Positioned flush against the header bottom (no mt-2 gap) so the
+            mouse can flow trigger → panel without crossing dead space and
+            triggering an unintended close. */}
         {isOpen && activePanel ? (
           <div
             ref={panelRef}
@@ -279,10 +307,7 @@ export function MegaMenu({ variant, className }: Props) {
             aria-label={
               activeItem?.type === "panel" ? activeItem.label : undefined
             }
-            className={[
-              "fixed left-0 right-0 z-40 mx-auto mt-2 max-w-6xl px-4 sm:px-6 lg:px-8",
-              "top-[var(--megamenu-top,4rem)]",
-            ].join(" ")}
+            className="fixed left-0 right-0 z-40 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8"
             style={{ top: "var(--megamenu-top, 4rem)" }}
             onMouseEnter={clearCloseTimer}
             onMouseLeave={scheduleClose}
