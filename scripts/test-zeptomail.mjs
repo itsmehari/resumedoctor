@@ -3,15 +3,18 @@
  * Smoke-test ZeptoMail transactional API (same path as production).
  * Run: npm run test:email
  */
-const token =
+const rawToken =
   process.env.ZEPTOMAIL_SEND_TOKEN?.trim() ||
   process.env.ZEPTOMAIL_TOKEN?.trim() ||
   process.env.ZEPTOMAIL_API_KEY?.trim();
+const token = rawToken?.replace(/^Zoho-enczapikey\s+/i, "").trim();
+const endpoint =
+  process.env.ZEPTOMAIL_API_URL?.trim() || "https://api.zeptomail.com/v1.1/email";
 const fromRaw = process.env.EMAIL_FROM?.trim();
 const to = process.argv[2] || "harikrishnanhk1988@gmail.com";
 
 if (!token) {
-  console.error("Missing ZEPTOMAIL_SEND_TOKEN (or ZEPTOMAIL_API_KEY). See .env.example.");
+  console.error("Missing or invalid ZEPTOMAIL_SEND_TOKEN (or ZEPTOMAIL_API_KEY). See .env.example.");
   process.exit(1);
 }
 if (!fromRaw) {
@@ -27,7 +30,7 @@ function parseFrom(from) {
 
 const sender = parseFrom(fromRaw);
 
-const r = await fetch("https://api.zeptomail.com/v1.1/email", {
+const r = await fetch(endpoint, {
   method: "POST",
   headers: {
     Authorization: `Zoho-enczapikey ${token}`,

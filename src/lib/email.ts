@@ -9,7 +9,12 @@
 //  - mime_headers for List-Unsubscribe on trial reminder (RFC 8058)
 //  - Production refuses sends without EMAIL_FROM (sender must use a verified domain in ZeptoMail)
 
-const ZEPTOMAIL_API = "https://api.zeptomail.com/v1.1/email";
+/** Default API host; India dashboards often show `api.zeptomail.in` — override with ZEPTOMAIL_API_URL if needed. */
+function zeptoEmailEndpoint(): string {
+  const u = process.env.ZEPTOMAIL_API_URL?.trim();
+  if (u) return u;
+  return "https://api.zeptomail.com/v1.1/email";
+}
 
 function zeptoSendToken(): string | null {
   const t =
@@ -17,6 +22,11 @@ function zeptoSendToken(): string | null {
     process.env.ZEPTOMAIL_TOKEN?.trim() ||
     process.env.ZEPTOMAIL_API_KEY?.trim();
   return t || null;
+}
+
+/** ZeptoMail UI sometimes copies `Zoho-enczapikey &lt;secret&gt;`; strip duplicate prefix before building Authorization. */
+function zeptoSecretOnly(raw: string): string {
+  return raw.trim().replace(/^Zoho-enczapikey\s+/i, "").trim();
 }
 
 const sendToken = zeptoSendToken();
@@ -122,11 +132,17 @@ async function send(
     payload.mime_headers = args.headers;
   }
 
+  const secret = zeptoSecretOnly(sendToken);
+  if (!secret) {
+    console.error(`[email] ${args.purpose}: ZEPTOMAIL_SEND_TOKEN is empty after parsing (check copied token).`);
+    return { ok: false, error: "Invalid ZeptoMail token" };
+  }
+
   try {
-    const r = await fetch(ZEPTOMAIL_API, {
+    const r = await fetch(zeptoEmailEndpoint(), {
       method: "POST",
       headers: {
-        Authorization: `Zoho-enczapikey ${sendToken}`,
+        Authorization: `Zoho-enczapikey ${secret}`,
         "Content-Type": "application/json",
         Accept: "application/json",
       },

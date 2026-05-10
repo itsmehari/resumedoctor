@@ -85,7 +85,7 @@ SENTRY_DSN=
 
 ### 2.1 Production transactional email (ZeptoMail + Vercel) — WBS 13.10–13.16
 
-Transactional mail goes through [`src/lib/email.ts`](../src/lib/email.ts) using **ZeptoMail** (`POST https://api.zeptomail.com/v1.1/email`, header `Authorization: Zoho-enczapikey <token>`). Copy **`ZEPTOMAIL_SEND_TOKEN`** from **ZeptoMail → Agent → SMTP/API → API → Send Mail Token**. In **production**, if `EMAIL_FROM` is missing, sends are **refused**.
+Transactional mail goes through [`src/lib/email.ts`](../src/lib/email.ts) using **ZeptoMail** (`POST` to `ZEPTOMAIL_API_URL` or default `https://api.zeptomail.com/v1.1/email`; Indian accounts may require `https://api.zeptomail.in/v1.1/email`). Header: `Authorization: Zoho-enczapikey <secret>` — paste **only** the secret from **Send Mail Token**, or the full `Zoho-enczapikey …` string (the app strips a duplicate prefix). In **production**, if `EMAIL_FROM` is missing, sends are **refused**.
 
 Execute in order; gates block the next step until complete.
 
