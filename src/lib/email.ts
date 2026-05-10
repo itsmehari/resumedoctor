@@ -1,35 +1,43 @@
-// Transactional email via Brevo (Sendinblue) API. Used for signup verification,
+// Transactional email via ZeptoMail (Zoho) REST API. Used for signup verification,
 // trial OTP, password reset, email-change confirmation, and Pro trial reminders.
 //
-// Docs: https://developers.brevo.com/reference/sendtransacemail
+// Docs: https://www.zoho.com/zeptomail/help/api/email-sending.html
 //
 // Deliverability:
-//  - Always include html + plain text
-//  - Set replyTo
-//  - List-Unsubscribe on marketing-adjacent mail (trial reminder) per RFC 8058
-//  - In production, refuse to send if `EMAIL_FROM` is unset (no implicit sandbox sender)
+//  - htmlbody + textbody when both supported
+//  - reply_to set
+//  - mime_headers for List-Unsubscribe on trial reminder (RFC 8058)
+//  - Production refuses sends without EMAIL_FROM (sender must use a verified domain in ZeptoMail)
 
-const BREVO_API = "https://api.brevo.com/v3/smtp/email";
+const ZEPTOMAIL_API = "https://api.zeptomail.com/v1.1/email";
 
-const apiKey = process.env.BREVO_API_KEY?.trim() || null;
+function zeptoSendToken(): string | null {
+  const t =
+    process.env.ZEPTOMAIL_SEND_TOKEN?.trim() ||
+    process.env.ZEPTOMAIL_TOKEN?.trim() ||
+    process.env.ZEPTOMAIL_API_KEY?.trim();
+  return t || null;
+}
+
+const sendToken = zeptoSendToken();
 const replyTo = process.env.EMAIL_REPLY_TO || "support@resumedoctor.in";
 const appName = process.env.NEXT_PUBLIC_APP_NAME || "ResumeDoctor";
 const isProd = process.env.NODE_ENV === "production";
 /** Avoid noisy duplicate warnings during `next build` static analysis. */
 const isNextProductionBuild = process.env.NEXT_PHASE === "phase-production-build";
 
-/** `true` when a Brevo API key is present (sends can be attempted). */
-export const emailProviderConfigured = Boolean(apiKey);
+/** `true` when a ZeptoMail Send Mail token is present (sends can be attempted). */
+export const emailProviderConfigured = Boolean(sendToken);
 
 if (isProd && !isNextProductionBuild) {
-  if (!apiKey) {
+  if (!sendToken) {
     console.warn(
-      "[email] BREVO_API_KEY is not set in production. Verification, OTP, and password-reset emails will all fail. Set it in Vercel → Settings → Environment Variables."
+      "[email] ZEPTOMAIL_SEND_TOKEN (or ZEPTOMAIL_API_KEY) is not set in production. Verification, OTP, and password-reset emails will all fail. Set it in Vercel → Settings → Environment Variables."
     );
   }
   if (!process.env.EMAIL_FROM) {
     console.warn(
-      "[email] EMAIL_FROM is not set in production. Transactional emails will be refused. Set EMAIL_FROM to a Brevo-verified sender, e.g. \"ResumeDoctor <noreply@resumedoctor.in>\"."
+      "[email] EMAIL_FROM is not set in production. Transactional emails will be refused. Set EMAIL_FROM to a ZeptoMail-verified sender, e.g. \"ResumeDoctor <noreply@resumedoctor.in>\"."
     );
   }
 }
@@ -45,6 +53,11 @@ function parseFromHeader(from: string): { name?: string; email: string } {
   return { email: from.trim() };
 }
 
+function recipientDisplayName(email: string): string {
+  const local = email.split("@")[0] ?? "";
+  return local.replace(/[._-]+/g, " ").trim() || "there";
+}
+
 /**
  * Single chokepoint for all outbound mail.
  */
@@ -58,21 +71,23 @@ async function send(
     purpose: string;
   }
 ): Promise<SendResult> {
-  if (!apiKey) {
-    console.error(`[email] ${args.purpose}: Brevo is not configured (BREVO_API_KEY missing).`);
+  if (!sendToken) {
+    console.error(
+      `[email] ${args.purpose}: ZeptoMail is not configured (set ZEPTOMAIL_SEND_TOKEN from Agents → SMTP/API → Send Mail Token).`
+    );
     return { ok: false, error: "Email not configured" };
   }
 
   const fromRaw = process.env.EMAIL_FROM || "";
   if (isProd && !fromRaw.trim()) {
     console.error(
-      `[email] ${args.purpose}: refusing to send in production without EMAIL_FROM. Set EMAIL_FROM to a Brevo-verified sender.`
+      `[email] ${args.purpose}: refusing to send in production without EMAIL_FROM. Set EMAIL_FROM to a ZeptoMail-verified sender.`
     );
     return { ok: false, error: "Email sender not configured for production" };
   }
   if (!fromRaw.trim()) {
     console.error(
-      `[email] ${args.purpose}: set EMAIL_FROM to a Brevo-verified sender (e.g. ResumeDoctor <noreply@yourdomain.com>).`
+      `[email] ${args.purpose}: set EMAIL_FROM to a ZeptoMail-verified sender (e.g. ResumeDoctor <noreply@yourdomain.com>).`
     );
     return { ok: false, error: "EMAIL_FROM is not set" };
   }
@@ -82,27 +97,40 @@ async function send(
     return { ok: false, error: "Invalid EMAIL_FROM" };
   }
 
-  const body: Record<string, unknown> = {
-    sender: { name: sender.name || appName, email: sender.email },
-    to: [{ email: args.to }],
-    replyTo: { email: replyTo },
+  const payload: Record<string, unknown> = {
+    from: {
+      address: sender.email,
+      name: sender.name || appName,
+    },
+    to: [
+      {
+        email_address: {
+          address: args.to,
+          name: recipientDisplayName(args.to),
+        },
+      },
+    ],
+    reply_to: [{ address: replyTo, name: appName }],
     subject: args.subject,
-    htmlContent: args.html,
-    textContent: args.text,
+    htmlbody: args.html,
+    textbody: args.text,
+    track_clicks: false,
+    track_opens: false,
   };
+
   if (args.headers && Object.keys(args.headers).length > 0) {
-    body.headers = args.headers;
+    payload.mime_headers = args.headers;
   }
 
   try {
-    const r = await fetch(BREVO_API, {
+    const r = await fetch(ZEPTOMAIL_API, {
       method: "POST",
       headers: {
-        "api-key": apiKey,
+        Authorization: `Zoho-enczapikey ${sendToken}`,
         "Content-Type": "application/json",
-        accept: "application/json",
+        Accept: "application/json",
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify(payload),
     });
 
     const data = (await r.json().catch(() => ({}))) as Record<string, unknown>;
@@ -232,14 +260,14 @@ export async function sendPasswordResetEmail(email: string, resetLink: string): 
   });
 }
 
-/** Admin smoke test — sends a short transactional message via Brevo. */
+/** Admin smoke test — sends a short transactional message via ZeptoMail. */
 export async function sendTestEmail(to: string): Promise<SendResult> {
   return send({
     purpose: "test",
     to,
     subject: "Hello from ResumeDoctor",
-    html: "<p>This is a <strong>test email</strong> from ResumeDoctor (Brevo).</p>",
-    text: "This is a test email from ResumeDoctor (Brevo).",
+    html: "<p>This is a <strong>test email</strong> from ResumeDoctor (ZeptoMail).</p>",
+    text: "This is a test email from ResumeDoctor (ZeptoMail).",
   });
 }
 

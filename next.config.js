@@ -50,7 +50,7 @@ const nextConfig = {
               // Fonts: self
               "font-src 'self' data:",
               // API connections
-              "connect-src 'self' https://api.openai.com https://api.groq.com https://api.brevo.com https://*.sentry.io https://www.google-analytics.com",
+              "connect-src 'self' https://api.openai.com https://api.groq.com https://api.zeptomail.com https://*.sentry.io https://www.google-analytics.com",
               // Frame ancestors: deny all (reinforces X-Frame-Options)
               "frame-ancestors 'none'",
               // Forms: self only

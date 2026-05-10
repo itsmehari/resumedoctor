@@ -23,9 +23,11 @@ function generateOtp(): string {
 
 export async function POST(req: Request) {
   try {
-    // Early check: Brevo must be configured for trial OTP
+    // Early check: ZeptoMail token must be configured for trial OTP
     if (!emailProviderConfigured) {
-      console.error("Send OTP: BREVO_API_KEY is not set in Vercel environment variables");
+      console.error(
+        "Send OTP: ZEPTOMAIL_SEND_TOKEN is not set in Vercel environment variables (ZeptoMail Agent → SMTP/API)"
+      );
       return NextResponse.json(
         { error: "Email service is not configured. Please try again later." },
         { status: 503 }

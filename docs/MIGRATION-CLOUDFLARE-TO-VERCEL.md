@@ -51,7 +51,7 @@ In **Project → Settings → Environment Variables**, add these (copy from Clou
 | `NEXTAUTH_URL` | ✅ | `https://resumedoctor.in` (production) |
 | `NEXTAUTH_SECRET` | ✅ | Same as Cloudflare |
 | `NEXT_PUBLIC_APP_URL` | ✅ | `https://resumedoctor.in` |
-| `BREVO_API_KEY` | ✅ | From Brevo dashboard; plus `EMAIL_FROM` |
+| `ZEPTOMAIL_SEND_TOKEN` | ✅ | ZeptoMail Agent → Send Mail Token; plus `EMAIL_FROM` |
 | `OPENAI_API_KEY` | ⚠️ | If you use AI features |
 | `TRIAL_SESSION_SECRET` | optional | Trial JWT secret |
 | `GOOGLE_CLIENT_ID` | optional | For OAuth |

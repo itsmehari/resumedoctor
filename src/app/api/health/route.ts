@@ -7,10 +7,18 @@ export const runtime = "nodejs";
 export async function GET() {
   const checks: Record<string, { ok: boolean; message: string }> = {};
 
-  // 1. Brevo transactional email API key
-  checks.brevo = process.env.BREVO_API_KEY
-    ? { ok: true, message: "BREVO_API_KEY is set" }
-    : { ok: false, message: "BREVO_API_KEY is missing in Vercel env" };
+  // 1. ZeptoMail Send Mail token (Agents → SMTP/API → Send Mail Token)
+  const hasZepto =
+    !!process.env.ZEPTOMAIL_SEND_TOKEN?.trim() ||
+    !!process.env.ZEPTOMAIL_TOKEN?.trim() ||
+    !!process.env.ZEPTOMAIL_API_KEY?.trim();
+  checks.zeptomail = hasZepto
+    ? { ok: true, message: "ZeptoMail token env is set (ZEPTOMAIL_SEND_TOKEN or alias)" }
+    : {
+        ok: false,
+        message:
+          "ZEPTOMAIL_SEND_TOKEN is missing in Vercel env (copy Send Mail Token from ZeptoMail Agent → SMTP/API)",
+      };
 
   // 2. Database URLs
   const hasDb = !!process.env.DATABASE_URL;

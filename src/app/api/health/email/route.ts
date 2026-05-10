@@ -1,6 +1,6 @@
 // Email smoke-test endpoint. Admin-only.
 //
-// This route exists to surface Brevo / EMAIL_FROM / domain-verification
+// This route exists to surface ZeptoMail / EMAIL_FROM / domain-verification
 // regressions in seconds rather than letting them silently break the signup
 // funnel. It performs a real send to a recipient supplied by the admin (or to
 // the admin's own session email by default) using the same `send` chokepoint
@@ -10,7 +10,7 @@
 //   POST /api/health/email
 //   { "to": "ops@resumedoctor.in" }   // optional; defaults to admin email
 //
-// Returns the actual Brevo error if the send fails, so misconfig is visible.
+// Returns the actual ZeptoMail error if the send fails, so misconfig is visible.
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/admin-auth";
@@ -37,7 +37,10 @@ export async function POST(req: Request) {
   const to = parsed.data.to ?? admin.email;
 
   const env = {
-    BREVO_API_KEY: !!process.env.BREVO_API_KEY,
+    ZEPTOMAIL_SEND_TOKEN:
+      !!(process.env.ZEPTOMAIL_SEND_TOKEN?.trim() ||
+        process.env.ZEPTOMAIL_TOKEN?.trim() ||
+        process.env.ZEPTOMAIL_API_KEY?.trim()),
     EMAIL_FROM: process.env.EMAIL_FROM ?? null,
     EMAIL_REPLY_TO: process.env.EMAIL_REPLY_TO ?? null,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL ?? null,
@@ -56,11 +59,11 @@ export async function POST(req: Request) {
           typeof result.error === "object" && result.error !== null
             ? result.error
             : { message: String(result.error ?? "unknown") },
-        hint: !env.BREVO_API_KEY
-          ? "BREVO_API_KEY is missing in Vercel Production env."
+        hint: !env.ZEPTOMAIL_SEND_TOKEN
+          ? "ZEPTOMAIL_SEND_TOKEN is missing — copy Send Mail Token from ZeptoMail → Agents → SMTP/API → API tab."
           : !env.EMAIL_FROM
-            ? "EMAIL_FROM is missing — set it to a Brevo-verified sender (e.g. ResumeDoctor <noreply@yourdomain.com>)."
-            : "Check the Brevo dashboard for delivery / domain verification errors.",
+            ? "EMAIL_FROM is missing — use a sender on your ZeptoMail-verified domain (e.g. ResumeDoctor <noreply@resumedoctor.in>)."
+            : "Check ZeptoMail logs / domain verification (Associate Domains must not be Pending).",
       },
       { status: 503 }
     );
@@ -70,6 +73,6 @@ export async function POST(req: Request) {
     ok: true,
     to,
     env,
-    note: "Smoke email accepted by Brevo. Confirm it lands in the inbox (not Promotions/Spam).",
+    note: "Smoke email accepted by ZeptoMail. Confirm it lands in the inbox (not Promotions/Spam).",
   });
 }

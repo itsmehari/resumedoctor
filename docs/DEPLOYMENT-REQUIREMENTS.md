@@ -25,7 +25,7 @@
 | **Database** | PostgreSQL | Supabase, Neon, RDS, PlanetScale (if MySQL) |
 | **File Storage** | PDFs, avatars, exports | S3, Cloudflare R2, Supabase Storage |
 | **CDN** | Static assets, templates | Vercel Edge, Cloudflare |
-| **Email** | Transactional (verify, reset) | Brevo (in-app), SendGrid, SES |
+| **Email** | Transactional (verify, reset) | ZeptoMail (in-app), SendGrid, SES |
 | **Auth** | OAuth + sessions | NextAuth + DB, Supabase Auth, Clerk |
 | **Payments** | QR/UPI (manual) | - |
 | **AI** | LLM API | OpenAI, Anthropic |
@@ -72,9 +72,9 @@ S3_REGION=ap-south-1
 S3_ACCESS_KEY=
 S3_SECRET_KEY=
 
-# Email (Brevo — required for verification, OTP, password reset)
-BREVO_API_KEY=xkeysib-...
-# MUST set a Brevo-verified sender (see §2.1). Without EMAIL_FROM, sends are refused in production.
+# Email (ZeptoMail — required for verification, OTP, password reset)
+ZEPTOMAIL_SEND_TOKEN=
+# MUST set sender on a ZeptoMail-verified domain (see §2.1). Without EMAIL_FROM, sends are refused in production.
 EMAIL_FROM="ResumeDoctor <noreply@resumedoctor.in>"
 # Optional: replies route here (defaults in code to support@resumedoctor.in if unset)
 EMAIL_REPLY_TO=support@resumedoctor.in
@@ -83,23 +83,23 @@ EMAIL_REPLY_TO=support@resumedoctor.in
 SENTRY_DSN=
 ```
 
-### 2.1 Production transactional email (Brevo + Vercel) — WBS 13.10–13.16
+### 2.1 Production transactional email (ZeptoMail + Vercel) — WBS 13.10–13.16
 
-Transactional mail (signup verification, trial OTP, password reset) goes through [`src/lib/email.ts`](../src/lib/email.ts) using the **Brevo** REST API (`POST https://api.brevo.com/v3/smtp/email`). Set **`BREVO_API_KEY`** (Settings → SMTP & API → API keys → **Transactional emails** permission). In **production**, if `EMAIL_FROM` is missing, sends are **refused**.
+Transactional mail goes through [`src/lib/email.ts`](../src/lib/email.ts) using **ZeptoMail** (`POST https://api.zeptomail.com/v1.1/email`, header `Authorization: Zoho-enczapikey <token>`). Copy **`ZEPTOMAIL_SEND_TOKEN`** from **ZeptoMail → Agent → SMTP/API → API → Send Mail Token**. In **production**, if `EMAIL_FROM` is missing, sends are **refused**.
 
 Execute in order; gates block the next step until complete.
 
 | WBS ID | Task | Owner | Gate |
 |--------|------|-------|------|
-| **13.10** | **Brevo:** Senders & domains → add **resumedoctor.in** (or use Brevo’s domain wizard). Open DNS records Brevo shows for authentication. | DevOps | Domain/sender steps started; DNS values visible |
-| **13.11** | **Registrar DNS:** Add **TXT** / records exactly as Brevo specifies. **Brevo:** verify domain until authenticated. | DevOps | Domain **authenticated** in Brevo |
-| **13.12** | **Vercel:** **Production** env: `BREVO_API_KEY`, `EMAIL_FROM` = `ResumeDoctor <noreply@resumedoctor.in>` (must match a verified sender). Optional: `EMAIL_REPLY_TO`. Remove legacy **`RESEND_API_KEY`** if present. | DevOps | Variables saved for Production |
-| **13.13** | **Redeploy** so functions pick up env (Deployments → Redeploy, or push to `main`). | DevOps | New deployment **Ready** |
-| **13.14** | **Smoke test (admin):** `POST https://www.resumedoctor.in/api/health/email` with admin session. Body: `{ "to": "your-inbox@example.com" }`. Expect `{ "ok": true }`. If `ok: false`, JSON `hint` flags missing `BREVO_API_KEY` / `EMAIL_FROM`. | Backend/DevOps | 200 + email received |
-| **13.15** | **E2E:** Trial OTP (`/try`), signup verification — **Brevo** transactional log shows success; inbox receives mail. | QA | Flows succeed |
-| **13.16** | **Optional:** Rotate `GOOGLE_CLIENT_SECRET` if flagged; prune unused API keys in Brevo. | DevOps | Secrets tidy |
+| **13.10** | **ZeptoMail:** **Associate Domains** for **resumedoctor.in** on your Agent. Copy DKIM TXT + bounce **CNAME** from ZeptoMail. | DevOps | DNS record names/values visible |
+| **13.11** | **Registrar DNS:** Add records exactly as ZeptoMail shows. **ZeptoMail:** **Verify DNS records** until domain is **not** Pending. | DevOps | Domain verified / authenticated |
+| **13.12** | **Vercel:** **Production:** `ZEPTOMAIL_SEND_TOKEN`, `EMAIL_FROM` (sender @ verified domain). Optional `EMAIL_REPLY_TO`. Remove **`BREVO_API_KEY`** / **`RESEND_API_KEY`** if obsolete. | DevOps | Variables saved |
+| **13.13** | **Redeploy** (Deployments → Redeploy, or push to `main`). | DevOps | Deployment **Ready** |
+| **13.14** | **Smoke test (admin):** `POST .../api/health/email` with admin session. Expect `{ "ok": true }`. | Backend/DevOps | 200 + inbox |
+| **13.15** | **E2E:** Trial OTP (`/try`), signup — ZeptoMail activity + inbox. | QA | OK |
+| **13.16** | **Optional:** Rotate flagged OAuth secrets; tidy unused tokens in ZeptoMail. | DevOps | — |
 
-**Export failed recipient addresses (historical audits):** Brevo → **Transactional** → **Logs** / statistics → filter failures → copy **To** addresses. Not stored in the app database.
+**Export failures (audits):** ZeptoMail → **Email Activity** / logs → filter by recipient or status. Not stored in-app.
 
 ### 2.2 SuperProfile (India checkout + webhook)
 
@@ -171,7 +171,7 @@ Also set **`SUPERPROFILE_WEBHOOK_SECRET`** (long random string). The app accepts
 | 2 | OpenAI usage limits set | ☐ |
 | 3 | Email domain verified (DKIM, SPF) | ☐ |
 | 4 | Sentry project for prod | ☐ |
-| 5 | **Transactional email** – verification & password reset via Brevo (see `docs/LAUNCH-TODO.md`) | ☐ |
+| 5 | **Transactional email** – verification & password reset via ZeptoMail (see `docs/LAUNCH-TODO.md`) | ☐ |
 
 ### 3.5 Domain & DNS
 

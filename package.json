@@ -17,7 +17,7 @@
     "db:seed": "prisma db seed",
     "promote-admin": "node --env-file=.env.local scripts/promote-admin.mjs",
     "postinstall": "prisma generate",
-    "test:email": "node --env-file=.env.local scripts/test-brevo.mjs",
+    "test:email": "node --env-file=.env.local scripts/test-zeptomail.mjs",
     "thumbnails": "node scripts/generate-thumbnails.mjs",
     "git:wip": "node scripts/git-wip.mjs",
     "git:wip:status": "node scripts/git-wip.mjs status",

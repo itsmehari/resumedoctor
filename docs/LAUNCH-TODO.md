@@ -15,7 +15,7 @@
 | 2FA (TOTP) | ✅ | `/api/user/2fa/*` routes |
 | Protected routes middleware | ✅ | `src/middleware.ts` |
 | Admin role protection | ✅ | `src/lib/admin-auth.ts` |
-| Brevo domain + sender for `resumedoctor.in` | ⚙️ | app.brevo.com → Senders & domains → authenticate domain; Vercel: `BREVO_API_KEY`, `EMAIL_FROM` |
+| ZeptoMail domain + sender for `resumedoctor.in` | ⚙️ | ZeptoMail → Associate Domains → verify DNS; Vercel: `ZEPTOMAIL_SEND_TOKEN`, `EMAIL_FROM` |
 
 ---
 
@@ -97,7 +97,7 @@ All items below are **configuration tasks** — no code changes needed.
 | `LINKEDIN_CLIENT_ID` | LinkedIn Developers |
 | `LINKEDIN_CLIENT_SECRET` | LinkedIn Developers |
 | `GROQ_API_KEY` | console.groq.com |
-| `BREVO_API_KEY` | app.brevo.com → Settings → API keys (Transactional emails) |
+| `ZEPTOMAIL_SEND_TOKEN` | ZeptoMail → Agent → SMTP/API → Send Mail Token |
 | `NEXT_PUBLIC_APP_URL` | `https://resumedoctor.in` |
 | `NEXT_PUBLIC_SENTRY_DSN` | sentry.io → Project → DSN |
 | `SENTRY_AUTH_TOKEN` | sentry.io → Settings → Auth Tokens |
