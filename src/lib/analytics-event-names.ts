@@ -4,7 +4,7 @@ export const AnalyticsEvents = {
   sign_up: "sign_up",
   /** Server: signup form was submitted (regardless of validation/email-send outcome). DB-backed funnel input independent of GA4. */
   signup_attempt: "signup_attempt",
-  /** Server: trial OTP send-otp endpoint was hit (regardless of Resend outcome). */
+  /** Server: trial OTP send-otp endpoint was hit (regardless of email provider outcome). */
   otp_request_attempt: "otp_request_attempt",
   resume_created: "resume_created",
   trial_start: "trial_start",

@@ -41,7 +41,7 @@ npm install @opennextjs/cloudflare wrangler --save-dev --legacy-peer-deps
 | `DATABASE_URL` | Neon Postgres connection string |
 | `NEXTAUTH_URL` | `https://resumedoctor.in` |
 | `NEXTAUTH_SECRET` | Generate with `openssl rand -base64 32` |
-| `RESEND_API_KEY` | From Resend dashboard |
+| `BREVO_API_KEY` | From Brevo → Settings → API keys |
 | `NEXT_PUBLIC_APP_URL` | `https://resumedoctor.in` |
 | `OPENAI_API_KEY` | If using AI features |
 | (Optional) OAuth, S3, etc. | See `.env.example` |
@@ -99,7 +99,7 @@ If Cloudflare Workers hits the 3 MiB limit, use Vercel. It supports Next.js nati
 3. **Build command:** `npm run build` (or leave default)
 4. Add **Environment variables** (same as `.env.example`):
    - `DATABASE_URL`, `NEXTAUTH_URL`, `NEXTAUTH_SECRET`, `NEXT_PUBLIC_APP_URL`
-   - `RESEND_API_KEY`, `OPENAI_API_KEY`, OAuth keys, etc.
+   - `BREVO_API_KEY`, `EMAIL_FROM`, `OPENAI_API_KEY`, OAuth keys, etc.
 5. Click **Deploy**
 6. **Custom domain:** Project → Settings → Domains → add `resumedoctor.in`
 7. **DNS:** In Cloudflare, add CNAME `@` → `cname.vercel-dns.com` (or the value Vercel shows)
@@ -114,7 +114,7 @@ Domain stays on Cloudflare; hosting is on Vercel.
 - [ ] Neon (or other) Postgres DB created
 - [ ] Migrations run: `npx prisma migrate deploy`
 - [ ] Env vars set in Cloudflare (or Vercel)
-- [ ] Resend API key for emails
+- [ ] Brevo API key + verified `EMAIL_FROM` for emails
 - [ ] OAuth redirect URIs updated for prod (if using Google/LinkedIn)
 
 ---

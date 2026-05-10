@@ -1,6 +1,6 @@
 // Email smoke-test endpoint. Admin-only.
 //
-// This route exists to surface Resend / EMAIL_FROM / domain-verification
+// This route exists to surface Brevo / EMAIL_FROM / domain-verification
 // regressions in seconds rather than letting them silently break the signup
 // funnel. It performs a real send to a recipient supplied by the admin (or to
 // the admin's own session email by default) using the same `send` chokepoint
@@ -10,7 +10,7 @@
 //   POST /api/health/email
 //   { "to": "ops@resumedoctor.in" }   // optional; defaults to admin email
 //
-// Returns the actual Resend error if the send fails, so misconfig is visible.
+// Returns the actual Brevo error if the send fails, so misconfig is visible.
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/admin-auth";
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
   const to = parsed.data.to ?? admin.email;
 
   const env = {
-    RESEND_API_KEY: !!process.env.RESEND_API_KEY,
+    BREVO_API_KEY: !!process.env.BREVO_API_KEY,
     EMAIL_FROM: process.env.EMAIL_FROM ?? null,
     EMAIL_REPLY_TO: process.env.EMAIL_REPLY_TO ?? null,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL ?? null,
@@ -56,11 +56,11 @@ export async function POST(req: Request) {
           typeof result.error === "object" && result.error !== null
             ? result.error
             : { message: String(result.error ?? "unknown") },
-        hint: !env.RESEND_API_KEY
-          ? "RESEND_API_KEY is missing in Vercel Production env."
+        hint: !env.BREVO_API_KEY
+          ? "BREVO_API_KEY is missing in Vercel Production env."
           : !env.EMAIL_FROM
-            ? "EMAIL_FROM is missing — production refuses to send from the Resend sandbox sender. Set EMAIL_FROM to a verified Resend domain sender."
-            : "Check the Resend dashboard for delivery / domain verification errors.",
+            ? "EMAIL_FROM is missing — set it to a Brevo-verified sender (e.g. ResumeDoctor <noreply@yourdomain.com>)."
+            : "Check the Brevo dashboard for delivery / domain verification errors.",
       },
       { status: 503 }
     );
@@ -70,6 +70,6 @@ export async function POST(req: Request) {
     ok: true,
     to,
     env,
-    note: "Smoke email accepted by Resend. Confirm it lands in the inbox (not Promotions/Spam).",
+    note: "Smoke email accepted by Brevo. Confirm it lands in the inbox (not Promotions/Spam).",
   });
 }

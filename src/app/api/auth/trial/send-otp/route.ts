@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { hash } from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { sendOtpEmail, resend } from "@/lib/email";
+import { emailProviderConfigured, sendOtpEmail } from "@/lib/email";
 import { recordProductEvent } from "@/lib/product-events";
 import { AnalyticsEvents } from "@/lib/analytics-event-names";
 import { subMinutes, subHours } from "date-fns";
@@ -23,9 +23,9 @@ function generateOtp(): string {
 
 export async function POST(req: Request) {
   try {
-    // Early check: Resend must be configured for trial OTP
-    if (!resend) {
-      console.error("Send OTP: RESEND_API_KEY is not set in Vercel environment variables");
+    // Early check: Brevo must be configured for trial OTP
+    if (!emailProviderConfigured) {
+      console.error("Send OTP: BREVO_API_KEY is not set in Vercel environment variables");
       return NextResponse.json(
         { error: "Email service is not configured. Please try again later." },
         { status: 503 }

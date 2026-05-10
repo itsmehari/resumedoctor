@@ -37,7 +37,7 @@ Set in **Vercel Dashboard** → Project → Settings → Environment Variables:
 | `NEXTAUTH_URL` | ✅ | `https://resumedoctor.in` |
 | `NEXTAUTH_SECRET` | ✅ | `openssl rand -base64 32` |
 | `NEXT_PUBLIC_APP_URL` | ✅ | `https://resumedoctor.in` |
-| `RESEND_API_KEY` | ✅ | Email (verify, reset, **trial OTP**) |
+| `BREVO_API_KEY` | ✅ | Email via Brevo (verify, reset, **trial OTP**); also `EMAIL_FROM` |
 | `OPENAI_API_KEY` | ⚠️ | If using AI features |
 | `TRIAL_SESSION_SECRET` | optional | Trial JWT (falls back to NEXTAUTH_SECRET) |
 | OAuth keys | optional | Google, LinkedIn |
@@ -58,7 +58,7 @@ This shows which env vars or services are missing. Fix any failing checks.
 
 | Check fails | Fix |
 |-------------|-----|
-| RESEND_API_KEY | Add in Vercel → Settings → Env Vars. Get key from [Resend](https://resend.com). |
+| BREVO_API_KEY | Add in Vercel → Env Vars. Key from [Brevo](https://app.brevo.com/settings/keys/api) (Transactional emails). Set `EMAIL_FROM` to a verified sender. |
 | DATABASE_URL | Add your Neon/Supabase **pooled** connection string. |
 | DIRECT_URL | Add your Neon/Supabase **direct** (non-pooled) connection string. Prisma needs both. |
 | Migrations / TrialSession | Run `npx prisma migrate deploy` against production DB (use DIRECT_URL). |

@@ -9,9 +9,9 @@
 
 | Feature | Location | Notes |
 |---------|----------|-------|
-| **Auth – signup** | `src/app/signup/page.tsx`, `src/app/api/auth/signup/route.ts` | Email + password; email verification via Resend |
+| **Auth – signup** | `src/app/signup/page.tsx`, `src/app/api/auth/signup/route.ts` | Email + password; email verification via Brevo |
 | **Auth – login** | `src/app/login/page.tsx`, `src/app/api/auth/[...nextauth]/route.ts` | Credentials + optional Google/LinkedIn OAuth |
-| **Auth – forgot password** | `src/app/forgot-password/`, `src/app/api/auth/forgot-password/` | Token-based reset via Resend |
+| **Auth – forgot password** | `src/app/forgot-password/`, `src/app/api/auth/forgot-password/` | Token-based reset via Brevo |
 | **Auth – reset password** | `src/app/reset-password/`, `src/app/api/auth/reset-password/` | Token + new password |
 | **Auth – email verification** | `src/app/verify-email/`, `src/app/api/auth/verify-email/` | Token from URL, POST to verify |
 | **Trial – OTP send** | `src/app/try/page.tsx`, `src/app/api/auth/trial/send-otp/` | 6-digit OTP, rate limits |
@@ -130,7 +130,7 @@ Expiry modal → Sign up to save / Start new trial
 | 1 | `DIRECT_URL` optional | Set `DIRECT_URL` for Neon/Supabase; update `.env.example` |
 | 2 | Trial JWT fallback `"trial-secret-change-me"` | Require `TRIAL_SESSION_SECRET` in prod; fail if missing |
 | 3 | Email verification not enforced | Add `emailVerified` check in credentials `authorize()` |
-| 4 | Resend missing → silent fail | Add health check or startup validation when `RESEND_API_KEY` empty |
+| 4 | Brevo missing → silent fail | `/api/health` checks `BREVO_API_KEY`; ensure `EMAIL_FROM` set for sends |
 | 5 | Export log ignores trial | Support trial in log, or document that only Pro logs |
 
 ### Medium priority

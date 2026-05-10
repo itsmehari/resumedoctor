@@ -1,49 +1,52 @@
-// Transactional email via Resend. Used for signup verification, trial OTP,
-// password reset, email-change confirmation, and Pro trial reminders.
+// Transactional email via Brevo (Sendinblue) API. Used for signup verification,
+// trial OTP, password reset, email-change confirmation, and Pro trial reminders.
 //
-// Deliverability hardening (May 2026):
-//  - Always include a plain-text alternative — biggest single lift for inbox
-//    placement on Gmail/Outlook. Without it Gmail tags many transactional
-//    sends as Promotions.
-//  - Set a real `replyTo` so replies do not bounce.
-//  - Add a `List-Unsubscribe` header on long-lived/marketing-adjacent emails
-//    (the Pro trial reminder); transactional verification mails are excluded
-//    per RFC 8058 / Gmail bulk sender guidance.
-//  - In production, refuse to send if `EMAIL_FROM` is unset rather than
-//    silently sending from the shared `onboarding@resend.dev` sandbox sender,
-//    which is heavily filtered.
-import { Resend } from "resend";
+// Docs: https://developers.brevo.com/reference/sendtransacemail
+//
+// Deliverability:
+//  - Always include html + plain text
+//  - Set replyTo
+//  - List-Unsubscribe on marketing-adjacent mail (trial reminder) per RFC 8058
+//  - In production, refuse to send if `EMAIL_FROM` is unset (no implicit sandbox sender)
 
-const apiKey = process.env.RESEND_API_KEY;
-const SANDBOX_FROM = "ResumeDoctor <onboarding@resend.dev>";
-const fromEmail = process.env.EMAIL_FROM || SANDBOX_FROM;
+const BREVO_API = "https://api.brevo.com/v3/smtp/email";
+
+const apiKey = process.env.BREVO_API_KEY?.trim() || null;
 const replyTo = process.env.EMAIL_REPLY_TO || "support@resumedoctor.in";
 const appName = process.env.NEXT_PUBLIC_APP_NAME || "ResumeDoctor";
 const isProd = process.env.NODE_ENV === "production";
+/** Avoid noisy duplicate warnings during `next build` static analysis. */
+const isNextProductionBuild = process.env.NEXT_PHASE === "phase-production-build";
 
-export const resend = apiKey ? new Resend(apiKey) : null;
+/** `true` when a Brevo API key is present (sends can be attempted). */
+export const emailProviderConfigured = Boolean(apiKey);
 
-if (isProd) {
+if (isProd && !isNextProductionBuild) {
   if (!apiKey) {
     console.warn(
-      "[email] RESEND_API_KEY is not set in production. Verification, OTP, and password-reset emails will all fail. Set it in Vercel → Settings → Environment Variables."
+      "[email] BREVO_API_KEY is not set in production. Verification, OTP, and password-reset emails will all fail. Set it in Vercel → Settings → Environment Variables."
     );
   }
   if (!process.env.EMAIL_FROM) {
     console.warn(
-      "[email] EMAIL_FROM is not set in production. Transactional emails will be REFUSED rather than sent from the sandbox sender (poor deliverability). Set EMAIL_FROM to a verified Resend domain sender, e.g. \"ResumeDoctor <noreply@resumedoctor.in>\"."
+      "[email] EMAIL_FROM is not set in production. Transactional emails will be refused. Set EMAIL_FROM to a Brevo-verified sender, e.g. \"ResumeDoctor <noreply@resumedoctor.in>\"."
     );
   }
 }
 
 type SendResult = { ok: true; data: unknown } | { ok: false; error: unknown };
 
+function parseFromHeader(from: string): { name?: string; email: string } {
+  const m = from.match(/^\s*(.+?)\s*<([^>]+)>\s*$/);
+  if (m) {
+    const name = m[1].replace(/^["']|["']$/g, "").trim();
+    return { name: name || undefined, email: m[2].trim() };
+  }
+  return { email: from.trim() };
+}
+
 /**
- * Single chokepoint for all outbound mail. Centralising it lets us:
- *  - refuse to use the Resend sandbox sender in production (deliverability)
- *  - always attach a plain-text alt (deliverability)
- *  - always set replyTo and optional List-Unsubscribe headers (deliverability)
- *  - log a single, structured error line per failure for Vercel logs
+ * Single chokepoint for all outbound mail.
  */
 async function send(
   args: {
@@ -55,30 +58,58 @@ async function send(
     purpose: string;
   }
 ): Promise<SendResult> {
-  if (!resend) {
-    console.error(`[email] ${args.purpose}: Resend client is not configured (RESEND_API_KEY missing).`);
+  if (!apiKey) {
+    console.error(`[email] ${args.purpose}: Brevo is not configured (BREVO_API_KEY missing).`);
     return { ok: false, error: "Email not configured" };
   }
-  if (isProd && (fromEmail === SANDBOX_FROM || !process.env.EMAIL_FROM)) {
+
+  const fromRaw = process.env.EMAIL_FROM || "";
+  if (isProd && !fromRaw.trim()) {
     console.error(
-      `[email] ${args.purpose}: refusing to send in production from sandbox sender. Set EMAIL_FROM to a verified domain sender.`
+      `[email] ${args.purpose}: refusing to send in production without EMAIL_FROM. Set EMAIL_FROM to a Brevo-verified sender.`
     );
     return { ok: false, error: "Email sender not configured for production" };
   }
+  if (!fromRaw.trim()) {
+    console.error(
+      `[email] ${args.purpose}: set EMAIL_FROM to a Brevo-verified sender (e.g. ResumeDoctor <noreply@yourdomain.com>).`
+    );
+    return { ok: false, error: "EMAIL_FROM is not set" };
+  }
+
+  const sender = parseFromHeader(fromRaw);
+  if (!sender.email) {
+    return { ok: false, error: "Invalid EMAIL_FROM" };
+  }
+
+  const body: Record<string, unknown> = {
+    sender: { name: sender.name || appName, email: sender.email },
+    to: [{ email: args.to }],
+    replyTo: { email: replyTo },
+    subject: args.subject,
+    htmlContent: args.html,
+    textContent: args.text,
+  };
+  if (args.headers && Object.keys(args.headers).length > 0) {
+    body.headers = args.headers;
+  }
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: fromEmail,
-      to: args.to,
-      replyTo,
-      subject: args.subject,
-      html: args.html,
-      text: args.text,
-      headers: args.headers,
+    const r = await fetch(BREVO_API, {
+      method: "POST",
+      headers: {
+        "api-key": apiKey,
+        "Content-Type": "application/json",
+        accept: "application/json",
+      },
+      body: JSON.stringify(body),
     });
-    if (error) {
-      console.error(`[email] ${args.purpose} send failed:`, error);
-      return { ok: false, error };
+
+    const data = (await r.json().catch(() => ({}))) as Record<string, unknown>;
+
+    if (!r.ok) {
+      console.error(`[email] ${args.purpose} send failed:`, r.status, data);
+      return { ok: false, error: data };
     }
     return { ok: true, data };
   } catch (err) {
@@ -201,21 +232,19 @@ export async function sendPasswordResetEmail(email: string, resetLink: string): 
   });
 }
 
-/** Test email – Resend "Hello World" style. Use for local testing only. */
+/** Admin smoke test — sends a short transactional message via Brevo. */
 export async function sendTestEmail(to: string): Promise<SendResult> {
   return send({
     purpose: "test",
     to,
     subject: "Hello from ResumeDoctor",
-    html: "<p>Congrats on sending your <strong>first email</strong> with Resend!</p>",
-    text: "Congrats on sending your first email with Resend!",
+    html: "<p>This is a <strong>test email</strong> from ResumeDoctor (Brevo).</p>",
+    text: "This is a test email from ResumeDoctor (Brevo).",
   });
 }
 
 /**
- * Pro trial expiry reminder (cron). This email is marketing-adjacent (a
- * renewal nudge), so we attach a List-Unsubscribe header per RFC 8058 / Gmail
- * bulk-sender guidance to keep it out of spam.
+ * Pro trial expiry reminder (cron). Marketing-adjacent — List-Unsubscribe header.
  */
 export async function sendProTrialExpiryReminder(
   email: string,

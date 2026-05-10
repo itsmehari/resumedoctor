@@ -25,7 +25,7 @@
 | **Database** | PostgreSQL | Supabase, Neon, RDS, PlanetScale (if MySQL) |
 | **File Storage** | PDFs, avatars, exports | S3, Cloudflare R2, Supabase Storage |
 | **CDN** | Static assets, templates | Vercel Edge, Cloudflare |
-| **Email** | Transactional (verify, reset) | Resend, SendGrid, SES |
+| **Email** | Transactional (verify, reset) | Brevo (in-app), SendGrid, SES |
 | **Auth** | OAuth + sessions | NextAuth + DB, Supabase Auth, Clerk |
 | **Payments** | QR/UPI (manual) | - |
 | **AI** | LLM API | OpenAI, Anthropic |
@@ -72,10 +72,9 @@ S3_REGION=ap-south-1
 S3_ACCESS_KEY=
 S3_SECRET_KEY=
 
-# Email (Resend — required for verification, OTP, password reset)
-RESEND_API_KEY=re_...
-# Production MUST set a verified-domain sender (see §2.1 below). Without it,
-# the app refuses to send from the Resend sandbox in production.
+# Email (Brevo — required for verification, OTP, password reset)
+BREVO_API_KEY=xkeysib-...
+# MUST set a Brevo-verified sender (see §2.1). Without EMAIL_FROM, sends are refused in production.
 EMAIL_FROM="ResumeDoctor <noreply@resumedoctor.in>"
 # Optional: replies route here (defaults in code to support@resumedoctor.in if unset)
 EMAIL_REPLY_TO=support@resumedoctor.in
@@ -84,25 +83,23 @@ EMAIL_REPLY_TO=support@resumedoctor.in
 SENTRY_DSN=
 ```
 
-### 2.1 Production transactional email (Resend + Vercel) — WBS 13.10–13.16
+### 2.1 Production transactional email (Brevo + Vercel) — WBS 13.10–13.16
 
-Transactional mail (signup verification, trial OTP, password reset) goes through [`src/lib/email.ts`](../src/lib/email.ts). In **production**, if `EMAIL_FROM` is missing or still the shared sandbox sender (`onboarding@resend.dev`), sends are **refused** so users do not silently hit Resend **403** sandbox restrictions.
+Transactional mail (signup verification, trial OTP, password reset) goes through [`src/lib/email.ts`](../src/lib/email.ts) using the **Brevo** REST API (`POST https://api.brevo.com/v3/smtp/email`). Set **`BREVO_API_KEY`** (Settings → SMTP & API → API keys → **Transactional emails** permission). In **production**, if `EMAIL_FROM` is missing, sends are **refused**.
 
 Execute in order; gates block the next step until complete.
 
 | WBS ID | Task | Owner | Gate |
 |--------|------|-------|------|
-| **13.10** | **Resend:** Domains → Add domain → `resumedoctor.in`. Pick region once (e.g. **US East `us-east-1`** or **EU West `eu-west-1`**). Open the DNS record sheet Resend shows. | DevOps | Domain row exists; SPF/DKIM/DMARC names/values visible |
-| **13.11** | **Registrar DNS:** Add the **TXT** records exactly as Resend specifies (SPF, DKIM; DMARC as guided). Wait for propagation if needed. **Resend:** click Verify until status is **Verified**. | DevOps | Resend domain **Verified** |
-| **13.12** | **Vercel:** Project → Settings → Environment Variables → **Production**: `EMAIL_FROM` = `ResumeDoctor <noreply@resumedoctor.in>` (or another address @ the verified domain). Optional: `EMAIL_REPLY_TO` = `support@resumedoctor.in`. Use **Preview** only if previews must send real email. CLI (after `vercel login`): `vercel env add EMAIL_FROM production` then paste value. | DevOps | Variables saved for Production |
-| **13.13** | **Redeploy** so serverless functions read new env: Deployments → ⋯ on latest → **Redeploy**, or push any commit to `main`. | DevOps | New Production deployment **Ready** |
-| **13.14** | **Smoke test (admin):** `POST https://www.resumedoctor.in/api/health/email` with session cookie or admin auth as implemented (`requireAdmin`). Body: `{ "to": "your-inbox@example.com" }`. Expect `{ "ok": true }` and inbox delivery. If `ok: false`, JSON includes `hint` for missing `RESEND_API_KEY` / `EMAIL_FROM`. | Backend/DevOps | 200 + email received |
-| **13.15** | **E2E:** Trial OTP (`/try` flow), password signup verification, **Resend** dashboard logs show **200** (not **403**). Test with a recipient **not** the Resend account owner (sandbox only delivers to owner). | QA | Flows succeed for arbitrary Gmail/etc. |
-| **13.16** | **Optional hygiene:** Rotate `GOOGLE_CLIENT_SECRET` if Vercel flags it; remove unused Resend API keys; keep one production key in Vercel only. | DevOps | Secrets tidy |
+| **13.10** | **Brevo:** Senders & domains → add **resumedoctor.in** (or use Brevo’s domain wizard). Open DNS records Brevo shows for authentication. | DevOps | Domain/sender steps started; DNS values visible |
+| **13.11** | **Registrar DNS:** Add **TXT** / records exactly as Brevo specifies. **Brevo:** verify domain until authenticated. | DevOps | Domain **authenticated** in Brevo |
+| **13.12** | **Vercel:** **Production** env: `BREVO_API_KEY`, `EMAIL_FROM` = `ResumeDoctor <noreply@resumedoctor.in>` (must match a verified sender). Optional: `EMAIL_REPLY_TO`. Remove legacy **`RESEND_API_KEY`** if present. | DevOps | Variables saved for Production |
+| **13.13** | **Redeploy** so functions pick up env (Deployments → Redeploy, or push to `main`). | DevOps | New deployment **Ready** |
+| **13.14** | **Smoke test (admin):** `POST https://www.resumedoctor.in/api/health/email` with admin session. Body: `{ "to": "your-inbox@example.com" }`. Expect `{ "ok": true }`. If `ok: false`, JSON `hint` flags missing `BREVO_API_KEY` / `EMAIL_FROM`. | Backend/DevOps | 200 + email received |
+| **13.15** | **E2E:** Trial OTP (`/try`), signup verification — **Brevo** transactional log shows success; inbox receives mail. | QA | Flows succeed |
+| **13.16** | **Optional:** Rotate `GOOGLE_CLIENT_SECRET` if flagged; prune unused API keys in Brevo. | DevOps | Secrets tidy |
 
-**Export failed recipient addresses (historical audits):** Resend → **Logs** / **Emails** → filter **Failed** / status **403** → date range → copy or export the **To** field per row. This data is not stored in the app database.
-
-**Region note:** Changing region after domain creation in Resend can require re-setup — choose deliberately in **13.10**.
+**Export failed recipient addresses (historical audits):** Brevo → **Transactional** → **Logs** / statistics → filter failures → copy **To** addresses. Not stored in the app database.
 
 ### 2.2 SuperProfile (India checkout + webhook)
 
@@ -174,7 +171,7 @@ Also set **`SUPERPROFILE_WEBHOOK_SECRET`** (long random string). The app accepts
 | 2 | OpenAI usage limits set | ☐ |
 | 3 | Email domain verified (DKIM, SPF) | ☐ |
 | 4 | Sentry project for prod | ☐ |
-| 5 | **Transactional email** – verification & password reset sent via Resend/SendGrid (see `docs/LAUNCH-TODO.md`) | ☐ |
+| 5 | **Transactional email** – verification & password reset via Brevo (see `docs/LAUNCH-TODO.md`) | ☐ |
 
 ### 3.5 Domain & DNS
 

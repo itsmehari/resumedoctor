@@ -1,18 +1,16 @@
 // WBS 13.7 – Health check / uptime monitoring endpoint
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { resend } from "@/lib/email";
-
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function GET() {
   const checks: Record<string, { ok: boolean; message: string }> = {};
 
-  // 1. Resend API key
-  checks.resend = process.env.RESEND_API_KEY
-    ? { ok: true, message: "RESEND_API_KEY is set" }
-    : { ok: false, message: "RESEND_API_KEY is missing in Vercel env" };
+  // 1. Brevo transactional email API key
+  checks.brevo = process.env.BREVO_API_KEY
+    ? { ok: true, message: "BREVO_API_KEY is set" }
+    : { ok: false, message: "BREVO_API_KEY is missing in Vercel env" };
 
   // 2. Database URLs
   const hasDb = !!process.env.DATABASE_URL;
