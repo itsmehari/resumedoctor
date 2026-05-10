@@ -20,6 +20,22 @@ export async function GET() {
           "ZEPTOMAIL_SEND_TOKEN is missing in Vercel env (copy Send Mail Token from ZeptoMail Agent → SMTP/API)",
       };
 
+  // 1b. Verified-domain From address (required for ZeptoMail sends in production builds)
+  const hasFrom = !!process.env.EMAIL_FROM?.trim();
+  checks.email_from =
+    hasFrom
+      ? { ok: true, message: "EMAIL_FROM is set (e.g. ResumeDoctor <noreply@domain>)" }
+      : process.env.NODE_ENV === "production"
+        ? {
+            ok: false,
+            message:
+              "EMAIL_FROM is missing — transactional mail (OTP, verify) is refused. Set in Vercel, e.g. ResumeDoctor <noreply@resumedoctor.in>",
+          }
+        : {
+            ok: true,
+            message: "EMAIL_FROM not set (local dev); set for real sends",
+          };
+
   // 2. Database URLs
   const hasDb = !!process.env.DATABASE_URL;
   const hasDirect = !!process.env.DIRECT_URL;
