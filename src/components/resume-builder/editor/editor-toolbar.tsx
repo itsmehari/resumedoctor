@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { ResumeSection } from "@/types/resume";
+import type { ResumeSection, SectionType } from "@/types/resume";
 import { computeResumeProgress } from "@/lib/resume-utils";
 import { getActiveStepId, getStepProgressLabel, isReviewModeReady } from "@/lib/resume-editor-progress";
 import { StepWizard } from "@/components/resume-builder/step-wizard";
@@ -44,6 +44,7 @@ interface Props {
   setTemplateOpen: (open: boolean) => void;
   templateHint: string | null;
   setTemplateHint: (hint: string | null) => void;
+  onPreflightJump?: (sectionType?: SectionType) => void;
 }
 
 export function EditorToolbar({
@@ -74,6 +75,7 @@ export function EditorToolbar({
   setTemplateOpen,
   templateHint,
   setTemplateHint,
+  onPreflightJump,
 }: Props) {
   const progress = computeResumeProgress(sections);
   const activeStep = getActiveStepId(sections);
@@ -238,6 +240,7 @@ export function EditorToolbar({
                 isTrial={isTrial}
                 resumePackCredits={resumePackCredits}
                 emphasize={reviewReady}
+                onPreflightJump={onPreflightJump}
               />
             </>
           )}

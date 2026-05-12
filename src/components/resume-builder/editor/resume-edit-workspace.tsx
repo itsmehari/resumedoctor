@@ -60,12 +60,15 @@ function ResumeEditWorkspaceContent({
   const [coachingOpen, setCoachingOpen] = useState(false);
   const [fieldTouched, setFieldTouched] = useState(false);
   const progressRef = useRef(0);
+  const restoredSectionRef = useRef(false);
 
   const {
     activeSectionId,
     setActiveSectionId,
+    scrollToSection,
     scrollToStep,
     scrollToSectionLabel,
+    scrollToSectionType,
     setEditorMode,
     editorMode,
     previewZoom,
@@ -78,6 +81,21 @@ function ResumeEditWorkspaceContent({
   const sections = resume?.content.sections ?? [];
   const meta = resume?.content?.meta ?? {};
   const reviewReady = isReviewModeReady(sections);
+  const activeSectionType = sections.find((s) => s.id === activeSectionId)?.type;
+
+  useEffect(() => {
+    if (restoredSectionRef.current || typeof window === "undefined") return;
+    const saved = sessionStorage.getItem(`resume-editor-section-${resumeId}`);
+    if (saved && sections.some((s) => s.id === saved)) {
+      scrollToSection(saved);
+    }
+    restoredSectionRef.current = true;
+  }, [resumeId, scrollToSection, sections]);
+
+  useEffect(() => {
+    if (!activeSectionId || typeof window === "undefined") return;
+    sessionStorage.setItem(`resume-editor-section-${resumeId}`, activeSectionId);
+  }, [activeSectionId, resumeId]);
 
   useEffect(() => {
     if (reviewReady) setEditorMode("review");
@@ -162,6 +180,18 @@ function ResumeEditWorkspaceContent({
       >
         Skip to resume editor
       </a>
+      <a
+        href="#resume-editor-sections"
+        className="sr-only focus:fixed focus:left-4 focus:top-32 focus:z-[60] focus:m-0 focus:inline-block focus:h-auto focus:w-auto focus:rounded-lg focus:bg-white focus:px-4 focus:py-2.5 focus:text-slate-900 focus:shadow-lg focus:ring-2 focus:ring-primary-500"
+      >
+        Skip to sections
+      </a>
+      <a
+        href="#resume-preview-panel"
+        className="sr-only focus:fixed focus:left-4 focus:top-44 focus:z-[60] focus:m-0 focus:inline-block focus:h-auto focus:w-auto focus:rounded-lg focus:bg-white focus:px-4 focus:py-2.5 focus:text-slate-900 focus:shadow-lg focus:ring-2 focus:ring-primary-500"
+      >
+        Skip to preview
+      </a>
       <SiteHeader variant="app" navVariant="dashboard" />
 
       <EditorToolbar
@@ -195,6 +225,9 @@ function ResumeEditWorkspaceContent({
         setTemplateOpen={setTemplateOpen}
         templateHint={templateHint}
         setTemplateHint={setTemplateHint}
+        onPreflightJump={(sectionType) => {
+          if (sectionType) scrollToSectionType(sectionType);
+        }}
       />
 
       <EditorDesignDrawer open={designOpen} onClose={() => setDesignOpen(false)} meta={meta} onChange={handleCustomize} />
@@ -234,7 +267,7 @@ function ResumeEditWorkspaceContent({
 
         <aside className="flex-shrink-0 overflow-y-auto border-l border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900/40 lg:w-[500px] xl:w-[550px]">
           <div className="sticky top-4 space-y-4">
-            <div className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900">
+            <div id="resume-preview-panel" className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900">
               <div className="mb-2 flex items-center justify-between gap-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Preview</p>
                 <div className="flex items-center gap-1 text-xs text-slate-500">
@@ -257,6 +290,8 @@ function ResumeEditWorkspaceContent({
                   spacing={meta.spacing}
                   className="origin-top"
                   previewStyle={{ transform: `scale(${previewZoom})`, transformOrigin: "top center" }}
+                  highlightedSectionType={activeSectionType}
+                  onSectionSelect={scrollToSectionType}
                 />
               </div>
             </div>

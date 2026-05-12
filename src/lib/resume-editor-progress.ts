@@ -241,5 +241,13 @@ export function suggestExportFilename(title: string, sections: ResumeSection[]):
   return `${base.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "resume"}.pdf`;
 }
 
+export function findSectionIdByType(
+  type: SectionType | undefined,
+  sections: ResumeSection[]
+): string | null {
+  if (!type) return null;
+  return sections.find((s) => s.type === type)?.id ?? null;
+}
+
 export const TRIAL_ENTITLEMENTS_COPY =
   "Trial: edit and preview free. Sign up to save; Pro or a resume pack unlocks PDF, Word, and full ATS checks.";

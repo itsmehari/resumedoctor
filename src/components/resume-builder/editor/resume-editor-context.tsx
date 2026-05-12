@@ -7,6 +7,7 @@ import {
   type EditorStepId,
   findSectionIdByLabel,
   findSectionIdForStep,
+  findSectionIdByType,
   getActiveStepId,
 } from "@/lib/resume-editor-progress";
 
@@ -17,6 +18,7 @@ interface ResumeEditorContextValue {
   scrollToSection: (sectionId: string) => void;
   scrollToStep: (stepId: EditorStepId) => void;
   scrollToSectionLabel: (label: string | undefined) => void;
+  scrollToSectionType: (type: SectionType) => void;
   focusSectionField: (sectionId: string) => void;
   addSectionAndScroll: (type: SectionType, onAdd: (section: ResumeSection) => void, sections: ResumeSection[]) => void;
   editorMode: "write" | "review";
@@ -82,6 +84,16 @@ export function ResumeEditorProvider({
     [focusSectionField, scrollToSection, sections]
   );
 
+  const scrollToSectionType = useCallback(
+    (type: SectionType) => {
+      const sectionId = findSectionIdByType(type, sections);
+      if (!sectionId) return;
+      scrollToSection(sectionId);
+      focusSectionField(sectionId);
+    },
+    [focusSectionField, scrollToSection, sections]
+  );
+
   const addSectionAndScroll = useCallback(
     (type: SectionType, onAdd: (section: ResumeSection) => void, current: ResumeSection[]) => {
       const section = createEmptySection(type, current.length);
@@ -102,6 +114,7 @@ export function ResumeEditorProvider({
       scrollToSection,
       scrollToStep,
       scrollToSectionLabel,
+      scrollToSectionType,
       focusSectionField,
       addSectionAndScroll,
       editorMode,
@@ -117,6 +130,7 @@ export function ResumeEditorProvider({
       scrollToSection,
       scrollToStep,
       scrollToSectionLabel,
+      scrollToSectionType,
       focusSectionField,
       addSectionAndScroll,
       editorMode,

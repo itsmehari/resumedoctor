@@ -6,7 +6,7 @@ import Link from "next/link";
 import { FileText, FileDown, Printer, Lock } from "lucide-react";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
-import type { ResumeSection } from "@/types/resume";
+import type { ResumeSection, SectionType } from "@/types/resume";
 import { trackEvent, trackMetaCustom } from "@/lib/analytics";
 import { getExportPreflightIssues } from "@/lib/resume-editor-progress";
 import { ExportPreflightModal } from "@/components/resume-builder/editor/export-preflight-modal";
@@ -20,7 +20,7 @@ interface Props {
   isTrial?: boolean;
   resumePackCredits?: number;
   emphasize?: boolean;
-  onPreflightJump?: (sectionType?: string) => void;
+  onPreflightJump?: (sectionType?: SectionType) => void;
 }
 
 export function ExportButtons({

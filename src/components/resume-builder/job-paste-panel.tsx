@@ -43,6 +43,10 @@ function genId(): string {
     : `s-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 }
 
+function cloneSections(sections: ResumeSection[]): ResumeSection[] {
+  return JSON.parse(JSON.stringify(sections)) as ResumeSection[];
+}
+
 export function JobPastePanel({
   resumeId,
   sections,
@@ -61,6 +65,17 @@ export function JobPastePanel({
   const [expanded, setExpanded] = useState(false);
   const [applied, setApplied] = useState<Set<string>>(new Set());
   const { toast } = useToast();
+
+  const commitWithUndo = (next: ResumeSection[], message: string) => {
+    const snapshot = cloneSections(sections);
+    onSectionsChange(next);
+    toast(message, {
+      action: {
+        label: "Undo",
+        onClick: () => onSectionsChange(snapshot),
+      },
+    });
+  };
 
   useEffect(() => {
     setMatchResult(null);
@@ -152,7 +167,7 @@ export function JobPastePanel({
           ? { ...s, data: { ...(s.data as { items?: string[] }), items: newItems } }
           : s
       ) as ResumeSection[];
-      onSectionsChange(next);
+      commitWithUndo(next, "Keywords added to skills");
     } else {
       const newSection: ResumeSection = {
         id: genId(),
@@ -160,10 +175,9 @@ export function JobPastePanel({
         order: sections.length,
         data: { items: newItems },
       };
-      onSectionsChange([...sections, newSection]);
+      commitWithUndo([...sections, newSection], "Keywords added to skills");
     }
     setApplied((prev) => new Set(Array.from(prev).concat("keywords")));
-    toast("Keywords added to skills", { variant: "success" });
   };
 
   const applySkills = () => {
@@ -180,7 +194,7 @@ export function JobPastePanel({
           ? { ...s, data: { ...(s.data as { items?: string[] }), items: newItems } }
           : s
       ) as ResumeSection[];
-      onSectionsChange(next);
+      commitWithUndo(next, "Skills added");
     } else {
       const newSection: ResumeSection = {
         id: genId(),
@@ -188,10 +202,9 @@ export function JobPastePanel({
         order: sections.length,
         data: { items: newItems },
       };
-      onSectionsChange([...sections, newSection]);
+      commitWithUndo([...sections, newSection], "Skills added");
     }
     setApplied((prev) => new Set(Array.from(prev).concat("skills")));
-    toast("Skills added", { variant: "success" });
   };
 
   const applySummary = () => {
@@ -203,9 +216,8 @@ export function JobPastePanel({
           ? { ...s, data: { ...(s.data as { text?: string }), text: result.summarySuggestion } }
           : s
       ) as ResumeSection[];
-      onSectionsChange(next);
+      commitWithUndo(next, "Summary updated");
       setApplied((prev) => new Set(Array.from(prev).concat("summary")));
-      toast("Summary updated", { variant: "success" });
     } else {
       const newSection: ResumeSection = {
         id: genId(),
@@ -213,9 +225,8 @@ export function JobPastePanel({
         order: sections.length,
         data: { text: result.summarySuggestion },
       };
-      onSectionsChange([...sections, newSection]);
+      commitWithUndo([...sections, newSection], "Summary added");
       setApplied((prev) => new Set(Array.from(prev).concat("summary")));
-      toast("Summary added", { variant: "success" });
     }
   };
 
@@ -238,13 +249,13 @@ export function JobPastePanel({
         ? { ...sec, data: { ...sec.data, entries: newEntries } }
         : sec
     ) as ResumeSection[];
-    onSectionsChange(next);
+    commitWithUndo(next, "Bullet updated");
     setApplied((prev) => new Set(Array.from(prev).concat(`bullet-${s.sectionId}-${s.entryIndex}-${s.bulletIndex}`)));
-    toast("Bullet updated", { variant: "success" });
   };
 
   const applyAll = () => {
     if (!result) return;
+    const snapshot = cloneSections(sections);
     let next = [...sections];
     const appliedKeys = new Set<string>();
 
@@ -304,7 +315,12 @@ export function JobPastePanel({
 
     onSectionsChange(next);
     setApplied((prev) => new Set([...Array.from(prev), ...Array.from(appliedKeys)]));
-    toast("All suggestions applied", { variant: "success" });
+    toast("All suggestions applied", {
+      action: {
+        label: "Undo",
+        onClick: () => onSectionsChange(snapshot),
+      },
+    });
   };
 
   return (
@@ -402,7 +418,7 @@ export function JobPastePanel({
               ) : (
                 <>
                   <Sparkles className="h-4 w-4" />
-                  Tailor with AI
+                  Tailor with AI (1 action)
                 </>
               )}
             </button>

@@ -972,6 +972,8 @@ export function ResumePreview({
   sections, templateId = "professional-in", className = "",
   previewStyle,
   primaryColor, fontFamily: fontOverride, fontSize: fontSizeOverride, spacing: spacingOverride,
+  highlightedSectionType,
+  onSectionSelect,
 }: Props) {
   const sorted = [...sections].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   const style = getTemplateStyle(templateId);
@@ -1017,6 +1019,26 @@ export function ResumePreview({
     : useSeparateHeader ? nonContactSections : sorted;
 
   const sectionProps = { accentColor, skillsVariant, experienceVariant, sectionTitleVariant, showIcons: sectionIcons };
+
+  function renderInteractiveSection(section: ResumeSection, isDark = false) {
+    const inner = <SectionPreview section={section} {...sectionProps} isDark={isDark} />;
+    if (!onSectionSelect) {
+      return <div key={section.id}>{inner}</div>;
+    }
+    const highlighted = highlightedSectionType === section.type;
+    return (
+      <button
+        key={section.id}
+        type="button"
+        onClick={() => onSectionSelect(section.type)}
+        className={`mb-1 block w-full rounded-md text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 motion-reduce:transition-none ${
+          highlighted ? "ring-2 ring-primary-400 ring-offset-2" : "hover:bg-slate-50/80"
+        }`}
+      >
+        {inner}
+      </button>
+    );
+  }
 
   function renderHeader() {
     if (!useSeparateHeader || !contactData) return null;
@@ -1074,14 +1096,10 @@ export function ResumePreview({
                 <p className="text-white/60 text-xs mt-1">{contactData.title}</p>
               )}
             </div>
-            {sidebarSections.map((section) => (
-              <SectionPreview key={section.id} section={section} {...sectionProps} isDark />
-            ))}
+            {sidebarSections.map((section) => renderInteractiveSection(section, true))}
           </div>
           <div className={`flex-1 px-7 py-8 ${sectionSpacing}`}>
-            {mainSections.map((section) => (
-              <SectionPreview key={section.id} section={section} {...sectionProps} isDark={false} />
-            ))}
+            {mainSections.map((section) => renderInteractiveSection(section, false))}
           </div>
         </div>
       </div>
@@ -1099,15 +1117,15 @@ export function ResumePreview({
           <div className={`w-[33%] flex-shrink-0 px-5 py-6 ${sectionSpacing}`} style={{ backgroundColor: "#f3f4f6" }}>
             <ProfileSidebarHero data={contactData} accentColor={accentColor} showPhoto={showPhotoPlaceholder} />
             {profileSidebarSections.filter((s) => s.type !== "contact").map((section) => (
-              <SectionPreview key={section.id} section={section} {...sectionProps} isDark={false} />
+              renderInteractiveSection(section, false)
             ))}
             {profileSidebarSections.filter((s) => s.type === "contact").map((section) => (
-              <SectionPreview key={section.id} section={section} {...sectionProps} isDark={false} />
+              renderInteractiveSection(section, false)
             ))}
           </div>
           <div className={`flex-1 px-7 py-7 ${sectionSpacing}`}>
             {profileMainSections.map((section) => (
-              <SectionPreview key={section.id} section={section} {...sectionProps} isDark={false} />
+              renderInteractiveSection(section, false)
             ))}
           </div>
         </div>
@@ -1128,13 +1146,11 @@ export function ResumePreview({
               ? { backgroundColor: accentColor + "14", borderRight: `1px solid ${accentColor}20` }
               : { borderRight: "1px solid #e2e8f0" }}>
             {sidebarSections.filter((s) => s.type !== "contact").map((section) => (
-              <SectionPreview key={section.id} section={section} {...sectionProps} isDark={false} />
+              renderInteractiveSection(section, false)
             ))}
           </div>
           <div className={`flex-1 px-6 py-6 ${sectionSpacing}`}>
-            {mainSections.map((section) => (
-              <SectionPreview key={section.id} section={section} {...sectionProps} isDark={false} />
-            ))}
+            {mainSections.map((section) => renderInteractiveSection(section, false))}
           </div>
         </div>
       </div>
@@ -1152,7 +1168,7 @@ export function ResumePreview({
         )}
         <div className={`flex-1 px-8 py-6 ${sectionSpacing}`}>
           {(useSeparateHeader ? nonContactSections : sorted).map((section) => (
-            <SectionPreview key={section.id} section={section} {...sectionProps} isDark={false} />
+            renderInteractiveSection(section, false)
           ))}
         </div>
       </div>
