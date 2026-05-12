@@ -278,3 +278,59 @@ export function StepDeviceMock({ step }: { step: "01" | "02" | "03" }) {
     </div>
   );
 }
+
+export function CareerCard({
+  emoji,
+  title,
+  color,
+  accent,
+  sections,
+  cta,
+  href,
+  guideHref,
+}: {
+  emoji: string;
+  title: string;
+  color: string;
+  accent: string;
+  sections: readonly string[];
+  cta: string;
+  href: string;
+  guideHref?: string;
+}) {
+  return (
+    <div
+      className={`relative flex h-full flex-col overflow-hidden rounded-2xl border-2 ${color} bg-white p-6 shadow-md ring-1 ring-slate-100/80 transition-all hover:-translate-y-0.5 hover:shadow-lg dark:bg-slate-900 dark:ring-slate-800`}
+    >
+      <div
+        className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-primary-400/70 via-violet-400/70 to-emerald-400/70 opacity-80 dark:opacity-60"
+        aria-hidden
+      />
+      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-2xl shadow-inner dark:bg-slate-800">
+        {emoji}
+      </div>
+      <h3 className={`mb-3 text-base font-bold ${accent}`}>{title}</h3>
+      <ul className="mb-5 flex-1 space-y-2">
+        {sections.map((section) => (
+          <li key={section} className="flex items-center gap-2.5 text-xs text-slate-600 dark:text-slate-400">
+            <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900/40">
+              <LandingIcon path={LANDING_ICON_PATHS.check} size={8} className="text-primary-600 dark:text-primary-400" />
+            </span>
+            {section}
+          </li>
+        ))}
+      </ul>
+      <div className="flex flex-wrap items-center gap-3">
+        <Link href={href} className={`flex items-center gap-1 text-xs font-semibold ${accent} hover:underline`}>
+          {cta}
+          <LandingIcon path={LANDING_ICON_PATHS.arrow} size={12} />
+        </Link>
+        {guideHref ? (
+          <Link href={guideHref} className="text-xs text-slate-500 hover:underline dark:text-slate-400">
+            Read guide
+          </Link>
+        ) : null}
+      </div>
+    </div>
+  );
+}

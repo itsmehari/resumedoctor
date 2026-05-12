@@ -22,13 +22,13 @@ import {
   TestimonialCard,
 } from "@/components/home/landing-ui";
 import { HomeFaqSection } from "@/components/home/home-faq-section";
+import { HomeCareerStagesSection, HomeIndustriesSection } from "@/components/home/home-audience-sections";
 import { HomePricingTeaser } from "@/components/home/home-pricing-teaser";
 import { HomeResumeLinkSection } from "@/components/home/home-resume-link-section";
+import { HomeTestimonialsMarquee } from "@/components/home/home-testimonials-marquee";
 import { TrustBadges } from "@/components/trust-badges";
 
 export function HomeLanding() {
-  const marqueeTestimonials = [...TESTIMONIALS, ...TESTIMONIALS];
-
   return (
   <>
       <section className="relative overflow-hidden bg-gradient-to-br from-primary-700 via-primary-600 to-indigo-900">
@@ -284,15 +284,11 @@ export function HomeLanding() {
               <TestimonialCard key={testimonial.name} {...testimonial} />
             ))}
           </div>
-          <div className="relative hidden overflow-hidden md:block">
-            <div className="landing-marquee-track flex w-max gap-6">
-              {marqueeTestimonials.map((testimonial, index) => (
-                <TestimonialCard key={`${testimonial.name}-${index}`} {...testimonial} />
-              ))}
-            </div>
-          </div>
+          <HomeTestimonialsMarquee testimonials={TESTIMONIALS} />
         </div>
       </section>
+
+      <HomeCareerStagesSection />
 
       <section className="relative overflow-hidden bg-gradient-to-br from-[#0f0c29] via-[#2a255a] to-[#1a1d3a] py-24">
         <div
@@ -431,6 +427,8 @@ export function HomeLanding() {
           </div>
         </div>
       </section>
+
+      <HomeIndustriesSection />
 
       <HomePricingTeaser />
 

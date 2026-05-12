@@ -119,6 +119,10 @@ a,
   animation: landing-marquee 55s linear infinite;
 }
 
+.landing-marquee-paused {
+  animation-play-state: paused;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .landing-marquee-track {
     animation: none;
