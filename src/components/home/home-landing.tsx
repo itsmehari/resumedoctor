@@ -7,6 +7,7 @@ import {
   ATS_BEAT_POINTS,
   EMPLOYER_LOGOS,
   HERO_TRUST_POINTS,
+  JOB_PORTALS,
   TEMPLATE_FILTERS,
   TEMPLATE_QUICK_PICK,
   TEMPLATE_SHOWCASE,
@@ -21,6 +22,8 @@ import {
   TestimonialCard,
 } from "@/components/home/landing-ui";
 import { HomeFaqSection } from "@/components/home/home-faq-section";
+import { HomePricingTeaser } from "@/components/home/home-pricing-teaser";
+import { HomeResumeLinkSection } from "@/components/home/home-resume-link-section";
 import { TrustBadges } from "@/components/trust-badges";
 
 export function HomeLanding() {
@@ -42,7 +45,7 @@ export function HomeLanding() {
 
         <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
           <div className="mb-8 flex flex-wrap items-center justify-center gap-4 lg:justify-start">
-            <TrustBadges />
+            <TrustBadges variant="onDark" />
           </div>
 
           <div className="grid items-center gap-14 lg:grid-cols-2 lg:gap-16">
@@ -55,7 +58,7 @@ export function HomeLanding() {
               <h1 className="text-4xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-[3.35rem]">
                 Build your ATS resume
                 <span className="block bg-gradient-to-r from-amber-200 via-accent to-amber-300 bg-clip-text text-transparent">
-                  in minutes — free to start
+                  in minutes — start with OTP Try
                 </span>
               </h1>
 
@@ -80,7 +83,7 @@ export function HomeLanding() {
                   href="/try"
                   className="rounded-xl bg-accent px-8 py-4 text-center text-base font-bold text-accent-dark shadow-xl shadow-black/30 transition-all hover:scale-[1.02] hover:bg-accent-hover active:scale-[0.98]"
                 >
-                  Create my free resume
+                  Start OTP Try — free preview
                 </Link>
                 <Link
                   href="/templates"
@@ -89,17 +92,21 @@ export function HomeLanding() {
                   Browse templates
                 </Link>
               </div>
+              <p className="mt-3 text-sm text-white/70">
+                OTP Try is a no-card preview. Upgrade on SuperProfile with the same email for PDF, Word, and every
+                template.
+              </p>
             </div>
 
-            <div className="relative hidden lg:block">
-              <div className="relative -ml-[12%] w-[120%] max-w-none">
+            <div className="relative mx-auto w-full max-w-md lg:max-w-none">
+              <div className="relative lg:-ml-[12%] lg:w-[120%]">
                 <Image
                   src={heroArtwork}
                   alt="ResumeDoctor resume builder preview"
                   width={1400}
                   height={900}
                   priority
-                  sizes="(max-width: 1024px) 100vw, 48vw"
+                  sizes="(max-width: 1024px) 90vw, 48vw"
                   className="h-auto w-full object-contain"
                 />
               </div>
@@ -127,8 +134,8 @@ export function HomeLanding() {
                 key={template.id}
                 name={template.name}
                 accent={template.accent}
-                users={template.users}
-                href={`/templates?highlight=${template.id}`}
+                hint={template.hint}
+                href={template.category ? `/templates?category=${template.category}` : "/templates"}
               />
             ))}
           </div>
@@ -138,7 +145,10 @@ export function HomeLanding() {
       <section className="border-b border-slate-200/80 bg-slate-50 py-12 dark:border-slate-800 dark:bg-slate-900/40">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <p className="text-center text-sm font-semibold text-slate-600 dark:text-slate-400">
-            Used by job seekers applying at India&apos;s leading employers
+            Example employers and brands where our users commonly apply
+          </p>
+          <p className="mx-auto mt-2 max-w-2xl text-center text-xs text-slate-500 dark:text-slate-500">
+            Names shown for context only — not endorsements or hiring partnerships.
           </p>
           <div className="relative mt-8 overflow-hidden">
             <div className="landing-marquee-track flex w-max gap-3">
@@ -151,6 +161,25 @@ export function HomeLanding() {
                 </span>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-slate-200/80 bg-white py-12 dark:border-slate-800 dark:bg-slate-950">
+        <div className="mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
+          <p className="text-xs font-bold uppercase tracking-widest text-primary-600 dark:text-primary-400">Apply on</p>
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+            Layouts and exports aligned with how you apply on India&apos;s job boards.
+          </p>
+          <div className="mx-auto mt-8 flex max-w-4xl flex-wrap justify-center gap-3 rounded-3xl border border-slate-200/80 bg-slate-50/80 px-5 py-8 ring-1 ring-slate-200/50 dark:border-slate-700/80 dark:bg-slate-900/40 dark:ring-slate-700/40">
+            {JOB_PORTALS.map((name) => (
+              <span
+                key={name}
+                className="rounded-full border border-slate-200/90 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm dark:border-slate-600 dark:bg-slate-900/80 dark:text-slate-300"
+              >
+                {name}
+              </span>
+            ))}
           </div>
         </div>
       </section>
@@ -220,7 +249,11 @@ export function HomeLanding() {
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {TEMPLATE_SHOWCASE.map((template) => (
-              <TemplateShowcaseCard key={template.title} {...template} />
+              <TemplateShowcaseCard
+                key={template.title}
+                {...template}
+                href={template.category ? `/templates?category=${template.category}` : "/templates"}
+              />
             ))}
           </div>
 
@@ -229,7 +262,7 @@ export function HomeLanding() {
               href="/try"
               className="inline-flex items-center gap-2 rounded-xl bg-accent px-8 py-4 text-base font-bold text-accent-dark shadow-lg transition hover:bg-accent-hover"
             >
-              Create free ATS-friendly resume
+              Start OTP Try
             </Link>
           </div>
         </div>
@@ -238,12 +271,20 @@ export function HomeLanding() {
       <section className="border-y border-slate-200/80 bg-slate-50 py-24 dark:border-slate-800 dark:bg-slate-900/30">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto mb-12 max-w-2xl text-center">
-            <p className="text-xs font-bold uppercase tracking-widest text-primary-500">Reviews</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-primary-500">Workflow stories</p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl">
-              Hear from job seekers who got results
+              How job seekers use ResumeDoctor
             </h2>
+            <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+              Illustrative scenarios based on common application workflows — not verified customer reviews.
+            </p>
           </div>
-          <div className="relative overflow-hidden">
+          <div className="grid gap-6 md:hidden">
+            {TESTIMONIALS.map((testimonial) => (
+              <TestimonialCard key={testimonial.name} {...testimonial} />
+            ))}
+          </div>
+          <div className="relative hidden overflow-hidden md:block">
             <div className="landing-marquee-track flex w-max gap-6">
               {marqueeTestimonials.map((testimonial, index) => (
                 <TestimonialCard key={`${testimonial.name}-${index}`} {...testimonial} />
@@ -277,7 +318,7 @@ export function HomeLanding() {
                 href="/try"
                 className="mt-8 inline-flex items-center gap-2 rounded-xl bg-violet-500 px-8 py-4 text-base font-bold text-white shadow-lg shadow-violet-900/40 transition hover:bg-violet-400"
               >
-                Generate free resume with AI
+                Try AI features in OTP Try
                 <LandingIcon path={LANDING_ICON_PATHS.arrow} size={18} />
               </Link>
             </div>
@@ -323,6 +364,8 @@ export function HomeLanding() {
           </div>
         </div>
       </section>
+
+      <HomeResumeLinkSection />
 
       <section className="border-y border-slate-200/80 bg-gradient-to-br from-primary-50/60 via-white to-slate-50 py-20 dark:border-slate-800 dark:from-primary-950/20 dark:via-slate-950 dark:to-slate-900/40">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
@@ -389,6 +432,8 @@ export function HomeLanding() {
         </div>
       </section>
 
+      <HomePricingTeaser />
+
       <HomeFaqSection />
 
       <section className="relative overflow-hidden bg-gradient-to-br from-primary-700 via-primary-600 to-indigo-900 py-24">
@@ -399,18 +444,18 @@ export function HomeLanding() {
         />
         <div className="relative mx-auto max-w-3xl px-4 text-center">
           <h2 className="text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl">
-            Make your resume great again
+            Your next role deserves a resume — and a link — that stays current
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-white/80">
-            Start building your professional ATS resume on ResumeDoctor — share it as a link, export when you upgrade,
-            and keep every version ready for India&apos;s job portals.
+            Start with OTP Try on ResumeDoctor, publish a shareable link for free, and upgrade on SuperProfile when you
+            need PDF, Word, and every template for India&apos;s job portals.
           </p>
           <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
             <Link
               href="/try"
               className="rounded-xl bg-accent px-10 py-4 text-lg font-bold text-accent-dark shadow-xl shadow-black/25 transition hover:scale-[1.02] hover:bg-accent-hover"
             >
-              Create my free resume now
+              Start OTP Try
             </Link>
             <Link
               href="/pricing"

@@ -4,12 +4,12 @@ import { LandingIcon, LANDING_ICON_PATHS } from "@/components/home/landing-icons
 export function TemplateQuickPickCard({
   name,
   accent,
-  users,
+  hint,
   href,
 }: {
   name: string;
   accent: string;
-  users: string;
+  hint: string;
   href: string;
 }) {
   return (
@@ -38,7 +38,7 @@ export function TemplateQuickPickCard({
         <p className="font-bold text-slate-900 transition-colors group-hover:text-primary-600 dark:text-slate-100 dark:group-hover:text-primary-400">
           {name}
         </p>
-        <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Chosen by {users} users</p>
+        <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{hint}</p>
       </div>
     </Link>
   );
@@ -51,6 +51,7 @@ export function TemplateShowcaseCard({
   accent,
   layout,
   slots,
+  href,
 }: {
   title: string;
   style: string;
@@ -58,13 +59,14 @@ export function TemplateShowcaseCard({
   accent: string;
   layout: string;
   slots: number;
+  href: string;
 }) {
   const isSidebar = layout === "dark-sidebar";
   const isTwoCol = layout === "two-column";
 
   return (
     <Link
-      href="/templates"
+      href={href}
       className="group overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-[0_14px_44px_rgba(15,23,42,0.08)] ring-1 ring-slate-100/95 transition-all hover:-translate-y-1 hover:border-primary-200/90 hover:shadow-[0_28px_60px_rgba(37,99,235,0.12)] dark:border-slate-700/90 dark:bg-slate-900 dark:ring-slate-800 dark:hover:border-primary-700/70"
     >
       <div
@@ -255,7 +257,7 @@ export function StepDeviceMock({ step }: { step: "01" | "02" | "03" }) {
                 </div>
               </div>
               <div className="rounded-lg border border-dashed border-slate-300 px-3 py-4 text-center text-xs text-slate-500 dark:border-slate-600 dark:text-slate-400">
-                Drop PDF or DOCX to import
+                Import PDF or DOCX from your dashboard after signup
               </div>
             </div>
           ) : null}

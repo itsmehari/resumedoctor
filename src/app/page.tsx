@@ -6,9 +6,9 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   alternates: { canonical: siteUrl },
-  title: "Free AI Resume Builder | ATS Resume Generator | ResumeDoctor",
+  title: "ResumeDoctor — ATS Resume Builder, Shareable Link & AI Help | India",
   description:
-    "Build an ATS-friendly resume in minutes with ResumeDoctor. 30+ templates, AI writing help, shareable resume links, and PDF & DOCX export for India's job market.",
+    "Build an ATS-friendly resume with 30+ templates, OTP Try, AI writing help, and a shareable resume link for WhatsApp and LinkedIn. Upgrade on SuperProfile for PDF and Word export.",
 };
 
 export default function HomePage() {

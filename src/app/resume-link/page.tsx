@@ -3,7 +3,7 @@
 // "resume url India", "live resume", "shareable resume URL".
 //
 // Marketing-only page; converts via /try. The hero, walkthrough, and FAQ
-// re-use the same vocabulary as the homepage "Your resume, as a link"
+// re-use the same vocabulary as the homepage resume-link section and /resume-link
 // section so the brand language stays consistent across surfaces.
 import Link from "next/link";
 import type { Metadata } from "next";
