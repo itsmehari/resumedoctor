@@ -76,13 +76,13 @@ todos:
     status: completed
   - id: MM.5.1
     content: MM.5.1 Run tsc --noEmit and ReadLints across all touched files; resolve any new lint errors
-    status: in_progress
+    status: completed
   - id: MM.5.2
     content: "MM.5.2 Eyeball pass: /, /pricing, /features, /dashboard, /resumes/[id]/edit, /r/<slug> in light + dark, mobile + desktop"
-    status: pending
+    status: completed
   - id: MM.5.3
     content: MM.5.3 Keyboard-only walkthrough (Tab, ArrowDown, Esc, Shift+Tab); verify no focus loss or trap
-    status: pending
+    status: completed
 isProject: false
 ---
 

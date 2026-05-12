@@ -34,9 +34,10 @@ export function MobileMegaMenu({ inverted }: Props) {
   const [open, setOpen] = useState(false);
   const [openSection, setOpenSection] = useState<number | null>(0);
   const pathname = usePathname();
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const { isPro } = useSubscription();
   const isSignedIn = status === "authenticated";
+  const isAdmin = (session?.user as { role?: string } | undefined)?.role === "admin";
   const triggerRef = useRef<HTMLButtonElement | null>(null);
 
   useBodyScrollLock(open);
@@ -247,6 +248,15 @@ export function MobileMegaMenu({ inverted }: Props) {
 
             {/* Pinned bottom — auth CTAs */}
             <div className={mobileDrawerTokens.pinnedFooter}>
+              {isAdmin ? (
+                <Link
+                  href="/admin"
+                  onClick={close}
+                  className="block text-center text-sm font-semibold text-amber-600 dark:text-amber-400 py-1"
+                >
+                  Admin
+                </Link>
+              ) : null}
               {isSignedIn ? (
                 <>
                   <Link

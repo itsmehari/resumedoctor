@@ -211,7 +211,7 @@ function MegaMenuFeaturedRailView({
               : "Included with your Pro plan."}
           </p>
           <Link
-            href="/settings#billing"
+            href="/settings"
             onClick={onLinkActivate}
             className={tokens.featuredRail.ghostCta}
           >
