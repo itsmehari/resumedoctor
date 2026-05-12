@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { trackEvent } from "@/lib/analytics";
 import { CheckCircle2, AlertCircle, AlertTriangle } from "lucide-react";
 import type { ResumeSection } from "@/types/resume";
+import { canRunAtsCheck } from "@/lib/resume-editor-progress";
+import { computeAtsScore } from "@/lib/ats-checker";
 
 interface AtsResult {
   score: number;
@@ -66,28 +68,40 @@ export function AtsScorePanel({ resumeId, sections, isPro }: Props) {
   };
 
   useEffect(() => {
-    if (isPro && resumeId) fetchScore();
+    if (isPro && resumeId && canRunAtsCheck(sections)) fetchScore();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resumeId, isPro]);
+  }, [resumeId, isPro, sections]);
+
+  const heuristic = !canRunAtsCheck(sections) ? null : computeAtsScore(sections);
 
   if (trialBlocked) {
     return (
-      <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4 bg-slate-50 dark:bg-slate-800/50">
-        <h3 className="font-semibold text-slate-900 dark:text-slate-100 text-sm">ATS Checker</h3>
-        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 mb-3">
-          Create a free account to save your resume and run ATS checks. Apply with confidence once your draft lives on a
-          full account — see{" "}
-          <a href="/pricing" className="font-medium text-primary-600 hover:underline dark:text-primary-400">
-            pricing
-          </a>{" "}
-          for full checks on Basic vs Pro.
-        </p>
-        <a
-          href="/signup"
-          className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
-        >
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/50">
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">ATS Checker</h3>
+        {heuristic ? (
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+            Quick read: your draft scores about <strong>{heuristic.score}</strong>/100. Sign up for a saved resume and a
+            full ATS run.
+          </p>
+        ) : (
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+            Add contact details and a little content to preview how parsers may read your draft.
+          </p>
+        )}
+        <a href="/signup" className="mt-3 inline-block text-sm font-medium text-primary-600 hover:underline">
           Sign up →
         </a>
+      </div>
+    );
+  }
+
+  if (!canRunAtsCheck(sections)) {
+    return (
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/50">
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">ATS Checker</h3>
+        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+          Add contact details and at least one more section before running ATS.
+        </p>
       </div>
     );
   }

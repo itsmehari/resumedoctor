@@ -1,7 +1,9 @@
 // WBS 3.6, 3.7 – Section editing components
 "use client";
 
+import { useState } from "react";
 import type { ResumeSection } from "@/types/resume";
+import { useToast } from "@/contexts/toast-context";
 import { ContactEditor } from "./sections/contact-editor";
 import { SummaryEditor } from "./sections/summary-editor";
 import { ObjectiveEditor } from "./sections/objective-editor";
@@ -21,19 +23,55 @@ interface Props {
   section: ResumeSection;
   onChange: (section: ResumeSection) => void;
   onRemove: () => void;
+  onRestore?: (section: ResumeSection) => void;
   resumeId?: string;
+  onFocus?: () => void;
 }
 
-export function SectionEditor({ section, onChange, onRemove, resumeId }: Props) {
+export function SectionEditor({ section, onChange, onRemove, onRestore, resumeId, onFocus }: Props) {
+  const { toast } = useToast();
+  const [confirming, setConfirming] = useState(false);
+
+  const handleRemove = () => {
+    if (!confirming) {
+      setConfirming(true);
+      return;
+    }
+    const snapshot = section;
+    onRemove();
+    toast("Section removed", {
+      action: onRestore
+        ? {
+            label: "Undo",
+            onClick: () => onRestore(snapshot),
+          }
+        : undefined,
+    });
+    setConfirming(false);
+  };
+
   const removeBtn = (
-    <button type="button" onClick={onRemove}
-      className="text-xs text-red-600 hover:text-red-700 dark:text-red-400 mt-1">
-      Remove section
-    </button>
+    <div className="mt-2 flex flex-wrap items-center gap-2">
+      <button
+        type="button"
+        onClick={handleRemove}
+        className="text-xs font-medium text-red-600 hover:text-red-700 dark:text-red-400"
+      >
+        {confirming ? "Confirm remove section" : "Remove section"}
+      </button>
+      {confirming && (
+        <button type="button" onClick={() => setConfirming(false)} className="text-xs text-slate-500 hover:underline">
+          Cancel
+        </button>
+      )}
+    </div>
   );
 
   const wrap = (editor: React.ReactNode) => (
-    <div className="space-y-2">{editor}{removeBtn}</div>
+    <div className="space-y-2" onFocusCapture={onFocus}>
+      {editor}
+      {removeBtn}
+    </div>
   );
 
   switch (section.type) {
@@ -43,7 +81,11 @@ export function SectionEditor({ section, onChange, onRemove, resumeId }: Props) 
       );
     case "summary":
       return wrap(
-        <SummaryEditor data={section.data} onChange={(data) => onChange({ ...section, data } as ResumeSection)} resumeId={resumeId} />
+        <SummaryEditor
+          data={section.data}
+          onChange={(data) => onChange({ ...section, data } as ResumeSection)}
+          resumeId={resumeId}
+        />
       );
     case "objective":
       return wrap(
@@ -51,7 +93,11 @@ export function SectionEditor({ section, onChange, onRemove, resumeId }: Props) 
       );
     case "experience":
       return wrap(
-        <ExperienceEditor data={section.data} onChange={(data) => onChange({ ...section, data } as ResumeSection)} resumeId={resumeId} />
+        <ExperienceEditor
+          data={section.data}
+          onChange={(data) => onChange({ ...section, data } as ResumeSection)}
+          resumeId={resumeId}
+        />
       );
     case "education":
       return wrap(

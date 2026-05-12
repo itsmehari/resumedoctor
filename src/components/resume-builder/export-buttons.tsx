@@ -8,6 +8,8 @@ import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import type { ResumeSection } from "@/types/resume";
 import { trackEvent, trackMetaCustom } from "@/lib/analytics";
+import { getExportPreflightIssues } from "@/lib/resume-editor-progress";
+import { ExportPreflightModal } from "@/components/resume-builder/editor/export-preflight-modal";
 
 interface Props {
   resumeId: string;
@@ -16,7 +18,9 @@ interface Props {
   previewRef: React.RefObject<HTMLDivElement | null>;
   isPro: boolean;
   isTrial?: boolean;
-  resumePackCredits?: number; // WBS 10.7 – one-time pack
+  resumePackCredits?: number;
+  emphasize?: boolean;
+  onPreflightJump?: (sectionType?: string) => void;
 }
 
 export function ExportButtons({
@@ -27,9 +31,12 @@ export function ExportButtons({
   isPro,
   isTrial = false,
   resumePackCredits = 0,
+  emphasize = true,
+  onPreflightJump,
 }: Props) {
   const canExport = (isPro || resumePackCredits > 0) && !isTrial;
   const [open, setOpen] = useState(false);
+  const [preflightOpen, setPreflightOpen] = useState(false);
   const [loading, setLoading] = useState<string | null>(null);
   const [pdfStatus, setPdfStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -185,16 +192,37 @@ export function ExportButtons({
   }, [resumeId, resumeTitle, canExport]);
 
   const busy = loading !== null;
+  const preflightIssues = getExportPreflightIssues(_sections);
 
   return (
     <div className="relative">
+      <ExportPreflightModal
+        open={preflightOpen}
+        issues={preflightIssues}
+        title={resumeTitle}
+        sections={_sections}
+        onClose={() => setPreflightOpen(false)}
+        onContinue={() => {
+          setPreflightOpen(false);
+          setOpen(true);
+        }}
+        onJump={(issue) => {
+          setPreflightOpen(false);
+          onPreflightJump?.(issue.sectionType);
+        }}
+      />
       <button
         type="button"
-        onClick={() => setOpen((o) => !o)}
-        disabled={busy}
+        onClick={() => setPreflightOpen(true)}
+        disabled={busy || !emphasize}
         aria-expanded={open}
         aria-haspopup="true"
-        className="flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-60"
+        title={!emphasize ? "Finish core sections before exporting" : undefined}
+        className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium disabled:opacity-60 ${
+          emphasize
+            ? "border-slate-300 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
+            : "border-slate-200 bg-slate-50 text-slate-500 dark:border-slate-700 dark:bg-slate-900"
+        }`}
       >
         <FileDown className="h-4 w-4 shrink-0" aria-hidden />
         {busy ? (

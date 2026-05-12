@@ -17,6 +17,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import type { ResumeSection } from "@/types/resume";
+import { hasContactSection } from "@/lib/resume-editor-progress";
 import { SectionEditor } from "./section-editor";
 import { SortableSection } from "./sortable-section";
 
@@ -24,6 +25,8 @@ interface Props {
   sections: ResumeSection[];
   onChange: (sections: ResumeSection[]) => void;
   resumeId?: string;
+  activeSectionId?: string | null;
+  onActiveSectionChange?: (id: string) => void;
 }
 
 const SECTION_LABELS: Record<ResumeSection["type"], string> = {
@@ -43,7 +46,13 @@ const SECTION_LABELS: Record<ResumeSection["type"], string> = {
   custom: "Custom Section",
 };
 
-export function SectionList({ sections, onChange, resumeId }: Props) {
+export function SectionList({
+  sections,
+  onChange,
+  resumeId,
+  activeSectionId,
+  onActiveSectionChange,
+}: Props) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
@@ -61,37 +70,53 @@ export function SectionList({ sections, onChange, resumeId }: Props) {
   };
 
   const updateSection = (id: string, updated: ResumeSection) => {
-    onChange(
-      sections.map((s) => (s.id === id ? updated : s))
-    );
+    onChange(sections.map((s) => (s.id === id ? updated : s)));
   };
 
   const removeSection = (id: string) => {
     onChange(sections.filter((s) => s.id !== id));
   };
 
+  const restoreSection = (section: ResumeSection) => {
+    onChange([...sections, { ...section, order: sections.length }]);
+  };
+
+  const moveSection = (index: number, direction: -1 | 1) => {
+    const newIndex = index + direction;
+    if (newIndex < 0 || newIndex >= sections.length) return;
+    const reordered = arrayMove(sections, index, newIndex);
+    onChange(reordered.map((s, i) => ({ ...s, order: i })));
+  };
+
+  const contactMissing = !hasContactSection(sections);
+
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      onDragEnd={handleDragEnd}
-    >
-      <SortableContext
-        items={sections.map((s) => s.id)}
-        strategy={verticalListSortingStrategy}
-      >
-        <div className="space-y-4">
-          {sections.map((section) => (
+    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <SortableContext items={sections.map((s) => s.id)} strategy={verticalListSortingStrategy}>
+        <div id="resume-editor-sections" className="space-y-4">
+          {sections.map((section, index) => (
             <SortableSection
               key={section.id}
               id={section.id}
               label={SECTION_LABELS[section.type]}
+              isActive={activeSectionId === section.id}
+              canMoveUp={index > 0}
+              canMoveDown={index < sections.length - 1}
+              onMoveUp={() => moveSection(index, -1)}
+              onMoveDown={() => moveSection(index, 1)}
             >
+              {contactMissing && (section.type === "summary" || section.type === "objective") && (
+                <p className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
+                  Add a Contact section first so recruiters know how to reach you.
+                </p>
+              )}
               <SectionEditor
                 section={section}
                 onChange={(updated) => updateSection(section.id, updated)}
                 onRemove={() => removeSection(section.id)}
+                onRestore={restoreSection}
                 resumeId={resumeId}
+                onFocus={() => onActiveSectionChange?.(section.id)}
               />
             </SortableSection>
           ))}

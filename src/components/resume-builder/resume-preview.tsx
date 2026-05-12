@@ -16,10 +16,13 @@ interface Props {
   sections: ResumeSection[];
   templateId?: string;
   className?: string;
+  previewStyle?: React.CSSProperties;
   primaryColor?: string;
   fontFamily?: "sans" | "serif" | "mono";
   fontSize?: "small" | "normal" | "large";
   spacing?: "compact" | "normal" | "spacious";
+  highlightedSectionType?: ResumeSection["type"];
+  onSectionSelect?: (type: ResumeSection["type"]) => void;
 }
 
 // ─── Section icon map ─────────────────────────────────────────────────────────
@@ -967,6 +970,7 @@ function SectionPreview({
 
 export function ResumePreview({
   sections, templateId = "professional-in", className = "",
+  previewStyle,
   primaryColor, fontFamily: fontOverride, fontSize: fontSizeOverride, spacing: spacingOverride,
 }: Props) {
   const sorted = [...sections].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
@@ -1027,15 +1031,24 @@ export function ResumePreview({
 
   if (sorted.length === 0) {
     return (
-      <div className={`bg-white text-slate-800 shadow-lg rounded-lg overflow-hidden max-w-[21cm] mx-auto ${wrapperFont} ${className}`}
-        style={{ minHeight: "297mm" }}>
-        <div className="p-8"><p className="text-slate-400 text-sm italic">Add sections to see preview</p></div>
+      <div
+        className={`mx-auto max-w-[21cm] overflow-hidden rounded-lg bg-white text-slate-800 shadow-lg ${wrapperFont} ${className}`}
+        style={{ minHeight: "297mm", ...previewStyle }}
+      >
+        <div className="space-y-3 p-8">
+          <div className="h-6 w-2/3 animate-pulse rounded bg-slate-200 motion-reduce:animate-none" />
+          <div className="h-4 w-1/2 animate-pulse rounded bg-slate-100 motion-reduce:animate-none" />
+          <div className="mt-6 h-4 w-full animate-pulse rounded bg-slate-100 motion-reduce:animate-none" />
+          <div className="h-4 w-5/6 animate-pulse rounded bg-slate-100 motion-reduce:animate-none" />
+          <p className="pt-4 text-sm text-slate-400">Add sections to see your resume take shape.</p>
+        </div>
       </div>
     );
   }
 
   const wrapperStyle: React.CSSProperties = {
     minHeight: "297mm",
+    ...previewStyle,
     ["--template-primary" as string]: accentColor,
   };
 

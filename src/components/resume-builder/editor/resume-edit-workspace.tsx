@@ -24,23 +24,32 @@ import { hasContactSection, isReviewModeReady, type EditorStepId } from "@/lib/r
 import type { ResumeSection } from "@/types/resume";
 import { useToast } from "@/contexts/toast-context";
 
-function ResumeEditWorkspace({ resumeId }: { resumeId: string }) {
+function ResumeEditWorkspaceContent({
+  resumeId,
+  resume,
+  saveStatus,
+  updateContent,
+  updateTitle,
+  updateTemplateId,
+  retrySave,
+  flushSave,
+  lastSavedAt,
+}: {
+  resumeId: string;
+  resume: NonNullable<ReturnType<typeof useResume>["resume"]>;
+  saveStatus: ReturnType<typeof useResume>["saveStatus"];
+  updateContent: ReturnType<typeof useResume>["updateContent"];
+  updateTitle: ReturnType<typeof useResume>["updateTitle"];
+  updateTemplateId: ReturnType<typeof useResume>["updateTemplateId"];
+  retrySave: ReturnType<typeof useResume>["retrySave"];
+  flushSave: ReturnType<typeof useResume>["flushSave"];
+  lastSavedAt: ReturnType<typeof useResume>["lastSavedAt"];
+}) {
   const router = useRouter();
   const previewRef = useRef<HTMLDivElement>(null);
   const editorPaneRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  const {
-    resume,
-    loading,
-    saveStatus,
-    updateContent,
-    updateTitle,
-    updateTemplateId,
-    retrySave,
-    flushSave,
-    lastSavedAt,
-  } = useResume(resumeId);
   const { isPro, isTrial, resumePackCredits, aiDailyUsed, aiDailyLimit } = useSubscription();
   const { secondsLeft, expired } = useTrialTimer(isTrial);
   const [templates, setTemplates] = useState<Array<{ id: string; name: string; isProOnly?: boolean }>>([]);
@@ -117,31 +126,6 @@ function ResumeEditWorkspace({ resumeId }: { resumeId: string }) {
       toast("Could not save — your edits are still on this page.", { variant: "error" });
     }
   }, [saveStatus, toast]);
-
-  if (loading) {
-    return (
-      <>
-        <SiteHeader variant="app" navVariant="dashboard" />
-        <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-          <p className="text-slate-500">Loading resume...</p>
-        </div>
-      </>
-    );
-  }
-
-  if (!resume) {
-    return (
-      <>
-        <SiteHeader variant="app" navVariant="dashboard" />
-        <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center gap-4">
-          <p className="text-slate-600">Resume not found</p>
-          <Link href="/dashboard" className="text-primary-600 hover:underline">
-            Back to dashboard
-          </Link>
-        </div>
-      </>
-    );
-  }
 
   const currentTemplateName = templates.find((t) => t.id === resume.templateId)?.name ?? resume.templateId;
 
@@ -271,7 +255,8 @@ function ResumeEditWorkspace({ resumeId }: { resumeId: string }) {
                   fontFamily={meta.fontFamily}
                   fontSize={meta.fontSize}
                   spacing={meta.spacing}
-                  className={`origin-top scale-[${previewZoom}]`}
+                  className="origin-top"
+                  previewStyle={{ transform: `scale(${previewZoom})`, transformOrigin: "top center" }}
                 />
               </div>
             </div>
@@ -310,7 +295,9 @@ function ResumeEditWorkspace({ resumeId }: { resumeId: string }) {
 }
 
 export function ResumeEditWorkspaceRoot({ resumeId }: { resumeId: string }) {
-  const { resume, loading } = useResume(resumeId);
+  const resumeHook = useResume(resumeId);
+  const { resume, loading, saveStatus, updateContent, updateTitle, updateTemplateId, retrySave, flushSave, lastSavedAt } =
+    resumeHook;
   const sections = resume?.content.sections ?? [];
 
   if (loading) {
@@ -324,9 +311,33 @@ export function ResumeEditWorkspaceRoot({ resumeId }: { resumeId: string }) {
     );
   }
 
+  if (!resume) {
+    return (
+      <>
+        <SiteHeader variant="app" navVariant="dashboard" />
+        <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center gap-4">
+          <p className="text-slate-600">Resume not found</p>
+          <Link href="/dashboard" className="text-primary-600 hover:underline">
+            Back to dashboard
+          </Link>
+        </div>
+      </>
+    );
+  }
+
   return (
     <ResumeEditorProvider sections={sections}>
-      <ResumeEditWorkspace resumeId={resumeId} />
+      <ResumeEditWorkspaceContent
+        resumeId={resumeId}
+        resume={resume}
+        saveStatus={saveStatus}
+        updateContent={updateContent}
+        updateTitle={updateTitle}
+        updateTemplateId={updateTemplateId}
+        retrySave={retrySave}
+        flushSave={flushSave}
+        lastSavedAt={lastSavedAt}
+      />
     </ResumeEditorProvider>
   );
 }

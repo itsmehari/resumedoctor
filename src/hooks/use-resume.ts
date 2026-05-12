@@ -22,6 +22,7 @@ export function useResume(resumeId: string | null) {
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingContentRef = useRef<ResumeContent | null>(null);
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
 
   const fetchResume = useCallback(async () => {
     if (!resumeId) {
@@ -66,6 +67,7 @@ export function useResume(resumeId: string | null) {
         const data = await res.json();
         setResume(data);
         setSaveStatus("saved");
+        setLastSavedAt(new Date());
         setTimeout(() => setSaveStatus("idle"), 2000);
       } catch {
         setSaveStatus("error");
@@ -144,6 +146,21 @@ export function useResume(resumeId: string | null) {
     };
   }, [flushPendingContent]);
 
+  const flushSave = useCallback(() => {
+    flushPendingContent();
+  }, [flushPendingContent]);
+
+  useEffect(() => {
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!pendingContentRef.current) return;
+      flushPendingContent();
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, [flushPendingContent]);
+
   const retrySave = useCallback(() => {
     if (!resume || !resumeId) return;
     void saveResume(resume.content, resume.title, resume.templateId);
@@ -159,5 +176,7 @@ export function useResume(resumeId: string | null) {
     updateTemplateId,
     refetch: fetchResume,
     retrySave,
+    flushSave,
+    lastSavedAt,
   };
 }
