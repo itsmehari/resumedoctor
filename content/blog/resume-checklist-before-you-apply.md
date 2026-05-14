@@ -73,4 +73,4 @@ If this fails, tailor first. Proofread after.
 
 Use this checklist every application cycle. It turns quality from random to repeatable.
 
-Next step: update your file in [ResumeDoctor](/try), then run this checklist plus our [ATS guide](/blog/ats-friendly-resume-complete-guide) before submit.
+Next step: update your file in [ResumeDoctor](/try), then run this checklist plus our [ATS guide](/blog/ats-friendly-resume-complete-guide) before submit. For a full refresh workflow, see [How to update your resume for a 2026 India job search](/blog/how-to-update-resume-india-2026) and our [update resume guide](/lp/update-my-resume-india).

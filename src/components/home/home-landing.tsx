@@ -78,6 +78,15 @@ export function HomeLanding() {
                 ))}
               </ul>
 
+              <p className="mx-auto mt-4 max-w-md text-center text-xs text-white/75 lg:mx-0 lg:text-left">
+                <Link
+                  href="/lp/update-my-resume-india"
+                  className="underline decoration-white/35 underline-offset-2 hover:text-white"
+                >
+                  Updating an old resume? India-first refresh guide
+                </Link>
+              </p>
+
               <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row lg:justify-start">
                 <Link
                   href="/try"

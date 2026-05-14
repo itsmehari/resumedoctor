@@ -63,6 +63,13 @@ export default function TailorResumeJobDescriptionLp() {
             className="text-primary-600 hover:underline dark:text-primary-400"
           >
             Reading ATS / JD match feedback
+          </Link>{" "}
+          ·{" "}
+          <Link
+            href="/lp/update-my-resume-india"
+            className="text-primary-600 hover:underline dark:text-primary-400"
+          >
+            Update my resume (India)
           </Link>
         </p>
       </main>
