@@ -24,9 +24,10 @@ jobs:
       - name: Ping health endpoint
         id: health
         run: |
-          HTTP_STATUS=$(curl -s -o /tmp/health_response.json -w "%{http_code}" \
+          # Apex domain 308-redirects to www; -L follows redirects to the final 200.
+          HTTP_STATUS=$(curl -sL -o /tmp/health_response.json -w "%{http_code}" \
             --max-time 15 \
-            "https://resumedoctor.in/api/health")
+            "https://www.resumedoctor.in/api/health")
           echo "status=$HTTP_STATUS" >> $GITHUB_OUTPUT
           echo "response=$(cat /tmp/health_response.json | head -c 500)" >> $GITHUB_OUTPUT
           echo "Health endpoint returned HTTP $HTTP_STATUS"
@@ -49,7 +50,7 @@ jobs:
           curl -X POST "$SLACK_WEBHOOK_URL" \
             -H "Content-Type: application/json" \
             -d '{
-              "text": ":red_circle: *ResumeDoctor is DOWN*\nHealth check failed at '"$(date -u '+%Y-%m-%d %H:%M UTC')"'\nStatus: ${{ steps.health.outputs.status }}\nURL: https://resumedoctor.in/api/health\n\nResponse: `${{ steps.health.outputs.response }}`"
+              "text": ":red_circle: *ResumeDoctor is DOWN*\nHealth check failed at '"$(date -u '+%Y-%m-%d %H:%M UTC')"'\nStatus: ${{ steps.health.outputs.status }}\nURL: https://www.resumedoctor.in/api/health\n\nResponse: `${{ steps.health.outputs.response }}`"
             }'
 
       - name: Create GitHub issue on failure
@@ -62,7 +63,7 @@ jobs:
               '## ResumeDoctor health check failed',
               '',
               `**Time:** ${new Date().toUTCString()}`,
-              `**URL:** https://resumedoctor.in/api/health`,
+              `**URL:** https://www.resumedoctor.in/api/health`,
               `**HTTP Status:** ${{ steps.health.outputs.status }}`,
               '',
               '```json',
