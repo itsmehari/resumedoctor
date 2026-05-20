@@ -5,16 +5,16 @@ import { useEffect, useState, Suspense, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { formatDistanceToNow } from "date-fns";
-import { MoreVertical, Copy, Trash2, FileText, Upload } from "lucide-react";
+import { FileText, Upload } from "lucide-react";
 import { UserDashboardLayout } from "@/components/user-dashboard-layout";
 import { ResumeImportModal } from "@/components/resume-import-modal";
 import { useSubscription } from "@/hooks/use-subscription";
 import { useTrialTimer } from "@/hooks/use-trial-timer";
-import { getTemplateDisplayName } from "@/lib/subscription-labels";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { OnboardingChecklist } from "@/components/dashboard/onboarding-checklist";
-import { PricingTrustStatsBar } from "@/components/pricing/payment-value-sections";
+import { DashboardHeaderActions } from "@/components/dashboard/dashboard-header-actions";
+import { DashboardAlerts } from "@/components/dashboard/dashboard-alerts";
+import { DashboardNextSteps } from "@/components/dashboard/dashboard-next-steps";
+import { ResumeLibraryGrid } from "@/components/dashboard/resume-library-grid";
 import { useToast } from "@/contexts/toast-context";
 
 interface ResumeItem {
@@ -131,44 +131,34 @@ function DashboardContent() {
     }
   };
 
-  const actions = (
-    <>
-      {!isPro && (
-        <Link
-          href="/pricing"
-          className="rounded-xl border-2 border-primary-500 px-4 py-2.5 text-sm font-semibold text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-all shadow-sm min-h-[44px] inline-flex items-center touch-manipulation"
-        >
-          Get PDF & Word for applications
-        </Link>
-      )}
-      <Link
-        href="/cover-letters"
-        className="rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-white hover:border-slate-400 hover:shadow-md dark:hover:bg-slate-800/80 transition-all min-h-[44px] inline-flex items-center touch-manipulation"
-      >
-        Cover Letters
-      </Link>
-      <button
-        type="button"
-        onClick={() => setImportOpen(true)}
-        className="rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-white hover:border-slate-400 hover:shadow-md dark:hover:bg-slate-800/80 transition-all inline-flex items-center gap-2 min-h-[44px] touch-manipulation"
-      >
-        <Upload className="h-4 w-4 shrink-0" />
-        Import
-      </button>
-      <Link
-        href="/resumes/new"
-        className="rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 hover:shadow-lg hover:shadow-primary-500/25 transition-all min-h-[44px] inline-flex items-center touch-manipulation"
-      >
-        + Create Resume
-      </Link>
-    </>
-  );
+  const handleResendVerify = async () => {
+    setResendVerifyMsg(null);
+    setResendVerifyBusy(true);
+    try {
+      const r = await fetch("/api/auth/resend-verification", {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await r.json().catch(() => ({}));
+      setResendVerifyMsg(
+        r.ok
+          ? (data.message as string) || "Sent. Check your inbox."
+          : (data.error as string) || "Could not send email."
+      );
+    } catch {
+      setResendVerifyMsg("Something went wrong.");
+    } finally {
+      setResendVerifyBusy(false);
+    }
+  };
 
   return (
     <UserDashboardLayout
       title="My Resumes"
       subtitle={welcomeName ? `Welcome, ${welcomeName}` : undefined}
-      actions={actions}
+      actions={
+        <DashboardHeaderActions isPro={isPro} onImport={() => setImportOpen(true)} />
+      }
     >
       {status === "loading" ? (
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-12 text-center shadow-sm">
@@ -176,73 +166,8 @@ function DashboardContent() {
         </div>
       ) : (
         <>
-          {!isImpersonating && (
-            <div className="mb-6">
-              <PricingTrustStatsBar variant="inline" />
-            </div>
-          )}
-          {isImpersonating && (
-            <div className="mb-6 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 px-4 py-3 flex items-center justify-between gap-3 shadow-sm">
-              <span className="text-amber-800 dark:text-amber-200 text-sm font-medium">
-                Viewing as user (impersonation mode)
-              </span>
-              <button
-                onClick={async () => {
-                  await fetch("/api/admin/impersonate/end", { method: "POST", credentials: "include" });
-                  window.location.href = "/admin/users";
-                }}
-                className="rounded-lg bg-amber-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-700"
-              >
-                Stop impersonating
-              </button>
-            </div>
-          )}
-          {status === "authenticated" &&
-            !isImpersonating &&
-            !subLoading &&
-            emailVerified === false && (
-              <div
-                className="mb-6 rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 px-4 py-3 shadow-sm"
-                role="status"
-              >
-                <p className="text-sm text-amber-900 dark:text-amber-100 font-medium">
-                  Verify your email to export your data, change your account email, or delete your account.
-                </p>
-                <p className="mt-1 text-xs text-amber-800/90 dark:text-amber-200/90">
-                  Open the link in your inbox, or request a new one below.
-                </p>
-                {resendVerifyMsg && (
-                  <p className="mt-2 text-xs text-slate-700 dark:text-slate-300">{resendVerifyMsg}</p>
-                )}
-                <button
-                  type="button"
-                  disabled={resendVerifyBusy}
-                  onClick={async () => {
-                    setResendVerifyMsg(null);
-                    setResendVerifyBusy(true);
-                    try {
-                      const r = await fetch("/api/auth/resend-verification", {
-                        method: "POST",
-                        credentials: "include",
-                      });
-                      const data = await r.json().catch(() => ({}));
-                      setResendVerifyMsg(
-                        r.ok
-                          ? (data.message as string) || "Sent. Check your inbox."
-                          : (data.error as string) || "Could not send email."
-                      );
-                    } catch {
-                      setResendVerifyMsg("Something went wrong.");
-                    } finally {
-                      setResendVerifyBusy(false);
-                    }
-                  }}
-                  className="mt-3 rounded-lg bg-amber-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-700 disabled:opacity-50"
-                >
-                  {resendVerifyBusy ? "Sending…" : "Resend verification email"}
-                </button>
-              </div>
-            )}
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
+            <div className="min-w-0 space-y-6">
           {listError && resumes.length > 0 && (
             <div
               className="mb-6 rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/80 dark:bg-red-950/30 px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm text-red-800 dark:text-red-200"
@@ -258,70 +183,19 @@ function DashboardContent() {
               </button>
             </div>
           )}
-          {status === "authenticated" && !isImpersonating && (
-            <OnboardingChecklist firstResumeId={resumes[0]?.id ?? null} />
-          )}
-          {upgraded && !isImpersonating && (
-            <div className="mb-6 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 px-4 py-3 text-green-800 dark:text-green-200 text-sm shadow-sm">
-              You&apos;re now a Pro member. PDF & Word export are unlocked.
-            </div>
-          )}
-          {isTrial && !expired && secondsLeft > 0 && (
-            <div className="mb-6 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 px-4 py-3 flex flex-wrap items-center justify-between gap-3 shadow-sm">
-              <p className="text-amber-800 dark:text-amber-200 text-sm font-medium">
-                {Math.floor(secondsLeft / 60)}:{String(secondsLeft % 60).padStart(2, "0")} left in your Try session ·
-                Sign up to save; PDF and Word need Pro — see{" "}
-                <Link href="/pricing" className="underline font-semibold text-amber-900 dark:text-amber-100">
-                  pricing
-                </Link>
-                .
-              </p>
-              <Link
-                href="/signup"
-                className="rounded-lg bg-amber-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-700"
-              >
-                Sign up to save
-              </Link>
-            </div>
-          )}
-
-          {/* Welcome section when user has resumes */}
           {!loading && !listError && resumes.length > 0 && welcomeName && (
-            <div className="mb-6 rounded-xl bg-gradient-to-br from-primary-50 to-primary-100/50 dark:from-primary-900/20 dark:to-primary-800/10 border border-primary-200/60 dark:border-primary-800/40 p-6 shadow-sm">
-              <p className="text-primary-800 dark:text-primary-200 font-medium">
-                Hi {welcomeName.split(/[\s@]/)[0]}! You have {resumes.length} resume{resumes.length !== 1 ? "s" : ""} in your library.
+            <div className="rounded-xl border border-primary-200/60 bg-gradient-to-br from-primary-50 to-primary-100/50 p-5 shadow-sm dark:border-primary-800/40 dark:from-primary-900/20 dark:to-primary-800/10">
+              <p className="font-medium text-primary-800 dark:text-primary-200">
+                Hi {welcomeName.split(/[\s@]/)[0]}! {resumes.length} resume{resumes.length !== 1 ? "s" : ""} in your library.
               </p>
               <p className="mt-1 text-sm text-primary-700/80 dark:text-primary-300/80">
-                Keep your resume sharp—update it when you achieve something new.
+                Update when you have something new to show recruiters.
               </p>
             </div>
           )}
 
-          {/* Next steps card when user has resumes */}
           {!loading && !listError && resumes.length > 0 && (
-            <div className="mb-8 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
-              <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Next steps</p>
-              <div className="flex flex-wrap gap-2">
-                <Link
-                  href={resumes[0] ? `/resumes/${resumes[0].id}/edit` : "/resumes/new"}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-600 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
-                >
-                  Match a job description (ATS)
-                </Link>
-                <Link
-                  href="/cover-letters/new"
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-600 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
-                >
-                  Add a cover letter
-                </Link>
-                <Link
-                  href="/jobs"
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-600 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
-                >
-                  Browse jobs
-                </Link>
-              </div>
-            </div>
+            <DashboardNextSteps firstResumeId={resumes[0]?.id ?? null} />
           )}
 
           {loading ? (
@@ -381,93 +255,38 @@ function DashboardContent() {
               </div>
             </div>
           ) : (
-            <ul className="space-y-3">
-              {resumes.map((r) => (
-                <li
-                  key={r.id}
-                  className="group rounded-xl border border-slate-200 dark:border-slate-700 border-l-4 border-l-primary-500/0 hover:border-l-primary-500 bg-white dark:bg-slate-900 shadow-md hover:shadow-xl hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200"
-                >
-                  <div className="flex items-center">
-                    <div className="flex-1 min-w-0 flex items-center justify-between p-4">
-                      <Link href={`/resumes/${r.id}/edit`} className="flex-1 min-w-0">
-                        <div className="flex items-center gap-4">
-                          <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-primary-50 dark:bg-primary-900/30 flex items-center justify-center border border-primary-100 dark:border-primary-800/40">
-                            <FileText className="h-6 w-6 text-primary-600 dark:text-primary-400" />
-                          </div>
-                          <div>
-                            <span className="font-semibold text-slate-900 dark:text-slate-100 block truncate">
-                              {r.title}
-                            </span>
-                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0">
-                              <span className="inline-flex items-center rounded-md bg-slate-100 dark:bg-slate-700/60 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-400">
-                                {getTemplateDisplayName(r.templateId)}
-                              </span>
-                              <span>
-                                Updated {formatDistanceToNow(new Date(r.updatedAt), { addSuffix: true })}
-                              </span>
-                              {r._count && r._count.exportLogs > 0 && (
-                                <span>
-                                  · {r._count.exportLogs} export{r._count.exportLogs !== 1 ? "s" : ""}
-                                </span>
-                              )}
-                            </p>
-                          </div>
-                        </div>
-                      </Link>
-                      <div className="flex items-center gap-1 ml-2 shrink-0">
-                        <button
-                          onClick={() => handleDuplicate(r)}
-                          disabled={!!actionLoading}
-                          className="p-2.5 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:hover:text-slate-400 dark:hover:bg-slate-800 disabled:opacity-50 transition-colors"
-                          title="Duplicate"
-                        >
-                          <Copy className="h-4 w-4" />
-                        </button>
-                        <div className="relative">
-                          <button
-                            onClick={() => setMenuOpen(menuOpen === r.id ? null : r.id)}
-                            className="p-2.5 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:hover:text-slate-400 dark:hover:bg-slate-800 transition-colors"
-                            title="More actions"
-                          >
-                            <MoreVertical className="h-4 w-4" />
-                          </button>
-                          {menuOpen === r.id && (
-                            <>
-                              <div
-                                className="fixed inset-0 z-10"
-                                onClick={() => setMenuOpen(null)}
-                                aria-hidden="true"
-                              />
-                              <div className="absolute right-0 top-full mt-1 z-20 w-40 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-lg py-1">
-                                <button
-                                  onClick={() => handleDuplicate(r)}
-                                  disabled={!!actionLoading}
-                                  className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-t-lg"
-                                >
-                                  <Copy className="h-3.5 w-3.5" />
-                                  {actionLoading === r.id ? "Duplicating…" : "Duplicate"}
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    setDeleteTarget(r);
-                                    setMenuOpen(null);
-                                  }}
-                                  className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-b-lg"
-                                >
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                  Delete
-                                </button>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
+            <ResumeLibraryGrid
+              resumes={resumes}
+              actionLoading={actionLoading}
+              menuOpen={menuOpen}
+              onMenuToggle={setMenuOpen}
+              onDuplicate={(r) => handleDuplicate(r as ResumeItem)}
+              onDeleteRequest={(r) => {
+                setDeleteTarget(r as ResumeItem);
+                setMenuOpen(null);
+              }}
+            />
           )}
+            </div>
+
+            <aside className="lg:sticky lg:top-24">
+              <DashboardAlerts
+                isImpersonating={isImpersonating}
+                showTrustBar={!isImpersonating}
+                emailVerified={emailVerified}
+                subLoading={subLoading}
+                resendVerifyBusy={resendVerifyBusy}
+                resendVerifyMsg={resendVerifyMsg}
+                onResendVerify={handleResendVerify}
+                upgraded={upgraded}
+                isTrial={isTrial}
+                expired={expired}
+                secondsLeft={secondsLeft}
+                firstResumeId={resumes[0]?.id ?? null}
+                showOnboarding={status === "authenticated" && !isImpersonating}
+              />
+            </aside>
+          </div>
         </>
       )}
 

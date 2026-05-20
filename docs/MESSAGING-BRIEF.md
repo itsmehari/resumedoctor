@@ -1,6 +1,6 @@
 # ResumeDoctor — one-page messaging brief
 
-Internal reference for marketing, product copy, and lifecycle comms. Keep homepage, pricing, emails, and in-app strings aligned with this.
+Internal reference for marketing, product copy, and lifecycle comms. Keep homepage, pricing, emails, and in-app strings aligned with this. Full brand system: [BRAND-IDENTITY.md](./BRAND-IDENTITY.md).
 
 ## Ideal customer profile (primary)
 

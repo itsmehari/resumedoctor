@@ -9,9 +9,9 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   alternates: { canonical: siteUrl },
-  title: "ResumeDoctor — Create, Manage & Share Your Resume as a Link | India",
+  title: "ResumeDoctor — India Resume Builder | Create, Share & Export",
   description:
-    "Create your resume, keep it current, and share it as one always-up-to-date link — perfect for WhatsApp, LinkedIn, and recruiter emails. India-first, fresher to senior. 30+ templates, AI assistance, PDF & DOCX export.",
+    "India-first resume builder: ATS-friendly templates, AI writing help, live resume link for WhatsApp and LinkedIn, and PDF/DOCX export on Pro. OTP Try—no card. Fresher to senior.",
 };
 
 // ─── Inline SVG icons (server-safe, no deps) ─────────────────────────────────
@@ -90,6 +90,19 @@ export default function HomePage() {
                 Built for India, fresher to senior.
               </p>
 
+              <p className="mt-4 max-w-lg rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm leading-relaxed text-white/90">
+                <strong className="font-semibold text-white">ResumeDoctor</strong> is an India-first
+                online resume builder: create ATS-friendly CVs, tailor to job descriptions, export PDF or
+                Word on Pro, and share one link that stays current.{" "}
+                <Link href="/faq" className="underline decoration-white/40 underline-offset-2 hover:text-white">
+                  FAQ
+                </Link>
+                {" · "}
+                <Link href="/guides" className="underline decoration-white/40 underline-offset-2 hover:text-white">
+                  Guides
+                </Link>
+              </p>
+
               {/* Quick wins — four user-language pillars */}
               <ul className="mt-6 space-y-2">
                 {[
@@ -134,10 +147,14 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* Right: hero visual */}
+            {/* Right: hero visual — desktop */}
             <div className="relative hidden lg:block">
               <HeroVisual />
             </div>
+          </div>
+          {/* Mobile / tablet proof — visible below lg */}
+          <div className="relative mx-auto mt-10 max-w-sm lg:hidden">
+            <HeroVisual compact />
           </div>
         </div>
       </section>
@@ -1141,16 +1158,16 @@ const TESTIMONIALS = [
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function HeroVisual() {
+function HeroVisual({ compact = false }: { compact?: boolean }) {
   return (
-    <div className="relative w-[140%] max-w-none -ml-[20%]">
+    <div className={compact ? "relative w-full" : "relative w-[140%] max-w-none -ml-[20%]"}>
       <Image
         src={heroArtwork}
         alt="ResumeDoctor before-and-after optimized resume visual"
         width={1400}
         height={900}
-        priority
-        sizes="(max-width: 1024px) 100vw, 48vw"
+        priority={!compact}
+        sizes={compact ? "100vw" : "(max-width: 1024px) 100vw, 48vw"}
         className="h-auto w-full object-contain"
       />
     </div>

@@ -4,7 +4,7 @@ overview: "Expanded UX improvement plan: 20 codebase-backed items plus prioritiz
 todos:
   - id: phase0-reliability
     content: "P0: Onboarding API error state, dashboard fetch vs empty, dup/delete toasts, save flush + retry"
-    status: pending
+    status: in_progress
   - id: phase1-auth-trust
     content: "P1: Verification policy + copy, verify-email reasons, try OTP resend, middleware redirect clarity, 2FA edge cases"
     status: pending

@@ -4,40 +4,40 @@ overview: Two follow-up features that compound the resume-link USP but require P
 todos:
   - id: vc-schema
     content: Add Resume.viewCount Int @default(0) to prisma/schema.prisma
-    status: pending
+    status: completed
   - id: vc-migration
     content: Generate prisma migration; verify Vercel runs prisma migrate deploy on build
-    status: pending
+    status: completed
   - id: vc-record
     content: Increment viewCount in /api/resumes/by-slug/[slug] (and on the SSR /r/[slug] page) — bot-filter via UA heuristic
-    status: pending
+    status: completed
   - id: vc-dashboard
     content: Surface "Viewed N times" on the owner's resume dashboard / share popover
-    status: pending
+    status: completed
   - id: vc-tests
     content: Manual QA — share, view from another browser, see count tick up; verify counter doesn't increment for owner's own dashboard preview
-    status: pending
+    status: completed
   - id: vs-schema
     content: Decide vanity slug field strategy — extend publicSlug uniqueness, or add Resume.vanitySlug String? @unique alongside publicSlug
-    status: pending
+    status: completed
   - id: vs-validation
     content: Slug validation rules (3-30 chars, kebab-case, profanity blocklist, reserved word list)
-    status: pending
+    status: completed
   - id: vs-claim-api
     content: PATCH /api/resumes/[id]/vanity-slug — uniqueness check, profanity check, reserved-word check, atomic update
-    status: pending
+    status: completed
   - id: vs-share-ui
     content: Add "Customize URL" UI inside ShareResumeButton (input field, availability check, set/save)
-    status: pending
+    status: completed
   - id: vs-routing
     content: Update r/[slug]/page.tsx + by-slug API to look up by either publicSlug OR vanitySlug
-    status: pending
+    status: completed
   - id: vs-redirects
     content: When a vanity slug is set, optionally 301 the random publicSlug to the vanity slug for canonical SEO
-    status: pending
+    status: completed
   - id: vs-tests
     content: QA — claim a slug, verify it loads, verify legacy publicSlug still works (or 301s), verify uniqueness
-    status: pending
+    status: completed
 isProject: false
 ---
 

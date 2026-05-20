@@ -4,22 +4,22 @@ overview: "Replan the authenticated My Resumes hub as a balanced workspace: a cl
 todos:
   - id: extract-dashboard-shell
     content: Split dashboard/page.tsx into workspace header, alerts, empty state, next steps, and library grid components; two-column layout on lg
-    status: pending
+    status: completed
   - id: header-action-hierarchy
     content: Demote Cover Letters/Pro to overflow or chip; keep Create + Import as primary header actions
-    status: pending
+    status: completed
   - id: gate-trust-onboarding
     content: Gate PricingTrustStatsBar; compact OnboardingChecklist sidebar/collapse; fix export step link and dismiss error feedback
-    status: pending
+    status: completed
   - id: resume-preview-grid
     content: Build resume-library-card/grid with TemplateThumbnail/ResumePreview pattern and skeleton loading
-    status: pending
+    status: completed
   - id: optional-list-progress
     content: "Optional: extend GET /api/resumes with progressPercent for completion badge on cards"
-    status: pending
+    status: completed
   - id: qa-deploy
     content: Manual QA empty/returning/trial/verify states; push to Git for Vercel preview
-    status: pending
+    status: completed
 isProject: false
 ---
 

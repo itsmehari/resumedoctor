@@ -4,6 +4,8 @@
  */
 import { siteUrl, siteName } from "@/lib/seo";
 import { FEATURE_ITEMS } from "@/components/features/features-data";
+import { ORGANIZATION_SAME_AS } from "@/lib/organization-social";
+import { SITE_FAQ_ITEMS } from "@/lib/faq-data";
 
 export function HomeJsonLd() {
   const webSite = {
@@ -27,7 +29,7 @@ export function HomeJsonLd() {
     url: siteUrl,
     logo: `${siteUrl}/favicon.png`,
     description: "India-first resume and CV builder. ATS-friendly templates; PDF and Word with Pro.",
-    sameAs: [], // Add LinkedIn, Twitter, etc. when available
+    sameAs: [...ORGANIZATION_SAME_AS],
   };
 
   const softwareApplication = {
@@ -65,33 +67,10 @@ export function HomeJsonLd() {
   );
 }
 
-const FAQ_ITEMS = [
-  {
-    question: "What is ResumeDoctor?",
-    answer:
-      "ResumeDoctor is an India-first online resume and CV builder that helps you create ATS-friendly resumes in minutes. You get professional templates, expert content suggestions, and export to PDF and Word.",
-  },
-  {
-    question: "How can I try ResumeDoctor before paying?",
-    answer:
-      "Use the OTP Try flow for a short, no-card preview of the builder. When you need full exports and all templates, upgrade to Pro on SuperProfile with the same account email.",
-  },
-  {
-    question: "How do I export my resume to PDF?",
-    answer:
-      "Upgrade to Pro with a one-time purchase on SuperProfile (for example, the monthly tier is ₹199). That unlocks PDF and Word export and removes watermarks.",
-  },
-  {
-    question: "Are the templates ATS-friendly?",
-    answer:
-      "Yes. All ResumeDoctor templates are designed for Applicant Tracking Systems used by Naukri, LinkedIn, Indeed, and other job portals. They use clean layouts and standard section structures.",
-  },
-  {
-    question: "How long does it take to create a resume?",
-    answer:
-      "Most users finish a professional resume in 5–15 minutes. Start a quick trial from the home page to explore the builder before you sign up.",
-  },
-];
+const FAQ_ITEMS = SITE_FAQ_ITEMS.slice(0, 5).map(({ question, answer }) => ({
+  question,
+  answer,
+}));
 
 export function FaqJsonLd() {
   const faqSchema = {

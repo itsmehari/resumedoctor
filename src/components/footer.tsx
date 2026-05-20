@@ -13,6 +13,9 @@ const footerLinks = {
   ],
   company: [
     { href: "/about", label: "About Us" },
+    { href: "/faq", label: "FAQ" },
+    { href: "/guides", label: "Guides" },
+    { href: "/ats-resume-checker", label: "ATS Checker" },
     { href: "/blog", label: "Blog" },
     { href: "/examples", label: "Resume Examples" },
     { href: "/blog/ats-friendly-resume-complete-guide", label: "ATS Guide" },
@@ -93,6 +96,12 @@ export function Footer() {
                 </a>
               ))}
             </div>
+            <a
+              href="/llms.txt"
+              className="mt-3 block text-xs text-slate-500 hover:text-accent transition-colors"
+            >
+              llms.txt (for AI assistants)
+            </a>
             <a
               href={`mailto:${emailAddress}`}
               className="mt-3 inline-flex items-center gap-2 text-sm text-slate-400 hover:text-accent transition-colors"

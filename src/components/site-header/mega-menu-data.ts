@@ -309,7 +309,7 @@ const resourcesPanel: MegaMenuPanel = {
         },
         {
           label: "ATS score check",
-          href: "/features#ats-support",
+          href: "/ats-resume-checker",
           description: "See what passes ATS gates",
         },
         {

@@ -1,0 +1,49 @@
+# ResumeDoctor (resumedoctor.in)
+# Machine-readable site map for AI crawlers and assistants.
+# Last updated: 2026-05-20
+
+> ResumeDoctor is an India-first resume and CV builder. Users create ATS-friendly resumes, maintain them in the cloud, share a live resume link, and export PDF/DOCX on Pro via SuperProfile checkout.
+
+## Product facts
+
+- Domain: https://www.resumedoctor.in
+- Category: Web resume builder (SaaS)
+- Geography: India-first (Naukri, LinkedIn India, campus, referrals)
+- Free entry: OTP Try at /try (no card)
+- Paid: Pro via SuperProfile (same email as account required)
+- Differentiator: Shareable resume link that stays current after edits
+
+## Canonical pages
+
+- Home: https://www.resumedoctor.in/
+- Features: https://www.resumedoctor.in/features
+- Pricing: https://www.resumedoctor.in/pricing
+- FAQ: https://www.resumedoctor.in/faq
+- ATS checker (marketing): https://www.resumedoctor.in/ats-resume-checker
+- Guides hub: https://www.resumedoctor.in/guides
+- Resume link: https://www.resumedoctor.in/resume-link
+- Templates: https://www.resumedoctor.in/templates
+- Try: https://www.resumedoctor.in/try
+- About: https://www.resumedoctor.in/about
+- Blog: https://www.resumedoctor.in/blog
+- Examples: https://www.resumedoctor.in/examples
+
+## Structured data API
+
+- JSON facts: https://www.resumedoctor.in/api/structured-data
+
+## Social (Organization sameAs)
+
+- Facebook: https://www.facebook.com/profile.php?id=61580973342626
+- Instagram: https://www.instagram.com/resumedoctorweb/
+- LinkedIn: https://www.linkedin.com/company/112700097/
+- X: https://x.com/ResumeDoctorWeb
+
+## Do not index (product / private)
+
+- /dashboard, /resumes/*, /settings, /admin, /login, /signup
+- Public resume pages /r/* use noindex (user-controlled sharing)
+
+## Contact
+
+- Email: resumedoctorweb@gmail.com
