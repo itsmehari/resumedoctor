@@ -9,7 +9,7 @@ import {
 } from "@/lib/master-admin-config";
 import { getTrialJwtSecretBytes } from "@/lib/trial-secret";
 
-const protectedPaths = ["/dashboard", "/settings", "/resumes", "/cover-letters"];
+const protectedPaths = ["/dashboard", "/settings", "/resumes", "/cover-letters", "/jobs", "/interview-prep"];
 const adminPaths = ["/admin"];
 const authPaths = ["/login", "/signup"];
 const TRIAL_COOKIE = "trial_session";
@@ -135,6 +135,8 @@ export const config = {
     "/settings/:path*",
     "/resumes/:path*",
     "/cover-letters/:path*",
+    "/jobs/:path*",
+    "/interview-prep/:path*",
     "/admin/:path*",
     "/try/templates",
     "/login",

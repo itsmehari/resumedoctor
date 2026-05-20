@@ -72,7 +72,7 @@ export function ExportButtons({
       if (!res.ok) throw new Error("Failed to load");
       const html = await res.text();
       const win = window.open("", "_blank");
-      if (!win) throw new Error("Popup blocked");
+      if (!win) throw new Error("Popup blocked — allow pop-ups for this site or use Download PDF instead.");
       win.document.write(html);
       win.document.close();
       win.onload = () => {

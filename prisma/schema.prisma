@@ -71,6 +71,25 @@ model User {
   proLinkActive       Boolean   @default(false)
   proLinkExpiresAt    DateTime?
   proLinkSource       String?   // "annual" | "standalone" | "complimentary" — diagnostic only
+
+  referralCode        String?   @unique
+  referredByUserId    String?
+  winBackEmailSentAt  DateTime?
+
+  referralsMade       ReferralAttribution[] @relation("ReferralsMade")
+  referralReceived    ReferralAttribution?  @relation("ReferralReceived")
+}
+
+model ReferralAttribution {
+  id             String   @id @default(cuid())
+  referrerUserId String
+  referredUserId String   @unique
+  createdAt      DateTime @default(now())
+
+  referrer User @relation("ReferralsMade", fields: [referrerUserId], references: [id], onDelete: Cascade)
+  referred User @relation("ReferralReceived", fields: [referredUserId], references: [id], onDelete: Cascade)
+
+  @@index([referrerUserId])
 }
 
 // WBS 10.6 – 14-day trial activation requests (user pays ₹1, submits UPI ref)

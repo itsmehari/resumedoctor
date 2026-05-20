@@ -4,19 +4,19 @@ overview: "Expanded UX improvement plan: 20 codebase-backed items plus prioritiz
 todos:
   - id: phase0-reliability
     content: "P0: Onboarding API error state, dashboard fetch vs empty, dup/delete toasts, save flush + retry"
-    status: in_progress
+    status: completed
   - id: phase1-auth-trust
     content: "P1: Verification policy + copy, verify-email reasons, try OTP resend, middleware redirect clarity, 2FA edge cases"
-    status: pending
+    status: completed
   - id: phase2-export-a11y
     content: "P1/P2: Export popup help + PDF progress, toast roles, skip links, mobile focus on dialogs"
-    status: pending
+    status: completed
   - id: phase3-editor-ia
     content: "P2: Trial expiry softening, editor progressive disclosure, tier messaging at decision points (incl. resume packs)"
-    status: pending
+    status: completed
   - id: phase4-followon-audit
     content: "P2+: Pricing/checkout drop-off, cover-letter parity, settings density, jobs/interview-prep/login-2fa/verify-trial"
-    status: pending
+    status: completed
 isProject: false
 ---
 

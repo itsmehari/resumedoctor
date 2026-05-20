@@ -329,3 +329,35 @@ export async function sendProTrialExpiryReminder(
     },
   });
 }
+
+export async function sendWinBackEmail(
+  email: string,
+  opts: { name: string | null; dashboardUrl: string }
+): Promise<SendResult> {
+  const greeting = opts.name?.trim() ? `Hi ${opts.name.split(/\s+/)[0]},` : "Hi,";
+  return send({
+    purpose: "win-back",
+    to: email,
+    subject: `Your resume is waiting — ${appName}`,
+    html: `
+      <div style="font-family: Arial, Helvetica, sans-serif; max-width: 480px; margin: 0 auto; color: #1e293b;">
+        <p>${greeting}</p>
+        <p>You started a resume on ${appName} but have not been back in a while. Indian hiring moves fast—a quick refresh before your next application can help.</p>
+        <p style="margin: 24px 0;">
+          <a href="${opts.dashboardUrl}" style="background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block;">Open my dashboard</a>
+        </p>
+        <p style="color: #64748b; font-size: 14px;">Reply to this email if you need help. To stop product emails, update preferences in Settings.</p>
+      </div>
+    `,
+    text: [
+      greeting,
+      "",
+      `You started a resume on ${appName} but have not been back in a while.`,
+      "",
+      `Continue: ${opts.dashboardUrl}`,
+    ].join("\n"),
+    headers: {
+      "List-Unsubscribe": `<mailto:${replyTo}?subject=unsubscribe>`,
+    },
+  });
+}

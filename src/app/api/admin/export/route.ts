@@ -34,7 +34,8 @@ export async function GET(req: NextRequest) {
     type === "exports" ||
     type === "purchases" ||
     type === "audit_log" ||
-    type === "churn";
+    type === "churn" ||
+    type === "product_events";
   if (!allowed) {
     return NextResponse.json({ error: "Invalid type" }, { status: 400 });
   }
@@ -201,6 +202,34 @@ export async function GET(req: NextRequest) {
       headers: {
         "Content-Type": "text/csv",
         "Content-Disposition": "attachment; filename=security-audit-log.csv",
+      },
+    });
+  }
+
+  if (type === "product_events") {
+    const rows = await prisma.productEvent.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 50_000,
+      include: { user: { select: { email: true } } },
+    });
+    const headers = ["id", "createdAt", "name", "userId", "userEmail", "props"];
+    const lines = [
+      headers.join(","),
+      ...rows.map((r) =>
+        [
+          r.id,
+          r.createdAt.toISOString(),
+          r.name,
+          r.userId ?? "",
+          r.user?.email ?? "",
+          r.props != null ? JSON.stringify(r.props) : "",
+        ].map((v) => csvEscape(String(v))).join(",")
+      ),
+    ];
+    return new NextResponse(lines.join("\n"), {
+      headers: {
+        "Content-Type": "text/csv",
+        "Content-Disposition": "attachment; filename=product-events.csv",
       },
     });
   }

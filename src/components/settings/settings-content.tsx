@@ -10,6 +10,7 @@ import { useSubscription } from "@/hooks/use-subscription";
 import { getSubscriptionLabel } from "@/lib/subscription-labels";
 import { UserDashboardLayout } from "@/components/user-dashboard-layout";
 import { DeleteAccountDialog } from "@/components/settings/delete-account-dialog";
+import { ReferralSection } from "@/components/settings/referral-section";
 import { CancelSubscriptionDialog } from "@/components/settings/cancel-subscription-dialog";
 import { trackEvent } from "@/lib/analytics";
 
@@ -658,6 +659,10 @@ export function SettingsContent() {
             <Link href="/pricing" className="inline-block text-primary-600 hover:underline text-sm font-medium">Manage subscription →</Link>
           </section>
         )}
+
+        <div className="mt-6">
+          <ReferralSection />
+        </div>
 
         <section className="mt-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
           <h2 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Data & Privacy</h2>

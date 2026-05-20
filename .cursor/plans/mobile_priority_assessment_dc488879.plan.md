@@ -4,19 +4,19 @@ overview: ResumeDoctor is built with mobile-first responsive CSS and solid marke
 todos:
   - id: mobile-hero-proof
     content: Replace desktop-only home hero (`hidden lg:block`) with a mobile/tablet proof pattern in home landing components
-    status: pending
+    status: completed
   - id: touch-target-pass
     content: Audit and fix sub-44px controls on home template filters, templates category UI, and crowded header auth links
-    status: pending
+    status: completed
   - id: pricing-mobile-compare
     content: Redesign pricing feature comparison for md-and-below (cards or progressive disclosure vs wide horizontal scroll)
-    status: pending
+    status: completed
   - id: product-mobile-qa
     content: Phone/tablet pass on resume editor, dashboard, and interview-prep layouts against PRD mobile stacking rules
-    status: pending
+    status: completed
   - id: mobile-governance
     content: Add breakpoint map + mobile/tablet acceptance checklist to PRD/WBS; segment analytics KPIs by device class
-    status: pending
+    status: completed
 isProject: false
 ---
 

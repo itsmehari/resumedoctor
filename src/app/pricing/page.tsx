@@ -27,6 +27,7 @@ import {
 } from "@/components/pricing/payment-value-sections";
 import { PricingFaqAccordion, type PricingFaqItem } from "@/components/pricing/pricing-faq-accordion";
 import { TrustBadges } from "@/components/trust-badges";
+import { PricingCompareMobile } from "@/components/pricing/pricing-compare-mobile";
 
 interface Plan {
   id: string;
@@ -930,6 +931,7 @@ export default function PricingPage() {
                     </>
                   )}
                 </p>
+                <PricingCompareMobile isIndia={isIndia} />
                 <div
                   className="mx-auto mt-5 flex max-w-3xl flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-slate-600 dark:text-slate-400"
                   aria-hidden
@@ -953,7 +955,7 @@ export default function PricingPage() {
                     Pro
                   </span>
                 </div>
-                <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200/80 shadow-inner dark:border-slate-700/80">
+                <div className="mt-6 hidden overflow-hidden rounded-2xl border border-slate-200/80 shadow-inner dark:border-slate-700/80 lg:block">
                   <table className="w-full min-w-[56rem] border-collapse text-sm">
                     <thead>
                       <tr className="border-b border-slate-200 dark:border-slate-700">

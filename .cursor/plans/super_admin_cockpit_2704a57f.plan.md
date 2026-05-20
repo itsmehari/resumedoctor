@@ -4,25 +4,25 @@ overview: "The admin area has useful aggregate KPIs and several ops pages, but i
 todos:
   - id: purchase-ledger
     content: "Admin Purchases page + GET /api/admin/purchases (paginated): join Invoice + SuperprofilePurchaseEvent into a unified timeline or tabs; columns user/email, plan/product, amount, currency, status, createdAt, source (invoice vs superprofile), externalRef; link to /admin/users/[id]; optional CSV export with audit"
-    status: pending
+    status: completed
   - id: user-billing-panel
     content: "On user detail: show invoices list + superprofile events for that user (or embed summary + link to filtered purchase view)"
-    status: pending
+    status: completed
   - id: surface-cohort-funnel
     content: Bind productEvents.cohortSignupToPaid and funnelLast7Days (and optional subscriptionMetrics.planBreakdown) in admin overview UI
-    status: pending
+    status: completed
   - id: governance-model
     content: "Choose super vs support model: new role field, SUPER_ADMIN_EMAILS, or keep flat; gate impersonation/export/promo/trial/revoke accordingly"
-    status: pending
+    status: completed
   - id: extend-kpis-api
     content: Add high-signal aggregates to analytics route (signups windows, invoice statuses breakdown, trial expiry, churn breakdown, OTP ratios)
-    status: pending
+    status: completed
   - id: security-hardening
     content: "Optional: require 2FA for admin, IP allowlist in middleware, shorter impersonation TTL"
-    status: pending
+    status: completed
   - id: exports-audit-center
     content: CSV export for audit/churn; dashboard widget for recent admin actions
-    status: pending
+    status: completed
 isProject: false
 ---
 

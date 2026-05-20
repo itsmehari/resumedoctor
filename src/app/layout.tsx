@@ -56,6 +56,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${poppins.variable} ${inter.variable} font-sans antialiased flex flex-col min-h-screen overflow-x-hidden`}>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[200] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-primary-700 focus:shadow-lg dark:focus:bg-slate-900 dark:focus:text-primary-300"
+        >
+          Skip to main content
+        </a>
         <Providers>
           <div className="flex-1 flex flex-col">{children}</div>
           <Footer />

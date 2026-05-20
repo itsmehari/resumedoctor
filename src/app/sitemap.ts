@@ -50,6 +50,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${siteUrl}/guides`, changeFrequency: "weekly" as const, priority: 0.82 },
     { url: `${siteUrl}/ats-resume-checker`, changeFrequency: "monthly" as const, priority: 0.82 },
     { url: `${siteUrl}/interview-prep`, changeFrequency: "monthly" as const, priority: 0.7 },
+    { url: `${siteUrl}/glossary`, changeFrequency: "monthly" as const, priority: 0.75 },
+    { url: `${siteUrl}/compare/resume-builder-alternatives`, changeFrequency: "monthly" as const, priority: 0.72 },
   ];
 
   return [

@@ -27,6 +27,8 @@
 - About: https://www.resumedoctor.in/about
 - Blog: https://www.resumedoctor.in/blog
 - Examples: https://www.resumedoctor.in/examples
+- Glossary: https://www.resumedoctor.in/glossary
+- Compare: https://www.resumedoctor.in/compare/resume-builder-alternatives
 
 ## Structured data API
 

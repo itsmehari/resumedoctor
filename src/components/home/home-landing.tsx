@@ -244,7 +244,7 @@ export function HomeLanding() {
                 <Link
                   key={label}
                   href={category ? `/templates?category=${category}` : "/templates"}
-                  className={`whitespace-nowrap rounded-full px-3.5 py-2 text-sm font-semibold transition-all ${
+                  className={`inline-flex min-h-[44px] items-center whitespace-nowrap rounded-full px-3.5 py-2.5 text-sm font-semibold transition-all touch-manipulation ${
                     label === "All"
                       ? "bg-primary-600 text-white shadow-md shadow-primary-900/25"
                       : "text-slate-600 hover:bg-primary-50 hover:text-primary-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-primary-300"

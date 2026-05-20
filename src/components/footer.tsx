@@ -16,6 +16,8 @@ const footerLinks = {
     { href: "/faq", label: "FAQ" },
     { href: "/guides", label: "Guides" },
     { href: "/ats-resume-checker", label: "ATS Checker" },
+    { href: "/glossary", label: "Glossary" },
+    { href: "/compare/resume-builder-alternatives", label: "Compare" },
     { href: "/blog", label: "Blog" },
     { href: "/examples", label: "Resume Examples" },
     { href: "/blog/ats-friendly-resume-complete-guide", label: "ATS Guide" },

@@ -22,13 +22,13 @@ todos:
     status: completed
   - id: p3-reactivation
     content: Win-back / re-engagement email loops (inactive users, post-churn) — not in codebase
-    status: pending
+    status: completed
   - id: p3-referral
     content: Referral or viral rewards MVP — not in codebase
-    status: pending
+    status: completed
   - id: p3-bi-export
     content: Optional admin CSV export of ProductEvent + ChurnFeedback for external BI (Metabase/BigQuery)
-    status: pending
+    status: completed
 isProject: false
 ---
 

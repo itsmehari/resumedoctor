@@ -8,11 +8,13 @@ import { sendVerificationEmail } from "@/lib/email";
 import { siteUrl } from "@/lib/seo";
 import { recordProductEvent } from "@/lib/product-events";
 import { AnalyticsEvents } from "@/lib/analytics-event-names";
+import { applyReferralOnSignup } from "@/lib/apply-referral";
 
 const signupSchema = z.object({
   email: z.string().email("Invalid email"),
   password: z.string().min(8, "Password must be at least 8 characters"),
   name: z.string().min(1, "Name is required").optional(),
+  ref: z.string().min(4).max(32).optional(),
 });
 
 export async function POST(req: Request) {
@@ -32,7 +34,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const { email, password, name } = parsed.data;
+    const { email, password, name, ref } = parsed.data;
     const normalizedEmail = email.toLowerCase().trim();
     await recordProductEvent({
       name: AnalyticsEvents.signup_attempt,
@@ -94,8 +96,14 @@ export async function POST(req: Request) {
     await recordProductEvent({
       userId: created.id,
       name: AnalyticsEvents.sign_up,
-      props: { method: "email" },
+      props: { method: "email", ref: ref ?? null },
     });
+
+    try {
+      await applyReferralOnSignup(created.id, ref);
+    } catch (e) {
+      console.error("[signup] referral apply failed", e);
+    }
 
     // WBS 2.3 – Create verification token (email sending via Resend in production)
     const verifyToken = randomBytes(32).toString("hex");
