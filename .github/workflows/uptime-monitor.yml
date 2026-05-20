@@ -55,7 +55,7 @@ jobs:
 
       - name: Create GitHub issue on failure
         if: failure()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const title = `🔴 Uptime alert: site down at ${new Date().toISOString()}`;
@@ -93,7 +93,7 @@ jobs:
 
       - name: Close uptime issue on recovery
         if: success()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const { data: issues } = await github.rest.issues.listForRepo({
