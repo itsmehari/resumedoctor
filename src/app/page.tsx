@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import heroArtwork from "../../Resumedoctor-heroimage.png";
+import { HeroSlider } from "@/components/home/hero-slider";
 import { SiteHeader } from "@/components/site-header";
 import { HomeJsonLd, FaqJsonLd, HowToJsonLd, FAQ_ITEMS } from "@/components/seo/json-ld";
 import { PricingTrustStatsBar } from "@/components/pricing/payment-value-sections";
@@ -9,9 +10,9 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   alternates: { canonical: siteUrl },
-  title: "ResumeDoctor — India Resume Builder | Create, Share & Export",
+  title: "At ₹49 — Build Your Resume in 2 Minutes | ResumeDoctor",
   description:
-    "India-first resume builder: ATS-friendly templates, AI writing help, live resume link for WhatsApp and LinkedIn, and PDF/DOCX export on Pro. OTP Try—no card. Fresher to senior.",
+    "Build a professional ATS-ready resume in under 2 minutes for ₹49 — less than a pizza. India-first resume builder with PDF/DOCX export, 30+ templates, and AI writing. 14-day full Pro pass.",
 };
 
 // ─── Inline SVG icons (server-safe, no deps) ─────────────────────────────────
@@ -70,82 +71,8 @@ export default function HomePage() {
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left: copy */}
-            <div>
-              <div className="inline-flex items-center gap-2 mb-5 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-xs font-semibold text-white/90 tracking-wide">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                Built for the Indian job market
-              </div>
-
-              <h1 className="text-4xl sm:text-5xl lg:text-[3.4rem] font-extrabold text-white leading-[1.05] tracking-tight">
-                Create your resume.<br />
-                <span className="bg-gradient-to-r from-amber-200 via-accent to-amber-300 bg-clip-text text-transparent">
-                  Share it as a link.
-                </span><br />
-                <span className="text-white/95">Update it anytime.</span>
-              </h1>
-              <p className="mt-5 text-lg text-white/85 max-w-lg leading-relaxed">
-                Build, maintain and manage your resume on ResumeDoctor — and share it as one link
-                that&apos;s always up to date, ready for WhatsApp, LinkedIn, or recruiter email.
-                Built for India, fresher to senior.
-              </p>
-
-              <p className="mt-4 max-w-lg rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm leading-relaxed text-white/90">
-                <strong className="font-semibold text-white">ResumeDoctor</strong> is an India-first
-                online resume builder: create ATS-friendly CVs, tailor to job descriptions, export PDF or
-                Word on Pro, and share one link that stays current.{" "}
-                <Link href="/faq" className="underline decoration-white/40 underline-offset-2 hover:text-white">
-                  FAQ
-                </Link>
-                {" · "}
-                <Link href="/guides" className="underline decoration-white/40 underline-offset-2 hover:text-white">
-                  Guides
-                </Link>
-              </p>
-
-              {/* Quick wins — four user-language pillars */}
-              <ul className="mt-6 space-y-2">
-                {[
-                  "Create a polished resume in under 5 minutes",
-                  "Keep it cloud-saved — edit and update anytime",
-                  "Manage multiple resumes for different roles",
-                  "Share one link — WhatsApp, LinkedIn, recruiter email",
-                ].map((item) => (
-                  <li key={item} className="flex items-center gap-2.5 text-sm text-white/85">
-                    <span className="w-4 h-4 rounded-full bg-green-400/20 flex items-center justify-center flex-shrink-0">
-                      <Icon path={PATHS.check} size={10} className="text-green-400" />
-                    </span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-
-              {/* CTAs — primary "Try" (OTP) + secondary "Create account" so the
-                  funnel does not depend solely on the OTP/email pipe. */}
-              <div className="mt-10 flex flex-col sm:flex-row gap-4">
-                <Link href="/try"
-                  className="rounded-xl bg-accent hover:bg-accent-hover px-8 py-4 text-base font-bold text-accent-dark text-center transition-all shadow-xl shadow-black/30 hover:scale-[1.02] active:scale-[0.98]">
-                  Build My Resume — Try
-                </Link>
-                <Link href="/signup"
-                  className="rounded-xl border-2 border-white/40 bg-white/10 hover:bg-white/20 px-8 py-4 text-base font-semibold text-white text-center transition-all backdrop-blur-sm">
-                  Create free account
-                </Link>
-              </div>
-              <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-white/70">
-                <Link href="/templates" className="underline-offset-2 hover:underline">
-                  Or browse templates →
-                </Link>
-                <span className="hidden sm:inline">·</span>
-                <Link href="/login" className="underline-offset-2 hover:underline">
-                  Already have an account? Sign in
-                </Link>
-              </div>
-
-              <p className="mt-8 text-sm text-white/70">
-                Upgrade on SuperProfile when you need exports &amp; every template — use the same email as your ResumeDoctor account
-              </p>
-            </div>
+            {/* Left: rotating pay-first slider */}
+            <HeroSlider />
 
             {/* Right: hero visual — desktop */}
             <div className="relative hidden lg:block">
