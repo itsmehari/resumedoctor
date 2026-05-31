@@ -13,6 +13,8 @@ import { siteUrl } from "@/lib/seo";
 import { SiteHeader } from "@/components/site-header";
 import { ResumePreview } from "@/components/resume-builder/resume-preview";
 import { DemoResumeBanner } from "@/components/resume-link/demo-resume-banner";
+import { ResumeLinkDemoJsonLd } from "@/components/seo/resume-link-json-ld";
+import { RESUME_LINK_DEMO_METADATA, RESUME_LINK_OG_IMAGE } from "@/lib/resume-link-seo-data";
 import { isLikelyBot } from "@/lib/bot-detector";
 import { getProLinkStatus } from "@/lib/pro-link-entitlement";
 import { sessionUserEmail } from "@/lib/session-user";
@@ -119,17 +121,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (isDemoPublicResumeSlug(params.slug)) {
     const url = `${siteUrl}/r/demo`;
     return {
-      title: "Live Demo — Resume as a Link | ResumeDoctor",
-      description:
-        "See a real ResumeDoctor resume link in action. Share on WhatsApp, LinkedIn, or email — always shows the latest version.",
+      title: RESUME_LINK_DEMO_METADATA.title,
+      description: RESUME_LINK_DEMO_METADATA.description,
       alternates: { canonical: url },
       robots: { index: true, follow: true },
       openGraph: {
-        title: "Live Demo — Resume as a Link",
-        description: "See how a shareable resume link looks on mobile and desktop.",
+        title: RESUME_LINK_DEMO_METADATA.title,
+        description: RESUME_LINK_DEMO_METADATA.description,
         url,
         type: "website",
         siteName: "ResumeDoctor",
+        locale: "en_IN",
+        images: [{ url: RESUME_LINK_OG_IMAGE, width: 1200, height: 630, alt: "ResumeDoctor resume link demo" }],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: RESUME_LINK_DEMO_METADATA.title,
+        description: RESUME_LINK_DEMO_METADATA.description,
+        images: [RESUME_LINK_OG_IMAGE],
       },
     };
   }
@@ -247,6 +256,7 @@ export default async function PublicResumePage({ params }: Props) {
     const meta = demo.content.meta ?? {};
     return (
       <div className="min-h-screen flex flex-col bg-slate-100 dark:bg-slate-900">
+        <ResumeLinkDemoJsonLd />
         <SiteHeader variant="app" maxWidth="4xl" />
         <main
           id="main-content"

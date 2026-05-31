@@ -7,6 +7,7 @@ import { ResumeLinkUrlTiers } from "@/components/resume-link/resume-link-url-tie
 import { SiteHeader } from "@/components/site-header";
 import { FREE_LINK_SLUG_EXAMPLE } from "@/lib/resume-link-utils";
 import { HomeJsonLd, FaqJsonLd, HowToJsonLd, FAQ_ITEMS } from "@/components/seo/json-ld";
+import { HomeResumeLinkCapabilityJsonLd } from "@/components/seo/resume-link-json-ld";
 import { PricingTrustStatsBar } from "@/components/pricing/payment-value-sections";
 import { siteUrl } from "@/lib/seo";
 import type { Metadata } from "next";
@@ -59,6 +60,7 @@ export default function HomePage() {
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
       <HomeJsonLd />
       <FaqJsonLd />
+      <HomeResumeLinkCapabilityJsonLd />
       <HowToJsonLd />
 
       <SiteHeader variant="home" />
@@ -408,6 +410,10 @@ export default function HomePage() {
             <p className="mt-4 text-xs text-white/60 max-w-md mx-auto">
               Free to publish. Update anytime — your link stays the same.
               <span className="block sm:inline sm:ml-1">Anyone with the link can view.</span>
+              {" "}
+              <Link href="/resume-link" className="text-cyan-300/90 hover:text-cyan-200 underline underline-offset-2">
+                Full resume link guide →
+              </Link>
             </p>
           </div>
         </div>

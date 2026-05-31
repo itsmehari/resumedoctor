@@ -47,7 +47,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${siteUrl}/lp/marketing-landing`, changeFrequency: "monthly" as const, priority: 0.72 },
     { url: `${siteUrl}/r/demo`, changeFrequency: "monthly" as const, priority: 0.7 },
     { url: `${siteUrl}/features`, changeFrequency: "monthly" as const, priority: 0.72 },
-    { url: `${siteUrl}/resume-link`, changeFrequency: "monthly" as const, priority: 0.85 },
+    { url: `${siteUrl}/resume-link`, changeFrequency: "weekly" as const, priority: 0.88 },
     { url: `${siteUrl}/faq`, changeFrequency: "monthly" as const, priority: 0.8 },
     { url: `${siteUrl}/guides`, changeFrequency: "weekly" as const, priority: 0.82 },
     { url: `${siteUrl}/ats-resume-checker`, changeFrequency: "monthly" as const, priority: 0.82 },

@@ -6,45 +6,19 @@
 // re-use the same vocabulary as the homepage resume-link section and /resume-link
 // section so the brand language stays consistent across surfaces.
 import Link from "next/link";
-import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { ResumeLinkCta } from "@/components/resume-link/resume-link-cta";
 import { ResumeLinkUrlTiers } from "@/components/resume-link/resume-link-url-tiers";
+import { ResumeLinkPageJsonLd } from "@/components/seo/resume-link-json-ld";
 import { siteUrl } from "@/lib/seo";
 import { FREE_LINK_SLUG_EXAMPLE } from "@/lib/resume-link-utils";
-
-export const metadata: Metadata = {
-  title:
-    "Resume Link — Share Your Resume as a URL | ResumeDoctor (India)",
-  description:
-    "One URL for your resume. Share on WhatsApp, LinkedIn, recruiter email or a printed QR. Always shows your latest version — update anytime, the link stays the same. Free to publish on ResumeDoctor.",
-  alternates: { canonical: `${siteUrl}/resume-link` },
-  keywords: [
-    "resume link",
-    "online resume link",
-    "shareable resume",
-    "share resume online",
-    "resume url",
-    "live resume",
-    "resume link india",
-    "whatsapp resume link",
-    "linkedin resume link",
-  ],
-  openGraph: {
-    title: "Resume Link — Share Your Resume as a URL",
-    description:
-      "One URL. Always up to date. Paste it on WhatsApp, LinkedIn, or your email signature.",
-    url: `${siteUrl}/resume-link`,
-    type: "website",
-    siteName: "ResumeDoctor",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Resume Link — Share Your Resume as a URL",
-    description:
-      "One URL. Always up to date. Paste it on WhatsApp, LinkedIn, or your email signature.",
-  },
-};
+import {
+  RESUME_LINK_AEO_DEFINITION,
+  RESUME_LINK_CANONICAL,
+  RESUME_LINK_FAQS,
+  RESUME_LINK_METADATA,
+  RESUME_LINK_VS_PDF_ROWS,
+} from "@/lib/resume-link-seo-data";
 
 // ─── Inline icons ──────────────────────────────────────────────────────────────
 
@@ -92,21 +66,16 @@ const PATHS = {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function ResumeLinkPage() {
-  const faqJson = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: FAQS.map((f) => ({
-      "@type": "Question",
-      name: f.q,
-      acceptedAnswer: { "@type": "Answer", text: f.a },
-    })),
-  };
-
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJson) }}
+      <ResumeLinkPageJsonLd
+        pageUrl={RESUME_LINK_CANONICAL}
+        pageName={RESUME_LINK_METADATA.title}
+        pageDescription={RESUME_LINK_METADATA.description}
+        breadcrumbs={[
+          { name: "Home", url: siteUrl },
+          { name: "Resume link", url: RESUME_LINK_CANONICAL },
+        ]}
       />
       <SiteHeader variant="home" />
 
@@ -115,6 +84,13 @@ export default function ResumeLinkPage() {
         tabIndex={-1}
         className="flex-1 flex flex-col outline-none"
       >
+        <nav aria-label="Breadcrumb" className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-4">
+          <ol className="flex flex-wrap items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+            <li><Link href="/" className="hover:text-primary-600 dark:hover:text-primary-400">Home</Link></li>
+            <li aria-hidden>/</li>
+            <li aria-current="page" className="font-medium text-slate-700 dark:text-slate-200">Resume link</li>
+          </ol>
+        </nav>
         {/* ── HERO ──────────────────────────────────────────────────────── */}
         <section className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-indigo-950 to-cyan-950">
           {/* Background grid + glows */}
@@ -201,6 +177,28 @@ export default function ResumeLinkPage() {
                 Free to publish. Update anytime — your link stays the same.
               </p>
             </div>
+          </div>
+        </section>
+
+        {/* ── AEO DEFINITION (citable by AI answer engines) ─────────────── */}
+        <section
+          id="resume-link-definition"
+          className="py-14 sm:py-16 bg-white dark:bg-slate-950 border-b border-slate-200/80 dark:border-slate-800"
+        >
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
+              What is a resume link?
+            </h2>
+            <p className="mt-4 text-base sm:text-lg leading-relaxed text-slate-700 dark:text-slate-300">
+              {RESUME_LINK_AEO_DEFINITION}
+            </p>
+            <p className="mt-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+              On ResumeDoctor, publishing a resume link is <strong>free</strong>. You get an auto-generated URL like{" "}
+              <code className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-xs dark:bg-slate-800">
+                resumedoctor.in/r/{FREE_LINK_SLUG_EXAMPLE}
+              </code>
+              . Optional <Link href="/pricing#pro-link" className="text-primary-600 hover:underline dark:text-primary-400">Pro Link</Link> adds a custom slug, view analytics, and a footer-free public page.
+            </p>
           </div>
         </section>
 
@@ -373,11 +371,44 @@ export default function ResumeLinkPage() {
                 </p>
               </div>
             </div>
+
+            {/* ── Link vs PDF comparison (AEO table) ─────────────────────── */}
+            <div id="resume-link-vs-pdf" className="mt-16">
+              <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 text-center">
+                Resume link vs PDF — when to use each
+              </h3>
+              <p className="mt-2 text-center text-sm text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+                Indian recruiters on WhatsApp prefer links. Job portals often still want a file upload — use both.
+              </p>
+              <div className="mt-6 overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                <table className="w-full min-w-[480px] text-sm text-left">
+                  <caption className="sr-only">
+                    Comparison of shareable resume links versus PDF attachments for job seekers in India
+                  </caption>
+                  <thead className="bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100">
+                    <tr>
+                      <th scope="col" className="px-4 py-3 font-semibold">Aspect</th>
+                      <th scope="col" className="px-4 py-3 font-semibold">Resume link</th>
+                      <th scope="col" className="px-4 py-3 font-semibold">PDF attachment</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 dark:divide-slate-700 bg-white dark:bg-slate-900">
+                    {RESUME_LINK_VS_PDF_ROWS.map((row) => (
+                      <tr key={row.aspect}>
+                        <th scope="row" className="px-4 py-3 font-medium text-slate-900 dark:text-slate-100">{row.aspect}</th>
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{row.link}</td>
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{row.pdf}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </section>
 
         {/* ── FAQ ──────────────────────────────────────────────────────── */}
-        <section className="py-20 sm:py-24 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900/40 dark:to-slate-950">
+        <section id="resume-link-faq" className="py-20 sm:py-24 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900/40 dark:to-slate-950">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-xl mx-auto mb-12">
               <p className="text-xs font-bold uppercase tracking-widest text-primary-500 mb-3">
@@ -389,7 +420,7 @@ export default function ResumeLinkPage() {
             </div>
 
             <div className="space-y-4">
-              {FAQS.map((f, i) => (
+              {RESUME_LINK_FAQS.map((f, i) => (
                 <details
                   key={f.q}
                   className="group rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm transition-all hover:border-primary-200 hover:shadow-md dark:border-slate-700 dark:bg-slate-900 dark:hover:border-primary-800/60"
@@ -467,7 +498,7 @@ const STEPS = [
   {
     step: "02",
     title: "Publish your link",
-    body: "One click. We generate resumedoctor.in/r/your-slug and copy it to your clipboard.",
+    body: `One click. We generate resumedoctor.in/r/${FREE_LINK_SLUG_EXAMPLE} and copy it to your clipboard.`,
     icon: PATHS.link,
     colorBg: "from-cyan-500 to-sky-600",
     glow: "shadow-cyan-500/40",
@@ -534,37 +565,3 @@ const BENEFITS = [
   },
 ];
 
-const FAQS = [
-  {
-    q: "What is a resume link?",
-    a: "A public URL — like resumedoctor.in/r/your-slug — that shows your current resume. Anyone with the link can view it on any device. There's no download required and no app to install.",
-  },
-  {
-    q: "Is the link always up to date?",
-    a: "Yes. Once you publish your resume link, every change you make in the editor is reflected the next time someone opens the link. You don't need to re-publish.",
-  },
-  {
-    q: "Can I unpublish my link?",
-    a: "Yes, you can stop sharing your resume at any time from the builder. Existing copies of the URL will then show a 'Resume not found' page.",
-  },
-  {
-    q: "Do I need a paid plan to publish a link?",
-    a: "No. Publishing your resume link is free on ResumeDoctor. Pro Link is the optional paid layer on top — custom URL, view analytics, and a footer-free public page. Free with Pro annual, ₹99/mo standalone.",
-  },
-  {
-    q: "Will my link show up on Google?",
-    a: "By default, no. Resume links are intentionally noindex — they're meant for sharing with people you choose, not for public search results. Your name and contact details stay private.",
-  },
-  {
-    q: "Can I use a custom URL like /r/my-name?",
-    a: "Yes — that's the Pro Link upgrade. Claim a vanity slug like /r/hari-krishnan from the Share button. Reserved words and lookalike URLs are blocked. The legacy random URL keeps working too, so old shares never break.",
-  },
-  {
-    q: "How do I see who has viewed my resume link?",
-    a: "Pro Link shows you anonymous totals — number of opens and the last time it was viewed — in the Share popover. We deliberately do not log IPs, browsers, or visitor identities; the metric is privacy-safe and bot-filtered.",
-  },
-  {
-    q: "Does the link work on WhatsApp and LinkedIn?",
-    a: "Yes. Every shared link comes with a rich preview card (your name, role, branded image) that renders on WhatsApp, LinkedIn DMs, iMessage, Slack, and email clients.",
-  },
-];
