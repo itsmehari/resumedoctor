@@ -1,15 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { trackEvent } from "@/lib/analytics";
+import {
+  FALLBACK_TRIAL_14_URL,
+  resolveSuperprofileCheckoutHref,
+} from "@/components/pricing/superprofile-pricing-links";
 import {
   HERO_SLIDER_INTERVAL_MS,
   HERO_SLIDES,
   HERO_TITLE_CARD,
   type HeroSlide,
 } from "@/components/home/hero-slider-data";
+
+const TRIAL_CHECKOUT_URL = resolveSuperprofileCheckoutHref(
+  process.env.NEXT_PUBLIC_SUPERPROFILE_URL_TRIAL_14,
+  FALLBACK_TRIAL_14_URL
+);
 
 function renderHeadline(slide: HeroSlide) {
   const { headline, headlineHighlight } = slide;
@@ -30,21 +39,52 @@ function renderHeadline(slide: HeroSlide) {
 }
 
 function SlideCta({ slide }: { slide: HeroSlide }) {
-  const onClick = () => {
-    trackEvent("hero_slider_cta_click", { slide_id: slide.id, cta_href: slide.ctaHref });
-  };
-
   const base =
     slide.ctaVariant === "trial"
       ? "bg-orange-500 text-white hover:bg-orange-600 shadow-orange-900/15 dark:bg-orange-600 dark:hover:bg-orange-500"
       : "bg-accent text-accent-dark hover:bg-accent-hover shadow-black/30";
 
+  const className = `inline-flex items-center justify-center gap-1.5 rounded-xl px-8 py-4 text-center text-base font-bold transition-all shadow-xl hover:scale-[1.02] active:scale-[0.98] ${base}`;
+
+  if (slide.ctaKind === "superprofile_trial") {
+    return (
+      <a
+        href={TRIAL_CHECKOUT_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={(event) => {
+          trackEvent("hero_slider_cta_click", {
+            slide_id: slide.id,
+            cta_href: TRIAL_CHECKOUT_URL,
+            cta_kind: "superprofile_trial",
+          });
+          const proceed = window.confirm(
+            "Before checkout, confirm you will use the same email as your ResumeDoctor account. Continue to SuperProfile?"
+          );
+          if (!proceed) {
+            event.preventDefault();
+            trackEvent("superprofile_checkout_cancelled", { label: "hero_slider_trial_14" });
+            return;
+          }
+          trackEvent("superprofile_checkout_click", {
+            label: "hero_slider_trial_14",
+            precheck_confirmed: true,
+          });
+        }}
+        className={className}
+      >
+        {slide.ctaLabel}
+        <ExternalLink className="h-4 w-4 shrink-0 opacity-90" aria-hidden />
+      </a>
+    );
+  }
+
+  const onClick = () => {
+    trackEvent("hero_slider_cta_click", { slide_id: slide.id, cta_href: slide.ctaHref });
+  };
+
   return (
-    <Link
-      href={slide.ctaHref}
-      onClick={onClick}
-      className={`rounded-xl px-8 py-4 text-center text-base font-bold transition-all shadow-xl hover:scale-[1.02] active:scale-[0.98] ${base}`}
-    >
+    <Link href={slide.ctaHref} onClick={onClick} className={className}>
       {slide.ctaLabel}
     </Link>
   );

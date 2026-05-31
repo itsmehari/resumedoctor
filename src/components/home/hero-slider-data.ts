@@ -1,4 +1,5 @@
 export type HeroSlideCtaVariant = "accent" | "trial";
+export type HeroSlideCtaKind = "internal" | "superprofile_trial";
 
 export type HeroSlide = {
   id: string;
@@ -10,6 +11,7 @@ export type HeroSlide = {
   proofLine: string;
   ctaLabel: string;
   ctaHref: string;
+  ctaKind?: HeroSlideCtaKind;
   ctaVariant: HeroSlideCtaVariant;
   secondaryLabel: string;
   secondaryHref: string;
@@ -30,6 +32,7 @@ export const HERO_SLIDES: HeroSlide[] = [
     proofLine: "PDF + Word export · 30+ templates · AI writing · unlimited ATS checks",
     ctaLabel: "Start for ₹49",
     ctaHref: "/pricing#trial",
+    ctaKind: "superprofile_trial",
     ctaVariant: "accent",
     secondaryLabel: "See what's included",
     secondaryHref: "/pricing",
