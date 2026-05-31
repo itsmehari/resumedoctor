@@ -1,6 +1,6 @@
 "use client";
 
-// Phase 1, 3: Load GA4 + Meta + LinkedIn + Clarity only when consent given; track page views
+// Phase 1, 3: GA4 config (consent-gated) + Meta + LinkedIn + Clarity; Google Ads tag loads in root layout head
 import Script from "next/script";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
@@ -19,10 +19,14 @@ export function AnalyticsProvider() {
   const clarityInited = useRef(false);
 
   useEffect(() => {
-    if (hasConsent && pathname) {
-      trackPageView(pathname);
-    }
+    if (!hasConsent || !pathname) return;
+    trackPageView(pathname);
   }, [hasConsent, pathname]);
+
+  useEffect(() => {
+    if (!hasConsent || typeof window === "undefined" || !window.gtag) return;
+    window.gtag("config", GA_ID);
+  }, [hasConsent]);
 
   useEffect(() => {
     if (!hasConsent || clarityInited.current) return;
@@ -38,18 +42,6 @@ export function AnalyticsProvider() {
 
   return (
     <>
-      <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-        strategy="afterInteractive"
-      />
-      <Script id="google-analytics" strategy="afterInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', '${GA_ID}');
-        `}
-      </Script>
       {META_PIXEL_ID && (
         <>
           <Script id="meta-pixel" strategy="afterInteractive">

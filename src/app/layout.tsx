@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Poppins } from "next/font/google";
+import { GoogleTagHead } from "@/components/google-tag-head";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -55,6 +56,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <GoogleTagHead />
+      </head>
       <body className={`${poppins.variable} ${inter.variable} font-sans antialiased flex flex-col min-h-screen overflow-x-hidden`}>
         <a
           href="#main-content"
