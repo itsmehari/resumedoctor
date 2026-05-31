@@ -41,3 +41,11 @@ Walk through it in this order:
 ## Price on SuperProfile
 
 Set the product price on SuperProfile (e.g. **₹49** for the 14-day trial) to match what you advertise on [resumedoctor.in/pricing](https://resumedoctor.in/pricing). ResumeDoctor only links to your page; it does not set SuperProfile’s price.
+
+## Post-purchase redirect (₹49 trial)
+
+After payment on the **14-day full Pro** product, send buyers to:
+
+`https://www.resumedoctor.in/pricing/thank-you`
+
+Configure this as the **success / thank-you URL** on the SuperProfile payment page (or in your Zapier “new sale” follow-up email). The page polls for Pro activation, shows next steps, and fires the Google Ads conversion once entitlement is confirmed.
