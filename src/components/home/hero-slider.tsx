@@ -14,6 +14,7 @@ import {
   HERO_TITLE_CARD,
   type HeroSlide,
 } from "@/components/home/hero-slider-data";
+import { ResumeLinkCta } from "@/components/resume-link/resume-link-cta";
 
 const TRIAL_CHECKOUT_URL = resolveSuperprofileCheckoutHref(
   process.env.NEXT_PUBLIC_SUPERPROFILE_URL_TRIAL_14,
@@ -45,6 +46,10 @@ function SlideCta({ slide }: { slide: HeroSlide }) {
       : "bg-accent text-accent-dark hover:bg-accent-hover shadow-black/30";
 
   const className = `inline-flex items-center justify-center gap-1.5 rounded-xl px-8 py-4 text-center text-base font-bold transition-all shadow-xl hover:scale-[1.02] active:scale-[0.98] ${base}`;
+
+  if (slide.ctaKind === "resume_link") {
+    return <ResumeLinkCta variant="accent">{slide.ctaLabel}</ResumeLinkCta>;
+  }
 
   if (slide.ctaKind === "superprofile_trial") {
     return (
@@ -159,7 +164,7 @@ export function HeroSlider() {
         </h1>
       </div>
 
-      <div aria-live="polite" aria-atomic="true" className="relative min-h-[320px] sm:min-h-[300px]">
+      <div aria-live="polite" aria-atomic="true" className="relative min-h-[360px] sm:min-h-[340px]">
         <div key={slide.id} className="animate-fade-in">
           <h2 className="text-3xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-4xl lg:text-[2.35rem]">
             {renderHeadline(slide)}
@@ -167,8 +172,20 @@ export function HeroSlider() {
 
           <p className="mt-4 max-w-lg text-lg leading-relaxed text-white/85">{slide.subheadline}</p>
 
-          <div className="mt-5 inline-flex flex-wrap items-baseline gap-x-2 gap-y-1 rounded-xl border border-orange-400/30 bg-orange-500/10 px-4 py-2.5">
-            <span className="text-3xl font-extrabold tabular-nums text-orange-300 sm:text-4xl">₹49</span>
+          <div
+            className={`mt-5 inline-flex flex-wrap items-baseline gap-x-2 gap-y-1 rounded-xl border px-4 py-2.5 ${
+              slide.priceAmount === "Free"
+                ? "border-emerald-400/30 bg-emerald-500/10"
+                : "border-orange-400/30 bg-orange-500/10"
+            }`}
+          >
+            <span
+              className={`text-3xl font-extrabold tabular-nums sm:text-4xl ${
+                slide.priceAmount === "Free" ? "text-emerald-300" : "text-orange-300"
+              }`}
+            >
+              {slide.priceAmount ?? "₹49"}
+            </span>
             <span className="text-sm font-medium text-white/80">{slide.priceDetail}</span>
           </div>
 

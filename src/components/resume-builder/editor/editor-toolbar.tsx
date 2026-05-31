@@ -45,6 +45,7 @@ interface Props {
   templateHint: string | null;
   setTemplateHint: (hint: string | null) => void;
   onPreflightJump?: (sectionType?: SectionType) => void;
+  autoOpenShare?: boolean;
 }
 
 export function EditorToolbar({
@@ -76,6 +77,7 @@ export function EditorToolbar({
   templateHint,
   setTemplateHint,
   onPreflightJump,
+  autoOpenShare,
 }: Props) {
   const progress = computeResumeProgress(sections);
   const activeStep = getActiveStepId(sections);
@@ -230,7 +232,7 @@ export function EditorToolbar({
               >
                 Cover Letter
               </Link>
-              <ShareResumeButton resumeId={resumeId} disabled={isTrial} />
+              <ShareResumeButton resumeId={resumeId} disabled={editorLocked} autoOpen={autoOpenShare} />
               <ExportButtons
                 resumeId={resumeId}
                 resumeTitle={title}

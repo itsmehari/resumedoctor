@@ -15,6 +15,7 @@ import { DashboardHeaderActions } from "@/components/dashboard/dashboard-header-
 import { DashboardAlerts } from "@/components/dashboard/dashboard-alerts";
 import { DashboardNextSteps } from "@/components/dashboard/dashboard-next-steps";
 import { ResumeLibraryGrid } from "@/components/dashboard/resume-library-grid";
+import { DashboardShareHighlight } from "@/components/resume-link/dashboard-share-highlight";
 import { useToast } from "@/contexts/toast-context";
 
 interface ResumeItem {
@@ -46,6 +47,8 @@ function DashboardContent() {
   const [resendVerifyMsg, setResendVerifyMsg] = useState<string | null>(null);
   const upgraded = searchParams.get("upgraded") === "1";
   const openImportParam = searchParams.get("openImport") === "1";
+  const highlightShare = searchParams.get("highlight") === "share";
+  const highlightResumeId = searchParams.get("resumeId");
 
   const welcomeName = displayName || session?.user?.name || session?.user?.email;
 
@@ -182,6 +185,9 @@ function DashboardContent() {
                 Retry
               </button>
             </div>
+          )}
+          {!loading && !listError && highlightShare && highlightResumeId && (
+            <DashboardShareHighlight resumeId={highlightResumeId} />
           )}
           {!loading && !listError && resumes.length > 0 && welcomeName && (
             <div className="rounded-xl border border-primary-200/60 bg-gradient-to-br from-primary-50 to-primary-100/50 p-5 shadow-sm dark:border-primary-800/40 dark:from-primary-900/20 dark:to-primary-800/10">

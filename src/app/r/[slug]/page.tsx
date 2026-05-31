@@ -12,9 +12,14 @@ import { prisma } from "@/lib/prisma";
 import { siteUrl } from "@/lib/seo";
 import { SiteHeader } from "@/components/site-header";
 import { ResumePreview } from "@/components/resume-builder/resume-preview";
+import { DemoResumeBanner } from "@/components/resume-link/demo-resume-banner";
 import { isLikelyBot } from "@/lib/bot-detector";
 import { getProLinkStatus } from "@/lib/pro-link-entitlement";
 import { sessionUserEmail } from "@/lib/session-user";
+import {
+  getDemoPublicResume,
+  isDemoPublicResumeSlug,
+} from "@/lib/demo-public-resume";
 import type { ResumeSection } from "@/types/resume";
 
 interface Props {
@@ -111,6 +116,24 @@ function extractMeta(resume: ResumeRow): ExtractedMeta {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  if (isDemoPublicResumeSlug(params.slug)) {
+    const url = `${siteUrl}/r/demo`;
+    return {
+      title: "Live Demo — Resume as a Link | ResumeDoctor",
+      description:
+        "See a real ResumeDoctor resume link in action. Share on WhatsApp, LinkedIn, or email — always shows the latest version.",
+      alternates: { canonical: url },
+      robots: { index: true, follow: true },
+      openGraph: {
+        title: "Live Demo — Resume as a Link",
+        description: "See how a shareable resume link looks on mobile and desktop.",
+        url,
+        type: "website",
+        siteName: "ResumeDoctor",
+      },
+    };
+  }
+
   const resume = await getResumeBySlug(params.slug);
   if (!resume) {
     return {
@@ -219,6 +242,47 @@ async function recordViewIfHuman(resumeId: string, ownerEmail: string | null) {
 }
 
 export default async function PublicResumePage({ params }: Props) {
+  if (isDemoPublicResumeSlug(params.slug)) {
+    const demo = getDemoPublicResume();
+    const meta = demo.content.meta ?? {};
+    return (
+      <div className="min-h-screen flex flex-col bg-slate-100 dark:bg-slate-900">
+        <SiteHeader variant="app" maxWidth="4xl" />
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="flex-1 py-8 px-4 overflow-auto outline-none"
+        >
+          <div className="max-w-[800px] mx-auto">
+            <DemoResumeBanner />
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden">
+              <ResumePreview
+                sections={demo.content.sections ?? []}
+                templateId={demo.templateId}
+                primaryColor={meta.primaryColor as string | undefined}
+                fontFamily={meta.fontFamily as "sans" | "serif" | "mono" | undefined}
+                fontSize={meta.fontSize as "small" | "normal" | "large" | undefined}
+                spacing={meta.spacing as "compact" | "normal" | "spacious" | undefined}
+              />
+            </div>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center text-sm text-slate-500">
+              <span>
+                Created with{" "}
+                <Link href="/" className="font-medium text-primary-600 hover:underline">
+                  ResumeDoctor
+                </Link>
+              </span>
+              <span aria-hidden>·</span>
+              <Link href="/resume-link" className="font-medium text-primary-600 hover:underline">
+                Get your own resume link
+              </Link>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   const resume = await getResumeBySlug(params.slug);
   if (!resume) {
     notFound();

@@ -8,7 +8,10 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
+import { ResumeLinkCta } from "@/components/resume-link/resume-link-cta";
+import { ResumeLinkUrlTiers } from "@/components/resume-link/resume-link-url-tiers";
 import { siteUrl } from "@/lib/seo";
+import { FREE_LINK_SLUG_EXAMPLE } from "@/lib/resume-link-utils";
 
 export const metadata: Metadata = {
   title:
@@ -169,36 +172,29 @@ export default function ResumeLinkPage() {
                   />
                   <span className="font-mono text-sm sm:text-base text-white/90">
                     resumedoctor.in/r/
-                    <span className="text-cyan-300 font-bold">your-name</span>
+                    <span className="text-cyan-300 font-bold">{FREE_LINK_SLUG_EXAMPLE}</span>
                   </span>
-                  <button
-                    type="button"
+                  <Link
+                    href="/r/demo"
                     className="ml-2 flex items-center gap-1.5 rounded-lg border border-cyan-400/40 bg-cyan-500/15 px-3 py-1.5 text-xs font-semibold text-cyan-200 hover:bg-cyan-500/25 transition-colors"
                   >
-                    <Icon path={PATHS.copy} size={12} />
-                    Copy link
-                  </button>
+                    See live demo →
+                  </Link>
                 </div>
+              </div>
+
+              <div className="mt-8 max-w-lg mx-auto text-left">
+                <ResumeLinkUrlTiers variant="dark" />
               </div>
 
               {/* CTAs */}
               <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+                <ResumeLinkCta variant="accentDark" />
                 <Link
-                  href="/try"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent hover:bg-accent-hover px-10 py-4 text-lg font-bold text-accent-dark shadow-2xl shadow-cyan-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
-                >
-                  <Icon
-                    path={PATHS.link}
-                    size={18}
-                    className="text-accent-dark"
-                  />
-                  Get your resume link
-                </Link>
-                <Link
-                  href="/templates"
+                  href="/r/demo"
                   className="rounded-xl border-2 border-white/30 bg-white/5 hover:bg-white/15 px-8 py-4 text-base font-semibold text-white text-center transition-all backdrop-blur-sm"
                 >
-                  Browse templates
+                  See live demo
                 </Link>
               </div>
               <p className="mt-5 text-sm text-white/60">
@@ -438,18 +434,12 @@ export default function ResumeLinkPage() {
               channel — always up to date.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center sm:items-center">
+              <ResumeLinkCta variant="accentDark" />
               <Link
-                href="/try"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent hover:bg-accent-hover px-10 py-4 text-lg font-bold text-accent-dark shadow-xl shadow-black/25 transition-all hover:scale-[1.02]"
-              >
-                <Icon path={PATHS.link} size={18} className="text-accent-dark" />
-                Get your resume link
-              </Link>
-              <Link
-                href="/templates"
+                href="/r/demo"
                 className="rounded-xl border-2 border-white/40 bg-white/10 hover:bg-white/20 px-8 py-4 text-base font-semibold text-white text-center transition-all backdrop-blur-sm"
               >
-                Browse templates
+                See live demo
               </Link>
             </div>
             <p className="mt-6 text-sm text-white/55">

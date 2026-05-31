@@ -2,7 +2,10 @@ import Link from "next/link";
 import Image from "next/image";
 import heroArtwork from "../../Resumedoctor-heroimage.png";
 import { HeroSlider } from "@/components/home/hero-slider";
+import { ResumeLinkCta } from "@/components/resume-link/resume-link-cta";
+import { ResumeLinkUrlTiers } from "@/components/resume-link/resume-link-url-tiers";
 import { SiteHeader } from "@/components/site-header";
+import { FREE_LINK_SLUG_EXAMPLE } from "@/lib/resume-link-utils";
 import { HomeJsonLd, FaqJsonLd, HowToJsonLd, FAQ_ITEMS } from "@/components/seo/json-ld";
 import { PricingTrustStatsBar } from "@/components/pricing/payment-value-sections";
 import { siteUrl } from "@/lib/seo";
@@ -117,6 +120,9 @@ export default function HomePage() {
               One URL. Always the latest version. Paste it anywhere — WhatsApp, LinkedIn, recruiter
               email, your bio. Update once, and every link you&apos;ve ever shared stays current.
             </p>
+            <div className="mt-8 max-w-xl mx-auto text-left">
+              <ResumeLinkUrlTiers variant="dark" />
+            </div>
           </div>
 
           {/* Stage row — browser mock + phone mock */}
@@ -134,7 +140,9 @@ export default function HomePage() {
                   </div>
                   <div className="ml-2 flex-1 flex items-center gap-2 rounded-lg border border-white/10 bg-slate-800/60 px-3 py-1.5 text-xs text-white/80">
                     <Icon path={PATHS.shield} size={12} className="text-emerald-400" />
-                    <span className="font-mono">resumedoctor.in/r/<span className="text-cyan-300 font-bold">your-name</span></span>
+                    <Link href="/r/demo" className="font-mono hover:text-cyan-200 transition-colors">
+                      resumedoctor.in/r/<span className="text-cyan-300 font-bold">{FREE_LINK_SLUG_EXAMPLE}</span>
+                    </Link>
                   </div>
                   <button type="button" className="flex items-center gap-1.5 rounded-md border border-cyan-400/40 bg-cyan-500/15 px-2.5 py-1 text-[11px] font-semibold text-cyan-200 hover:bg-cyan-500/25 transition-colors">
                     <Icon path={PATHS.copy} size={10} />
@@ -215,7 +223,7 @@ export default function HomePage() {
                     <p className="text-[8px] font-medium text-slate-500">Frontend Engineer</p>
                     <div className="mt-1.5 flex items-center gap-1 text-[7px] text-slate-500">
                       <Icon path={PATHS.globe} size={6} />
-                      resumedoctor.in/r/your-name
+                      resumedoctor.in/r/{FREE_LINK_SLUG_EXAMPLE}
                     </div>
                   </div>
                   <div className="rounded-lg bg-white p-3 shadow-sm">
@@ -328,7 +336,7 @@ export default function HomePage() {
                 <div className="mt-3 ml-auto max-w-[90%] rounded-2xl rounded-tr-sm bg-emerald-500/90 p-2.5 shadow-md">
                   <p className="text-[11px] text-white">Here&apos;s my resume — always up to date.</p>
                   <div className="mt-1.5 rounded-md bg-emerald-700/60 px-2 py-1 text-[10px] font-mono text-white/95 break-all">
-                    resumedoctor.in/r/your-name
+                    resumedoctor.in/r/{FREE_LINK_SLUG_EXAMPLE}
                   </div>
                   <p className="text-right text-[8px] text-white/70 mt-1">9:41 ✓✓</p>
                 </div>
@@ -344,7 +352,7 @@ export default function HomePage() {
                   <p className="text-[11px] text-white/85">Hi! Following up on the Frontend role —</p>
                   <p className="text-[11px] text-white/85 mt-1">my resume:</p>
                   <p className="mt-1.5 text-[11px] font-mono text-cyan-200 break-all underline decoration-cyan-300/40">
-                    resumedoctor.in/r/your-name
+                    resumedoctor.in/r/{FREE_LINK_SLUG_EXAMPLE}
                   </p>
                 </div>
               </div>
@@ -360,7 +368,7 @@ export default function HomePage() {
                   <p className="text-[10px] text-white/65">Frontend Engineer · Bengaluru</p>
                   <p className="text-[10px] text-white/65 mt-0.5">+91 98xxx xxxxx</p>
                   <p className="mt-1.5 text-[10px] font-mono text-cyan-200 break-all">
-                    resumedoctor.in/r/your-name
+                    resumedoctor.in/r/{FREE_LINK_SLUG_EXAMPLE}
                   </p>
                 </div>
               </div>
@@ -390,11 +398,13 @@ export default function HomePage() {
 
           {/* CTA */}
           <div className="text-center">
-            <Link href="/try"
-              className="inline-flex items-center gap-2 rounded-xl bg-accent hover:bg-accent-hover px-10 py-4 text-lg font-bold text-accent-dark shadow-2xl shadow-cyan-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]">
-              <Icon path={PATHS.link} size={18} className="text-accent-dark" />
-              Get your resume link
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <ResumeLinkCta variant="accentDark" />
+              <Link href="/r/demo"
+                className="inline-flex items-center gap-2 rounded-xl border-2 border-white/30 bg-white/5 hover:bg-white/15 px-8 py-4 text-base font-semibold text-white backdrop-blur-sm transition-all">
+                See live demo →
+              </Link>
+            </div>
             <p className="mt-4 text-xs text-white/60 max-w-md mx-auto">
               Free to publish. Update anytime — your link stays the same.
               <span className="block sm:inline sm:ml-1">Anyone with the link can view.</span>

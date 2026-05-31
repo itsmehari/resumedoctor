@@ -1,5 +1,5 @@
 export type HeroSlideCtaVariant = "accent" | "trial";
-export type HeroSlideCtaKind = "internal" | "superprofile_trial";
+export type HeroSlideCtaKind = "internal" | "superprofile_trial" | "resume_link";
 
 export type HeroSlide = {
   id: string;
@@ -8,6 +8,7 @@ export type HeroSlide = {
   headlineHighlight?: string;
   subheadline: string;
   priceDetail: string;
+  priceAmount?: string;
   proofLine: string;
   ctaLabel: string;
   ctaHref: string;
@@ -81,6 +82,23 @@ export const HERO_SLIDES: HeroSlide[] = [
     ctaVariant: "trial",
     secondaryLabel: "Compare all plans",
     secondaryHref: "/pricing",
+  },
+  {
+    id: "resume-link",
+    eyebrow: "WhatsApp & LinkedIn ready",
+    headline: "Share one link — not another PDF attachment",
+    headlineHighlight: "one link",
+    subheadline:
+      "Paste your resume URL in a DM, email signature, or QR on your card. Update once — every shared link stays current. Free to publish.",
+    priceAmount: "Free",
+    priceDetail: "publish · Pro Link from ₹99/mo",
+    proofLine: "See a live example at resumedoctor.in/r/demo",
+    ctaLabel: "Get your resume link",
+    ctaHref: "/resume-link",
+    ctaKind: "resume_link",
+    ctaVariant: "accent",
+    secondaryLabel: "See live demo",
+    secondaryHref: "/r/demo",
   },
 ];
 

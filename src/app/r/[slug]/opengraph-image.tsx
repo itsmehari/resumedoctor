@@ -5,6 +5,7 @@
 // consistent at every touchpoint.
 import { ImageResponse } from "next/og";
 import { prisma } from "@/lib/prisma";
+import { getDemoPublicResume, isDemoPublicResumeSlug } from "@/lib/demo-public-resume";
 import type { ResumeSection } from "@/types/resume";
 
 // Prisma needs the Node.js runtime; keep this explicit so future
@@ -33,6 +34,20 @@ async function getResumeMeta(slug: string): Promise<ResumeMeta> {
   };
   const trimmed = slug?.trim();
   if (!trimmed) return fallback;
+
+  if (isDemoPublicResumeSlug(trimmed)) {
+    const demo = getDemoPublicResume();
+    const contact = demo.content.sections?.find((s) => s.type === "contact");
+    if (contact && contact.type === "contact") {
+      return {
+        name: contact.data.name?.trim() || "Demo Resume",
+        headline: contact.data.title?.trim() || null,
+        location: contact.data.location?.trim() || null,
+      };
+    }
+    return { name: "Priya Sharma", headline: "Senior Software Engineer", location: "Bangalore, India" };
+  }
+
   try {
     const resume = await prisma.resume.findUnique({
       where: { publicSlug: trimmed },

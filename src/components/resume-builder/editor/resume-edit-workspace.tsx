@@ -109,6 +109,9 @@ function ResumeEditWorkspaceContent({
     }
     const section = searchParams.get("section");
     if (section) scrollToStep(section as EditorStepId);
+    if (searchParams.get("share") === "1") {
+      setEditorMode("review");
+    }
   }, [searchParams, scrollToStep, setEditorMode]);
 
   useEffect(() => {
@@ -228,6 +231,7 @@ function ResumeEditWorkspaceContent({
         onPreflightJump={(sectionType) => {
           if (sectionType) scrollToSectionType(sectionType);
         }}
+        autoOpenShare={searchParams.get("share") === "1"}
       />
 
       <EditorDesignDrawer open={designOpen} onClose={() => setDesignOpen(false)} meta={meta} onChange={handleCustomize} />

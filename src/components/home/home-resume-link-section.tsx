@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { LandingIcon, LANDING_ICON_PATHS } from "@/components/home/landing-icons";
+import { ResumeLinkCta } from "@/components/resume-link/resume-link-cta";
+import { ResumeLinkUrlTiers } from "@/components/resume-link/resume-link-url-tiers";
 
 export function HomeResumeLinkSection() {
   return (
@@ -29,6 +31,9 @@ export function HomeResumeLinkSection() {
             One URL that always shows your latest version. Paste it on WhatsApp, LinkedIn, recruiter email, or a printed
             QR — update once and every shared link stays current.
           </p>
+          <div className="mt-8 text-left">
+            <ResumeLinkUrlTiers variant="dark" />
+          </div>
         </div>
 
         <div className="mt-10 grid gap-4 md:grid-cols-3">
@@ -57,13 +62,19 @@ export function HomeResumeLinkSection() {
         </div>
 
         <div className="mt-10 flex flex-col items-center gap-3 text-center">
-          <Link
-            href="/try"
-            className="inline-flex items-center gap-2 rounded-xl bg-accent px-8 py-4 text-base font-bold text-accent-dark shadow-xl shadow-cyan-500/20 transition hover:bg-accent-hover"
-          >
-            <LandingIcon path={LANDING_ICON_PATHS.link} size={18} className="text-accent-dark" />
-            Get your resume link
-          </Link>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <ResumeLinkCta
+              variant="accent"
+              className="px-8 py-4 text-base shadow-xl shadow-cyan-500/20"
+              icon={<LandingIcon path={LANDING_ICON_PATHS.link} size={18} className="text-accent-dark" />}
+            />
+            <Link
+              href="/r/demo"
+              className="inline-flex items-center justify-center rounded-xl border-2 border-white/30 bg-white/5 px-8 py-4 text-base font-semibold text-white backdrop-blur-sm transition hover:bg-white/15"
+            >
+              See live demo
+            </Link>
+          </div>
           <Link href="/resume-link" className="text-sm text-cyan-200/90 underline-offset-2 hover:underline">
             How resume links work
           </Link>

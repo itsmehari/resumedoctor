@@ -1,18 +1,19 @@
 "use client";
 
 // Phase 1.3 – Shareable resume link button
-// Pro Link – adds:
-//   * inline "Customize URL" editor (vanity slug)
-//   * view analytics popover (count + last viewed)
-//   * upgrade teasers when Pro Link is inactive
+// Pro Link – adds vanity URL, view analytics, WhatsApp share, QR download, first-copy upsell
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Share2, Copy, Check, Eye, Sparkles, Lock } from "lucide-react";
+import { Share2, Copy, Check, Eye, Sparkles, Lock, MessageCircle, QrCode } from "lucide-react";
+import QRCode from "qrcode";
+import { buildWhatsAppShareUrl } from "@/lib/resume-link-utils";
+import { trackEvent } from "@/lib/analytics";
 import { useToast } from "@/contexts/toast-context";
 
 interface ShareResumeButtonProps {
   resumeId: string;
   disabled?: boolean;
+  autoOpen?: boolean;
 }
 
 interface ShareInfo {
@@ -47,23 +48,27 @@ function formatRelative(iso: string | null): string {
   return `${Math.round(month / 12)}y ago`;
 }
 
-export function ShareResumeButton({ resumeId, disabled }: ShareResumeButtonProps) {
+export function ShareResumeButton({ resumeId, disabled, autoOpen }: ShareResumeButtonProps) {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [info, setInfo] = useState<ShareInfo | null>(null);
   const [copied, setCopied] = useState(false);
+  const [showCopyUpsell, setShowCopyUpsell] = useState(false);
+  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const [vanityInput, setVanityInput] = useState("");
   const [availability, setAvailability] = useState<AvailabilityState>({ state: "idle" });
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const autoOpenedRef = useRef(false);
 
-  const handleClick = async () => {
+  const loadShareLink = async () => {
     setLoading(true);
     setOpen(true);
     setInfo(null);
     setEditing(false);
+    setShowCopyUpsell(false);
     try {
       const res = await fetch(`/api/resumes/${resumeId}/share`, {
         method: "POST",
@@ -88,16 +93,68 @@ export function ShareResumeButton({ resumeId, disabled }: ShareResumeButtonProps
     }
   };
 
+  const handleClick = () => {
+    void loadShareLink();
+  };
+
+  useEffect(() => {
+    if (!autoOpen || disabled || autoOpenedRef.current) return;
+    autoOpenedRef.current = true;
+    void loadShareLink();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once when autoOpen is set
+  }, [autoOpen, disabled]);
+
+  useEffect(() => {
+    if (!autoOpen || !disabled) return;
+    toast("Publish your link from Share once your session is active.", { variant: "error" });
+  }, [autoOpen, disabled, toast]);
+
+  useEffect(() => {
+    if (!info?.url) {
+      setQrDataUrl(null);
+      return;
+    }
+    let cancelled = false;
+    QRCode.toDataURL(info.url, { width: 280, margin: 2, color: { dark: "#0f172a", light: "#ffffff" } })
+      .then((url) => {
+        if (!cancelled) setQrDataUrl(url);
+      })
+      .catch(() => {
+        if (!cancelled) setQrDataUrl(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [info?.url]);
+
   const handleCopy = async () => {
     if (!info?.url) return;
     try {
       await navigator.clipboard.writeText(info.url);
       setCopied(true);
       toast("Link copied to clipboard", { variant: "success" });
+      trackEvent("resume_link_copy", { resume_id: resumeId, pro_link: info.proLinkActive });
+      if (!info.proLinkActive) setShowCopyUpsell(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
       toast("Failed to copy", { variant: "error" });
     }
+  };
+
+  const handleWhatsAppShare = () => {
+    if (!info?.url) return;
+    trackEvent("resume_link_whatsapp_share", { resume_id: resumeId });
+    window.open(buildWhatsAppShareUrl(info.url), "_blank", "noopener,noreferrer");
+  };
+
+  const handleDownloadQr = () => {
+    if (!qrDataUrl || !info) return;
+    const anchor = document.createElement("a");
+    anchor.href = qrDataUrl;
+    anchor.download = `resume-link-${info.slug}.png`;
+    anchor.click();
+    trackEvent("resume_link_qr_download", { resume_id: resumeId, pro_link: info.proLinkActive });
+    toast("QR code downloaded", { variant: "success" });
   };
 
   // Debounced availability check while typing.
@@ -184,7 +241,7 @@ export function ShareResumeButton({ resumeId, disabled }: ShareResumeButtonProps
             onClick={() => setOpen(false)}
             aria-hidden
           />
-          <div className="absolute right-0 top-full z-50 mt-1 w-[22rem] rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg p-3">
+          <div className="absolute right-0 top-full z-50 mt-1 w-[min(24rem,calc(100vw-2rem))] rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg p-3 sm:left-auto sm:translate-x-0">
             {loading ? (
               <p className="text-sm text-slate-500">Generating link...</p>
             ) : info ? (
@@ -218,6 +275,59 @@ export function ShareResumeButton({ resumeId, disabled }: ShareResumeButtonProps
                     </button>
                   </div>
                 </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={handleWhatsAppShare}
+                    className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-emerald-600/40 bg-emerald-50 px-2 py-2 text-xs font-semibold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-700/50 dark:bg-emerald-950/30 dark:text-emerald-200"
+                  >
+                    <MessageCircle className="h-3.5 w-3.5" />
+                    WhatsApp
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDownloadQr}
+                    disabled={!qrDataUrl}
+                    className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-300 px-2 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700"
+                  >
+                    <QrCode className="h-3.5 w-3.5" />
+                    Download QR
+                  </button>
+                </div>
+
+                {qrDataUrl ? (
+                  <div className="flex items-center gap-3 rounded-md border border-slate-200 bg-slate-50 p-2 dark:border-slate-700 dark:bg-slate-900/50">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={qrDataUrl}
+                      alt="QR code for your resume link"
+                      width={72}
+                      height={72}
+                      className="rounded border border-slate-200 bg-white p-1 dark:border-slate-600"
+                    />
+                    <p className="text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">
+                      Scan on campus drives and networking events. Download for print-ready PNG.
+                    </p>
+                  </div>
+                ) : null}
+
+                {showCopyUpsell && !info.proLinkActive ? (
+                  <div className="rounded-md border border-amber-200 bg-amber-50 p-2.5 dark:border-amber-800/50 dark:bg-amber-950/30">
+                    <p className="text-xs font-semibold text-amber-900 dark:text-amber-100">
+                      Want resumedoctor.in/r/your-name instead?
+                    </p>
+                    <p className="mt-1 text-[11px] text-amber-800/90 dark:text-amber-200/80">
+                      Pro Link adds a custom URL, view analytics, and removes the footer on your public page.
+                    </p>
+                    <Link
+                      href="/pricing#pro-link"
+                      className="mt-2 inline-flex text-[11px] font-bold text-primary-600 hover:underline dark:text-primary-400"
+                    >
+                      Upgrade to Pro Link — ₹99/mo →
+                    </Link>
+                  </div>
+                ) : null}
 
                 {/* ── Pro Link: vanity URL editor or upgrade teaser ───────── */}
                 <div className="rounded-md border border-slate-200 dark:border-slate-700 p-2.5">
