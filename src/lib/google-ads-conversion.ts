@@ -1,5 +1,5 @@
 /**
- * Google Ads purchase conversion — fire on post-purchase thank-you page only.
+ * Google Ads purchase conversion — fire on /payment/success only.
  * Set NEXT_PUBLIC_GOOGLE_ADS_PURCHASE_SEND_TO to "AW-xxx/label" from Google Ads.
  */
 import { GOOGLE_ADS_ID } from "@/components/google-tag-head";

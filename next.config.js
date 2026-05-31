@@ -67,16 +67,22 @@ const nextConfig = {
   },
 
   async redirects() {
+    const legacyPaymentSuccess = {
+      source: "/pricing/thank-you",
+      destination: "/payment/success",
+      permanent: true,
+    };
     // Block /dev/* in production
     return isProd
       ? [
+          legacyPaymentSuccess,
           {
             source: "/dev/:path*",
             destination: "/",
             permanent: false,
           },
         ]
-      : [];
+      : [legacyPaymentSuccess];
   },
 };
 

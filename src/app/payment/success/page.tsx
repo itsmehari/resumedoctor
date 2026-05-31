@@ -18,6 +18,7 @@ import {
 } from "@/components/pricing/payment-value-sections";
 import { reportGoogleAdsPurchaseConversion } from "@/lib/google-ads-conversion";
 import { trackEvent } from "@/lib/analytics";
+import { PAYMENT_SUCCESS_PATH } from "@/lib/payment-success-url";
 
 type PageState = "loading" | "guest" | "pending" | "active" | "active_other";
 
@@ -65,7 +66,7 @@ function formatExpiry(iso: string | null): string | null {
   }
 }
 
-function ThankYouContent() {
+function PaymentSuccessContent() {
   const [state, setState] = useState<PageState>("loading");
   const [email, setEmail] = useState<string | null>(null);
   const [expiresAt, setExpiresAt] = useState<string | null>(null);
@@ -97,7 +98,7 @@ function ThankYouContent() {
         if (!conversionFired.current) {
           conversionFired.current = true;
           reportGoogleAdsPurchaseConversion({ value: 49, currency: "INR" });
-          trackEvent("post_purchase_confirmed", { plan: "pro_trial_14", source: "thank_you_page" });
+          trackEvent("post_purchase_confirmed", { plan: "pro_trial_14", source: "payment_success_page" });
         }
       } else if (data.isPro) {
         setState("active_other");
@@ -124,6 +125,7 @@ function ThankYouContent() {
   }, [state, pollCount, checkStatus]);
 
   const expiryLabel = formatExpiry(expiresAt);
+  const authReturnUrl = encodeURIComponent(PAYMENT_SUCCESS_PATH);
 
   return (
     <main
@@ -132,7 +134,6 @@ function ThankYouContent() {
       className="mx-auto w-full max-w-3xl flex-1 px-4 py-10 sm:py-14 outline-none"
     >
       <TrialSectionBackdrop>
-        {/* Hero */}
         <div className="text-center">
           <div
             className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full ${
@@ -153,11 +154,11 @@ function ThankYouContent() {
           </p>
           <h1 className="mt-2 text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-50 sm:text-3xl">
             {state === "active" || state === "active_other"
-              ? "You're in — full Pro is unlocked"
+              ? "Payment successful — full Pro is unlocked"
               : state === "pending"
-                ? "Payment received — activating your Pro pass"
+                ? "Payment successful — activating your Pro pass"
                 : state === "guest"
-                  ? "Payment received — sign in to unlock"
+                  ? "Payment successful — sign in to unlock"
                   : "Checking your account…"}
           </h1>
           <p className="mt-3 text-base leading-relaxed text-slate-600 dark:text-slate-400">
@@ -194,19 +195,18 @@ function ThankYouContent() {
           ) : null}
         </div>
 
-        {/* Status-specific actions */}
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
           {state === "guest" ? (
             <>
               <Link
-                href="/login?callbackUrl=/pricing/thank-you"
+                href={`/login?callbackUrl=${authReturnUrl}`}
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500 px-6 py-3.5 text-sm font-semibold text-white shadow-md transition hover:bg-orange-600"
               >
                 Sign in to activate Pro
                 <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
               <Link
-                href="/signup?callbackUrl=/pricing/thank-you"
+                href={`/signup?callbackUrl=${authReturnUrl}`}
                 className="inline-flex items-center justify-center rounded-xl border-2 border-slate-300 px-6 py-3.5 text-sm font-semibold text-slate-800 transition hover:border-orange-400 dark:border-slate-600 dark:text-slate-100"
               >
                 Create account
@@ -230,7 +230,6 @@ function ThankYouContent() {
           </Link>
         </div>
 
-        {/* What's unlocked */}
         <div className="mt-10 grid gap-8 md:grid-cols-2">
           <div>
             <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-orange-700 dark:text-orange-400">
@@ -259,7 +258,6 @@ function ThankYouContent() {
           </div>
         </div>
 
-        {/* Next steps */}
         <div className="mt-10 border-t border-slate-200/80 pt-8 dark:border-slate-700/80">
           <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Your next 3 steps</h2>
           <ol className="mt-5 space-y-4" role="list">
@@ -287,7 +285,6 @@ function ThankYouContent() {
           </ol>
         </div>
 
-        {/* Help — email mismatch */}
         {(state === "pending" || state === "guest") && (
           <div className="mt-8 rounded-2xl border border-amber-200/80 bg-amber-50/80 p-5 dark:border-amber-900/50 dark:bg-amber-950/20">
             <h2 className="flex items-center gap-2 text-sm font-bold text-amber-900 dark:text-amber-200">
@@ -331,7 +328,7 @@ function ThankYouContent() {
   );
 }
 
-function ThankYouFallback() {
+function PaymentSuccessFallback() {
   return (
     <main className="mx-auto flex max-w-3xl flex-1 items-center justify-center px-4 py-20">
       <Loader2 className="h-8 w-8 animate-spin text-orange-500" aria-label="Loading" />
@@ -339,12 +336,12 @@ function ThankYouFallback() {
   );
 }
 
-export default function ThankYouPage() {
+export default function PaymentSuccessPage() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950">
       <SiteHeader variant="app" maxWidth="xl" />
-      <Suspense fallback={<ThankYouFallback />}>
-        <ThankYouContent />
+      <Suspense fallback={<PaymentSuccessFallback />}>
+        <PaymentSuccessContent />
       </Suspense>
     </div>
   );

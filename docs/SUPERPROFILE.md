@@ -46,6 +46,8 @@ Set the product price on SuperProfile (e.g. **₹49** for the 14-day trial) to m
 
 After payment on the **14-day full Pro** product, send buyers to:
 
-`https://www.resumedoctor.in/pricing/thank-you`
+`https://www.resumedoctor.in/payment/success`
 
-Configure this as the **success / thank-you URL** on the SuperProfile payment page (or in your Zapier “new sale” follow-up email). The page polls for Pro activation, shows next steps, and fires the Google Ads conversion once entitlement is confirmed.
+Configure this as the **success URL** on the SuperProfile payment page (or in your Zapier “new sale” follow-up email). The page polls for Pro activation, shows next steps, and fires the Google Ads conversion once entitlement is confirmed.
+
+The old path `/pricing/thank-you` redirects here automatically.
