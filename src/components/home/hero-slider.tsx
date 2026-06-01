@@ -79,17 +79,32 @@ function SlideCta({ slide }: { slide: HeroSlide }) {
   );
 }
 
-export function HeroSlider() {
-  const [activeIndex, setActiveIndex] = useState(0);
+export function HeroSlider({
+  activeIndex: controlledIndex,
+  onActiveIndexChange,
+}: {
+  activeIndex?: number;
+  onActiveIndexChange?: (index: number) => void;
+} = {}) {
+  const [internalIndex, setInternalIndex] = useState(0);
+  const activeIndex = controlledIndex ?? internalIndex;
   const [paused, setPaused] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
   const trackedRef = useRef<Set<string>>(new Set());
 
   const slide = HERO_SLIDES[activeIndex];
 
-  const goTo = useCallback((index: number) => {
-    setActiveIndex((index + HERO_SLIDES.length) % HERO_SLIDES.length);
-  }, []);
+  const goTo = useCallback(
+    (index: number) => {
+      const next = (index + HERO_SLIDES.length) % HERO_SLIDES.length;
+      if (onActiveIndexChange) {
+        onActiveIndexChange(next);
+      } else {
+        setInternalIndex(next);
+      }
+    },
+    [onActiveIndexChange]
+  );
 
   const goPrev = useCallback(() => goTo(activeIndex - 1), [activeIndex, goTo]);
   const goNext = useCallback(() => goTo(activeIndex + 1), [activeIndex, goTo]);

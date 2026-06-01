@@ -1,7 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
-import heroArtwork from "../../Resumedoctor-heroimage.png";
-import { HeroSlider } from "@/components/home/hero-slider";
+import { HomeHeroSection } from "@/components/home/home-hero-section";
 import { ResumeLinkCta } from "@/components/resume-link/resume-link-cta";
 import { ResumeLinkUrlTiers } from "@/components/resume-link/resume-link-url-tiers";
 import { SiteHeader } from "@/components/site-header";
@@ -74,17 +72,7 @@ export default function HomePage() {
           style={{ background: "radial-gradient(circle, #818cf8 0%, transparent 70%)" }} aria-hidden />
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 lg:py-24">
-          {/* Mobile / tablet: visual first */}
-          <div className="relative mx-auto mb-8 w-full max-w-[300px] sm:max-w-sm lg:hidden">
-            <HeroVisual compact />
-          </div>
-
-          <div className="flex flex-col gap-10 lg:grid lg:grid-cols-2 lg:gap-14 lg:items-center">
-            <HeroSlider />
-            <div className="relative hidden lg:block">
-              <HeroVisual />
-            </div>
-          </div>
+          <HomeHeroSection />
         </div>
       </section>
 
@@ -1097,22 +1085,6 @@ const TESTIMONIALS = [
 ];
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
-
-function HeroVisual({ compact = false }: { compact?: boolean }) {
-  return (
-    <div className={compact ? "relative w-full" : "relative w-full max-w-none lg:w-[115%] lg:-ml-[8%]"}>
-      <Image
-        src={heroArtwork}
-        alt="Before and after resume example — optimized for more interviews"
-        width={1400}
-        height={900}
-        priority={!compact}
-        sizes="(max-width: 1024px) 90vw, 48vw"
-        className="h-auto w-full object-contain drop-shadow-2xl"
-      />
-    </div>
-  );
-}
 
 function FeatureCard({ icon, color, title, description, badge, guideHref }: {
   icon: string; color: string; title: string; description: string; badge: string | null; guideHref?: string | null;
