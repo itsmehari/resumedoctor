@@ -14,9 +14,9 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   alternates: { canonical: siteUrl },
-  title: "At ₹49 — Build Your Resume in 2 Minutes | ResumeDoctor",
+  title: "Build Your Resume in 2 Minutes — ₹49 | ResumeDoctor India",
   description:
-    "Build a professional ATS-ready resume in under 2 minutes for ₹49 — less than a pizza. India-first resume builder with PDF/DOCX export, 30+ templates, and AI writing. 14-day full Pro pass.",
+    "Build a professional resume in under 2 minutes for ₹49 — less than a pizza. India-first builder with PDF/DOCX export, 30+ templates, and AI writing. 14-day full Pro pass.",
 };
 
 // ─── Inline SVG icons (server-safe, no deps) ─────────────────────────────────
@@ -66,27 +66,24 @@ export default function HomePage() {
       <SiteHeader variant="home" />
 
       <main id="main-content" tabIndex={-1} className="flex-1 flex flex-col outline-none">
-      {/* ── HERO ────────────────────────────────────────────────────────── */}
+      {/* ── HERO (mobile-first) ─────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary-700 via-primary-600 to-indigo-900">
-        {/* Background decorations */}
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] opacity-10 blur-3xl rounded-full"
+        <div className="absolute top-0 right-0 w-[min(100vw,600px)] h-[min(100vw,600px)] opacity-10 blur-3xl rounded-full pointer-events-none"
           style={{ background: "radial-gradient(circle, #fbbf24 0%, transparent 70%)" }} aria-hidden />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] opacity-10 blur-3xl rounded-full"
+        <div className="absolute bottom-0 left-0 w-[min(80vw,400px)] h-[min(80vw,400px)] opacity-10 blur-3xl rounded-full pointer-events-none"
           style={{ background: "radial-gradient(circle, #818cf8 0%, transparent 70%)" }} aria-hidden />
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left: rotating pay-first slider */}
-            <HeroSlider />
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 lg:py-24">
+          {/* Mobile / tablet: visual first */}
+          <div className="relative mx-auto mb-8 w-full max-w-[300px] sm:max-w-sm lg:hidden">
+            <HeroVisual compact />
+          </div>
 
-            {/* Right: hero visual — desktop */}
+          <div className="flex flex-col gap-10 lg:grid lg:grid-cols-2 lg:gap-14 lg:items-center">
+            <HeroSlider />
             <div className="relative hidden lg:block">
               <HeroVisual />
             </div>
-          </div>
-          {/* Mobile / tablet proof — visible below lg */}
-          <div className="relative mx-auto mt-10 max-w-sm lg:hidden">
-            <HeroVisual compact />
           </div>
         </div>
       </section>
@@ -1103,15 +1100,15 @@ const TESTIMONIALS = [
 
 function HeroVisual({ compact = false }: { compact?: boolean }) {
   return (
-    <div className={compact ? "relative w-full" : "relative w-[140%] max-w-none -ml-[20%]"}>
+    <div className={compact ? "relative w-full" : "relative w-full max-w-none lg:w-[115%] lg:-ml-[8%]"}>
       <Image
         src={heroArtwork}
-        alt="ResumeDoctor before-and-after optimized resume visual"
+        alt="Before and after resume example — optimized for more interviews"
         width={1400}
         height={900}
         priority={!compact}
-        sizes={compact ? "100vw" : "(max-width: 1024px) 100vw, 48vw"}
-        className="h-auto w-full object-contain"
+        sizes="(max-width: 1024px) 90vw, 48vw"
+        className="h-auto w-full object-contain drop-shadow-2xl"
       />
     </div>
   );
