@@ -108,16 +108,8 @@ function OutLink(props: {
       href={props.href}
       target="_blank"
       rel="noopener noreferrer"
-      onClick={(e) => {
-        const proceed = window.confirm(
-          "Before checkout, confirm you will use the same email as your ResumeDoctor account. Continue to SuperProfile?"
-        );
-        if (!proceed) {
-          e.preventDefault();
-          trackEvent("superprofile_checkout_cancelled", { label: props.eventLabel });
-          return;
-        }
-        trackEvent("superprofile_checkout_click", { label: props.eventLabel, precheck_confirmed: true });
+      onClick={() => {
+        trackEvent("superprofile_checkout_click", { label: props.eventLabel });
       }}
       className={`inline-flex items-center justify-center gap-1.5 rounded-xl border-2 px-4 py-3.5 text-sm font-semibold w-full text-center transition-colors ${base}`}
     >
