@@ -2,8 +2,7 @@
 
 import Image, { type StaticImageData } from "next/image";
 import heroBeforeAfter from "../../../Resumedoctor-heroimage.png";
-
-const HERO_DESK_IMAGE = "/images/hero-desk-resume.png";
+import { HERO_SLIDE_VISUAL_BY_INDEX } from "@/components/home/hero-slider-data";
 
 const HERO_IMAGES: { src: StaticImageData | string; alt: string; priority?: boolean }[] = [
   {
@@ -12,19 +11,29 @@ const HERO_IMAGES: { src: StaticImageData | string; alt: string; priority?: bool
     priority: true,
   },
   {
-    src: HERO_DESK_IMAGE,
+    src: "/images/hero-desk-resume.png",
     alt: "Professional resume on laptop and desk — ResumeDoctor",
+  },
+  {
+    src: "/images/hero-pro-trial-49.png",
+    alt: "Try SuperProfile Pro — ₹49 for 14 days, PDF and Word export",
+  },
+  {
+    src: "/images/hero-get-hired-laptop.png",
+    alt: "Build a resume that gets you hired — ResumeDoctor on laptop",
   },
 ];
 
 type HeroVisualProps = {
-  /** 0 = before/after, 1 = desk scene — synced with hero slider */
-  activeVisual?: number;
+  /** Hero slide index (0–4) — picks the matching visual */
+  slideIndex?: number;
   compact?: boolean;
 };
 
-export function HeroVisual({ activeVisual = 0, compact = false }: HeroVisualProps) {
-  const index = activeVisual % HERO_IMAGES.length;
+export function HeroVisual({ slideIndex = 0, compact = false }: HeroVisualProps) {
+  const visualIndex =
+    HERO_SLIDE_VISUAL_BY_INDEX[slideIndex % HERO_SLIDE_VISUAL_BY_INDEX.length] ?? 0;
+  const index = visualIndex % HERO_IMAGES.length;
 
   return (
     <div
@@ -43,7 +52,7 @@ export function HeroVisual({ activeVisual = 0, compact = false }: HeroVisualProp
             src={item.src}
             alt={i === index ? item.alt : ""}
             fill
-            priority={Boolean(item.priority) && compact === false && i === 0}
+            priority={Boolean(item.priority) && !compact && i === 0}
             sizes="(max-width: 1024px) 90vw, 48vw"
             className="object-contain drop-shadow-2xl"
           />

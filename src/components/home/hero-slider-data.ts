@@ -91,3 +91,6 @@ export const HERO_SLIDES: HeroSlide[] = [
 ];
 
 export const HERO_SLIDER_INTERVAL_MS = 6000;
+
+/** Maps each hero slide index to a hero visual (see hero-visual.tsx). */
+export const HERO_SLIDE_VISUAL_BY_INDEX = [0, 1, 3, 2, 1] as const;
