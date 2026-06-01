@@ -1,38 +1,54 @@
 /**
- * Google Ads purchase conversion — fires once per browser session on /payment/success.
+ * Google Ads "Page view" conversion on /payment/success (SuperProfile redirect).
  *
- * In Google Ads: create a conversion action → "Website" → thank-you URL:
- *   https://www.resumedoctor.in/payment/success
- * Copy the conversion label into NEXT_PUBLIC_GOOGLE_ADS_PURCHASE_SEND_TO (AW-xxx/label).
+ * Event snippet from Google Ads:
+ *   gtag('event', 'conversion', {'send_to': 'AW-18199694938/94gZCLbZ2rYcENqcpeZD'});
  */
-import { GOOGLE_ADS_ID } from "@/components/google-tag-head";
-
-const PURCHASE_SEND_TO =
+export const GOOGLE_ADS_PURCHASE_CONVERSION_SEND_TO =
   process.env.NEXT_PUBLIC_GOOGLE_ADS_PURCHASE_SEND_TO?.trim() ||
-  `${GOOGLE_ADS_ID}/default`;
+  "AW-18199694938/94gZCLbZ2rYcENqcpeZD";
 
 const SESSION_KEY = "rd_gads_purchase_conversion_fired";
 
+/** Fires the Page view conversion once per browser session. Retries until gtag is ready. */
 export function reportGoogleAdsPurchaseConversion(options?: {
-  value?: number;
-  currency?: string;
   transactionId?: string;
-}) {
-  if (typeof window === "undefined" || typeof window.gtag !== "function") return false;
+}): void {
+  if (typeof window === "undefined") return;
 
   try {
-    if (sessionStorage.getItem(SESSION_KEY) === "1") return false;
-    sessionStorage.setItem(SESSION_KEY, "1");
+    if (sessionStorage.getItem(SESSION_KEY) === "1") return;
   } catch {
-    // sessionStorage blocked — still attempt the conversion
+    // sessionStorage blocked
   }
 
-  window.gtag("event", "conversion", {
-    send_to: PURCHASE_SEND_TO,
-    value: options?.value ?? 49,
-    currency: options?.currency ?? "INR",
-    transaction_id: options?.transactionId ?? `trial14_${Date.now()}`,
-  });
+  const fire = () => {
+    if (typeof window.gtag !== "function") return false;
 
-  return true;
+    const payload: Record<string, string> = {
+      send_to: GOOGLE_ADS_PURCHASE_CONVERSION_SEND_TO,
+    };
+    if (options?.transactionId) {
+      payload.transaction_id = options.transactionId;
+    }
+
+    window.gtag("event", "conversion", payload);
+
+    try {
+      sessionStorage.setItem(SESSION_KEY, "1");
+    } catch {
+      // ignore
+    }
+    return true;
+  };
+
+  if (fire()) return;
+
+  let attempts = 0;
+  const id = window.setInterval(() => {
+    attempts += 1;
+    if (fire() || attempts >= 20) {
+      window.clearInterval(id);
+    }
+  }, 250);
 }

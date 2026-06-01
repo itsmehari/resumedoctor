@@ -70,17 +70,13 @@ function PaymentSuccessContent() {
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [profileLoaded, setProfileLoaded] = useState(false);
 
-  // Google Ads conversion — fire once when SuperProfile redirects here after payment
+  // Google Ads conversion — Page view conversion (AW-18199694938/94gZCLbZ2rYcENqcpeZD)
   useEffect(() => {
     if (conversionFired.current) return;
     conversionFired.current = true;
 
     const transactionId = transactionIdFromParams(searchParams);
-    reportGoogleAdsPurchaseConversion({
-      value: 49,
-      currency: "INR",
-      transactionId,
-    });
+    reportGoogleAdsPurchaseConversion({ transactionId });
     trackEvent("post_purchase_page_view", { plan: "pro_trial_14", source: "superprofile_redirect" });
     trackEvent("post_purchase_confirmed", { plan: "pro_trial_14", source: "payment_success_page" });
   }, [searchParams]);

@@ -26,7 +26,7 @@ After payment on the **14-day full Pro** product, SuperProfile redirects the buy
 
 `https://www.resumedoctor.in/payment/success`
 
-Copy the conversion tag label into Vercel as `NEXT_PUBLIC_GOOGLE_ADS_PURCHASE_SEND_TO` (format `AW-18199694938/your_label`). The page fires the conversion event automatically when someone lands here after checkout.
+Copy the conversion tag label into Vercel as `NEXT_PUBLIC_GOOGLE_ADS_PURCHASE_SEND_TO` (default in code: `AW-18199694938/94gZCLbZ2rYcENqcpeZD`). The page fires `gtag('event', 'conversion', { send_to: '...' })` when someone lands here after checkout.
 
 The old path `/pricing/thank-you` redirects here automatically.
 
