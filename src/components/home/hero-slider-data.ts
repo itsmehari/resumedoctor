@@ -1,5 +1,4 @@
 export type HeroSlideCtaVariant = "accent" | "trial";
-export type HeroSlideCtaKind = "internal" | "superprofile_trial" | "resume_link";
 
 export type HeroSlide = {
   id: string;
@@ -11,13 +10,12 @@ export type HeroSlide = {
   priceAmount?: string;
   proofLine: string;
   ctaLabel: string;
-  ctaHref: string;
-  ctaKind?: HeroSlideCtaKind;
   ctaVariant: HeroSlideCtaVariant;
   secondaryLabel: string;
   secondaryHref: string;
 };
 
+/** All primary hero CTAs use SuperProfile ₹49 checkout (see hero-slider.tsx). */
 export const HERO_SLIDES: HeroSlide[] = [
   {
     id: "pizza",
@@ -29,8 +27,6 @@ export const HERO_SLIDES: HeroSlide[] = [
     priceDetail: "one-time · 14-day full Pro",
     proofLine: "PDF + Word · 30+ templates · AI writing help",
     ctaLabel: "Start for ₹49",
-    ctaHref: "/pricing#trial",
-    ctaKind: "superprofile_trial",
     ctaVariant: "accent",
     secondaryLabel: "Try free preview",
     secondaryHref: "/try",
@@ -45,7 +41,6 @@ export const HERO_SLIDES: HeroSlide[] = [
     priceDetail: "14 days · every export unlocked",
     proofLine: "One payment. Full Pro. No auto-renew.",
     ctaLabel: "Unlock exports — ₹49",
-    ctaHref: "/pricing#trial",
     ctaVariant: "accent",
     secondaryLabel: "Browse templates",
     secondaryHref: "/templates",
@@ -60,7 +55,6 @@ export const HERO_SLIDES: HeroSlide[] = [
     priceDetail: "full Pro · 14 days to apply",
     proofLine: "Role-fit tips + AI bullet rewrites",
     ctaLabel: "Get interview-ready — ₹49",
-    ctaHref: "/pricing#trial",
     ctaVariant: "accent",
     secondaryLabel: "See how it works",
     secondaryHref: "/features",
@@ -75,7 +69,6 @@ export const HERO_SLIDES: HeroSlide[] = [
     priceDetail: "vs ₹199/mo · ~₹3.50/day",
     proofLine: "Same email at checkout = instant unlock",
     ctaLabel: "Pay ₹49 — 14-day full Pro",
-    ctaHref: "/pricing#trial",
     ctaVariant: "trial",
     secondaryLabel: "Compare plans",
     secondaryHref: "/pricing",
@@ -90,9 +83,7 @@ export const HERO_SLIDES: HeroSlide[] = [
     priceAmount: "Free",
     priceDetail: "publish · Pro Link from ₹99/mo",
     proofLine: "Live demo at resumedoctor.in/r/demo",
-    ctaLabel: "Get your resume link",
-    ctaHref: "/resume-link",
-    ctaKind: "resume_link",
+    ctaLabel: "Pay ₹49 — full Pro + link",
     ctaVariant: "accent",
     secondaryLabel: "See live demo",
     secondaryHref: "/r/demo",

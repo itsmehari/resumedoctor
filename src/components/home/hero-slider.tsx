@@ -13,7 +13,6 @@ import {
   HERO_SLIDES,
   type HeroSlide,
 } from "@/components/home/hero-slider-data";
-import { ResumeLinkCta } from "@/components/resume-link/resume-link-cta";
 
 const TRIAL_CHECKOUT_URL = resolveSuperprofileCheckoutHref(
   process.env.NEXT_PUBLIC_SUPERPROFILE_URL_TRIAL_14,
@@ -38,6 +37,26 @@ function renderHeadline(slide: HeroSlide) {
   );
 }
 
+function openSuperprofileCheckout(slideId: string, event: React.MouseEvent<HTMLAnchorElement>) {
+  trackEvent("hero_slider_cta_click", {
+    slide_id: slideId,
+    cta_href: TRIAL_CHECKOUT_URL,
+    cta_kind: "superprofile_trial",
+  });
+  const proceed = window.confirm(
+    "Before checkout, confirm you will use the same email as your ResumeDoctor account. Continue to SuperProfile?"
+  );
+  if (!proceed) {
+    event.preventDefault();
+    trackEvent("superprofile_checkout_cancelled", { label: "hero_slider_trial_14" });
+    return;
+  }
+  trackEvent("superprofile_checkout_click", {
+    label: "hero_slider_trial_14",
+    precheck_confirmed: true,
+  });
+}
+
 function SlideCta({ slide }: { slide: HeroSlide }) {
   const base =
     slide.ctaVariant === "trial"
@@ -46,57 +65,17 @@ function SlideCta({ slide }: { slide: HeroSlide }) {
 
   const className = `inline-flex w-full items-center justify-center gap-1.5 rounded-xl px-6 py-3.5 text-center text-base font-bold transition-all shadow-xl active:scale-[0.98] sm:w-auto sm:px-8 sm:py-4 ${base}`;
 
-  if (slide.ctaKind === "resume_link") {
-    return (
-      <div className="w-full sm:w-auto">
-        <ResumeLinkCta variant="accent" className="w-full justify-center sm:w-auto">
-          {slide.ctaLabel}
-        </ResumeLinkCta>
-      </div>
-    );
-  }
-
-  if (slide.ctaKind === "superprofile_trial") {
-    return (
-      <a
-        href={TRIAL_CHECKOUT_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={(event) => {
-          trackEvent("hero_slider_cta_click", {
-            slide_id: slide.id,
-            cta_href: TRIAL_CHECKOUT_URL,
-            cta_kind: "superprofile_trial",
-          });
-          const proceed = window.confirm(
-            "Before checkout, confirm you will use the same email as your ResumeDoctor account. Continue to SuperProfile?"
-          );
-          if (!proceed) {
-            event.preventDefault();
-            trackEvent("superprofile_checkout_cancelled", { label: "hero_slider_trial_14" });
-            return;
-          }
-          trackEvent("superprofile_checkout_click", {
-            label: "hero_slider_trial_14",
-            precheck_confirmed: true,
-          });
-        }}
-        className={className}
-      >
-        {slide.ctaLabel}
-        <ExternalLink className="h-4 w-4 shrink-0 opacity-90" aria-hidden />
-      </a>
-    );
-  }
-
-  const onClick = () => {
-    trackEvent("hero_slider_cta_click", { slide_id: slide.id, cta_href: slide.ctaHref });
-  };
-
   return (
-    <Link href={slide.ctaHref} onClick={onClick} className={className}>
+    <a
+      href={TRIAL_CHECKOUT_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={(event) => openSuperprofileCheckout(slide.id, event)}
+      className={className}
+    >
       {slide.ctaLabel}
-    </Link>
+      <ExternalLink className="h-4 w-4 shrink-0 opacity-90" aria-hidden />
+    </a>
   );
 }
 
