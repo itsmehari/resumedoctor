@@ -24,6 +24,11 @@ function TryPageContent() {
   const returnTo = searchParams.get("returnTo");
 
   useEffect(() => {
+    trackEvent("trial_start_view", { reason: reason ?? null, returnTo: returnTo ?? null });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     if (resendSeconds <= 0) return;
     const t = setInterval(() => {
       setResendSeconds((s) => (s <= 1 ? 0 : s - 1));
@@ -50,6 +55,7 @@ function TryPageContent() {
         setEmail(trimmed);
         setStep("otp");
         setMessage("Verification code sent! Check your email.");
+        trackEvent("trial_otp_sent", { email_domain: trimmed.split("@")[1] ?? null });
         if (options?.isResend) setResendSeconds(RESEND_COOLDOWN_SEC);
         return true;
       } finally {
@@ -93,6 +99,7 @@ function TryPageContent() {
         setError(data.error || "Invalid or expired code");
         return;
       }
+      trackEvent("trial_otp_verified");
       trackEvent("trial_start");
       trackMetaEvent("CompleteRegistration");
       trackMetaCustom("TrialStart");
@@ -110,12 +117,12 @@ function TryPageContent() {
       <main id="main-content" tabIndex={-1} className="flex-1 flex flex-col items-center justify-center px-4 py-12 outline-none">
         <div className="w-full max-w-md">
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100 text-center">
-            Try the builder — no card
+            Get a free resume review — no card
           </h1>
           <p className="mt-2 text-slate-600 dark:text-slate-400 text-center max-w-md mx-auto text-sm">
             {step === "email"
-              ? "In about fifteen minutes you can pick a template, sketch sections, and preview. Enter your email for a code—we never ask for a card on this step."
-              : "Enter the 6-digit code we sent to your email"}
+              ? "Enter your email to receive a verification code. After OTP, you’ll see a quick review preview: top fixes + a sample rewrite, then you can pick a template and start editing."
+              : "Enter the 6-digit code we sent to your email to start your free preview"}
           </p>
 
           {isExpired && (
@@ -165,6 +172,17 @@ function TryPageContent() {
                 >
                   {loading ? "Sending..." : "Send verification code"}
                 </button>
+                <div className="rounded-2xl border border-slate-200/80 bg-white/70 p-4 text-left text-xs text-slate-700 shadow-sm ring-1 ring-slate-100 dark:border-slate-700/70 dark:bg-slate-900/60 dark:text-slate-200 dark:ring-slate-800">
+                  <p className="font-semibold text-slate-900 dark:text-slate-100">What you’ll get in the free preview</p>
+                  <ul className="mt-2 space-y-1.5 text-slate-600 dark:text-slate-300">
+                    <li>• Resume strength summary (ATS-friendly checks inside)</li>
+                    <li>• 3–5 priority fixes to improve impact</li>
+                    <li>• 1 sample rewrite to show the tone</li>
+                  </ul>
+                  <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+                    Then pick a template and start editing. Unlock export only when you’re ready to download.
+                  </p>
+                </div>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
                   Editing and preview in-session. Create a free account to save your work; PDF and Word need Pro (see{" "}
                   <Link href="/pricing" className="text-primary-600 hover:underline dark:text-primary-400">
@@ -203,7 +221,7 @@ function TryPageContent() {
                   disabled={loading || otp.length !== 6}
                   className="w-full rounded-xl bg-accent hover:bg-accent-hover py-3 text-base font-semibold text-accent-dark transition-colors disabled:opacity-50"
                 >
-                  {loading ? "Verifying..." : "Verify and start 15-min trial"}
+                  {loading ? "Verifying..." : "Verify and start free preview"}
                 </button>
                 <button
                   type="button"
@@ -237,8 +255,7 @@ function TryPageContent() {
           </div>
 
           <p className="mt-6 text-center text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
-            Fifteen-minute session after verification. No credit card here. Sign up to keep your resume; Pro on SuperProfile
-            unlocks PDF and Word for real applications.
+            Short session after verification. No credit card here. Sign up to keep your resume; unlock PDF/DOCX export when you’re ready to apply.
           </p>
         </div>
       </main>

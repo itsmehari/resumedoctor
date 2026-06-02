@@ -64,6 +64,10 @@ export default function TryTemplatesPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    trackEvent("preview_generated", { step: "try_templates" });
+  }, []);
+
+  useEffect(() => {
     fetch("/api/templates", { credentials: "include" })
       .then((res) => (res.ok ? res.json() : { templates: [] }))
       .then((data) =>
@@ -101,6 +105,46 @@ export default function TryTemplatesPage() {
 
       <main id="main-content" tabIndex={-1} className="flex-1 px-4 py-12 outline-none">
         <div className="max-w-4xl mx-auto">
+          <div className="mx-auto mb-8 max-w-2xl">
+            <div className="flex items-center justify-center gap-2 text-[11px] font-semibold text-slate-600 dark:text-slate-400">
+              <span className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 dark:border-violet-800/40 dark:bg-violet-950/25">
+                <span className="h-2 w-2 rounded-full bg-violet-500" aria-hidden />
+                Preview
+              </span>
+              <span className="text-slate-400" aria-hidden>→</span>
+              <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 dark:border-slate-700 dark:bg-slate-900">
+                Improve
+              </span>
+              <span className="text-slate-400" aria-hidden>→</span>
+              <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 dark:border-slate-700 dark:bg-slate-900">
+                Export (₹49 unlock)
+              </span>
+            </div>
+            <div className="mt-4 rounded-3xl border border-slate-200/80 bg-white/80 p-5 shadow-sm ring-1 ring-slate-100 dark:border-slate-700/70 dark:bg-slate-900/70 dark:ring-slate-800">
+              <p className="text-xs font-bold uppercase tracking-widest text-primary-600 dark:text-primary-400">
+                Free review preview
+              </p>
+              <h2 className="mt-2 text-lg sm:text-xl font-extrabold text-slate-900 dark:text-slate-100">
+                Here’s what you’ll see once you start editing
+              </h2>
+              <div className="mt-3 grid gap-3 sm:grid-cols-3">
+                {[
+                  { t: "Strength summary", d: "A quick snapshot of what to fix first." },
+                  { t: "Top 3–5 fixes", d: "Actionable improvements you can apply immediately." },
+                  { t: "Sample rewrite", d: "One example bullet rewritten with better impact." },
+                ].map((i) => (
+                  <div key={i.t} className="rounded-2xl border border-slate-200/70 bg-slate-50/70 p-4 dark:border-slate-700/70 dark:bg-slate-800/40">
+                    <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{i.t}</p>
+                    <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">{i.d}</p>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
+                Pick a template below to create a draft. You can unlock export later when you’re ready to download.
+              </p>
+            </div>
+          </div>
+
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100 text-center">
             Choose a template for this Try session
           </h1>

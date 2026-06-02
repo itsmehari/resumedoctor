@@ -1,23 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { trackEvent } from "@/lib/analytics";
-import {
-  FALLBACK_TRIAL_14_URL,
-  resolveSuperprofileCheckoutHref,
-} from "@/components/pricing/superprofile-pricing-links";
 import {
   HERO_SLIDER_INTERVAL_MS,
   HERO_SLIDES,
   type HeroSlide,
 } from "@/components/home/hero-slider-data";
-
-const TRIAL_CHECKOUT_URL = resolveSuperprofileCheckoutHref(
-  process.env.NEXT_PUBLIC_SUPERPROFILE_URL_TRIAL_14,
-  FALLBACK_TRIAL_14_URL
-);
 
 function renderHeadline(slide: HeroSlide) {
   const { headline, headlineHighlight } = slide;
@@ -37,34 +28,24 @@ function renderHeadline(slide: HeroSlide) {
   );
 }
 
-function openSuperprofileCheckout(slideId: string) {
+function trackHeroCta(slideId: string) {
   trackEvent("hero_slider_cta_click", {
     slide_id: slideId,
-    cta_href: TRIAL_CHECKOUT_URL,
-    cta_kind: "superprofile_trial",
+    cta_href: "/try",
+    cta_kind: "try",
   });
-  trackEvent("superprofile_checkout_click", { label: "hero_slider_trial_14" });
+  trackEvent("landing_cta_click", { source: "hero_slider", slide_id: slideId, target: "/try" });
 }
 
 function SlideCta({ slide }: { slide: HeroSlide }) {
-  const base =
-    slide.ctaVariant === "trial"
-      ? "bg-orange-500 text-white hover:bg-orange-600 shadow-orange-900/15 dark:bg-orange-600 dark:hover:bg-orange-500"
-      : "bg-accent text-accent-dark hover:bg-accent-hover shadow-black/30";
+  const base = "bg-accent text-accent-dark hover:bg-accent-hover shadow-black/30";
 
   const className = `inline-flex w-full items-center justify-center gap-1.5 rounded-xl px-6 py-3.5 text-center text-base font-bold transition-all shadow-xl active:scale-[0.98] sm:w-auto sm:px-8 sm:py-4 ${base}`;
 
   return (
-    <a
-      href={TRIAL_CHECKOUT_URL}
-      target="_blank"
-      rel="noopener noreferrer"
-      onClick={() => openSuperprofileCheckout(slide.id)}
-      className={className}
-    >
+    <Link href="/try" onClick={() => trackHeroCta(slide.id)} className={className}>
       {slide.ctaLabel}
-      <ExternalLink className="h-4 w-4 shrink-0 opacity-90" aria-hidden />
-    </a>
+    </Link>
   );
 }
 

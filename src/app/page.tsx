@@ -12,9 +12,9 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   alternates: { canonical: siteUrl },
-  title: "Build Your Resume in 2 Minutes — ₹49 | ResumeDoctor India",
+  title: "Free Resume Review & Builder (OTP) — Unlock Export for ₹49 | ResumeDoctor",
   description:
-    "Build a professional resume in under 2 minutes for ₹49 — less than a pizza. India-first builder with PDF/DOCX export, 30+ templates, and AI writing. 14-day full Pro pass.",
+    "Start with a free resume review via OTP Try. Build a recruiter-ready resume with templates and AI help, then unlock PDF/DOCX export and the full improvement report for ₹49 when you're ready.",
 };
 
 // ─── Inline SVG icons (server-safe, no deps) ─────────────────────────────────
@@ -73,6 +73,51 @@ export default function HomePage() {
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 lg:py-24">
           <HomeHeroSection />
+
+          {/* Value justification (replaces “pizza cost” framing) */}
+          <div className="mt-10 mx-auto max-w-3xl">
+            <div className="rounded-3xl border border-white/15 bg-white/10 backdrop-blur-md p-6 sm:p-7 shadow-[0_20px_70px_rgba(0,0,0,0.22)] ring-1 ring-white/10">
+              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-white/80">
+                Free preview first · Pay only when you export
+              </p>
+              <h2 className="mt-2 text-xl sm:text-2xl font-extrabold tracking-tight text-white">
+                Unlock your export‑ready resume for{" "}
+                <span className="text-amber-300">₹49</span>
+              </h2>
+              <p className="mt-2 text-sm sm:text-base text-white/80 leading-relaxed">
+                Start with a free review via OTP Try. When you’re ready to apply, unlock portal‑ready PDF/DOCX and the full improvement report.
+              </p>
+
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                {[
+                  { t: "Full improvement report", d: "Structure, impact, and keyword coverage — in one view." },
+                  { t: "PDF + DOCX export", d: "Files recruiters can open anywhere, ready for portals." },
+                  { t: "Premium templates", d: "Use every layout while your access is active." },
+                  { t: "Apply AI improvements", d: "Turn drafts into crisp bullets faster." },
+                ].map((item) => (
+                  <div key={item.t} className="rounded-2xl border border-white/10 bg-white/[0.06] p-4">
+                    <p className="font-semibold text-white">{item.t}</p>
+                    <p className="mt-1 text-xs text-white/70">{item.d}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6 flex flex-col sm:flex-row gap-3">
+                <Link
+                  href="/try"
+                  className="inline-flex items-center justify-center rounded-xl bg-accent hover:bg-accent-hover px-6 py-3 text-sm sm:text-base font-bold text-accent-dark transition-all shadow-xl shadow-black/25 hover:scale-[1.01]"
+                >
+                  Start free review
+                </Link>
+                <Link
+                  href="/pricing#trial"
+                  className="inline-flex items-center justify-center rounded-xl border border-white/25 bg-white/5 hover:bg-white/10 px-6 py-3 text-sm sm:text-base font-semibold text-white transition-colors"
+                >
+                  See ₹49 unlock details
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

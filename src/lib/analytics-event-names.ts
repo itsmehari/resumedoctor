@@ -6,6 +6,14 @@ export const AnalyticsEvents = {
   signup_attempt: "signup_attempt",
   /** Server: trial OTP send-otp endpoint was hit (regardless of email provider outcome). */
   otp_request_attempt: "otp_request_attempt",
+  /** Client GA4: user viewed the /try entry step. */
+  trial_start_view: "trial_start_view",
+  /** Client GA4: OTP email was sent successfully (client confirmation). */
+  trial_otp_sent: "trial_otp_sent",
+  /** Client GA4: OTP was verified successfully (client confirmation). */
+  trial_otp_verified: "trial_otp_verified",
+  /** Client GA4: user reached the post-OTP preview/templates step. */
+  preview_generated: "preview_generated",
   resume_created: "resume_created",
   trial_start: "trial_start",
   checkout_started: "checkout_started",
@@ -34,6 +42,10 @@ export const DOCUMENTED_PRODUCT_EVENT_NAMES: readonly AnalyticsEventName[] = [
   AnalyticsEvents.sign_up,
   AnalyticsEvents.signup_attempt,
   AnalyticsEvents.otp_request_attempt,
+  AnalyticsEvents.trial_start_view,
+  AnalyticsEvents.trial_otp_sent,
+  AnalyticsEvents.trial_otp_verified,
+  AnalyticsEvents.preview_generated,
   AnalyticsEvents.resume_created,
   AnalyticsEvents.trial_start,
   AnalyticsEvents.checkout_started,

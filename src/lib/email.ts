@@ -361,3 +361,86 @@ export async function sendWinBackEmail(
     },
   });
 }
+
+export async function sendTrialPreviewFollowupEmail(
+  email: string,
+  opts: { tryUrl: string; pricingUrl: string }
+): Promise<SendResult> {
+  return send({
+    purpose: "trial-followup-15m",
+    to: email,
+    subject: `Your resume review + 3 quick fixes — ${appName}`,
+    html: `
+      <div style="font-family: Arial, Helvetica, sans-serif; max-width: 520px; margin: 0 auto; color: #0f172a;">
+        <h2 style="margin:0 0 8px; font-size: 20px;">Your resume review is ready</h2>
+        <p style="margin:0 0 16px; color:#475569; line-height:1.55;">
+          You started a free preview on ${appName}. Come back to apply the fixes and export when you’re ready.
+        </p>
+        <ul style="margin:0 0 18px; padding-left: 18px; color:#334155; line-height:1.6;">
+          <li>Strength summary + what to fix first</li>
+          <li>Top 3–5 priority improvements</li>
+          <li>One sample rewrite to match recruiter tone</li>
+        </ul>
+        <p style="margin: 18px 0;">
+          <a href="${opts.tryUrl}" style="background:#2563eb; color:white; padding:12px 18px; text-decoration:none; border-radius:10px; display:inline-block; font-weight:700;">
+            Continue my free preview
+          </a>
+        </p>
+        <p style="margin:0; color:#64748b; font-size: 13px; line-height:1.55;">
+          When you’re ready to download, unlock export (₹49 in India) here: <a href="${opts.pricingUrl}" style="color:#2563eb;">Pricing</a>.
+        </p>
+      </div>
+    `,
+    text: [
+      `Your resume review is ready — ${appName}`,
+      "",
+      `Continue your free preview: ${opts.tryUrl}`,
+      "",
+      "What you'll see:",
+      "- Strength summary + what to fix first",
+      "- Top 3–5 priority improvements",
+      "- One sample rewrite to match recruiter tone",
+      "",
+      `Unlock export when you're ready (₹49 in India): ${opts.pricingUrl}`,
+    ].join("\n"),
+    headers: {
+      "List-Unsubscribe": `<mailto:${replyTo}?subject=unsubscribe>`,
+    },
+  });
+}
+
+export async function sendTrialPreviewReminder24hEmail(
+  email: string,
+  opts: { tryUrl: string; pricingUrl: string }
+): Promise<SendResult> {
+  return send({
+    purpose: "trial-followup-24h",
+    to: email,
+    subject: `Finish your resume — export when ready (₹49) — ${appName}`,
+    html: `
+      <div style="font-family: Arial, Helvetica, sans-serif; max-width: 520px; margin: 0 auto; color: #0f172a;">
+        <h2 style="margin:0 0 8px; font-size: 20px;">Finish your resume in minutes</h2>
+        <p style="margin:0 0 16px; color:#475569; line-height:1.55;">
+          Quick reminder: your ${appName} preview is waiting. Apply the fixes, then unlock export only if you need a PDF/DOCX download.
+        </p>
+        <p style="margin: 18px 0;">
+          <a href="${opts.tryUrl}" style="background:#16a34a; color:white; padding:12px 18px; text-decoration:none; border-radius:10px; display:inline-block; font-weight:700;">
+            Continue and improve my resume
+          </a>
+        </p>
+        <p style="margin:0; color:#64748b; font-size: 13px; line-height:1.55;">
+          Pricing & unlock details: <a href="${opts.pricingUrl}" style="color:#2563eb;">${opts.pricingUrl}</a>
+        </p>
+      </div>
+    `,
+    text: [
+      `Finish your resume — ${appName}`,
+      "",
+      `Continue: ${opts.tryUrl}`,
+      `Pricing & unlock: ${opts.pricingUrl}`,
+    ].join("\n"),
+    headers: {
+      "List-Unsubscribe": `<mailto:${replyTo}?subject=unsubscribe>`,
+    },
+  });
+}

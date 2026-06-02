@@ -344,9 +344,9 @@ export function ExportButtons({
               <>
                 <div className="px-3 py-2 text-xs text-slate-600 dark:text-slate-400 border-b border-slate-100 dark:border-slate-700">
                   TXT and print are free. Recruiter-ready <strong className="font-medium">PDF</strong> and{" "}
-                  <strong className="font-medium">Word</strong> need{" "}
+                  <strong className="font-medium">Word</strong> are an unlock (₹49 in India) via{" "}
                   <Link href="/pricing" className="text-primary-600 dark:text-primary-400 underline font-medium">
-                    Pro or a resume pack
+                    pricing
                   </Link>
                   .
                 </div>
@@ -374,7 +374,7 @@ export function ExportButtons({
                   Print opens a new tab. If nothing appears, allow pop-ups for this site.
                 </p>
                 <Link
-                  href="/pricing"
+                  href="/pricing#trial"
                   onClick={() => {
                     trackEvent("upgrade_click", { source: "export_pdf" });
                     setOpen(false);
@@ -383,10 +383,10 @@ export function ExportButtons({
                   role="menuitem"
                 >
                   <Lock className="h-4 w-4 shrink-0" aria-hidden />
-                  Download PDF — Pro or pack
+                  Unlock & download PDF
                 </Link>
                 <Link
-                  href="/pricing"
+                  href="/pricing#trial"
                   onClick={() => {
                     trackEvent("upgrade_click", { source: "export_word" });
                     setOpen(false);
@@ -395,7 +395,7 @@ export function ExportButtons({
                   role="menuitem"
                 >
                   <Lock className="h-4 w-4 shrink-0" aria-hidden />
-                  Download Word — Pro or pack
+                  Unlock & download Word
                 </Link>
               </>
             )}

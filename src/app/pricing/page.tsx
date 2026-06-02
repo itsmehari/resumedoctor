@@ -476,8 +476,8 @@ export default function PricingPage() {
             <Link href="/try" className="text-primary-600 underline hover:text-primary-700 dark:text-primary-400">
               /try
             </Link>{" "}
-            with a quick OTP: you get a short, time-limited session to explore templates and editing. No card, no
-            checkout.
+            with a quick OTP: you get a short session to preview the builder and see the free review preview. No card,
+            no checkout.
             <br />
             <br />
             <strong className="text-slate-800 dark:text-slate-100">Pro (paid)</strong> — When you need PDF &amp; Word
@@ -523,7 +523,7 @@ export default function PricingPage() {
             checkout on SuperProfile, your account gets <strong className="text-slate-800 dark:text-slate-100">full Pro</strong>{" "}
             features for <strong className="text-slate-800 dark:text-slate-100">14 calendar days</strong>. It is separate
             from the OTP Try page — useful when you already know you want every export and template for a short burst
-            of applications. No automatic renewal.
+            of applications (especially when you’re ready to export). No automatic renewal.
           </>
         ),
       });
@@ -543,10 +543,10 @@ export default function PricingPage() {
           </h1>
           <p className="mx-auto mt-3 max-w-2xl text-slate-600 dark:text-slate-400">
             {region?.currency === "USD"
-              ? "Preview the builder with OTP Try (no card). Build, share as a link, and when you are ready to send a PDF or Word file to employers, upgrade on SuperProfile—use the same email as this account so access turns on automatically."
+              ? "Start with OTP Try (no card) for a free preview. Build, share as a link, and when you are ready to download portal-ready PDF/DOCX, unlock Pro on SuperProfile—use the same email as this account so access turns on automatically."
               : region?.currency === "INR"
-                ? "Preview with OTP Try (no card). Build, share as a link, and upgrade on SuperProfile when you need portal-ready PDF and Word, every template, and higher AI limits — pay once with the same email as this account."
-                : "Preview the builder with OTP Try (no card). Build, share as a link, and when you are ready to send a PDF or Word file to employers, upgrade on SuperProfile—use the same email as this account so access turns on automatically."}
+                ? "Start with OTP Try (no card) for a free preview. When you’re ready to export portal-ready PDF/DOCX and unlock the full improvement report, use the ₹49 India pass or Pro plans on SuperProfile — pay with the same email as this account."
+                : "Start with OTP Try (no card) for a free preview. Build, share as a link, and when you are ready to download portal-ready PDF/DOCX, unlock Pro on SuperProfile—use the same email as this account so access turns on automatically."}
           </p>
           <div className="mx-auto mt-8 max-w-xl">
             <TrustBadges />
@@ -555,7 +555,7 @@ export default function PricingPage() {
             <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-slate-700 dark:text-slate-300">
               <span className="font-semibold text-slate-900 dark:text-slate-100">India checkout:</span> Pro monthly{" "}
               <span className="font-medium">₹199</span>, annual <span className="font-medium">₹1,499</span>, optional{" "}
-              <span className="font-semibold text-orange-600 dark:text-orange-400">14-day full Pro pass ₹49</span>{" "}
+              <span className="font-semibold text-orange-600 dark:text-orange-400">₹49 unlock (14-day full Pro)</span>{" "}
               (one-time on{" "}
               <a
                 href={resolveSuperprofileCheckoutHref(

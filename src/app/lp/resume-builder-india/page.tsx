@@ -8,7 +8,7 @@ import { LpTierClarification } from "@/components/lp/lp-tier-clarification";
 export const metadata: Metadata = {
   title: "Resume Builder India — ATS-Friendly PDF & Word | ResumeDoctor",
   description:
-    "Build a resume for Naukri, LinkedIn, and campus drives. OTP Try with no card; Pro unlocks PDF and Word on SuperProfile.",
+    "Build a resume for Naukri, LinkedIn, and campus drives. Start with OTP Try (free preview); unlock PDF and Word exports when you're ready.",
   alternates: { canonical: `${siteUrl}/lp/resume-builder-india` },
 };
 
@@ -35,7 +35,7 @@ export default function ResumeBuilderIndiaLp() {
             href="/try"
             className="inline-flex items-center justify-center rounded-xl bg-primary-600 px-8 py-4 text-center text-base font-bold text-white shadow-lg transition hover:bg-primary-700"
           >
-            Start with OTP Try
+            Start free preview (OTP)
           </Link>
           <Link
             href="/pricing"
