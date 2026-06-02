@@ -5,6 +5,9 @@ import { prisma } from "@/lib/prisma";
 import { requireAdmin, requireSuperAdmin } from "@/lib/admin-auth";
 import { logAdminAction } from "@/lib/admin-audit";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -68,7 +71,11 @@ export async function GET(
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  return NextResponse.json(user);
+  return NextResponse.json(user, {
+    headers: {
+      "Cache-Control": "no-store, max-age=0",
+    },
+  });
 }
 
 const updateSchema = z.object({

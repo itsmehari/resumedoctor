@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin-auth";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;
@@ -64,13 +67,20 @@ export async function GET(req: NextRequest) {
     prisma.user.count({ where }),
   ]);
 
-  return NextResponse.json({
-    users,
-    pagination: {
-      page,
-      limit,
-      total,
-      totalPages: Math.ceil(total / limit),
+  return NextResponse.json(
+    {
+      users,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
     },
-  });
+    {
+      headers: {
+        "Cache-Control": "no-store, max-age=0",
+      },
+    }
+  );
 }

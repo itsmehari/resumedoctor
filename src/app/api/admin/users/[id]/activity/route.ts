@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin-auth";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 const LIMIT = 120;
 
 type TimelineItem = {
@@ -95,5 +98,12 @@ export async function GET(
   items.sort((a, b) => (a.at < b.at ? 1 : a.at > b.at ? -1 : 0));
   const trimmed = items.slice(0, LIMIT);
 
-  return NextResponse.json({ items: trimmed });
+  return NextResponse.json(
+    { items: trimmed },
+    {
+      headers: {
+        "Cache-Control": "no-store, max-age=0",
+      },
+    }
+  );
 }
