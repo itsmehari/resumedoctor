@@ -1,14 +1,12 @@
 // Phase 1.2 – Paste job description → AI tailor
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { requireFullAccountAuth } from "@/lib/api-auth";
 import { chatCompletion, isAiConfigured } from "@/lib/ai-client";
 import { checkAiRateLimit, recordAiUsage } from "@/lib/ai-rate-limit";
 import { getCachedAiResponse, setCachedAiResponse } from "@/lib/ai-cache";
 import { recordFeatureUsage } from "@/lib/feature-usage";
-import { sessionUserEmail } from "@/lib/session-user";
 
 const schema = z.object({
   jobDescription: z.string().min(50, "Job description too short").max(15000),
@@ -42,11 +40,8 @@ export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getServerSession(authOptions);
-  const sessionEmail = sessionUserEmail(session);
-  if (!sessionEmail) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const authResult = await requireFullAccountAuth();
+  if ("error" in authResult) return authResult.error;
 
   if (!isAiConfigured()) {
     return NextResponse.json(
@@ -55,13 +50,7 @@ export async function POST(
     );
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email: sessionEmail },
-    select: { id: true },
-  });
-  if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
-
-  const rateLimit = await checkAiRateLimit(user.id, "tailor-for-job");
+  const rateLimit = await checkAiRateLimit(authResult.userId, "tailor-for-job");
   if (!rateLimit.allowed) {
     return NextResponse.json(
       {
@@ -74,7 +63,7 @@ export async function POST(
 
   const { id } = await params;
   const resume = await prisma.resume.findFirst({
-    where: { id, userId: user.id },
+    where: { id, userId: authResult.userId },
   });
   if (!resume) {
     return NextResponse.json({ error: "Resume not found" }, { status: 404 });
@@ -97,8 +86,8 @@ export async function POST(
     };
     const cached = await getCachedAiResponse<TailorForJobResponse>("tailor-for-job", cacheInput);
     if (cached) {
-      await recordAiUsage(user.id, "tailor-for-job");
-      await recordFeatureUsage(user.id, "ai", { action: "tailor-for-job", cached: true });
+      await recordAiUsage(authResult.userId, "tailor-for-job");
+      await recordFeatureUsage(authResult.userId, "ai", { action: "tailor-for-job", cached: true });
       return NextResponse.json(cached);
     }
 
@@ -179,8 +168,8 @@ Rules:
       };
     }
 
-    await recordAiUsage(user.id, "tailor-for-job");
-    await recordFeatureUsage(user.id, "ai", { action: "tailor-for-job" });
+    await recordAiUsage(authResult.userId, "tailor-for-job");
+    await recordFeatureUsage(authResult.userId, "ai", { action: "tailor-for-job" });
     await setCachedAiResponse("tailor-for-job", cacheInput, result);
     return NextResponse.json(result);
   } catch (err) {

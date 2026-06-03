@@ -1,6 +1,6 @@
 # Lifecycle email map (segments and sequences)
 
-ResumeDoctor does not ship ESP automation in-repo; use this spec in your email tool (Resend, Customer.io, etc.) with the same copy themes as [`docs/MESSAGING-BRIEF.md`](./MESSAGING-BRIEF.md).
+ResumeDoctor does not ship ESP automation in-repo; use this spec in your email tool (Customer.io, Loops, Resend, etc.) with the same copy themes as [`docs/MESSAGING-BRIEF.md`](./MESSAGING-BRIEF.md).
 
 ## Segments
 

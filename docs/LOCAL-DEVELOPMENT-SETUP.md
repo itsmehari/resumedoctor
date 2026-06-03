@@ -1,6 +1,6 @@
 # ResumeDoctor – Local Development Setup & Dependencies (resumedoctor.in)
 
-**Last Updated:** 2026-02-27
+**Last Updated:** 2026-06-02
 
 ---
 
@@ -51,6 +51,8 @@ docker run -d --name resumedoctor-redis -p 6379:6379 redis:7-alpine
 
 ### 2.1 Frontend Dependencies (`package.json`)
 
+This list is representative; treat `package.json` as authoritative.
+
 ```json
 {
   "dependencies": {
@@ -82,9 +84,7 @@ docker run -d --name resumedoctor-redis -p 6379:6379 redis:7-alpine
     "typescript": "^5.3.0",
     "eslint": "^8.56.0",
     "eslint-config-next": "^14.2.0",
-    "prettier": "^3.2.0",
-    "husky": "^9.0.0",
-    "lint-staged": "^15.2.0"
+    "prettier": "^3.2.0"
   }
 }
 ```
@@ -98,10 +98,10 @@ docker run -d --name resumedoctor-redis -p 6379:6379 redis:7-alpine
   "dependencies": {
     "@prisma/client": "^5.9.0",
     "openai": "^4.28.0",
-    "ioredis": "^5.3.2",
-    "pdf-parse": "^1.1.1",
-    "docxtemplater": "^3.42.0",
-    "pizzip": "^3.1.6"
+    "docx": "^9.6.0",
+    "pdf-parse": "^2.4.5",
+    "otplib": "^13.3.0",
+    "jose": "^6.1.3"
   },
   "devDependencies": {
     "prisma": "^5.9.0"
@@ -113,8 +113,8 @@ docker run -d --name resumedoctor-redis -p 6379:6379 redis:7-alpine
 
 | Package | Purpose |
 |---------|---------|
-| `@aws-sdk/client-s3` | S3/R2 file storage |
-| `puppeteer` | High-fidelity PDF export |
+| `@aws-sdk/client-s3` | S3/R2 file storage (only if you add external file uploads) |
+| `puppeteer` | High-fidelity server-side PDF export |
 | `@anthropic-ai/sdk` | Claude API (alternative to OpenAI) |
 
 ---
@@ -151,12 +151,10 @@ OPENAI_API_KEY=sk-...
 # Redis (optional for MVP)
 REDIS_URL=redis://localhost:6379
 
-# File Storage (S3-compatible, optional for local)
-# S3_BUCKET=
-# S3_REGION=
-# S3_ACCESS_KEY=
-# S3_SECRET_KEY=
-# S3_ENDPOINT=  # for R2/MinIO
+# Email (transactional)
+# ZEPTOMAIL_SEND_TOKEN=
+# EMAIL_FROM="ResumeDoctor <noreply@resumedoctor.in>"
+# EMAIL_REPLY_TO=support@resumedoctor.in
 ```
 
 ### Generate `NEXTAUTH_SECRET`
@@ -172,7 +170,7 @@ openssl rand -base64 32
 ### 4.1 Clone & Install
 
 ```bash
-cd F:\Zesty
+cd "E:\OneDrive\Resume-Doctor\_root_resdoc"
 pnpm install
 ```
 

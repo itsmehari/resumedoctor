@@ -25,6 +25,8 @@ function LoginForm() {
         "Administrator accounts must sign in with email and password, not Google or LinkedIn."
       );
     }
+    const prefill = searchParams.get("email");
+    if (prefill) setEmail(decodeURIComponent(prefill));
   }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent) {

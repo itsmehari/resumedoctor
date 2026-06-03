@@ -48,6 +48,8 @@ Or:
 | `docs/PRD-ROLE-BASED.md` | Role-specific PRD, acceptance criteria |
 | `docs/LOCAL-DEVELOPMENT-SETUP.md` | Dependencies, env vars, setup steps |
 | `docs/DEPLOYMENT-REQUIREMENTS.md` | Production checklist, deployment steps |
+| `docs/USER-ACCESS-CONTROL.md` | User types, identity layers, entitlements, flow inventory |
+| `docs/TEAMS-FORWARD-DESIGN.md` | Future org/teams model (design only) |
 | `AGENTS.md` | This file – agent quick start |
 
 ---

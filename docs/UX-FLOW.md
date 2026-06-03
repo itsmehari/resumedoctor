@@ -541,7 +541,7 @@ Signed-in users get full layout; anonymous users may see marketing wrapper with 
 
 ## 22. Lifecycle email touchpoints
 
-Email automation is configured outside the repo (e.g. Resend, Customer.io). Product events should drive segments documented in [`LIFECYCLE-EMAIL.md`](./LIFECYCLE-EMAIL.md).
+Email automation is configured outside the repo (e.g. Customer.io, Loops, Resend). Product events should drive segments documented in [`LIFECYCLE-EMAIL.md`](./LIFECYCLE-EMAIL.md).
 
 | Segment | Trigger (conceptual) | Email goal | In-app CTA target |
 |---------|----------------------|------------|-------------------|
@@ -611,7 +611,7 @@ flowchart TB
   subgraph org [External systems]
     STRIPE[Stripe]
     OAI[OpenAI API]
-    EMAIL[Resend email]
+    EMAIL[Transactional email (ZeptoMail)]
     EXT_WH[Inbound webhooks\nStripe SuperProfile etc]
   end
 

@@ -33,3 +33,10 @@ The old path `/pricing/thank-you` redirects here automatically.
 ## Webhook URL (optional — Pro entitlement in app)
 
 If you later want purchases to **automatically unlock Pro** inside ResumeDoctor (not just track conversions), use **`POST /api/webhooks/superprofile`** — see **`docs/DEPLOYMENT-REQUIREMENTS.md`**. This is optional and separate from the redirect + Google Ads flow above.
+
+---
+
+## Related routes (as implemented)
+
+- `GET /payment/success` (page): `src/app/payment/success/page.tsx`
+- `POST /api/webhooks/superprofile`: `src/app/api/webhooks/superprofile/route.ts`

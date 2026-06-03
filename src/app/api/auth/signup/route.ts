@@ -9,6 +9,7 @@ import { siteUrl } from "@/lib/seo";
 import { recordProductEvent } from "@/lib/product-events";
 import { AnalyticsEvents } from "@/lib/analytics-event-names";
 import { applyReferralOnSignup } from "@/lib/apply-referral";
+import { buildClearTrialCookieHeader } from "@/lib/trial-jwt";
 
 const signupSchema = z.object({
   email: z.string().email("Invalid email"),
@@ -68,13 +69,16 @@ export async function POST(req: Request) {
           name: AnalyticsEvents.sign_up,
           props: { method: "email", path: "trial_upgrade" },
         });
-        return NextResponse.json(
+        const response = NextResponse.json(
           {
             message:
               "Account created! You can now sign in with your email and password.",
+            trialUpgrade: true,
           },
           { status: 201 }
         );
+        response.headers.append("Set-Cookie", buildClearTrialCookieHeader());
+        return response;
       }
 
       // Full account exists → must sign in

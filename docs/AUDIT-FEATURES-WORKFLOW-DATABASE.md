@@ -139,7 +139,7 @@ Expiry modal → Sign up to save / Start new trial
 |---|-------|----------------|
 | 6 | Resume `content` not validated | Add Zod schema for content shape |
 | 7 | Email not normalized (signup) | Use `trim().toLowerCase()` on email |
-| 8 | Signup page shows "Zesty" | Update to "ResumeDoctor" |
+| 8 | Signup page shows outdated branding ("Zesty") | Update to "ResumeDoctor" |
 | 9 | Generic 500 errors | Introduce error codes for better client handling |
 
 ### Lower priority

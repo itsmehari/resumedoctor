@@ -15,7 +15,7 @@ todos:
     content: ChurnFeedback on delete-account + POST /api/user/churn-feedback (cancel flow); optional detail; ProductEvent churn_completed
     status: completed
   - id: p1-trial-email
-    content: Vercel cron trial-expiry-reminders + trial-expired-downgrade; Resend; proTrialReminder*SentAt on User
+    content: Vercel cron trial-expiry-reminders + trial-expired-downgrade; transactional email (ZeptoMail in production); proTrialReminder*SentAt on User
     status: completed
   - id: p2-dashboard
     content: Admin GET /api/admin/analytics — productEvents.funnelLast7Days + cohortSignupToPaid over payment_success
@@ -62,7 +62,7 @@ flowchart TB
   TryPath --> TrialBuilder[Trial builder limited]
   TrialBuilder --> Pricing[/pricing SuperProfile + copy]
 
-  SignPath --> VerifyEmail[verify-email Resend]
+  SignPath --> VerifyEmail[verify-email (transactional email)]
   VerifyEmail --> LoginPath
   LoginPath --> Dash[/dashboard checklist + core]
 
@@ -101,7 +101,7 @@ flowchart TB
 | ----------------------------------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | **Onboarding system**               | Implemented                     | Dashboard checklist, `User.onboardingChecklist`, `onboardingCompletedAt`                                                               |
 | **Engagement (in-app)**             | Strong                          | Builder, AI, ATS, jobs, cover letters                                                                                                  |
-| **Notifications**                   | Transactional + trial lifecycle | Resend verify/OTP/reset; **pro trial expiry reminders** (`[trial-expiry-reminders](src/app/api/cron/trial-expiry-reminders/route.ts)`) |
+| **Notifications**                   | Transactional + trial lifecycle | Verification/OTP/reset + **pro trial expiry reminders** (`[trial-expiry-reminders](src/app/api/cron/trial-expiry-reminders/route.ts)`) |
 | **Email marketing / lifecycle**     | Partial                         | Trial reminders; no broad drip/win-back                                                                                                |
 | **Payment system**                  | Hybrid                          | **SuperProfile** + webhook; Stripe optional; manual/admin legacy                                                                       |
 | **Subscription tiers**              | Yes                             | `free`, `trial`, `pro_monthly`, `pro_annual`, `pro_trial_14` on `User`                                                                 |
@@ -144,7 +144,7 @@ Legend: **Y** = Yes, **P** = Partial, **N** = No
 
 **P3 — Growth / optimization**
 
-- Reactivation and win-back (batch + Resend).
+- Reactivation and win-back (batch + ESP campaigns).
 - Referral MVP (credits or extra AI).
 - Admin **CSV export** of `ProductEvent` / `ChurnFeedback` if JSON is not enough.
 - Usage-based upgrade nudges (e.g. AI cap thresholds) using existing logs.
@@ -216,7 +216,7 @@ Refer to `[prisma/schema.prisma](prisma/schema.prisma)` for truth. Highlights:
 
 1. **CSV export** (admin-guarded) for `ProductEvent` and `ChurnFeedback`.
 2. **Standardize** any remaining ad-hoc event strings onto `AnalyticsEvents` constants.
-3. **Reactivation**: one Resend template + weekly job for users inactive 14d with `subscription = free`.
+3. **Reactivation**: one ESP template + weekly job for users inactive 14d with `subscription = free`.
 4. **Docs**: keep `[BUSINESS-ONLY-AUDIT-SHEET.md](docs/BUSINESS-ONLY-AUDIT-SHEET.md)` aligned with SuperProfile as source of truth for customer pay.
 
 ---

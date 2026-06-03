@@ -3,7 +3,7 @@
 **Mini-project:** Email capture + OTP verification → 5-min trial → basic templates, no export
 
 **Status:** Implemented  
-**Last updated:** 2026-02-27
+**Last updated:** 2026-06-02
 
 ### Implementation Complete
 
@@ -216,7 +216,7 @@ if (path is /resumes/:id/edit) {
 
 - Subject: "Your ResumeDoctor verification code"
 - Body: "Your code is: **123456**. Valid for 10 minutes."
-- Plain, minimal. Use Resend (existing).
+- Plain, minimal. Use the app’s transactional email provider (ZeptoMail in production).
 
 ### G. 5 Basic Templates
 
@@ -248,7 +248,7 @@ Template definitions can live in JSON + React components (extend existing `Resum
 | 1.1     | Add Prisma models: TrialSession, OtpAttempt | Backend | schema.prisma updates, migration |
 | 1.2     | API: POST /api/auth/trial/send-otp      | Backend | Rate limit, OTP gen, hash, save, send    |
 | 1.3     | API: POST /api/auth/trial/verify-otp    | Backend | Verify, create User (trial) + TrialSession, return JWT |
-| 1.4     | sendOtpEmail() in lib/email.ts          | Backend | Resend template for OTP                  |
+| 1.4     | sendOtpEmail() in lib/email.ts          | Backend | OTP email via transactional provider     |
 | 1.5     | Trial JWT util: sign, verify, payload   | Backend | lib/trial-jwt.ts                         |
 
 ### Phase 2: Backend – Resume Access for Trial (Est. 3–4h)
@@ -303,12 +303,12 @@ Template definitions can live in JSON + React components (extend existing `Resum
 
 | Dependency     | Purpose           | Status      |
 |----------------|-------------------|-------------|
-| Resend         | Send OTP email    | Existing    |
+| Transactional email provider | Send OTP email | ZeptoMail in production |
 | bcryptjs       | OTP hashing       | Existing    |
 | jose or jsonwebtoken | Trial JWT   | Add if needed |
 | Database       | TrialSession, etc.| PostgreSQL  |
 
-**New env vars:** None required if using existing Resend. Optional: `TRIAL_SESSION_SECRET` for JWT signing.
+**New env vars:** `ZEPTOMAIL_SEND_TOKEN` + `EMAIL_FROM` required for production email sends. Optional: `TRIAL_SESSION_SECRET` for JWT signing.
 
 ---
 

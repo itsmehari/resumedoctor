@@ -1,4 +1,4 @@
-# Zesty / ResumeDoctor – Completion Plan & Tracker
+# ResumeDoctor – Completion Plan & Tracker
 
 **Version:** 1.0  
 **Created:** 2026-03-04  

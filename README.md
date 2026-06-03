@@ -1,21 +1,20 @@
-# Zesty – Resume & CV Builder
+# ResumeDoctor – Resume & CV Builder
 
-India-first resume builder with ATS-friendly templates, AI assistance, and job-matching tools.
+India-first resume builder with ATS-friendly templates, AI assistance, ATS checks, and job-matching tools.
 
 ## Quick Start
 
 ### Prerequisites
 
 - Node.js 20+
-- pnpm (or npm)
-- PostgreSQL 15+ (or [Docker](https://www.docker.com/products/docker-desktop/))
+- pnpm (recommended; npm also works)
+- PostgreSQL 15+ (local/hosted, or [Docker](https://www.docker.com/products/docker-desktop/))
 
 ### Setup
 
 ```bash
 # Install dependencies
 pnpm install
-# or: npm install
 
 # Copy environment file
 cp .env.example .env.local
@@ -25,9 +24,9 @@ cp .env.example .env.local
 
 # Generate Prisma client & run migrations
 pnpm prisma generate
-pnpm prisma migrate dev --name init
+pnpm prisma migrate dev
 
-# Start dev server
+# Start dev server (only if you are doing local testing)
 pnpm dev
 ```
 
@@ -42,17 +41,17 @@ docker compose up -d
 npx prisma migrate dev --name init
 ```
 
-**Option 2 – Single container:**
+**Option 2 – Single container (quick):**
 
 ```bash
-docker run -d --name zesty-db -e POSTGRES_PASSWORD=dev -e POSTGRES_DB=zesty_dev -p 5432:5432 postgres:15
-npx prisma migrate dev --name init
+docker run -d --name resumedoctor-db -e POSTGRES_PASSWORD=dev -e POSTGRES_DB=resumedoctor_dev -p 5432:5432 postgres:15
+pnpm prisma migrate dev
 ```
 
 Then ensure `.env.local` has:
 
 ```
-DATABASE_URL="postgresql://postgres:dev@localhost:5432/zesty_dev"
+DATABASE_URL="postgresql://postgres:dev@localhost:5432/resumedoctor_dev"
 ```
 
 > **Note:** Auth, signup, and resume features require a running database. Static pages (home, login, signup) load without it, but API calls will fail.

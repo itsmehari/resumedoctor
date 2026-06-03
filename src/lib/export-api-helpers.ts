@@ -2,19 +2,19 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { parseResumeContent } from "@/lib/resume-utils";
-import { getResumeAuth } from "@/lib/trial-auth";
+import { getEffectiveAuth } from "@/lib/effective-auth";
+import { getUserEntitlements } from "@/lib/entitlements";
 import { hasFullProAccess } from "@/lib/subscription-entitlements";
 
 export async function getResumeForExport(
   resumeId: string,
   options?: { requirePro?: boolean }
 ) {
-  const auth = await getResumeAuth();
+  const auth = await getEffectiveAuth();
   if (!auth) {
     return { error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }) };
   }
 
-  // Trial users cannot export at all
   if (auth.isTrial) {
     return {
       error: NextResponse.json(
@@ -26,27 +26,34 @@ export async function getResumeForExport(
 
   const resume = await prisma.resume.findFirst({
     where: { id: resumeId, userId: auth.userId },
-    include: { user: { select: { id: true, subscription: true, subscriptionExpiresAt: true, resumePackCredits: true } } },
+    include: {
+      user: {
+        select: {
+          id: true,
+          subscription: true,
+          subscriptionExpiresAt: true,
+          resumePackCredits: true,
+          proLinkActive: true,
+          proLinkExpiresAt: true,
+          proLinkSource: true,
+        },
+      },
+    },
   });
 
   if (!resume) {
     return { error: NextResponse.json({ error: "Resume not found" }, { status: 404 }) };
   }
 
-  if (options?.requirePro) {
-    const isPro = hasFullProAccess(
-      resume.user.subscription,
-      resume.user.subscriptionExpiresAt
-    );
-    const hasPackCredits = (resume.user.resumePackCredits ?? 0) > 0;
-    if (!isPro && !hasPackCredits) {
-      return {
-        error: NextResponse.json(
-          { error: "Upgrade to Pro to export PDF or Word", code: "PRO_REQUIRED" },
-          { status: 403 }
-        ),
-      };
-    }
+  const entitlements = getUserEntitlements({ user: resume.user, isTrial: false });
+
+  if (options?.requirePro && !entitlements.canExportPaidFormats) {
+    return {
+      error: NextResponse.json(
+        { error: "Upgrade to Pro to export PDF or Word", code: "PRO_REQUIRED" },
+        { status: 403 }
+      ),
+    };
   }
 
   const content = parseResumeContent(resume.content);
@@ -55,7 +62,8 @@ export async function getResumeForExport(
     userId: resume.user.id,
     subscription: resume.user.subscription,
     subscriptionExpiresAt: resume.user.subscriptionExpiresAt,
-    resumePackCredits: resume.user.resumePackCredits ?? 0,
+    resumePackCredits: entitlements.resumePackCredits,
+    entitlements,
   };
 }
 
@@ -90,13 +98,19 @@ export async function logExport(
 export async function consumePackCreditIfNeeded(userId: string): Promise<boolean> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { subscription: true, subscriptionExpiresAt: true, resumePackCredits: true },
+    select: {
+      subscription: true,
+      subscriptionExpiresAt: true,
+      resumePackCredits: true,
+      proLinkActive: true,
+      proLinkExpiresAt: true,
+      proLinkSource: true,
+    },
   });
   if (!user) return false;
-  const isPro = hasFullProAccess(user.subscription, user.subscriptionExpiresAt);
-  if (isPro) return false; // Pro users don't use credits
-  const credits = user.resumePackCredits ?? 0;
-  if (credits <= 0) return false;
+  const entitlements = getUserEntitlements({ user, isTrial: false });
+  if (entitlements.hasFullPro) return false;
+  if (entitlements.resumePackCredits <= 0) return false;
   await prisma.user.update({
     where: { id: userId },
     data: { resumePackCredits: { decrement: 1 } },

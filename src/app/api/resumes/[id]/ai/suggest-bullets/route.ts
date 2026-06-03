@@ -1,14 +1,12 @@
 // WBS 6.3, 6.6, 6.7 – AI suggest bullets for role from job description (rate limited + cached)
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { requireFullAccountAuth } from "@/lib/api-auth";
 import { chatCompletion, isAiConfigured } from "@/lib/ai-client";
 import { checkAiRateLimit, recordAiUsage } from "@/lib/ai-rate-limit";
 import { getCachedAiResponse, setCachedAiResponse } from "@/lib/ai-cache";
 import { recordFeatureUsage } from "@/lib/feature-usage";
-import { sessionUserEmail } from "@/lib/session-user";
 
 const schema = z.object({
   jobDescription: z.string().min(1, "Job description required").max(8000),
@@ -21,11 +19,8 @@ export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getServerSession(authOptions);
-  const sessionEmail = sessionUserEmail(session);
-  if (!sessionEmail) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const authResult = await requireFullAccountAuth();
+  if ("error" in authResult) return authResult.error;
 
   if (!isAiConfigured()) {
     return NextResponse.json(
@@ -34,13 +29,7 @@ export async function POST(
     );
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email: sessionEmail },
-    select: { id: true },
-  });
-  if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
-
-  const rateLimit = await checkAiRateLimit(user.id, "suggest-bullets");
+  const rateLimit = await checkAiRateLimit(authResult.userId, "suggest-bullets");
   if (!rateLimit.allowed) {
     return NextResponse.json(
       {
@@ -55,7 +44,7 @@ export async function POST(
 
   const { id } = await params;
   const resume = await prisma.resume.findFirst({
-    where: { id, userId: user.id },
+    where: { id, userId: authResult.userId },
   });
   if (!resume) {
     return NextResponse.json({ error: "Resume not found" }, { status: 404 });
@@ -78,8 +67,8 @@ export async function POST(
     };
     const cachedBullets = await getCachedAiResponse<{ bullets: string[] }>("suggest-bullets", cacheInput);
     if (cachedBullets) {
-      await recordAiUsage(user.id, "suggest-bullets");
-      await recordFeatureUsage(user.id, "ai", { action: "suggest-bullets", cached: true });
+      await recordAiUsage(authResult.userId, "suggest-bullets");
+      await recordFeatureUsage(authResult.userId, "ai", { action: "suggest-bullets", cached: true });
       return NextResponse.json(cachedBullets);
     }
 
@@ -128,8 +117,8 @@ Return ONLY a JSON array of strings, e.g. ["bullet 1", "bullet 2", ...] No other
         .filter(Boolean);
     }
 
-    await recordAiUsage(user.id, "suggest-bullets");
-    await recordFeatureUsage(user.id, "ai", { action: "suggest-bullets" });
+    await recordAiUsage(authResult.userId, "suggest-bullets");
+    await recordFeatureUsage(authResult.userId, "ai", { action: "suggest-bullets" });
     await setCachedAiResponse("suggest-bullets", cacheInput, { bullets });
     return NextResponse.json({ bullets });
   } catch (err) {

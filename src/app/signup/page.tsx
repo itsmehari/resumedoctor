@@ -16,6 +16,7 @@ function SignupForm() {
   const [error, setError] = useState<Record<string, string[]>>({});
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [trialUpgrade, setTrialUpgrade] = useState(false);
   const [emailSent, setEmailSent] = useState(true);
   const [resendStatus, setResendStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [resendMessage, setResendMessage] = useState<string | null>(null);
@@ -28,6 +29,7 @@ function SignupForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, name: name || undefined, ref: refCode }),
+        credentials: "include",
       });
       const data = await res.json();
 
@@ -49,6 +51,7 @@ function SignupForm() {
         return;
       }
       setSuccess(true);
+      setTrialUpgrade(data?.trialUpgrade === true);
       // 202 from API means account created but verification email did not send
       setEmailSent(data?.emailSent !== false);
       trackEvent("sign_up");
@@ -131,9 +134,18 @@ function SignupForm() {
               )}
             </div>
             <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-              {emailSent ? "Account created!" : "Account created — email pending"}
+              {trialUpgrade
+                ? "Account ready!"
+                : emailSent
+                  ? "Account created!"
+                  : "Account created — email pending"}
             </h1>
-            {emailSent ? (
+            {trialUpgrade ? (
+              <p className="text-slate-600 dark:text-slate-400 text-sm max-w-sm mx-auto">
+                Your trial resume is saved under <strong>{email}</strong>. Sign in with the password
+                you just set — no extra email verification needed.
+              </p>
+            ) : emailSent ? (
               <p className="text-slate-600 dark:text-slate-400 text-sm max-w-sm mx-auto">
                 We sent a verification link to <strong>{email}</strong>. Open it to confirm your address, then sign in. Email
                 verification is required before you can log in with your password.
@@ -145,7 +157,7 @@ function SignupForm() {
               </p>
             )}
 
-            {!emailSent && (
+            {!trialUpgrade && !emailSent && (
               <div className="space-y-2">
                 <button
                   type="button"
@@ -173,19 +185,21 @@ function SignupForm() {
               </div>
             )}
 
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Verification email not arriving? Check Spam/Promotions, or{" "}
-              <a href="mailto:support@resumedoctor.in" className="text-primary-600 hover:underline">
-                contact support
-              </a>
-              .
-            </p>
+            {!trialUpgrade && (
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Verification email not arriving? Check Spam/Promotions, or{" "}
+                <a href="mailto:support@resumedoctor.in" className="text-primary-600 hover:underline">
+                  contact support
+                </a>
+                .
+              </p>
+            )}
 
             <Link
-              href="/login"
+              href={trialUpgrade ? `/login?email=${encodeURIComponent(email)}` : "/login"}
               className="inline-block rounded-lg border border-slate-300 dark:border-slate-700 px-5 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
             >
-              Go to sign in
+              {trialUpgrade ? "Sign in now" : "Go to sign in"}
             </Link>
           </div>
         </main>

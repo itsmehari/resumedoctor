@@ -1,10 +1,10 @@
-# Resumly – Complete Work Breakdown Structure (WBS)
+# ResumeDoctor – Complete Work Breakdown Structure (WBS)
 
 **Project:** Zety-style Resume/CV Builder SaaS  
 **Version:** 1.0  
-**Last Updated:** 2026-02-27
+**Last Updated:** 2026-06-02
 
-**Completion Status:** Phases 1–3, 5 complete. Phases 4, 6–13 pending.
+**Completion Status (reality-sync):** The original phase-level status is outdated; much of phases **4–12** exists in the codebase. Use [`BACKLOG-PRIORITIZED.md`](./BACKLOG-PRIORITIZED.md) as the fast “what’s actually shipped / what’s next” view, and treat this WBS as the canonical task-ID catalog.
 
 **Reality sync:** Many phase 6–12 tasks exist in code (AI tailor-for-job, ATS API, jobs, cover letters, admin, content). See **[BACKLOG-PRIORITIZED.md](./BACKLOG-PRIORITIZED.md)** for codebase-aligned status and the ordered ship list (JD match + WBS follow-through).
 

@@ -4,7 +4,7 @@
 
 **Product:** India-first, Zety-style resume/CV builder SaaS (freemium, Pro subscriptions, trials).  
 **Production domain:** resumedoctor.in  
-**Last updated:** 2026-05-01  
+**Last updated:** 2026-06-02  
 
 **Diagrams:** This document uses [Mermaid](https://mermaid.js.org/) (`flowchart`, `sequenceDiagram`, `stateDiagram`, `classDiagram`, `erDiagram`, `mindmap`). GitHub renders them in Markdown; local editors may need a Mermaid-capable preview.
 
@@ -40,7 +40,7 @@
 | Auth | NextAuth.js (JWT sessions), Google & LinkedIn OAuth, credentials + email verification, optional TOTP 2FA |
 | Payments | Stripe (checkout + webhooks); manual/UPI flows where configured |
 | AI | OpenAI (resume/cover improvements, ATS-style logic, interview prep) |
-| Email | Resend |
+| Email | ZeptoMail (transactional) |
 | Hosting | Vercel (`vercel.json` crons); assets/uploads via Vercel Blob where used |
 | Observability | Sentry, Vercel Analytics / Speed Insights, Microsoft Clarity |
 | Testing | Playwright (dev dependency) |
@@ -562,7 +562,7 @@ flowchart TB
   subgraph org [External systems]
     STRIPE[Stripe]
     OAI[OpenAI API]
-    EMAIL[Resend email]
+    EMAIL[Transactional email (ZeptoMail)]
     EXT_WH[Inbound webhooks\nStripe SuperProfile etc]
   end
 
@@ -622,7 +622,7 @@ flowchart LR
   subgraph partners [Partner APIs]
     ST[Stripe]
     AI[OpenAI]
-    RS[Resend]
+    RS[ZeptoMail]
   end
 
   WEB --> VC
@@ -955,7 +955,7 @@ Typical keys (see `.env.example` / `LOCAL-DEVELOPMENT-SETUP.md` for authoritativ
 - **Auth:** `NEXTAUTH_SECRET`, OAuth client IDs/secrets, email verification settings
 - **Stripe:** API keys, webhook secret, price IDs
 - **AI:** `OPENAI_API_KEY`
-- **Email:** Resend API key
+- **Email:** `ZEPTOMAIL_SEND_TOKEN`, `EMAIL_FROM` (and optional `EMAIL_REPLY_TO`)
 - **Security / admin:** `ADMIN_IP_ALLOWLIST`, master admin allowlist env, `REQUIRE_ADMIN_2FA`
 - **Trial:** trial JWT secret (see `lib/trial-secret.ts`)
 - **Vercel Cron:** secured cron routes (verify implementation in each cron handler)

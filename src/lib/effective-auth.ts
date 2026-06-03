@@ -70,7 +70,18 @@ export async function getEffectiveAuth(): Promise<{
   }
 
   const trial = await getTrialFromRequest();
-  if (trial) return { userId: trial.userId, isTrial: true };
+  if (trial) {
+    const user = await prisma.user.findUnique({
+      where: { id: trial.userId },
+      select: { id: true, subscription: true },
+    });
+    if (!user) return null;
+    // Cookie may outlive OTP trial; entitlements follow DB subscription, not cookie alone.
+    return {
+      userId: user.id,
+      isTrial: user.subscription === "trial",
+    };
+  }
 
   return null;
 }

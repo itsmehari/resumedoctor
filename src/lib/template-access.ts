@@ -6,7 +6,7 @@ import {
   TRIAL_TEMPLATE_IDS,
   resolveTemplateId,
 } from "@/lib/templates";
-import { getResumeAuth } from "@/lib/trial-auth";
+import { getEffectiveAuth } from "@/lib/effective-auth";
 import { hasFullProAccess } from "@/lib/subscription-entitlements";
 
 /** Legacy template ids still allowed for existing resumes */
@@ -67,7 +67,7 @@ export async function getTemplateAccessContext(): Promise<{
   subscriptionExpiresAt: Date | null;
   allowedTemplateIds: string[];
 } | null> {
-  const auth = await getResumeAuth();
+  const auth = await getEffectiveAuth();
   if (!auth) return null;
 
   if (auth.isTrial) {

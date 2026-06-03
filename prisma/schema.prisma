@@ -1,4 +1,4 @@
-// Zesty – Prisma Schema
+// ResumeDoctor – Prisma Schema
 // WBS 1.3, 2, 3.1
 
 generator client {
@@ -58,7 +58,7 @@ model User {
   // Onboarding checklist (merged with server-detected progress)
   onboardingChecklist   Json?
   onboardingCompletedAt DateTime?
-  // Pro ₹1 trial – expiry reminder emails (cron + Resend)
+  // Pro ₹1 trial – expiry reminder emails (cron + transactional email provider)
   proTrialReminder3dSentAt DateTime?
   proTrialReminder1dSentAt DateTime?
 

@@ -2,7 +2,7 @@
 
 **Product:** Zety-style Resume/CV Builder SaaS  
 **Version:** 1.0  
-**Last Updated:** 2026-02-27
+**Last Updated:** 2026-06-02
 
 ---
 
@@ -118,12 +118,13 @@ API routes, database schema, business logic, integrations (auth, payments, AI, s
 
 ## Tech Stack
 
-- Next.js API routes or standalone Node
+- Next.js Route Handlers (`src/app/api/**/route.ts`)
 - Prisma + PostgreSQL
 - NextAuth
 - Stripe
 - OpenAI API
-- S3-compatible storage (R2/S3)
+- Transactional email (ZeptoMail in production)
+- Vercel Blob (where used for uploads/avatars)
 
 ## Priorities (Order of Work)
 
@@ -154,7 +155,7 @@ API routes, database schema, business logic, integrations (auth, payments, AI, s
 |----------|--------|
 | TXT | Return plain text; no auth required for free tier |
 | PDF | Server-side or client; check subscription before allowing |
-| DOCX | Use docxtemplater or similar; return binary |
+| DOCX | Use `docx` (current) or similar; return binary |
 | Gating | Middleware to verify `user.subscription === 'pro'` for PDF/Word |
 
 ### Task: AI Rewrite API (WBS 6.1–6.4)
@@ -186,7 +187,7 @@ API routes, database schema, business logic, integrations (auth, payments, AI, s
 
 - DB migrations from DevOps (WBS 1.3)
 - Stripe account, OpenAI API key
-- File storage bucket for exports
+- Email provider account (ZeptoMail) for OTP/verification in production
 
 ---
 

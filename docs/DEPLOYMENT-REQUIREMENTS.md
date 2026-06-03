@@ -186,6 +186,8 @@ Also set **`SUPERPROFILE_WEBHOOK_SECRET`** (long random string). The app accepts
 
 ## 4. Deployment Steps (Vercel)
 
+**Recommended deployment method:** push to the connected Git repository (Vercel auto-deploys). Use Vercel CLI only when you explicitly need it for debugging or one-off operations.
+
 ### 4.1 Initial Setup
 
 ```bash
@@ -200,7 +202,7 @@ vercel env add DATABASE_URL
 vercel env add NEXTAUTH_SECRET
 # ... repeat for all
 
-# 4. Deploy
+# 4. Deploy (optional; prefer Git push for normal deploys)
 vercel --prod
 ```
 

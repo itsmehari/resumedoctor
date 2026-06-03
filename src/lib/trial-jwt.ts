@@ -55,3 +55,16 @@ export async function verifyTrialToken(token: string): Promise<TrialPayload | nu
 export function getTrialCookieName(): string {
   return COOKIE_NAME;
 }
+
+/** Expire the trial JWT cookie (after signup upgrade or full login). */
+export function buildClearTrialCookieHeader(): string {
+  const isProd = process.env.NODE_ENV === "production";
+  return [
+    `${COOKIE_NAME}=`,
+    "Path=/",
+    "HttpOnly",
+    "SameSite=Lax",
+    "Max-Age=0",
+    ...(isProd ? ["Secure"] : []),
+  ].join("; ");
+}

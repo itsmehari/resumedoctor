@@ -1,14 +1,12 @@
 // WBS 6.4, 6.6, 6.7 – AI improve professional summary (rate limited + cached)
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { requireFullAccountAuth } from "@/lib/api-auth";
 import { chatCompletion, isAiConfigured } from "@/lib/ai-client";
 import { checkAiRateLimit, recordAiUsage } from "@/lib/ai-rate-limit";
 import { getCachedAiResponse, setCachedAiResponse } from "@/lib/ai-cache";
 import { recordFeatureUsage } from "@/lib/feature-usage";
-import { sessionUserEmail } from "@/lib/session-user";
 
 const schema = z.object({
   text: z.string().min(1, "Summary text required").max(2000),
@@ -18,11 +16,8 @@ export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getServerSession(authOptions);
-  const sessionEmail = sessionUserEmail(session);
-  if (!sessionEmail) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const authResult = await requireFullAccountAuth();
+  if ("error" in authResult) return authResult.error;
 
   if (!isAiConfigured()) {
     return NextResponse.json(
@@ -31,13 +26,7 @@ export async function POST(
     );
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email: sessionEmail },
-    select: { id: true },
-  });
-  if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
-
-  const rateLimit = await checkAiRateLimit(user.id, "improve-summary");
+  const rateLimit = await checkAiRateLimit(authResult.userId, "improve-summary");
   if (!rateLimit.allowed) {
     return NextResponse.json(
       {
@@ -52,7 +41,7 @@ export async function POST(
 
   const { id } = await params;
   const resume = await prisma.resume.findFirst({
-    where: { id, userId: user.id },
+    where: { id, userId: authResult.userId },
   });
   if (!resume) {
     return NextResponse.json({ error: "Resume not found" }, { status: 404 });
@@ -70,8 +59,8 @@ export async function POST(
 
     const cached = await getCachedAiResponse<{ text: string }>("improve-summary", { text: parsed.data.text });
     if (cached) {
-      await recordAiUsage(user.id, "improve-summary");
-      await recordFeatureUsage(user.id, "ai", { action: "improve-summary", cached: true });
+      await recordAiUsage(authResult.userId, "improve-summary");
+      await recordFeatureUsage(authResult.userId, "ai", { action: "improve-summary", cached: true });
       return NextResponse.json(cached);
     }
 
@@ -93,8 +82,8 @@ export async function POST(
       return NextResponse.json({ error: "No content generated" }, { status: 500 });
     }
 
-    await recordAiUsage(user.id, "improve-summary");
-    await recordFeatureUsage(user.id, "ai", { action: "improve-summary" });
+    await recordAiUsage(authResult.userId, "improve-summary");
+    await recordFeatureUsage(authResult.userId, "ai", { action: "improve-summary" });
     await setCachedAiResponse("improve-summary", { text: parsed.data.text }, { text: generated });
     return NextResponse.json({ text: generated });
   } catch (err) {
